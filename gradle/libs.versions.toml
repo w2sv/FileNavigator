@@ -1,0 +1,49 @@
+[versions]
+minSdk = '26'  # min for activity.isRequestPinAppWidgetSupported
+compileSdk = '33'
+
+agp = "8.0.0"
+kotlin = '1.8.10'
+java = '17'
+
+compose-compiler = '1.4.4'
+compose-tooling = '1.4.2'
+hilt = '2.45'
+junit = '5.9.2'
+lifecycle = "2.6.1"
+
+[libraries]
+
+# owned
+androidutils = 'com.github.w2sv:AndroidUtils:0.2.0-rc1'
+kotlinutils = 'com.github.w2sv:KotlinUtils:0.0.7-rc2'
+
+# androidx
+androidx-appcompat = 'androidx.appcompat:appcompat:1.6.1'
+androidx-core = 'androidx.core:core-ktx:1.10.0'
+androidx-localbroadcastmanager = 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
+androidx-splashscreen = 'androidx.core:core-splashscreen:1.0.1'
+androidx-lifecycle-runtime = { module = 'androidx.lifecycle:lifecycle-runtime-ktx', version.ref = 'lifecycle' }
+androidx-compose-bom = 'androidx.compose:compose-bom:2023.04.01'
+androidx-compose-material3 = 'androidx.compose.material3:material3:1.0.1'
+androidx-compose-ui = { module = 'androidx.compose.ui:ui', version.ref = 'compose-tooling' }
+androidx-compose-ui-tooling-preview = { module = 'androidx.compose.ui:ui-tooling-preview', version.ref = 'compose-tooling' }
+androidx-compose-ui-tooling = { module = 'androidx.compose.ui:ui-tooling', version.ref = 'compose-tooling' }
+androidx-compose-activity = 'androidx.activity:activity-compose:1.7.1'
+androidx-compose-viewmodel = { module = 'androidx.lifecycle:lifecycle-viewmodel-compose', version.ref = 'lifecycle' }
+androidx-datastore-preferences = 'androidx.datastore:datastore-preferences:1.0.0'
+
+# google
+google-material = 'com.google.android.material:material:1.8.0'
+google-hilt = { module = 'com.google.dagger:hilt-android', version.ref = 'hilt' }
+google-hilt-kapt = { module = 'com.google.dagger:hilt-android-compiler', version.ref = 'hilt' }
+accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.30.1"
+
+# other
+slimber = 'com.github.PaulWoitaschek:Slimber:2.0.0'
+
+[plugins]
+application = { id = 'com.android.application', version.ref = 'agp' }
+kotlin = { id = 'org.jetbrains.kotlin.android', version.ref = 'kotlin' }
+hilt = { id = 'com.google.dagger.hilt.android', version.ref = 'hilt' }
+play = { id = 'com.github.triplet.play', version = '3.8.2' }

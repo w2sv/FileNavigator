@@ -1,0 +1,117 @@
+plugins {
+    alias libs.plugins.application
+    alias libs.plugins.play
+    alias libs.plugins.kotlin
+    alias libs.plugins.hilt
+    id 'kotlin-kapt'
+}
+
+android {
+    def PACKAGE_NAME = 'com.w2sv.filetrafficnavigator'
+
+    namespace PACKAGE_NAME
+    compileSdk libs.versions.compileSdk.get().toInteger()
+
+    defaultConfig {
+        applicationId PACKAGE_NAME
+
+        minSdk libs.versions.minSdk.get().toInteger()
+        targetSdk libs.versions.compileSdk.get().toInteger()
+
+        versionCode project.findProperty('versionCode').toInteger()
+        versionName version
+
+        // Store bundles as "{versionName}-{buildFlavor}.aab"
+        setProperty('archivesBaseName', versionName)
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+    signingConfigs {
+        // create release signingConfig from keystore.properties file, if present
+        release {
+            rootProject.file("keystore.properties").with { file ->
+                if (file.exists()) {
+                    def keystoreProperties = new Properties()
+                    keystoreProperties.load(new FileInputStream(file))
+
+                    storeFile rootProject.file("keys.jks")
+                    storePassword keystoreProperties["storePassword"]
+                    keyAlias keystoreProperties["keyAlias"]
+                    keyPassword keystoreProperties["keyPassword"]
+                } else
+                    println("WARNING: Failed to create release signing configuration; $file.path not present")
+            }
+        }
+    }
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+        }
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion libs.versions.compose.compiler.get()
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlin {
+        jvmToolchain(libs.versions.java.get().toInteger())
+    }
+    // Store .apk's as "{versionName}.apk"
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${variant.versionName}.apk"
+        }
+    }
+}
+
+// https://github.com/Triple-T/gradle-play-publisher
+play {
+    serviceAccountCredentials.set(file("../service-account-key.json"))
+    defaultToAppBundles.set(true)
+    artifactDir.set(file("build/outputs/bundle/release"))
+}
+
+dependencies {
+    implementation libs.androidutils
+    implementation libs.kotlinutils
+
+    // androidx
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.lifecycle.runtime
+    implementation libs.androidx.splashscreen
+    implementation libs.androidx.localbroadcastmanager
+
+    // .compose
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.ui.tooling.preview
+    debugImplementation libs.androidx.compose.ui.tooling
+
+    implementation libs.androidx.compose.activity
+    implementation libs.androidx.compose.viewmodel
+
+    // hilt
+    implementation libs.google.hilt
+    kapt libs.google.hilt.kapt
+
+    // other
+    implementation libs.slimber
+    implementation libs.accompanist.permissions
+}
