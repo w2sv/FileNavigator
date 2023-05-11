@@ -114,4 +114,5 @@ dependencies {
     // other
     implementation libs.slimber
     implementation libs.accompanist.permissions
+    implementation libs.google.guava
 }

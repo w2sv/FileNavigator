@@ -15,7 +15,7 @@ lifecycle = "2.6.1"
 [libraries]
 
 # owned
-androidutils = 'com.github.w2sv:AndroidUtils:0.2.0-rc1'
+androidutils = 'com.github.w2sv:AndroidUtils:0.2.1-rc1'
 kotlinutils = 'com.github.w2sv:KotlinUtils:0.0.7-rc2'
 
 # androidx
@@ -35,6 +35,7 @@ androidx-datastore-preferences = 'androidx.datastore:datastore-preferences:1.0.0
 
 # google
 google-material = 'com.google.android.material:material:1.8.0'
+google-guava = 'com.google.guava:guava:31.1-jre'
 google-hilt = { module = 'com.google.dagger:hilt-android', version.ref = 'hilt' }
 google-hilt-kapt = { module = 'com.google.dagger:hilt-android-compiler', version.ref = 'hilt' }
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.30.1"
