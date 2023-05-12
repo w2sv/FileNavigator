@@ -1,7 +1,9 @@
 package com.w2sv.filenavigator
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -28,11 +30,14 @@ class FileNavigator : Service() {
 
         fun stopService(context: Context) {
             context.startService(
-                Intent(context, FileNavigator::class.java)
-                    .setAction(ACTION_STOP_SERVICE)
+                getStopIntent(context)
             )
             i { "Stopping FileNavigator" }
         }
+
+        fun getStopIntent(context: Context): Intent =
+            Intent(context, FileNavigator::class.java)
+                .setAction(ACTION_STOP_SERVICE)
 
         private const val ACTION_STOP_SERVICE = "com.w2sv.filetrafficnavigator.STOP"
     }
@@ -40,27 +45,50 @@ class FileNavigator : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(
-            AppNotificationChannel.STARTED_FOREGROUND_SERVICE.nonZeroOrdinal,
-            applicationContext.createNotificationChannelAndGetNotificationBuilder(
-                AppNotificationChannel.STARTED_FOREGROUND_SERVICE,
-                AppNotificationChannel.STARTED_FOREGROUND_SERVICE.title
-            )
-                .setContentText("Waiting for new files to be navigated...")
-                .build()
-        )
+        when(intent?.action){
+            ACTION_STOP_SERVICE -> {
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                stopSelf()
+            }
+            else -> {
+                startForeground(
+                    AppNotificationChannel.STARTED_FOREGROUND_SERVICE.nonZeroOrdinal,
+                    getForegroundServiceNotification()
+                )
 
-        MediaType.values().forEach {
-            contentResolver.registerContentObserver(
-                it.mediaStoreUri,
-                true,
-                mediaObserver
-            )
-            i { "Registered mediaObserver for ${it.name} files" }
+                MediaType.values().forEach {
+                    contentResolver.registerContentObserver(
+                        it.mediaStoreUri,
+                        true,
+                        mediaObserver
+                    )
+                    i { "Registered mediaObserver for ${it.name} files" }
+                }
+            }
         }
 
         return super.onStartCommand(intent, flags, startId)
     }
+
+    private fun getForegroundServiceNotification(): Notification =
+        applicationContext.createNotificationChannelAndGetNotificationBuilder(
+            AppNotificationChannel.STARTED_FOREGROUND_SERVICE,
+            AppNotificationChannel.STARTED_FOREGROUND_SERVICE.title
+        )
+            .setContentText("Waiting for new files to be navigated")
+            .addAction(
+                NotificationCompat.Action(
+                    R.drawable.ic_cancel_24,
+                    "Stop",
+                    PendingIntent.getService(
+                        applicationContext,
+                        77,
+                        getStopIntent(applicationContext),
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+                    ),
+                )
+            )
+            .build()
 
     private val mediaObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
 
@@ -80,6 +108,9 @@ class FileNavigator : Service() {
         }
     }
 
+    /**
+     * Unregisters [mediaObserver].
+     */
     override fun onDestroy() {
         super.onDestroy()
 

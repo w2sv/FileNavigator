@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,7 +26,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     ElevatedButton(
-                        onClick = { startService(Intent(this, FileNavigator::class.java)) },
+                        onClick = { FileNavigator.startService(this) },
                         modifier = Modifier
                             .width(32.dp)
                             .height(24.dp)
