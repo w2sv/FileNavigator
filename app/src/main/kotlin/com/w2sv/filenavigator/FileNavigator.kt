@@ -1,4 +1,4 @@
-package com.w2sv.filetrafficnavigator
+package com.w2sv.filenavigator
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -16,17 +16,37 @@ import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.kotlinutils.extensions.nonZeroOrdinal
 import slimber.log.i
 
-class Listener : Service() {
+class FileNavigator : Service() {
+
+    companion object {
+        fun startService(context: Context) {
+            context.startService(
+                Intent(context, FileNavigator::class.java)
+            )
+            i { "Starting FileNavigator" }
+        }
+
+        fun stopService(context: Context) {
+            context.startService(
+                Intent(context, FileNavigator::class.java)
+                    .setAction(ACTION_STOP_SERVICE)
+            )
+            i { "Stopping FileNavigator" }
+        }
+
+        private const val ACTION_STOP_SERVICE = "com.w2sv.filetrafficnavigator.STOP"
+    }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(
             AppNotificationChannel.STARTED_FOREGROUND_SERVICE.nonZeroOrdinal,
-            applicationContext.createChannelAndGetNotificationBuilder(
+            applicationContext.createNotificationChannelAndGetNotificationBuilder(
                 AppNotificationChannel.STARTED_FOREGROUND_SERVICE,
                 AppNotificationChannel.STARTED_FOREGROUND_SERVICE.title
             )
+                .setContentText("Waiting for new files to be navigated...")
                 .build()
         )
 
@@ -51,7 +71,7 @@ class Listener : Service() {
 
             showNotification(
                 AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal,
-                createChannelAndGetNotificationBuilder(
+                createNotificationChannelAndGetNotificationBuilder(
                     AppNotificationChannel.NEW_FILE_DETECTED,
                     AppNotificationChannel.NEW_FILE_DETECTED.title
                 )
@@ -68,7 +88,7 @@ class Listener : Service() {
     }
 }
 
-private fun Context.createChannelAndGetNotificationBuilder(
+private fun Context.createNotificationChannelAndGetNotificationBuilder(
     channel: AppNotificationChannel,
     contentTitle: String? = null
 ): NotificationCompat.Builder {

@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         maven { url "https://jitpack.io" }
     }
 }
-rootProject.name = "FiletrafficNavigator"
+rootProject.name = "FileNavigator"
 include ':app'

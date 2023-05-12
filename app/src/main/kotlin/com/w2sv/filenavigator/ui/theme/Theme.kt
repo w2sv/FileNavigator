@@ -1,4 +1,4 @@
-package com.w2sv.filetrafficnavigator.ui.theme
+package com.w2sv.filenavigator.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -38,7 +38,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun FiletrafficNavigatorTheme(
+fun FileNavigatorTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

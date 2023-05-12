@@ -1,4 +1,4 @@
-package com.w2sv.filetrafficnavigator
+package com.w2sv.filenavigator
 
 import android.net.Uri
 import android.provider.MediaStore

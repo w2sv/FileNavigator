@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    def PACKAGE_NAME = 'com.w2sv.filetrafficnavigator'
+    def PACKAGE_NAME = 'com.w2sv.filenavigator'
 
     namespace PACKAGE_NAME
     compileSdk libs.versions.compileSdk.get().toInteger()

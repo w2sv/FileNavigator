@@ -1,4 +1,4 @@
-package com.w2sv.filetrafficnavigator.ui.theme
+package com.w2sv.filenavigator.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
