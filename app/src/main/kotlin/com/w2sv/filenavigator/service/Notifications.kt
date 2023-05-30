@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import com.w2sv.androidutils.notifying.getNotificationManager
-import com.w2sv.filenavigator.R
 
 fun Context.createNotificationChannelAndGetNotificationBuilder(
     channel: AppNotificationChannel,
@@ -26,6 +25,5 @@ private fun Context.notificationBuilder(
     title: String?,
 ): NotificationCompat.Builder =
     NotificationCompat.Builder(this, channelId)
-        .setSmallIcon(R.drawable.ic_file_move_24)
         .setContentTitle(title)
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)

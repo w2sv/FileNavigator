@@ -32,11 +32,11 @@ class FileNavigator : Service() {
             Intent(context, FileNavigator::class.java)
                 .setAction(ACTION_STOP_SERVICE)
 
-        private const val ACTION_STOP_SERVICE = "com.w2sv.filetrafficnavigator.STOP"
+        private const val ACTION_STOP_SERVICE = "com.w2sv.filenavigator.STOP"
 
         const val EXTRA_MEDIA_STORE_FILE_METADATA =
-            "com.w2sv.filetrafficnavigator.extra.MEDIA_STORE_FILE_METADATA"
-        const val EXTRA_NOTIFICATION_ID = "com.w2sv.filetrafficnavigator.extra.NOTIFICATION_ID"
+            "com.w2sv.filenavigator.extra.MEDIA_STORE_FILE_METADATA"
+        const val EXTRA_NOTIFICATION_ID = "com.w2sv.filenavigator.extra.NOTIFICATION_ID"
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -59,6 +59,7 @@ class FileNavigator : Service() {
                         AppNotificationChannel.STARTED_FOREGROUND_SERVICE,
                         getString(AppNotificationChannel.STARTED_FOREGROUND_SERVICE.titleRes)
                     )
+                        .setSmallIcon(R.drawable.ic_file_move_24)
                         .setContentText(getString(R.string.waiting_for_new_files_to_be_navigated))
                         // add 'Stop' action
                         .addAction(
@@ -129,6 +130,7 @@ class FileNavigator : Service() {
                                 mediaStoreFileData.mediaType.name
                             )
                         )
+                            .setSmallIcon(mediaType.iconRes)
                             // set content
                             .setStyle(
                                 NotificationCompat.BigTextStyle()
