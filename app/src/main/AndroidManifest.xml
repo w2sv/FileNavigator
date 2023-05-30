@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- System Permission -> granted automatically -->
+    <!-- System Permission -> granted automatically -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <!-- SDK <= 32 -->
     <uses-permission
@@ -10,10 +11,14 @@
         android:maxSdkVersion="32" />
 
     <!-- SDK >= 33 -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- == More granular drop-in for READ_EXTERNAL_STORAGE -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:name=".Application"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -35,7 +40,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.w2sv.filenavigator.FileNavigator" />
+        <activity
+            android:name="com.w2sv.filenavigator.service.FileMoverActivity" />
+
+        <service android:name="com.w2sv.filenavigator.service.FileNavigator" />
     </application>
 
 </manifest>
