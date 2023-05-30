@@ -14,9 +14,11 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import com.anggrayudi.storage.callback.FileCallback
+import com.anggrayudi.storage.file.getSimplePath
 import com.anggrayudi.storage.media.MediaStoreCompat
 import com.w2sv.androidutils.notifying.getNotificationManager
 import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.mediastore.MediaStoreFileMetadata
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,12 +68,17 @@ class FileMoverActivity : ComponentActivity() {
                     targetDirectoryDocumentFile,
                     callback = object : FileCallback() {
                         override fun onCompleted(result: Any) {
-                            showToast("Successfully moved file")
+                            showToast(
+                                getString(
+                                    R.string.successfully_moved_file_to,
+                                    targetDirectoryDocumentFile.getSimplePath(this@FileMoverActivity)
+                                )
+                            )
                         }
 
                         // TODO: refined errorCode handling
                         override fun onFailed(errorCode: ErrorCode) {
-                            showToast("Couldn't move file")
+                            showToast(R.string.couldn_t_move_file)
                         }
                     }
                 )
@@ -106,25 +113,18 @@ class FileMoverActivity : ComponentActivity() {
             PendingIntent.getActivity(
                 context,
                 PendingIntentRequestCode.MoveFile.ordinal,
-                getIntent(context, mediaStoreFileMetadata, cancelNotificationId),
+                Intent.makeRestartActivityTask(
+                    ComponentName(
+                        context,
+                        FileMoverActivity::class.java
+                    )
+                )
+                    .putExtra(FileNavigator.EXTRA_MEDIA_STORE_FILE_METADATA, mediaStoreFileMetadata)
+                    .putExtra(
+                        FileNavigator.EXTRA_NOTIFICATION_ID,
+                        cancelNotificationId
+                    ),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
             )
-
-        private fun getIntent(
-            context: Context,
-            mediaStoreFileMetadata: MediaStoreFileMetadata,
-            cancelNotificationId: Int
-        ): Intent =
-            Intent.makeRestartActivityTask(
-                ComponentName(
-                    context,
-                    FileMoverActivity::class.java
-                )
-            )
-                .putExtra(FileNavigator.EXTRA_MEDIA_STORE_FILE_METADATA, mediaStoreFileMetadata)
-                .putExtra(
-                    FileNavigator.EXTRA_NOTIFICATION_ID,
-                    cancelNotificationId
-                )
     }
 }

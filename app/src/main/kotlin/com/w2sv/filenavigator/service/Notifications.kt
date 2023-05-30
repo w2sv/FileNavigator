@@ -14,7 +14,7 @@ fun Context.createNotificationChannelAndGetNotificationBuilder(
     getNotificationManager().createNotificationChannel(
         NotificationChannel(
             channel.name,
-            channel.title,
+            getString(channel.titleRes),
             NotificationManager.IMPORTANCE_DEFAULT
         )
     )

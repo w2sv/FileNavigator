@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -60,7 +61,7 @@ private fun HomeScreen() {
                 .width(120.dp)
                 .height(80.dp)
         ) {
-            Text(text = "Start Listener", textAlign = TextAlign.Center)
+            Text(text = stringResource(R.string.start_listener), textAlign = TextAlign.Center)
         }
     }
 }

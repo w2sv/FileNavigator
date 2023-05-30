@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.service
 
-import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
@@ -11,7 +10,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
-import com.anggrayudi.storage.file.MimeType
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.filenavigator.R
@@ -28,13 +26,6 @@ class FileNavigator : Service() {
                 Intent(context, FileNavigator::class.java)
             )
             i { "Starting FileNavigator" }
-        }
-
-        fun stopService(context: Context) {
-            context.startService(
-                getStopIntent(context)
-            )
-            i { "Stopping FileNavigator" }
         }
 
         fun getStopIntent(context: Context): Intent =
@@ -64,7 +55,25 @@ class FileNavigator : Service() {
             else -> {
                 startForeground(
                     AppNotificationChannel.STARTED_FOREGROUND_SERVICE.nonZeroOrdinal,
-                    getForegroundServiceNotification()
+                    createNotificationChannelAndGetNotificationBuilder(
+                        AppNotificationChannel.STARTED_FOREGROUND_SERVICE,
+                        getString(AppNotificationChannel.STARTED_FOREGROUND_SERVICE.titleRes)
+                    )
+                        .setContentText(getString(R.string.waiting_for_new_files_to_be_navigated))
+                        // add 'Stop' action
+                        .addAction(
+                            NotificationCompat.Action(
+                                R.drawable.ic_cancel_24,
+                                getString(R.string.stop),
+                                PendingIntent.getService(
+                                    applicationContext,
+                                    PendingIntentRequestCode.StopFileNavigator.ordinal,
+                                    getStopIntent(applicationContext),
+                                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+                                ),
+                            )
+                        )
+                        .build()
                 )
 
                 mediaTypeObservers.forEach {
@@ -81,89 +90,81 @@ class FileNavigator : Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun getForegroundServiceNotification(): Notification =
-        applicationContext.createNotificationChannelAndGetNotificationBuilder(
-            AppNotificationChannel.STARTED_FOREGROUND_SERVICE,
-            AppNotificationChannel.STARTED_FOREGROUND_SERVICE.title
-        )
-            .setContentText("Waiting for new files to be navigated")
-            .addAction(
-                NotificationCompat.Action(
-                    R.drawable.ic_cancel_24,
-                    "Stop",
-                    PendingIntent.getService(
-                        applicationContext,
-                        PendingIntentRequestCode.StopFileNavigator.ordinal,
-                        getStopIntent(applicationContext),
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-                    ),
-                )
-            )
-            .build()
-
     @Suppress("UnstableApiUsage")
     private inner class MediaTypeObserver(val mediaType: MediaType) :
         ContentObserver(Handler(Looper.getMainLooper())) {
 
-        private val mediaStoreFileDataBlacklist = EvictingQueue.create<MediaStoreFileMetadata>(5)
-
         override fun deliverSelfNotifications(): Boolean = false
+
+        private val mediaStoreFileDataBlacklist = EvictingQueue.create<MediaStoreFileMetadata>(5)
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             super.onChange(selfChange, uri)
 
-            i { "Registered new uri: $uri" }
+            i { "Registered a new uri: $uri" }
 
-            if (uri != null) {
-                MediaStoreFileMetadata.fetch(uri, mediaType, contentResolver)
-                    ?.let { mediaStoreFileData ->
-                        if (mediaStoreFileData.isNewlyAdded && mediaStoreFileDataBlacklist.none {
-                                it.pointsToSameContentAs(
-                                    mediaStoreFileData
-                                )
-                            }) {
-                            val notificationContentText =
-                                "${mediaStoreFileData.name} found at ${mediaStoreFileData.relativePath}"
+            uri ?: return
 
-                            showNotification(
-                                AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal,
-                                createNotificationChannelAndGetNotificationBuilder(
-                                    AppNotificationChannel.NEW_FILE_DETECTED,
-                                    AppNotificationChannel.NEW_FILE_DETECTED.title.format(
-                                        mediaStoreFileData.mediaType.name
-                                    )
-                                )
-                                    .setStyle(
-                                        NotificationCompat.BigTextStyle()
-                                            .bigText(notificationContentText)
-                                    )
-                                    .setContentText(notificationContentText)
-                                    .addAction(
-                                        NotificationCompat.Action(
-                                            R.drawable.ic_file_move_24,
-                                            "Move",
-                                            FileMoverActivity.getPendingIntent(
-                                                applicationContext,
-                                                mediaStoreFileData,
-                                                AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal
-                                            )
-                                        )
-                                    )
-                                    .setContentIntent(
-                                        PendingIntent.getActivity(
-                                            this@FileNavigator,
-                                            PendingIntentRequestCode.ViewImage.ordinal,
-                                            Intent()
-                                                .setAction(Intent.ACTION_VIEW)
-                                                .setDataAndType(uri, MimeType.IMAGE),
-                                            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-                                        )
-                                    )
+            MediaStoreFileMetadata.fetch(uri, mediaType, contentResolver)
+                ?.let { mediaStoreFileData ->
+                    if (!mediaStoreFileData.isNewlyAdded || mediaStoreFileDataBlacklist.any {
+                            it.pointsToSameContentAs(
+                                mediaStoreFileData
                             )
-                            mediaStoreFileDataBlacklist.add(mediaStoreFileData)
-                        }
-                    }
-            }
+                        })
+                        return
+                    val notificationContentText =
+                        getString(
+                            R.string.found_at,  // TODO: make bold
+                            mediaStoreFileData.name,
+                            mediaStoreFileData.relativePath
+                        )
+
+                    showNotification(
+                        AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal,
+                        createNotificationChannelAndGetNotificationBuilder(
+                            AppNotificationChannel.NEW_FILE_DETECTED,
+                            getString(
+                                AppNotificationChannel.NEW_FILE_DETECTED.titleRes,
+                                mediaStoreFileData.mediaType.name
+                            )
+                        )
+                            // set content
+                            .setStyle(
+                                NotificationCompat.BigTextStyle()
+                                    .bigText(notificationContentText)
+                            )
+                            .setContentText(notificationContentText)
+                            // add move action
+                            .addAction(
+                                NotificationCompat.Action(
+                                    R.drawable.ic_file_move_24,
+                                    getString(R.string.move),
+                                    FileMoverActivity.getPendingIntent(
+                                        applicationContext,
+                                        mediaStoreFileData,
+                                        AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal
+                                    )
+                                )
+                            )
+                            // view file upon notification click
+                            .setContentIntent(
+                                PendingIntent.getActivity(
+                                    this@FileNavigator,
+                                    PendingIntentRequestCode.ViewImage.ordinal,
+                                    Intent()
+                                        .setAction(Intent.ACTION_VIEW)
+                                        .setDataAndType(
+                                            uri,
+                                            mediaType.simpleStorageMediaType.mimeType
+                                        ),
+                                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+                                )
+                            )
+                    )
+
+                    mediaStoreFileDataBlacklist.add(mediaStoreFileData)
+                }
         }
     }
 

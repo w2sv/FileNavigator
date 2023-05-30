@@ -1,6 +1,9 @@
 package com.w2sv.filenavigator.service
 
-enum class AppNotificationChannel(val title: String) {
-    STARTED_FOREGROUND_SERVICE("File Navigator is running"),
-    NEW_FILE_DETECTED("Detected a new %1s file")
+import androidx.annotation.StringRes
+import com.w2sv.filenavigator.R
+
+enum class AppNotificationChannel(@StringRes val titleRes   : Int) {
+    STARTED_FOREGROUND_SERVICE(R.string.file_navigator_is_running),
+    NEW_FILE_DETECTED(R.string.detected_a_new_file)
 }
