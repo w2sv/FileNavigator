@@ -54,7 +54,7 @@ class FileMoverActivity : ComponentActivity() {
                 DocumentFile.fromTreeUri(this, treeUri) ?: return@registerForActivityResult
             val mediaFile = MediaStoreCompat.fromMediaId(
                 this,
-                viewModel.mediaStoreFileMetadata.mediaType.simpleStorageMediaType,
+                viewModel.mediaStoreFileMetadata.mediaType.storageType,
                 viewModel.mediaStoreFileMetadata.mediaId
             ) ?: return@registerForActivityResult
 

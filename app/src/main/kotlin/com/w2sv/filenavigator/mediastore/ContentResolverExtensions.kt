@@ -12,7 +12,7 @@ fun ContentResolver.queryMediaStoreData(
     columns: Array<String>,
     selection: String? = null,
     selectionArgs: Array<String>? = null
-): List<String>? =
+): List<String?>? =
     query(
         uri,
         columns,
@@ -22,5 +22,26 @@ fun ContentResolver.queryMediaStoreData(
     )?.run {
         moveToFirst()
         columns.map { getString(getColumnIndexOrThrow(it)) }
+            .also { close() }
+    }
+
+fun ContentResolver.queryNonNullMediaStoreData(
+    uri: Uri,
+    columns: Array<String>,
+    selection: String? = null,
+    selectionArgs: Array<String>? = null
+): List<String>? =
+    query(
+        uri,
+        columns,
+        selection,
+        selectionArgs,
+        null
+    )?.run {
+        moveToFirst()
+        columns
+            .map { columnIndex ->
+                getString(getColumnIndexOrThrow(columnIndex)).also { if (it == null) return@run null }
+            }
             .also { close() }
     }

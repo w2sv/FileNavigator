@@ -50,7 +50,7 @@ data class MediaStoreFileMetadata(
             contentResolver: ContentResolver
         ): MediaStoreFileMetadata? =
             try {
-                contentResolver.queryMediaStoreData(
+                contentResolver.queryNonNullMediaStoreData(
                     uri,
                     arrayOf(
                         MediaColumns._ID,
@@ -88,4 +88,4 @@ data class MediaStoreFileMetadata(
 }
 
 private fun isPending(fileSize: String, isPendingFlag: String): Boolean =
-    fileSize == "0" || isPendingFlag != "0"
+    setOf("0", "null").contains(fileSize) || isPendingFlag != "0"

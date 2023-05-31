@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.database.ContentObserver
 import android.net.Uri
-import android.os.FileObserver
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -83,7 +82,7 @@ class FileNavigator : Service() {
 
                 mediaTypeObservers.forEach {
                     contentResolver.registerContentObserver(
-                        it.mediaType.mediaStoreUri,
+                        MediaStore.Files.getContentUri("external"),
                         true,
                         it
                     )
@@ -168,7 +167,7 @@ class FileNavigator : Service() {
                                         .setAction(Intent.ACTION_VIEW)
                                         .setDataAndType(
                                             uri,
-                                            mediaType.simpleStorageMediaType.mimeType
+                                            mediaType.storageType.mimeType
                                         ),
                                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
                                 )
