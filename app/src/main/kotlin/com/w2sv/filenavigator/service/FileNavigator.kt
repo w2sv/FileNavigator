@@ -6,10 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.database.ContentObserver
 import android.net.Uri
+import android.os.FileObserver
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.provider.MediaStore
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.filenavigator.R
@@ -130,7 +134,13 @@ class FileNavigator : Service() {
                                 mediaStoreFileData.mediaType.name
                             )
                         )
-                            .setSmallIcon(mediaType.iconRes)
+                            .setSmallIcon(R.drawable.ic_file_move_24)
+                            .setLargeIcon(
+                                AppCompatResources.getDrawable(
+                                    this@FileNavigator,
+                                    mediaType.iconRes
+                                )?.toBitmap()
+                            )
                             // set content
                             .setStyle(
                                 NotificationCompat.BigTextStyle()

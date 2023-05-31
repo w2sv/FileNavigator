@@ -12,5 +12,6 @@
     <string name="image">Image</string>
     <string name="video">Video</string>
     <string name="audio">Audio</string>
+    <string name="pdf">PDF</string>
     <string name="select_media_types">Select Media Types</string>
 </resources>

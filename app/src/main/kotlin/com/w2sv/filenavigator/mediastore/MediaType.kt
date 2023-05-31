@@ -29,5 +29,11 @@ enum class MediaType(
         com.anggrayudi.storage.media.MediaType.AUDIO,
         R.string.audio,
         R.drawable.ic_audio_file_24
+    ),
+    PDF(
+        MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+        com.anggrayudi.storage.media.MediaType.DOWNLOADS,
+        R.string.pdf,
+        R.drawable.ic_pdf_24
     )
 }
