@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
@@ -44,6 +44,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.filenavigator.mediastore.MediaType
 import com.w2sv.filenavigator.service.FileNavigator
+import com.w2sv.filenavigator.ui.animateGridItemSpawn
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.utils.getMutableStateMap
 import com.w2sv.filenavigator.utils.toggle
@@ -133,14 +134,19 @@ private fun MediaTypeSelectionGridPrev() {
 
 @Composable
 internal fun MediaTypeSelectionGrid(modifier: Modifier = Modifier) {
+    val state = rememberLazyListState()
+    val nColumns = 2
+
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Fixed(nColumns),
         modifier = modifier.height(240.dp)
     ) {
-        items(MediaType.values()) {
+        items(MediaType.values().size) {
             MediaTypeCard(
-                mediaType = it,
-                modifier = Modifier.padding(8.dp)
+                mediaType = MediaType.values()[it],
+                modifier = Modifier
+                    .padding(8.dp)
+                    .animateGridItemSpawn(it, nColumns, state)
             )
         }
     }
