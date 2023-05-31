@@ -14,9 +14,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -84,8 +88,12 @@ private fun HomeScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(text = "Select Media Types", style = MaterialTheme.typography.headlineMedium)
-            MediaTypeSelectionColumn()
+            Text(
+                text = stringResource(R.string.select_media_types),
+                style = MaterialTheme.typography.headlineMedium
+            )
+            MediaTypeSelectionGrid()
+            Divider(modifier = Modifier.padding(16.dp))
             StartListenerButton(
                 onClick = {
                     when (permissionState.status.isGranted) {
@@ -108,24 +116,31 @@ fun StartListenerButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     ElevatedButton(
         onClick = onClick,
         modifier = modifier
-            .width(120.dp)
+            .width(220.dp)
             .height(80.dp)
     ) {
         Text(text = stringResource(R.string.start_listener), textAlign = TextAlign.Center)
     }
 }
 
+@Preview
 @Composable
-internal fun MediaTypeSelectionColumn(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
+private fun MediaTypeSelectionGridPrev() {
+    FileNavigatorTheme {
+        MediaTypeSelectionGrid()
+    }
+}
+
+@Composable
+internal fun MediaTypeSelectionGrid(modifier: Modifier = Modifier) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = modifier.height(240.dp)
     ) {
-        MediaType.values().forEach {
+        items(MediaType.values()) {
             MediaTypeCard(
                 mediaType = it,
-                modifier = Modifier
-                    .size(140.dp)
-                    .padding(vertical = 10.dp)
+                modifier = Modifier.padding(8.dp)
             )
         }
     }
