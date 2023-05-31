@@ -75,10 +75,10 @@ fun FileNavigatorTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colors = if (!useDarkTheme) {
-        lightColors
-    } else {
+    val colors = if (useDarkTheme) {
         darkColors
+    } else {
+        lightColors
     }
 
     MaterialTheme(
