@@ -8,6 +8,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -183,11 +186,17 @@ fun ListenerButton(
             .width(220.dp)
             .height(80.dp)
     ) {
-        Text(
-            text = stringResource(if (isListenerRunning) R.string.stop_listener else R.string.start_listener),
-            textAlign = TextAlign.Center,
-            fontSize = 16.sp
-        )
+        Crossfade(
+            targetState = isListenerRunning,
+            animationSpec = tween(durationMillis = 1000, easing = EaseOutCubic),
+            label = ""
+        ) {
+            Text(
+                text = stringResource(if (it) R.string.stop_listener else R.string.start_listener),
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp
+            )
+        }
     }
 }
 
