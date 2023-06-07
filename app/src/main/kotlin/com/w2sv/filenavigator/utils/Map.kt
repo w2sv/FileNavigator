@@ -2,6 +2,9 @@ package com.w2sv.filenavigator.utils
 
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 fun <K, V> Map<K, V>.getMutableStateMap(): SnapshotStateMap<K, V> =
     mutableStateMapOf<K, V>()
@@ -10,3 +13,10 @@ fun <K, V> Map<K, V>.getMutableStateMap(): SnapshotStateMap<K, V> =
 fun <K> MutableMap<K, Boolean>.toggle(key: K) {
     this[key] = !getValue(key)
 }
+
+fun <K, V> Map<K, Flow<V>>.getSynchronousMap(): Map<K, V> =
+    runBlocking {
+        mapValues {
+            it.value.first()
+        }
+    }

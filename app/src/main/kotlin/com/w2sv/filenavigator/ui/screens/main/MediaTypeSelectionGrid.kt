@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.mediastore.MediaType
 import com.w2sv.filenavigator.ui.animateGridItemSpawn
-import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
+import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.utils.toggle
 
 @Preview
@@ -89,13 +89,13 @@ private fun MediaTypeCard(
             ) {
                 RailwayText(text = stringResource(id = mediaType.labelRes), fontSize = 18.sp)
                 Checkbox(
-                    checked = mainScreenViewModel.listenToMediaType.getValue(mediaType),
-                    onCheckedChange = { mainScreenViewModel.listenToMediaType.toggle(mediaType) }
+                    checked = mainScreenViewModel.accountForMediaType.getValue(mediaType),
+                    onCheckedChange = { mainScreenViewModel.accountForMediaType.toggle(mediaType) }
                 )
             }
             Divider()
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                mediaType.origins.forEachIndexed { i, origin ->
+                mediaType.origins.forEach { origin ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -103,20 +103,19 @@ private fun MediaTypeCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RailwayText(
-                            text = stringResource(id = origin.labelRes),
+                            text = stringResource(id = origin.kind.labelRes),
                             fontSize = 13.sp
                         )
                         Spacer(modifier = Modifier.fillMaxWidth())
 
-                        val originIdentifier = mediaType.originIdentifiers[i]
                         Checkbox(
-                            checked = mainScreenViewModel.includeMediaTypeOrigin.getValue(
-                                originIdentifier
+                            checked = mainScreenViewModel.accountForMediaTypeOrigin.getValue(
+                                origin
                             ),
                             onCheckedChange = {
-                                mainScreenViewModel.includeMediaTypeOrigin.toggle(originIdentifier)
+                                mainScreenViewModel.accountForMediaTypeOrigin.toggle(origin)
                             },
-                            enabled = mainScreenViewModel.listenToMediaType.getValue(mediaType),
+                            enabled = mainScreenViewModel.accountForMediaType.getValue(mediaType),
                             colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.secondary)
                         )
                     }
