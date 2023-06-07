@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -104,16 +105,19 @@ private fun HeaderSection(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Spacer(Modifier.weight(1f))
-            RailwayText(
-                text = stringResource(id = mediaType.labelRes),
-                fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.tertiary
-            )
-            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
+            Spacer(Modifier.weight(0.2f))
+            Box(Modifier.weight(0.6f), contentAlignment = Alignment.Center){
+                RailwayText(
+                    text = stringResource(id = mediaType.labelRes),
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+            }
+            Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.CenterEnd) {
                 Checkbox(
                     checked = mainScreenViewModel.accountForMediaType.getValue(mediaType),
-                    onCheckedChange = { mainScreenViewModel.accountForMediaType.toggle(mediaType) }
+                    onCheckedChange = { mainScreenViewModel.accountForMediaType.toggle(mediaType) },
+                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.tertiary)
                 )
             }
         }
@@ -134,22 +138,23 @@ private fun OriginsSection(
                     .height(36.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                RailwayText(
-                    text = stringResource(id = origin.kind.labelRes),
-                    fontSize = 13.sp
-                )
-
-                Spacer(modifier = Modifier.weight(1f, fill = true))
-
-                Checkbox(
-                    checked = mainScreenViewModel.accountForMediaTypeOrigin.getValue(
-                        origin
-                    ),
-                    onCheckedChange = {
-                        mainScreenViewModel.accountForMediaTypeOrigin.toggle(origin)
-                    },
-                    enabled = mainScreenViewModel.accountForMediaType.getValue(mediaType)
-                )
+                Box(modifier = Modifier.weight(0.8f), contentAlignment = Alignment.CenterStart){
+                    RailwayText(
+                        text = stringResource(id = origin.kind.labelRes),
+                        fontSize = 13.sp
+                    )
+                }
+                Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.CenterEnd) {
+                    Checkbox(
+                        checked = mainScreenViewModel.accountForMediaTypeOrigin.getValue(
+                            origin
+                        ),
+                        onCheckedChange = {
+                            mainScreenViewModel.accountForMediaTypeOrigin.toggle(origin)
+                        },
+                        enabled = mainScreenViewModel.accountForMediaType.getValue(mediaType)
+                    )
+                }
             }
         }
     }
