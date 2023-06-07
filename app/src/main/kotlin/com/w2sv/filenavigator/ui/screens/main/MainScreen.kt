@@ -73,14 +73,14 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 style = MaterialTheme.typography.headlineMedium
             )
             Box {
-                MediaTypeSelectionGrid(modifier = Modifier.heightIn(360.dp))
+                MediaTypeSelectionGrid(modifier = Modifier.heightIn(400.dp))
                 this@Column.AnimatedVisibility(
                     visible = mainScreenViewModel.nonAppliedListenerConfiguration.stateChanged.collectAsState().value,
                     enter = fadeIn() + slideInVertically(),
                     exit = fadeOut() + slideOutVertically(),
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .offset(y = 26.dp)
+                        .offset(y = 32.dp)
                 ) {
                     SaveFloatingActionButton(
                         onClick = {
