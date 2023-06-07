@@ -15,4 +15,9 @@
     <string name="audio">Audio</string>
     <string name="pdf">PDF</string>
     <string name="select_media_types">Select Media Types</string>
+
+    <string name="download">Download</string>
+    <string name="third_party_app">3rd Party App</string>
+    <string name="screenshot">Screenshot</string>
+    <string name="camera">Camera</string>
 </resources>

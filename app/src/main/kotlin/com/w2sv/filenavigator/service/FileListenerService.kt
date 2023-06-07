@@ -13,12 +13,12 @@ import android.provider.MediaStore
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.mediastore.MediaStoreFileMetadata
 import com.w2sv.filenavigator.mediastore.MediaType
+import com.w2sv.filenavigator.utils.sendLocalBroadcast
 import com.w2sv.kotlinutils.extensions.nonZeroOrdinal
 import slimber.log.i
 
@@ -207,9 +207,4 @@ class FileListenerService : Service() {
         const val ACTION_FILE_LISTENER_SERVICE_STOPPED =
             "com.w2sv.filenavigator.FILE_LISTENER_SERVICE_STOPPED"
     }
-}
-
-@Suppress("DEPRECATION")
-private fun Context.sendLocalBroadcast(action: String) {
-    LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(action))
 }
