@@ -13,6 +13,7 @@ import android.provider.MediaStore
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.filenavigator.R
@@ -21,26 +22,7 @@ import com.w2sv.filenavigator.mediastore.MediaType
 import com.w2sv.kotlinutils.extensions.nonZeroOrdinal
 import slimber.log.i
 
-class FileNavigator : Service() {
-
-    companion object {
-        fun startService(context: Context) {
-            context.startService(
-                Intent(context, FileNavigator::class.java)
-            )
-            i { "Starting FileNavigator" }
-        }
-
-        fun getStopIntent(context: Context): Intent =
-            Intent(context, FileNavigator::class.java)
-                .setAction(ACTION_STOP_SERVICE)
-
-        private const val ACTION_STOP_SERVICE = "com.w2sv.filenavigator.STOP"
-
-        const val EXTRA_MEDIA_STORE_FILE_METADATA =
-            "com.w2sv.filenavigator.extra.MEDIA_STORE_FILE_METADATA"
-        const val EXTRA_NOTIFICATION_ID = "com.w2sv.filenavigator.extra.NOTIFICATION_ID"
-    }
+class FileListenerService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -53,6 +35,7 @@ class FileNavigator : Service() {
             ACTION_STOP_SERVICE -> {
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
+                sendLocalBroadcast(ACTION_FILE_LISTENER_SERVICE_STOPPED)
             }
 
             else -> {
@@ -88,6 +71,8 @@ class FileNavigator : Service() {
                     )
                 }
                 i { "Registered mediaTypeObservers" }
+
+                sendLocalBroadcast(ACTION_FILE_LISTENER_SERVICE_STARTED)
             }
         }
 
@@ -136,7 +121,7 @@ class FileNavigator : Service() {
                             .setSmallIcon(R.drawable.ic_file_move_24)
                             .setLargeIcon(
                                 AppCompatResources.getDrawable(
-                                    this@FileNavigator,
+                                    this@FileListenerService,
                                     mediaType.iconRes
                                 )?.toBitmap()
                             )
@@ -161,7 +146,7 @@ class FileNavigator : Service() {
                             // view file upon notification click
                             .setContentIntent(
                                 PendingIntent.getActivity(
-                                    this@FileNavigator,
+                                    this@FileListenerService,
                                     PendingIntentRequestCode.ViewImage.ordinal,
                                     Intent()
                                         .setAction(Intent.ACTION_VIEW)
@@ -190,4 +175,41 @@ class FileNavigator : Service() {
         }
         i { "Unregistered mediaTypeObservers" }
     }
+
+    companion object {
+        fun start(context: Context) {
+            context.startService(
+                Intent(context, FileListenerService::class.java)
+            )
+            i { "Starting FileNavigator" }
+        }
+
+        fun stop(context: Context) {
+            context.startService(
+                Intent(context, FileListenerService::class.java)
+                    .setAction(ACTION_STOP_SERVICE)
+            )
+            i { "Stopping FileNavigator" }
+        }
+
+        fun getStopIntent(context: Context): Intent =
+            Intent(context, FileListenerService::class.java)
+                .setAction(ACTION_STOP_SERVICE)
+
+        private const val ACTION_STOP_SERVICE = "com.w2sv.filenavigator.STOP"
+
+        const val EXTRA_MEDIA_STORE_FILE_METADATA =
+            "com.w2sv.filenavigator.extra.MEDIA_STORE_FILE_METADATA"
+        const val EXTRA_NOTIFICATION_ID = "com.w2sv.filenavigator.extra.NOTIFICATION_ID"
+
+        const val ACTION_FILE_LISTENER_SERVICE_STARTED =
+            "com.w2sv.filenavigator.FILE_LISTENER_SERVICE_STARTED"
+        const val ACTION_FILE_LISTENER_SERVICE_STOPPED =
+            "com.w2sv.filenavigator.FILE_LISTENER_SERVICE_STOPPED"
+    }
+}
+
+@Suppress("DEPRECATION")
+private fun Context.sendLocalBroadcast(action: String) {
+    LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(action))
 }

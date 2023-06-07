@@ -40,7 +40,7 @@
 
         <activity android:name="com.w2sv.filenavigator.service.FileMoverActivity" />
 
-        <service android:name="com.w2sv.filenavigator.service.FileNavigator" />
+        <service android:name="com.w2sv.filenavigator.service.FileListenerService" />
     </application>
 
 </manifest>

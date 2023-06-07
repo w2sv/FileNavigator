@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.service
 
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -38,8 +39,8 @@ class FileMoverActivity : ComponentActivity() {
         androidx.lifecycle.ViewModel() {
 
         val mediaStoreFileMetadata: MediaStoreFileMetadata =
-            savedStateHandle[FileNavigator.EXTRA_MEDIA_STORE_FILE_METADATA]!!
-        val cancelNotificationId: Int = savedStateHandle[FileNavigator.EXTRA_NOTIFICATION_ID]!!
+            savedStateHandle[FileListenerService.EXTRA_MEDIA_STORE_FILE_METADATA]!!
+        val cancelNotificationId: Int = savedStateHandle[FileListenerService.EXTRA_NOTIFICATION_ID]!!
     }
 
     private val viewModel by viewModels<ViewModel>()
@@ -119,9 +120,9 @@ class FileMoverActivity : ComponentActivity() {
                         FileMoverActivity::class.java
                     )
                 )
-                    .putExtra(FileNavigator.EXTRA_MEDIA_STORE_FILE_METADATA, mediaStoreFileMetadata)
+                    .putExtra(FileListenerService.EXTRA_MEDIA_STORE_FILE_METADATA, mediaStoreFileMetadata)
                     .putExtra(
-                        FileNavigator.EXTRA_NOTIFICATION_ID,
+                        FileListenerService.EXTRA_NOTIFICATION_ID,
                         cancelNotificationId
                     ),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
