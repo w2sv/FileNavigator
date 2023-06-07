@@ -10,6 +10,7 @@ import com.w2sv.filenavigator.ui.NonAppliedState
 import com.w2sv.filenavigator.ui.NonAppliedStateFlow
 import com.w2sv.filenavigator.ui.NonAppliedStatesComposition
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -97,5 +98,9 @@ abstract class AbstractDataStoreRepository(
         fun makeNonAppliedStatesComposition(vararg nonAppliedState: NonAppliedState<*>): NonAppliedStatesComposition =
             NonAppliedStatesComposition(*nonAppliedState, coroutineScope = coroutineScope)
 
+        fun NonAppliedState<*>.launchSync(): Job =
+            coroutineScope.launch {
+                sync()
+            }
     }
 }

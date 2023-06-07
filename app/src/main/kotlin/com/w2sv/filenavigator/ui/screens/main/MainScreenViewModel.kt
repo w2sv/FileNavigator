@@ -28,6 +28,6 @@ class MainScreenViewModel @Inject constructor(
     }
 
     val nonAppliedListenerConfiguration by lazy {
-        makeNonAppliedStatesComposition(accountForMediaTypeOrigin, accountForMediaTypeOrigin)
+        makeNonAppliedStatesComposition(accountForMediaType, accountForMediaTypeOrigin)
     }
 }

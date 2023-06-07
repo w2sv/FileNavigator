@@ -20,4 +20,7 @@
     <string name="third_party_app">3rd Party App</string>
     <string name="screenshot">Screenshot</string>
     <string name="camera">Camera</string>
+
+    <string name="saved_listener_configuration">Saved Listener Configuration</string>
+    <string name="save_listener_configuration_button_cd">Save Listener Configuration</string>
 </resources>

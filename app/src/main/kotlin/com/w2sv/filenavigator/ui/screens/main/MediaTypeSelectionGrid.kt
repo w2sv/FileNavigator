@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,11 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -64,8 +65,7 @@ internal fun MediaTypeSelectionGrid(modifier: Modifier = Modifier) {
 @Composable
 private fun MediaTypeCard(
     mediaType: MediaType,
-    modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel()
+    modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier = modifier) {
         Column(
@@ -74,52 +74,78 @@ private fun MediaTypeCard(
                 .fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                painter = painterResource(id = mediaType.iconRes),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(38.dp)
-                    .align(Alignment.CenterHorizontally),
-                tint = MaterialTheme.colorScheme.tertiary
+            HeaderSection(mediaType = mediaType)
+            Divider()
+            OriginsSection(mediaType = mediaType)
+        }
+    }
+}
+
+@Composable
+private fun HeaderSection(
+    mediaType: MediaType,
+    modifier: Modifier = Modifier,
+    mainScreenViewModel: MainScreenViewModel = viewModel()
+) {
+    Column(modifier = modifier) {
+        Icon(
+            painter = painterResource(id = mediaType.iconRes),
+            contentDescription = null,
+            modifier = Modifier
+                .size(38.dp)
+                .align(Alignment.CenterHorizontally),
+            tint = MaterialTheme.colorScheme.tertiary
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Spacer(Modifier.weight(1f))
+            RailwayText(
+                text = stringResource(id = mediaType.labelRes),
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.tertiary
             )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                RailwayText(text = stringResource(id = mediaType.labelRes), fontSize = 18.sp)
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterEnd){
                 Checkbox(
                     checked = mainScreenViewModel.accountForMediaType.getValue(mediaType),
                     onCheckedChange = { mainScreenViewModel.accountForMediaType.toggle(mediaType) }
                 )
             }
-            Divider()
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                mediaType.origins.forEach { origin ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(36.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RailwayText(
-                            text = stringResource(id = origin.kind.labelRes),
-                            fontSize = 13.sp
-                        )
-                        Spacer(modifier = Modifier.fillMaxWidth())
+        }
+    }
+}
 
-                        Checkbox(
-                            checked = mainScreenViewModel.accountForMediaTypeOrigin.getValue(
-                                origin
-                            ),
-                            onCheckedChange = {
-                                mainScreenViewModel.accountForMediaTypeOrigin.toggle(origin)
-                            },
-                            enabled = mainScreenViewModel.accountForMediaType.getValue(mediaType),
-                            colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.secondary)
-                        )
-                    }
-                }
+@Composable
+private fun OriginsSection(
+    mediaType: MediaType,
+    modifier: Modifier = Modifier,
+    mainScreenViewModel: MainScreenViewModel = viewModel()
+) {
+    Column(modifier = modifier) {
+        mediaType.origins.forEach { origin ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(36.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RailwayText(
+                    text = stringResource(id = origin.kind.labelRes),
+                    fontSize = 13.sp
+                )
+
+                Spacer(modifier = Modifier.weight(1f, fill = true))
+
+                Checkbox(
+                    checked = mainScreenViewModel.accountForMediaTypeOrigin.getValue(
+                        origin
+                    ),
+                    onCheckedChange = {
+                        mainScreenViewModel.accountForMediaTypeOrigin.toggle(origin)
+                    },
+                    enabled = mainScreenViewModel.accountForMediaType.getValue(mediaType)
+                )
             }
         }
     }
