@@ -4,29 +4,27 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.w2sv.filenavigator.R
 
-data class MediaTypeOrigin(@StringRes val labelRes: Int)
-
 enum class MediaType(
     val storageType: com.anggrayudi.storage.media.MediaType,
     @StringRes val labelRes: Int,
     @DrawableRes val iconRes: Int,
-    val origins: List<MediaTypeOrigin>
+    val origins: List<Origin>
 ) {
     Image(
         com.anggrayudi.storage.media.MediaType.IMAGE,
         R.string.image,
         R.drawable.ic_image_24,
         listOf(
-            MediaTypeOrigin(
+            Origin(
                 R.string.camera
             ),
-            MediaTypeOrigin(
+            Origin(
                 R.string.screenshot
             ),
-            MediaTypeOrigin(
+            Origin(
                 R.string.download
             ),
-            MediaTypeOrigin(
+            Origin(
                 R.string.third_party_app
             )
         )
@@ -36,13 +34,13 @@ enum class MediaType(
         R.string.video,
         R.drawable.ic_video_file_24,
         listOf(
-            MediaTypeOrigin(
+            Origin(
                 R.string.camera
             ),
-            MediaTypeOrigin(
+            Origin(
                 R.string.download
             ),
-            MediaTypeOrigin(
+            Origin(
                 R.string.third_party_app
             )
         )
@@ -52,10 +50,10 @@ enum class MediaType(
         R.string.audio,
         R.drawable.ic_audio_file_24,
         listOf(
-            MediaTypeOrigin(
+            Origin(
                 R.string.download
             ),
-            MediaTypeOrigin(
+            Origin(
                 R.string.third_party_app
             )
         )
@@ -67,8 +65,7 @@ enum class MediaType(
 //    )
     ;
 
-    val originIdentifiers: List<String> = origins.map { getOriginIdentifier(this, it) }
-}
+    val originIdentifiers: List<String> = origins.map { "${name}.${it.labelRes}" }
 
-fun getOriginIdentifier(mediaType: MediaType, mediaTypeOrigin: MediaTypeOrigin): String =
-    "${mediaType.name}.${mediaTypeOrigin.labelRes}"
+    data class Origin(@StringRes val labelRes: Int)
+}
