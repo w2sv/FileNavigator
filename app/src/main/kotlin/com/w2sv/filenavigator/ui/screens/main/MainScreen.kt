@@ -126,7 +126,7 @@ fun SaveFloatingActionButton(onClick: () -> Unit, modifier: Modifier = Modifier)
 }
 
 @Composable
-fun ListenerButton(
+private fun ListenerButton(
     startListener: () -> Unit,
     stopListener: () -> Unit,
     modifier: Modifier = Modifier,

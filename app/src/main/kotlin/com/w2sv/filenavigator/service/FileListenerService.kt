@@ -65,7 +65,7 @@ class FileListenerService : Service() {
 
                 mediaTypeObservers.forEach {
                     contentResolver.registerContentObserver(
-                        MediaStore.Files.getContentUri("external"),
+                        it.mediaType.storageType.readUri!!,
                         true,
                         it
                     )
