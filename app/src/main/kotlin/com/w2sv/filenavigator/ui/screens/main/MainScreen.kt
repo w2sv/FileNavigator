@@ -6,28 +6,16 @@ import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -44,11 +31,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.mediastore.MediaType
 import com.w2sv.filenavigator.service.FileListenerService
-import com.w2sv.filenavigator.ui.animateGridItemSpawn
-import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
-import com.w2sv.filenavigator.utils.toggle
+import com.w2sv.filenavigator.ui.theme.RailwayText
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -71,7 +55,7 @@ fun MainScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround
         ) {
-            Text(
+            RailwayText(
                 text = stringResource(R.string.select_media_types),
                 style = MaterialTheme.typography.headlineMedium
             )
@@ -110,7 +94,7 @@ fun ListenerButton(
             animationSpec = tween(durationMillis = 1000, easing = EaseOutCubic),
             label = ""
         ) {
-            Text(
+            RailwayText(
                 text = stringResource(if (it) R.string.stop_listener else R.string.start_listener),
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp

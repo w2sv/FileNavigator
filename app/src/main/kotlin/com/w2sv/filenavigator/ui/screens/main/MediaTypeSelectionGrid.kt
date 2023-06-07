@@ -18,7 +18,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.mediastore.MediaType
 import com.w2sv.filenavigator.ui.animateGridItemSpawn
+import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.utils.toggle
 
@@ -87,7 +87,7 @@ private fun MediaTypeCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = stringResource(id = mediaType.labelRes), fontSize = 18.sp)
+                RailwayText(text = stringResource(id = mediaType.labelRes), fontSize = 18.sp)
                 Checkbox(
                     checked = mainScreenViewModel.listenToMediaType.getValue(mediaType),
                     onCheckedChange = { mainScreenViewModel.listenToMediaType.toggle(mediaType) }
@@ -102,7 +102,7 @@ private fun MediaTypeCard(
                             .height(36.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
+                        RailwayText(
                             text = stringResource(id = origin.labelRes),
                             fontSize = 13.sp
                         )
