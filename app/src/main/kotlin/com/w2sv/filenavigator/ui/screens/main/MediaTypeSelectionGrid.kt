@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -87,11 +88,20 @@ private fun MediaTypeCard(
 }
 
 @Composable
+fun disabledColor(): Color =
+    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+
+@Composable
 private fun HeaderSection(
     mediaType: MediaType,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
+    val mainColor = if (mainScreenViewModel.accountForMediaType.getValue(mediaType))
+        MaterialTheme.colorScheme.tertiary
+    else
+        disabledColor()
+
     Column(modifier = modifier) {
         Icon(
             painter = painterResource(id = mediaType.iconRes),
@@ -99,25 +109,28 @@ private fun HeaderSection(
             modifier = Modifier
                 .size(38.dp)
                 .align(Alignment.CenterHorizontally),
-            tint = MaterialTheme.colorScheme.tertiary
+            tint = mainColor
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
             Spacer(Modifier.weight(0.2f))
-            Box(Modifier.weight(0.6f), contentAlignment = Alignment.Center){
+            Box(Modifier.weight(0.6f), contentAlignment = Alignment.Center) {
                 RailwayText(
                     text = stringResource(id = mediaType.labelRes),
                     fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.tertiary
+                    color = mainColor
                 )
             }
             Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.CenterEnd) {
                 Checkbox(
                     checked = mainScreenViewModel.accountForMediaType.getValue(mediaType),
                     onCheckedChange = { mainScreenViewModel.accountForMediaType.toggle(mediaType) },
-                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.tertiary)
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = mainColor,
+                        checkmarkColor = MaterialTheme.colorScheme.surface
+                    )
                 )
             }
         }
@@ -138,10 +151,11 @@ private fun OriginsSection(
                     .height(36.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(modifier = Modifier.weight(0.8f), contentAlignment = Alignment.CenterStart){
+                Box(modifier = Modifier.weight(0.8f), contentAlignment = Alignment.CenterStart) {
                     RailwayText(
                         text = stringResource(id = origin.kind.labelRes),
-                        fontSize = 13.sp
+                        fontSize = 13.sp,
+                        color = if (mainScreenViewModel.accountForMediaType.getValue(mediaType)) Color.Unspecified else disabledColor()
                     )
                 }
                 Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.CenterEnd) {
@@ -152,7 +166,10 @@ private fun OriginsSection(
                         onCheckedChange = {
                             mainScreenViewModel.accountForMediaTypeOrigin.toggle(origin)
                         },
-                        enabled = mainScreenViewModel.accountForMediaType.getValue(mediaType)
+                        enabled = mainScreenViewModel.accountForMediaType.getValue(mediaType),
+                        colors = CheckboxDefaults.colors(
+                            checkmarkColor = MaterialTheme.colorScheme.surface
+                        )
                     )
                 }
             }
