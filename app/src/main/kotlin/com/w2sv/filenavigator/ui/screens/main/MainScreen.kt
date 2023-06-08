@@ -156,7 +156,7 @@ private fun ListenerButton(
     ) {
         Crossfade(
             targetState = isListenerRunning,
-            animationSpec = tween(durationMillis = 1000, easing = EaseOutCubic),
+            animationSpec = tween(durationMillis = 1250, delayMillis = 250, easing = EaseOutCubic),
             label = ""
         ) {
             RailwayText(
