@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.service
 
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -20,7 +19,7 @@ import com.anggrayudi.storage.media.MediaStoreCompat
 import com.w2sv.androidutils.notifying.getNotificationManager
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.mediastore.MediaStoreFileMetadata
+import com.w2sv.filenavigator.mediastore.MediaStoreFile
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,9 +37,10 @@ class FileMoverActivity : ComponentActivity() {
     ) :
         androidx.lifecycle.ViewModel() {
 
-        val mediaStoreFileMetadata: MediaStoreFileMetadata =
-            savedStateHandle[FileListenerService.EXTRA_MEDIA_STORE_FILE_METADATA]!!
-        val cancelNotificationId: Int = savedStateHandle[FileListenerService.EXTRA_NOTIFICATION_ID]!!
+        val mediaStoreFile: MediaStoreFile =
+            savedStateHandle[FileListenerService.EXTRA_MEDIA_STORE_FILE]!!
+        val cancelNotificationId: Int =
+            savedStateHandle[FileListenerService.EXTRA_NOTIFICATION_ID]!!
     }
 
     private val viewModel by viewModels<ViewModel>()
@@ -55,8 +55,8 @@ class FileMoverActivity : ComponentActivity() {
                 DocumentFile.fromTreeUri(this, treeUri) ?: return@registerForActivityResult
             val mediaFile = MediaStoreCompat.fromMediaId(
                 this,
-                viewModel.mediaStoreFileMetadata.mediaType.storageType,
-                viewModel.mediaStoreFileMetadata.mediaId
+                viewModel.mediaStoreFile.type.storageType,
+                viewModel.mediaStoreFile.mediaStoreData.id
             ) ?: return@registerForActivityResult
 
             contentResolver.takePersistableUriPermission(
@@ -102,13 +102,13 @@ class FileMoverActivity : ComponentActivity() {
         getNotificationManager().cancel(viewModel.cancelNotificationId)
 
         i { "Launching destinationSelectionLauncher" }
-        destinationSelectionLauncher.launch(viewModel.mediaStoreFileMetadata.mediaUri)
+        destinationSelectionLauncher.launch(viewModel.mediaStoreFile.uri)
     }
 
     companion object {
-        fun getPendingIntent(
+        fun makePendingIntent(
             context: Context,
-            mediaStoreFileMetadata: MediaStoreFileMetadata,
+            fileMediaStoreData: MediaStoreFile,
             cancelNotificationId: Int
         ): PendingIntent =
             PendingIntent.getActivity(
@@ -120,7 +120,7 @@ class FileMoverActivity : ComponentActivity() {
                         FileMoverActivity::class.java
                     )
                 )
-                    .putExtra(FileListenerService.EXTRA_MEDIA_STORE_FILE_METADATA, mediaStoreFileMetadata)
+                    .putExtra(FileListenerService.EXTRA_MEDIA_STORE_FILE, fileMediaStoreData)
                     .putExtra(
                         FileListenerService.EXTRA_NOTIFICATION_ID,
                         cancelNotificationId

@@ -3,6 +3,7 @@
     <string name="successfully_moved_file_to">Successfully moved file to %1$s</string>
     <string name="couldn_t_move_file">Couldn\'t move file</string>
     <string name="move">Move</string>
+    <string name="open">Open</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
     <string name="detected_a_new_file">Detected a new %1s file</string>
     <string name="stop">Stop</string>

@@ -41,7 +41,8 @@ fun ContentResolver.queryNonNullMediaStoreData(
         moveToFirst()
         columns
             .map { columnIndex ->
-                getString(getColumnIndexOrThrow(columnIndex)).also { if (it == null) return@run null }
+                getString(getColumnIndexOrThrow(columnIndex))
+                    .also { if (it == null) return@run null }
             }
             .also { close() }
     }

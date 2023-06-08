@@ -55,11 +55,21 @@ enum class MediaType(
 
     val origins = originKinds.map { Origin(it, name) }
 
-    enum class OriginKind(@StringRes val labelRes: Int) {
-        Camera(R.string.camera),
-        Screenshot(R.string.screenshot),
-        Download(R.string.download),
-        ThirdPartyApp(R.string.third_party_app)
+    enum class OriginKind(
+        @StringRes val labelRes: Int
+    ) {
+        Camera(
+            R.string.camera
+        ),
+        Screenshot(
+            R.string.screenshot
+        ),
+        Download(
+            R.string.download
+        ),
+        ThirdPartyApp(
+            R.string.third_party_app
+        )
     }
 
     class Origin(val kind: OriginKind, mediaTypeIdentifier: String) :
@@ -71,4 +81,3 @@ enum class MediaType(
         }
     }
 }
-

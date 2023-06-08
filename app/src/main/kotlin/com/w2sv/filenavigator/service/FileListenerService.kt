@@ -9,25 +9,48 @@ import android.net.Uri
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.provider.MediaStore
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.mediastore.MediaStoreFileMetadata
+import com.w2sv.filenavigator.datastore.DataStoreRepository
+import com.w2sv.filenavigator.mediastore.FileMediaStoreData
+import com.w2sv.filenavigator.mediastore.MediaStoreFile
 import com.w2sv.filenavigator.mediastore.MediaType
+import com.w2sv.filenavigator.utils.getSynchronousMap
 import com.w2sv.filenavigator.utils.sendLocalBroadcast
 import com.w2sv.kotlinutils.extensions.nonZeroOrdinal
+import dagger.hilt.android.AndroidEntryPoint
 import slimber.log.i
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class FileListenerService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    @Inject
+    lateinit var dataStoreRepository: DataStoreRepository
+
     private val mediaTypeObservers: List<MediaTypeObserver> by lazy {
-        MediaType.values().map { MediaTypeObserver(it) }
+        val accountForMediaType = dataStoreRepository.accountForMediaType.getSynchronousMap()
+        val accountForMediaTypeOrigin =
+            dataStoreRepository.accountForMediaTypeOrigin.getSynchronousMap()
+
+        MediaType.values()
+            .filter { accountForMediaType.getValue(it) }
+            .map { mediaType ->
+                MediaTypeObserver(
+                    mediaType,
+                    mediaType
+                        .origins
+                        .filter { origin -> accountForMediaTypeOrigin.getValue(origin) }
+                        .map { origin -> origin.kind }
+                        .toSet()
+                )
+            }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -70,7 +93,6 @@ class FileListenerService : Service() {
                         it
                     )
                 }
-                i { "Registered mediaTypeObservers" }
 
                 sendLocalBroadcast(ACTION_FILE_LISTENER_SERVICE_STARTED)
             }
@@ -80,12 +102,19 @@ class FileListenerService : Service() {
     }
 
     @Suppress("UnstableApiUsage")
-    private inner class MediaTypeObserver(val mediaType: MediaType) :
+    private inner class MediaTypeObserver(
+        val mediaType: MediaType,
+        private val originKinds: Set<MediaType.OriginKind>
+    ) :
         ContentObserver(Handler(Looper.getMainLooper())) {
+
+        init {
+            i { "Registered ${mediaType.name} MediaTypeObserver with originKinds: ${originKinds.map { it.name }}" }
+        }
 
         override fun deliverSelfNotifications(): Boolean = false
 
-        private val mediaStoreFileDataBlacklist = EvictingQueue.create<MediaStoreFileMetadata>(5)
+        private val fileMediaStoreDataBlacklistCache = EvictingQueue.create<FileMediaStoreData>(5)
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             super.onChange(selfChange, uri)
@@ -94,73 +123,91 @@ class FileListenerService : Service() {
 
             uri ?: return
 
-            MediaStoreFileMetadata.fetch(uri, mediaType, contentResolver)
-                ?.let { mediaStoreFileData ->
-                    if (!mediaStoreFileData.isNewlyAdded || mediaStoreFileDataBlacklist.any {
-                            it.pointsToSameContentAs(
-                                mediaStoreFileData
-                            )
-                        })
-                        return
-                    val notificationContentText =
-                        getString(
-                            R.string.found_at,  // TODO: make bold
-                            mediaStoreFileData.name,
-                            mediaStoreFileData.relativePath
-                        )
+            FileMediaStoreData.fetch(uri, contentResolver)?.let { mediaStoreData ->
+                if (mediaStoreData.isPending) return@let
 
+                if (mediaStoreData.isNewlyAdded &&
+                    fileMediaStoreDataBlacklistCache.none {
+                        it.pointsToSameContentAs(
+                            mediaStoreData
+                        )
+                    } &&
+                    originKinds.contains(mediaStoreData.getOriginKind())
+                ) {
                     showNotification(
-                        AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal,
-                        createNotificationChannelAndGetNotificationBuilder(
-                            AppNotificationChannel.NEW_FILE_DETECTED,
-                            getString(
-                                AppNotificationChannel.NEW_FILE_DETECTED.titleRes,
-                                mediaStoreFileData.mediaType.name
+                        MediaStoreFile(
+                            uri = uri,
+                            type = mediaType,
+                            mediaStoreData = mediaStoreData
+                        )
+                    )
+                }
+
+                fileMediaStoreDataBlacklistCache.add(mediaStoreData)
+            }
+        }
+
+        private fun showNotification(mediaStoreFile: MediaStoreFile) {
+            val notificationContentText =
+                getString(
+                    R.string.found_at,  // TODO: make bold
+                    mediaStoreFile.mediaStoreData.name,
+                    mediaStoreFile.mediaStoreData.relativePath
+                )
+
+            showNotification(
+                AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal,
+                createNotificationChannelAndGetNotificationBuilder(
+                    AppNotificationChannel.NEW_FILE_DETECTED,
+                    getString(
+                        AppNotificationChannel.NEW_FILE_DETECTED.titleRes,
+                        mediaType.name
+                    )
+                )
+                    .setSmallIcon(R.drawable.ic_file_move_24)
+                    .setLargeIcon(
+                        AppCompatResources.getDrawable(
+                            this@FileListenerService,
+                            mediaType.iconRes
+                        )?.toBitmap()
+                    )
+                    // set content
+                    .setStyle(
+                        NotificationCompat.BigTextStyle()
+                            .bigText(notificationContentText)
+                    )
+                    .setContentText(notificationContentText)
+                    // add move-file action
+                    .addAction(
+                        NotificationCompat.Action(
+                            R.drawable.ic_file_move_24,
+                            getString(R.string.move),
+                            FileMoverActivity.makePendingIntent(
+                                applicationContext,
+                                mediaStoreFile,
+                                AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal
                             )
                         )
-                            .setSmallIcon(R.drawable.ic_file_move_24)
-                            .setLargeIcon(
-                                AppCompatResources.getDrawable(
-                                    this@FileListenerService,
-                                    mediaType.iconRes
-                                )?.toBitmap()
-                            )
-                            // set content
-                            .setStyle(
-                                NotificationCompat.BigTextStyle()
-                                    .bigText(notificationContentText)
-                            )
-                            .setContentText(notificationContentText)
-                            // add move action
-                            .addAction(
-                                NotificationCompat.Action(
-                                    R.drawable.ic_file_move_24,
-                                    getString(R.string.move),
-                                    FileMoverActivity.getPendingIntent(
-                                        applicationContext,
-                                        mediaStoreFileData,
-                                        AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal
-                                    )
-                                )
-                            )
-                            // view file upon notification click
-                            .setContentIntent(
-                                PendingIntent.getActivity(
-                                    this@FileListenerService,
-                                    PendingIntentRequestCode.ViewImage.ordinal,
-                                    Intent()
-                                        .setAction(Intent.ACTION_VIEW)
-                                        .setDataAndType(
-                                            uri,
-                                            mediaType.storageType.mimeType
-                                        ),
-                                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-                                )
-                            )
                     )
-
-                    mediaStoreFileDataBlacklist.add(mediaStoreFileData)
-                }
+                    // add open-file action
+                    .addAction(
+                        NotificationCompat.Action(
+                            R.drawable.ic_file_open_24,
+                            getString(R.string.open),
+                            PendingIntent.getActivity(
+                                this@FileListenerService,
+                                PendingIntentRequestCode.OpenFile.ordinal,
+                                Intent()
+                                    .setAction(Intent.ACTION_VIEW)
+                                    .setDataAndType(
+                                        mediaStoreFile.uri,
+                                        mediaType.storageType.mimeType
+                                    ),
+                                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+                            )
+                        )
+                    )
+            )
         }
     }
 
@@ -198,8 +245,8 @@ class FileListenerService : Service() {
 
         private const val ACTION_STOP_SERVICE = "com.w2sv.filenavigator.STOP"
 
-        const val EXTRA_MEDIA_STORE_FILE_METADATA =
-            "com.w2sv.filenavigator.extra.MEDIA_STORE_FILE_METADATA"
+        const val EXTRA_MEDIA_STORE_FILE =
+            "com.w2sv.filenavigator.extra.MEDIA_STORE_FILE"
         const val EXTRA_NOTIFICATION_ID = "com.w2sv.filenavigator.extra.NOTIFICATION_ID"
 
         const val ACTION_FILE_LISTENER_SERVICE_STARTED =
