@@ -31,8 +31,8 @@ class MainActivity : ComponentActivity() {
         context,
         IntentFilter()
             .apply {
-                addAction(FileListenerService.ACTION_FILE_LISTENER_SERVICE_STARTED)
-                addAction(FileListenerService.ACTION_FILE_LISTENER_SERVICE_STOPPED)
+                addAction(FileListenerService.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED)
+                addAction(FileListenerService.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED)
             },
         callback
     )
@@ -42,8 +42,8 @@ class MainActivity : ComponentActivity() {
             intent ?: return@FileListenerServiceBroadcastReceiver
 
             viewModel.isListenerRunning.value = when (intent.action) {
-                FileListenerService.ACTION_FILE_LISTENER_SERVICE_STARTED -> true
-                FileListenerService.ACTION_FILE_LISTENER_SERVICE_STOPPED -> false
+                FileListenerService.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED -> true
+                FileListenerService.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED -> false
                 else -> throw Error()
             }
         }

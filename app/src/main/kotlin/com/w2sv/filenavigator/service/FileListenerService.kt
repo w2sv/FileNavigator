@@ -62,7 +62,7 @@ class FileListenerService : Service() {
             ACTION_STOP_SERVICE -> {
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
-                sendLocalBroadcast(ACTION_FILE_LISTENER_SERVICE_STOPPED)
+                sendLocalBroadcast(ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED)
             }
 
             ACTION_REREGISTER_MEDIA_OBSERVERS -> {
@@ -78,19 +78,6 @@ class FileListenerService : Service() {
                         .setSmallIcon(R.drawable.ic_file_move_24)
                         .setContentTitle(getString(AppNotificationChannel.STARTED_FOREGROUND_SERVICE.titleRes))
                         .setContentText(getString(R.string.waiting_for_new_files_to_be_navigated))
-                        // add stop action
-                        .addAction(
-                            NotificationCompat.Action(
-                                R.drawable.ic_cancel_24,
-                                getString(R.string.stop),
-                                PendingIntent.getService(
-                                    applicationContext,
-                                    PendingIntentRequestCode.StopFileNavigator.ordinal,
-                                    getStopIntent(applicationContext),
-                                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-                                ),
-                            )
-                        )
                         // add configure action
                         .addAction(
                             NotificationCompat.Action(
@@ -106,6 +93,19 @@ class FileListenerService : Service() {
                                 )
                             )
                         )
+                        // add stop action
+                        .addAction(
+                            NotificationCompat.Action(
+                                R.drawable.ic_cancel_24,
+                                getString(R.string.stop),
+                                PendingIntent.getService(
+                                    applicationContext,
+                                    PendingIntentRequestCode.StopFileNavigator.ordinal,
+                                    getStopIntent(applicationContext),
+                                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+                                ),
+                            )
+                        )
                         .build()
                 )
 
@@ -118,7 +118,7 @@ class FileListenerService : Service() {
                         )
                     }
 
-                sendLocalBroadcast(ACTION_FILE_LISTENER_SERVICE_STARTED)
+                sendLocalBroadcast(ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED)
             }
         }
 
@@ -311,10 +311,10 @@ class FileListenerService : Service() {
             "com.w2sv.filenavigator.extra.MEDIA_STORE_FILE"
         const val EXTRA_NOTIFICATION_ID = "com.w2sv.filenavigator.extra.NOTIFICATION_ID"
 
-        const val ACTION_FILE_LISTENER_SERVICE_STARTED =
-            "com.w2sv.filenavigator.FILE_LISTENER_SERVICE_STARTED"
-        const val ACTION_FILE_LISTENER_SERVICE_STOPPED =
-            "com.w2sv.filenavigator.FILE_LISTENER_SERVICE_STOPPED"
+        const val ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED =
+            "com.w2sv.filenavigator.NOTIFY_FILE_LISTENER_SERVICE_STARTED"
+        const val ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED =
+            "com.w2sv.filenavigator.NOTIFY_FILE_LISTENER_SERVICE_STOPPED"
         const val ACTION_REREGISTER_MEDIA_OBSERVERS =
             "com.w2sv.filenavigator.REREGISTER_MEDIA_OBSERVERS"
     }
