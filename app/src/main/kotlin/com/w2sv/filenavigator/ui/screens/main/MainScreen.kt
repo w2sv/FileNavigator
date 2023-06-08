@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import android.Manifest
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.EaseOutCubic
@@ -116,6 +117,10 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 stopListener = { FileListenerService.stop(context) }
             )
         }
+    }
+
+    BackHandler {
+        mainScreenViewModel.onBackPress(context)
     }
 }
 

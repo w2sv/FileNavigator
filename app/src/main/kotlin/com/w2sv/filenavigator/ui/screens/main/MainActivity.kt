@@ -8,11 +8,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.lifecycle.SelfManagingLocalBroadcastReceiver
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.filenavigator.service.FileListenerService
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -54,6 +56,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         lifecycle.addObserver(fileListenerServiceBroadcastReceiver)
+
+        lifecycleScope.launch {
+            viewModel.exitApplication.collect {
+                finishAffinity()
+            }
+        }
 
         setContent {
             FileNavigatorTheme {
