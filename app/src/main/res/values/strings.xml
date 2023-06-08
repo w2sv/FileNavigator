@@ -41,4 +41,7 @@
     <string name="save_listener_configuration_button_cd">Save listener configuration</string>
     <string name="configure">Configure</string>
     <string name="tap_again_to_exit">Tag again to exit</string>
+    <string name="alright">Alright</string>
+    <string name="maybe_later">Maybe later</string>
+    <string name="manage_external_storage_rational">File Navigator requires permission to manage all files to be able to navigate file types other than Image, Video and Audio files.</string>
 </resources>

@@ -106,7 +106,6 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 }
             }
 
-//            Divider(modifier = Modifier.padding(16.dp))
             ListenerButton(
                 startListener = {
                     when (permissionState.status.isGranted) {
@@ -118,6 +117,8 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
             )
         }
     }
+
+    EventualManageExternalStorageRational()
 
     BackHandler {
         mainScreenViewModel.onBackPress(context)

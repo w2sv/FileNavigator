@@ -1,14 +1,18 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import android.content.Context
+import android.os.Build
+import android.os.Environment
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.androidutils.services.isServiceRunning
+import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.AbstractDataStoreRepository
 import com.w2sv.filenavigator.datastore.DataStoreRepository
 import com.w2sv.filenavigator.service.FileListenerService
+import com.w2sv.filenavigator.utils.isExternalStorageManger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,10 +24,24 @@ import javax.inject.Inject
 class MainScreenViewModel @Inject constructor(
     @ApplicationContext context: Context,
     dataStoreRepository: DataStoreRepository
-) : AbstractDataStoreRepository.InterfacingViewModel(dataStoreRepository) {
+) : AbstractDataStoreRepository.InterfacingViewModel<DataStoreRepository>(dataStoreRepository) {
 
     val isListenerRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileListenerService>())
+
+    // ==============
+    // manageExternalStoragePermissionGranted
+    // ==============
+
+    val manageExternalStoragePermissionGranted = MutableStateFlow(false)
+
+    fun updateManageExternalStoragePermissionGranted(){
+        manageExternalStoragePermissionGranted.value = isExternalStorageManger()
+    }
+
+    // ==============
+    // Listener Configuration
+    // ==============
 
     val accountForMediaType by lazy {
         makeNonAppliedSnapshotStateMap(dataStoreRepository.accountForMediaType)

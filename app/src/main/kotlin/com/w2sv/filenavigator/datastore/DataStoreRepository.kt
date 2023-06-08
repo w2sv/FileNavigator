@@ -3,9 +3,12 @@ package com.w2sv.filenavigator.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.w2sv.filenavigator.mediastore.MediaType
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class DataStoreRepository @Inject constructor(dataStore: DataStore<Preferences>): AbstractDataStoreRepository(dataStore){
+class DataStoreRepository @Inject constructor(dataStore: DataStore<Preferences>) :
+    AbstractDataStoreRepository(dataStore) {
 
     val accountForMediaType = mapFromDataStoreProperties(MediaType.values())
 
@@ -15,4 +18,8 @@ class DataStoreRepository @Inject constructor(dataStore: DataStore<Preferences>)
             .flatten()
             .toTypedArray()
     )
+
+    val showedManageExternalStorageRational: Flow<Boolean> = dataStore.data.map {
+        it[PreferencesKey.SHOWED_MANAGE_EXTERNAL_STORAGE_RATIONAL] ?: false
+    }
 }

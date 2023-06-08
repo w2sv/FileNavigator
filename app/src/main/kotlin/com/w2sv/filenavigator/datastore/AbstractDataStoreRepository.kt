@@ -78,7 +78,7 @@ abstract class AbstractDataStoreRepository(
         }
     }
 
-    abstract class InterfacingViewModel(override val dataStoreRepository: AbstractDataStoreRepository) :
+    abstract class InterfacingViewModel<R: AbstractDataStoreRepository>(override val dataStoreRepository: R) :
         ViewModel(),
         Client {
 
