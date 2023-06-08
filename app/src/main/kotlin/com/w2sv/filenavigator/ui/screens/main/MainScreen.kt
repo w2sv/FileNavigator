@@ -82,13 +82,22 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                         .align(Alignment.BottomEnd)
                         .offset(y = 32.dp)
                 ) {
-                    SaveFloatingActionButton(
+                    SaveConfigButton(
                         onClick = {
                             with(mainScreenViewModel) {
                                 nonAppliedListenerConfiguration
                                     .launchSync()
                                     .invokeOnCompletion {
-                                        context.showToast(R.string.saved_listener_configuration)
+                                        when (mainScreenViewModel.isListenerRunning.value) {
+                                            true -> {
+                                                FileListenerService.reregisterMediaObservers(context)
+                                                context.showToast(R.string.saved_and_updated_listener_configuration)
+                                            }
+
+                                            false -> {
+                                                context.showToast(R.string.saved_listener_configuration)
+                                            }
+                                        }
                                     }
                             }
                         }
@@ -111,7 +120,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
 }
 
 @Composable
-fun SaveFloatingActionButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun SaveConfigButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     FloatingActionButton(
         onClick = onClick,
         modifier = modifier,

@@ -34,15 +34,17 @@ class FileListenerService : Service() {
     @Inject
     lateinit var dataStoreRepository: DataStoreRepository
 
-    private val mediaTypeObservers: List<MediaTypeObserver> by lazy {
+    private var mediaObservers: List<MediaObserver> = getMediaTypeObservers()
+
+    private fun getMediaTypeObservers(): List<MediaObserver>{
         val accountForMediaType = dataStoreRepository.accountForMediaType.getSynchronousMap()
         val accountForMediaTypeOrigin =
             dataStoreRepository.accountForMediaTypeOrigin.getSynchronousMap()
 
-        MediaType.values()
+        return MediaType.values()
             .filter { accountForMediaType.getValue(it) }
             .map { mediaType ->
-                MediaTypeObserver(
+                MediaObserver(
                     mediaType,
                     mediaType
                         .origins
@@ -59,6 +61,10 @@ class FileListenerService : Service() {
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
                 sendLocalBroadcast(ACTION_FILE_LISTENER_SERVICE_STOPPED)
+            }
+
+            ACTION_REREGISTER_MEDIA_OBSERVERS -> {
+                mediaObservers = getMediaTypeObservers()
             }
 
             else -> {
@@ -86,7 +92,7 @@ class FileListenerService : Service() {
                         .build()
                 )
 
-                mediaTypeObservers.forEach {
+                mediaObservers.forEach {
                     contentResolver.registerContentObserver(
                         it.mediaType.storageType.readUri!!,
                         true,
@@ -102,7 +108,7 @@ class FileListenerService : Service() {
     }
 
     @Suppress("UnstableApiUsage")
-    private inner class MediaTypeObserver(
+    private inner class MediaObserver(
         val mediaType: MediaType,
         private val originKinds: Set<MediaType.OriginKind>
     ) :
@@ -212,12 +218,12 @@ class FileListenerService : Service() {
     }
 
     /**
-     * Unregisters [mediaTypeObservers].
+     * Unregisters [mediaObservers].
      */
     override fun onDestroy() {
         super.onDestroy()
 
-        mediaTypeObservers.forEach {
+        mediaObservers.forEach {
             contentResolver.unregisterContentObserver(it)
         }
         i { "Unregistered mediaTypeObservers" }
@@ -239,6 +245,14 @@ class FileListenerService : Service() {
             i { "Stopping FileNavigator" }
         }
 
+        fun reregisterMediaObservers(context: Context){
+            context.startService(
+                Intent(context, FileListenerService::class.java)
+                    .setAction(ACTION_REREGISTER_MEDIA_OBSERVERS)
+            )
+            i { "Reregistering MediaObservers" }
+        }
+
         fun getStopIntent(context: Context): Intent =
             Intent(context, FileListenerService::class.java)
                 .setAction(ACTION_STOP_SERVICE)
@@ -253,5 +267,7 @@ class FileListenerService : Service() {
             "com.w2sv.filenavigator.FILE_LISTENER_SERVICE_STARTED"
         const val ACTION_FILE_LISTENER_SERVICE_STOPPED =
             "com.w2sv.filenavigator.FILE_LISTENER_SERVICE_STOPPED"
+        const val ACTION_REREGISTER_MEDIA_OBSERVERS =
+            "com.w2sv.filenavigator.REREGISTER_MEDIA_OBSERVERS"
     }
 }

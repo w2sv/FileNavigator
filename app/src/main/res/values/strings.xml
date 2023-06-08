@@ -22,6 +22,7 @@
     <string name="screenshot">Screenshot</string>
     <string name="camera">Camera</string>
 
-    <string name="saved_listener_configuration">Saved Listener Configuration</string>
-    <string name="save_listener_configuration_button_cd">Save Listener Configuration</string>
+    <string name="saved_listener_configuration">Saved listener configuration</string>
+    <string name="saved_and_updated_listener_configuration">Saved &amp; updated listener configuration</string>
+    <string name="save_listener_configuration_button_cd">Save listener configuration</string>
 </resources>
