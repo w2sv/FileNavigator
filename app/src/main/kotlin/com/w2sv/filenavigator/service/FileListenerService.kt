@@ -174,7 +174,7 @@ class FileListenerService : Service() {
         private fun showNotification(mediaStoreFile: MediaStoreFile) {
             val notificationContentText =
                 getString(
-                    R.string.found_at,  // TODO: make bold
+                    R.string.found_at,
                     mediaStoreFile.data.name,
                     mediaStoreFile.data.relativePath
                 )

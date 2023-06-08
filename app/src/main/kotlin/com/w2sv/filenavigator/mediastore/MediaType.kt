@@ -47,12 +47,43 @@ enum class MediaType(
             OriginKind.Download,
             OriginKind.ThirdPartyApp
         )
+    ),
+    PDF(
+        com.anggrayudi.storage.media.MediaType.DOWNLOADS,
+        R.string.pdf,
+        R.string.pdf,
+        R.drawable.ic_pdf_24,
+        listOf(
+            OriginKind.Download
+        )
+    ),
+    TXT(
+        com.anggrayudi.storage.media.MediaType.DOWNLOADS,
+        R.string.txt,
+        R.string.txt_file,
+        R.drawable.ic_text_file_24,
+        listOf(
+            OriginKind.Download
+        )
+    ),
+    ZIP(
+        com.anggrayudi.storage.media.MediaType.DOWNLOADS,
+        R.string.zip,
+        R.string.zip_file,
+        R.drawable.ic_folder_zip_24,
+        listOf(
+            OriginKind.Download
+        )
+    ),
+    APK(
+        com.anggrayudi.storage.media.MediaType.DOWNLOADS,
+        R.string.apk,
+        R.string.apk_file,
+        R.drawable.ic_apk_file_24,
+        listOf(
+            OriginKind.Download
+        )
     );
-//    PDF(
-//        com.anggrayudi.storage.media.MediaType.DOWNLOADS,
-//        R.string.pdf,
-//        R.drawable.ic_pdf_24
-//    )
 
     override val defaultValue: Boolean = true
     override val preferencesKey: Preferences.Key<Boolean> = booleanPreferencesKey(name)

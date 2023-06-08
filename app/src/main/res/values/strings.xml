@@ -14,10 +14,16 @@
     <string name="image">Image</string>
     <string name="video">Video</string>
     <string name="audio">Audio</string>
-    <string name="pdf">PDF</string>
-    <string name="select_media_types">Select Media Types</string>
-
     <string name="audio_file">Audio File</string>
+    <string name="pdf">PDF</string>
+    <string name="zip">ZIP</string>
+    <string name="zip_file">ZIP File</string>
+    <string name="apk">APK</string>
+    <string name="apk_file">APK File</string>
+    <string name="txt">TXT</string>
+    <string name="txt_file">TXT File</string>
+
+    <string name="select_media_types">Select Media Types</string>
 
     <string name="download">Download</string>
     <string name="third_party_app">3rd Party Apps</string>

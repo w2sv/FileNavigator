@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.mediastore.MediaType
-import com.w2sv.filenavigator.ui.animateGridItemSpawn
+import com.w2sv.filenavigator.ui.animateGridItemSpawnOnScrollDown
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.utils.toggle
@@ -61,7 +61,7 @@ internal fun MediaTypeSelectionGrid(modifier: Modifier = Modifier) {
                 mediaType = MediaType.values()[it],
                 modifier = Modifier
                     .padding(8.dp)
-                    .animateGridItemSpawn(it, nColumns, state)
+                    .animateGridItemSpawnOnScrollDown(it, nColumns, state)
             )
         }
     }

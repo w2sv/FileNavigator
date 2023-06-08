@@ -3,7 +3,10 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -38,13 +41,9 @@ class MainActivity : ComponentActivity() {
         FileListenerServiceBroadcastReceiver(this) { _, intent ->
             intent ?: return@FileListenerServiceBroadcastReceiver
 
-            when (intent.action) {
-                FileListenerService.ACTION_FILE_LISTENER_SERVICE_STARTED -> viewModel.isListenerRunning.value =
-                    true
-
-                FileListenerService.ACTION_FILE_LISTENER_SERVICE_STOPPED -> viewModel.isListenerRunning.value =
-                    false
-
+            viewModel.isListenerRunning.value = when (intent.action) {
+                FileListenerService.ACTION_FILE_LISTENER_SERVICE_STARTED -> true
+                FileListenerService.ACTION_FILE_LISTENER_SERVICE_STOPPED -> false
                 else -> throw Error()
             }
         }
@@ -73,6 +72,15 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
+        // TODO
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+            startActivity(
+                Intent(
+                    android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                    Uri.fromParts("package", packageName, null)
+                )
+            )
+        }
         if (!isServiceRunning<FileListenerService>()) {
             FileListenerService.start(this)
         }  // TODO: remove

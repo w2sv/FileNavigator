@@ -1,7 +1,5 @@
 package com.w2sv.filenavigator.ui
 
-import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
@@ -10,14 +8,14 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 
-fun Modifier.animateGridItemSpawn(
+fun Modifier.animateGridItemSpawnOnScrollDown(
     itemIndex: Int,
     nColumns: Int,
     state: LazyListState,
@@ -28,38 +26,49 @@ fun Modifier.animateGridItemSpawn(
     toAlpha: Float = 1f
 ): Modifier =
     composed {
-        val (delay, easing) = state.calculateDelayAndEasing(itemIndex, nColumns)
-        val (scale, alpha) = scaleAndAlpha(
-            fromScale = fromScale,
-            toScale = toScale,
-            fromAlpha = fromAlpha,
-            toAlpha = toAlpha,
-            animation = tween(durationMillis = duration, delayMillis = delay, easing = easing)
-        )
-        this then graphicsLayer(alpha = alpha, scaleX = scale, scaleY = scale)
+        state.calculateDelay(itemIndex, nColumns)?.let { delay ->
+            val (scale, alpha) = scaleAndAlpha(
+                fromScale = fromScale,
+                toScale = toScale,
+                fromAlpha = fromAlpha,
+                toAlpha = toAlpha,
+                animation = tween(
+                    durationMillis = duration,
+                    delayMillis = delay,
+                    easing = LinearOutSlowInEasing
+                )
+            )
+            this then graphicsLayer(alpha = alpha, scaleX = scale, scaleY = scale)
+        }
+            ?: this
     }
 
 private enum class GridItemState { PLACING, PLACED }
 
+/**
+ * @return null if scrolling up.
+ */
 @Composable
-private fun LazyListState.calculateDelayAndEasing(index: Int, columnCount: Int): Pair<Int, Easing> {
-    val firstVisibleRow by remember { derivedStateOf { firstVisibleItemIndex } }
+private fun LazyListState.calculateDelay(
+    index: Int,
+    columnCount: Int
+): Int? {
+    val firstVisibleRow by remember { mutableStateOf(firstVisibleItemIndex) }
 
     val row = index / columnCount
+    if (firstVisibleRow >= row) {
+        return null
+    }
+
     val column = index % columnCount
     val nVisibleRows = layoutInfo.visibleItemsInfo.count()
-    val scrollingToBottom = firstVisibleRow < row
-    val isFirstLoad = nVisibleRows == 0
 
-    val rowDelay = 200 * when {
-        isFirstLoad -> row // initial load
-        scrollingToBottom -> nVisibleRows + firstVisibleRow - row // scrolling to bottom
-        else -> 1 // scrolling to top
+    val rowDelay = 100 * when (nVisibleRows) {
+        0 -> row // initial load
+        else -> nVisibleRows + firstVisibleRow - row
     }
-    val columnDelay = column * 150 * if (scrollingToBottom || isFirstLoad) 1 else -1
-    val easing =
-        if (scrollingToBottom || isFirstLoad) LinearOutSlowInEasing else FastOutSlowInEasing
-    return rowDelay + columnDelay to easing
+    val columnDelay = column * 150
+    return rowDelay + columnDelay
 }
 
 @Composable
