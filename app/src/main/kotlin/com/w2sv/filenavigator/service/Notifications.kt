@@ -7,8 +7,7 @@ import androidx.core.app.NotificationCompat
 import com.w2sv.androidutils.notifying.getNotificationManager
 
 fun Context.createNotificationChannelAndGetNotificationBuilder(
-    channel: AppNotificationChannel,
-    contentTitle: String? = null
+    channel: AppNotificationChannel
 ): NotificationCompat.Builder {
     getNotificationManager().createNotificationChannel(
         NotificationChannel(
@@ -17,13 +16,11 @@ fun Context.createNotificationChannelAndGetNotificationBuilder(
             NotificationManager.IMPORTANCE_DEFAULT
         )
     )
-    return notificationBuilder(channel.name, contentTitle)
+    return notificationBuilder(channel.name)
 }
 
 private fun Context.notificationBuilder(
-    channelId: String,
-    title: String?,
+    channelId: String
 ): NotificationCompat.Builder =
     NotificationCompat.Builder(this, channelId)
-        .setContentTitle(title)
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)

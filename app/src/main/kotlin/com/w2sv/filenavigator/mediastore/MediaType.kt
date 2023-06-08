@@ -10,12 +10,14 @@ import com.w2sv.filenavigator.datastore.DataStoreVariable
 enum class MediaType(
     val storageType: com.anggrayudi.storage.media.MediaType,
     @StringRes val labelRes: Int,
+    @StringRes val fileLabelRes: Int,
     @DrawableRes val iconRes: Int,
     originKinds: List<OriginKind>
 ) : DataStoreVariable<Boolean> {
 
     Image(
         com.anggrayudi.storage.media.MediaType.IMAGE,
+        R.string.image,
         R.string.image,
         R.drawable.ic_image_24,
         listOf(
@@ -28,6 +30,7 @@ enum class MediaType(
     Video(
         com.anggrayudi.storage.media.MediaType.VIDEO,
         R.string.video,
+        R.string.video,
         R.drawable.ic_video_file_24,
         listOf(
             OriginKind.Camera,
@@ -38,6 +41,7 @@ enum class MediaType(
     Audio(
         com.anggrayudi.storage.media.MediaType.AUDIO,
         R.string.audio,
+        R.string.audio_file,
         R.drawable.ic_audio_file_24,
         listOf(
             OriginKind.Download,
@@ -53,7 +57,7 @@ enum class MediaType(
     override val defaultValue: Boolean = true
     override val preferencesKey: Preferences.Key<Boolean> = booleanPreferencesKey(name)
 
-    val origins = originKinds.map { Origin(it, name) }
+    val origins: List<Origin> = originKinds.map { Origin(it, name) }
 
     enum class OriginKind(
         @StringRes val labelRes: Int

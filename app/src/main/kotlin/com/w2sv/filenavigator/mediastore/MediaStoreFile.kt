@@ -11,5 +11,5 @@ import kotlinx.parcelize.Parcelize
 data class MediaStoreFile(
     val uri: Uri,
     val type: MediaType,
-    val mediaStoreData: FileMediaStoreData
+    val data: MediaStoreFileData
 ) : Parcelable

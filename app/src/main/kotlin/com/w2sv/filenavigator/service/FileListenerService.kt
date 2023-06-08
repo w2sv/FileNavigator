@@ -16,7 +16,7 @@ import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.DataStoreRepository
-import com.w2sv.filenavigator.mediastore.FileMediaStoreData
+import com.w2sv.filenavigator.mediastore.MediaStoreFileData
 import com.w2sv.filenavigator.mediastore.MediaStoreFile
 import com.w2sv.filenavigator.mediastore.MediaType
 import com.w2sv.filenavigator.utils.getSynchronousMap
@@ -34,9 +34,9 @@ class FileListenerService : Service() {
     @Inject
     lateinit var dataStoreRepository: DataStoreRepository
 
-    private var mediaObservers: List<MediaObserver> = getMediaTypeObservers()
+    private lateinit var mediaObservers: List<MediaObserver>
 
-    private fun getMediaTypeObservers(): List<MediaObserver>{
+    private fun getMediaTypeObservers(): List<MediaObserver> {
         val accountForMediaType = dataStoreRepository.accountForMediaType.getSynchronousMap()
         val accountForMediaTypeOrigin =
             dataStoreRepository.accountForMediaTypeOrigin.getSynchronousMap()
@@ -71,9 +71,9 @@ class FileListenerService : Service() {
                 startForeground(
                     AppNotificationChannel.STARTED_FOREGROUND_SERVICE.nonZeroOrdinal,
                     createNotificationChannelAndGetNotificationBuilder(
-                        AppNotificationChannel.STARTED_FOREGROUND_SERVICE,
-                        getString(AppNotificationChannel.STARTED_FOREGROUND_SERVICE.titleRes)
+                        AppNotificationChannel.STARTED_FOREGROUND_SERVICE
                     )
+                        .setContentTitle(getString(AppNotificationChannel.STARTED_FOREGROUND_SERVICE.titleRes))
                         .setSmallIcon(R.drawable.ic_file_move_24)
                         .setContentText(getString(R.string.waiting_for_new_files_to_be_navigated))
                         // add 'Stop' action
@@ -92,13 +92,14 @@ class FileListenerService : Service() {
                         .build()
                 )
 
-                mediaObservers.forEach {
-                    contentResolver.registerContentObserver(
-                        it.mediaType.storageType.readUri!!,
-                        true,
-                        it
-                    )
-                }
+                mediaObservers = getMediaTypeObservers()
+                    .onEach {
+                        contentResolver.registerContentObserver(
+                            it.mediaType.storageType.readUri!!,
+                            true,
+                            it
+                        )
+                    }
 
                 sendLocalBroadcast(ACTION_FILE_LISTENER_SERVICE_STARTED)
             }
@@ -120,7 +121,7 @@ class FileListenerService : Service() {
 
         override fun deliverSelfNotifications(): Boolean = false
 
-        private val fileMediaStoreDataBlacklistCache = EvictingQueue.create<FileMediaStoreData>(5)
+        private val mediaStoreFileDataBlacklistCache = EvictingQueue.create<MediaStoreFileData>(5)
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             super.onChange(selfChange, uri)
@@ -129,27 +130,27 @@ class FileListenerService : Service() {
 
             uri ?: return
 
-            FileMediaStoreData.fetch(uri, contentResolver)?.let { mediaStoreData ->
+            MediaStoreFileData.fetch(uri, contentResolver)?.let { mediaStoreData ->
                 if (mediaStoreData.isPending) return@let
 
                 if (mediaStoreData.isNewlyAdded &&
-                    fileMediaStoreDataBlacklistCache.none {
+                    mediaStoreFileDataBlacklistCache.none {
                         it.pointsToSameContentAs(
                             mediaStoreData
                         )
                     } &&
-                    originKinds.contains(mediaStoreData.getOriginKind())
+                    originKinds.contains(mediaStoreData.originKind)
                 ) {
                     showNotification(
                         MediaStoreFile(
                             uri = uri,
                             type = mediaType,
-                            mediaStoreData = mediaStoreData
+                            data = mediaStoreData
                         )
                     )
                 }
 
-                fileMediaStoreDataBlacklistCache.add(mediaStoreData)
+                mediaStoreFileDataBlacklistCache.add(mediaStoreData)
             }
         }
 
@@ -157,25 +158,29 @@ class FileListenerService : Service() {
             val notificationContentText =
                 getString(
                     R.string.found_at,  // TODO: make bold
-                    mediaStoreFile.mediaStoreData.name,
-                    mediaStoreFile.mediaStoreData.relativePath
+                    mediaStoreFile.data.name,
+                    mediaStoreFile.data.relativePath
                 )
 
             showNotification(
                 AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal,
                 createNotificationChannelAndGetNotificationBuilder(
-                    AppNotificationChannel.NEW_FILE_DETECTED,
-                    getString(
-                        AppNotificationChannel.NEW_FILE_DETECTED.titleRes,
-                        mediaType.name
-                    )
+                    AppNotificationChannel.NEW_FILE_DETECTED
                 )
+                    .setContentTitle(
+                        getString(
+                            AppNotificationChannel.NEW_FILE_DETECTED.titleRes,
+                            getNotificationTitleFormatArg(mediaStoreFile)
+                        )
+                    )
+                    // set icons
                     .setSmallIcon(R.drawable.ic_file_move_24)
                     .setLargeIcon(
                         AppCompatResources.getDrawable(
                             this@FileListenerService,
                             mediaType.iconRes
-                        )?.toBitmap()
+                        )
+                            ?.toBitmap()
                     )
                     // set content
                     .setStyle(
@@ -215,6 +220,32 @@ class FileListenerService : Service() {
                     )
             )
         }
+
+        fun getNotificationTitleFormatArg(mediaStoreFile: MediaStoreFile): String =
+            when (mediaStoreFile.data.originKind) {
+                MediaType.OriginKind.Screenshot -> getString(
+                    R.string.new_screenshot
+                )
+
+                MediaType.OriginKind.Camera -> getString(
+                    when (mediaStoreFile.type) {
+                        MediaType.Image -> R.string.new_photo
+                        MediaType.Video -> R.string.new_video
+                        else -> throw Error()
+                    }
+                )
+
+                MediaType.OriginKind.Download -> getString(
+                    R.string.newly_downloaded_template,
+                    getString(mediaStoreFile.type.fileLabelRes)
+                )
+
+                MediaType.OriginKind.ThirdPartyApp -> getString(
+                    R.string.new_third_party_file_template,
+                    mediaStoreFile.data.dirName,
+                    getString(mediaStoreFile.type.fileLabelRes)
+                )
+            }
     }
 
     /**
@@ -245,7 +276,7 @@ class FileListenerService : Service() {
             i { "Stopping FileNavigator" }
         }
 
-        fun reregisterMediaObservers(context: Context){
+        fun reregisterMediaObservers(context: Context) {
             context.startService(
                 Intent(context, FileListenerService::class.java)
                     .setAction(ACTION_REREGISTER_MEDIA_OBSERVERS)

@@ -11,6 +11,7 @@ import com.w2sv.kotlinutils.timeDelta
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
+import java.io.File
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit
  * @param relativePath Relative path from the storage volume, e.g. "Documents/", "DCIM/Camera/".
  */
 @Parcelize
-data class FileMediaStoreData(
+data class MediaStoreFileData(
     val id: String,
     val relativePath: String,
     val name: String,
@@ -40,7 +41,7 @@ data class FileMediaStoreData(
             i { "isPending: $it" }
         }
 
-    fun pointsToSameContentAs(other: FileMediaStoreData): Boolean =
+    fun pointsToSameContentAs(other: MediaStoreFileData): Boolean =
         id == other.id || (size == other.size && nonIncrementedNameWOExtension == other.nonIncrementedNameWOExtension)    // TODO
 
     @IgnoredOnParcel
@@ -49,16 +50,26 @@ data class FileMediaStoreData(
             .replace(Regex("\\(\\d+\\)$"), "")  // remove trailing file incrementation parentheses
     }
 
-    fun getOriginKind(): MediaType.OriginKind = when {
-        isDownload -> MediaType.OriginKind.Download
-        // NOTE: Don't change the order of the Screenshot and Camera branches, as the actual screenshot dir
-        // may be a child dir of the camera directory
-        relativePath.contains(Environment.DIRECTORY_SCREENSHOTS) -> MediaType.OriginKind.Screenshot
-        relativePath.contains(Environment.DIRECTORY_DCIM) -> MediaType.OriginKind.Camera
-        else -> MediaType.OriginKind.ThirdPartyApp
-    }.also {
-        i {
-            "relativePath: $relativePath\nDetermined OriginKind: ${it.name}"
+    @IgnoredOnParcel
+    val dirName: String by lazy {
+        relativePath
+            .removeSuffix(File.separator)
+            .substringAfterLast(File.separator)
+    }
+
+    @IgnoredOnParcel
+    val originKind: MediaType.OriginKind by lazy {
+        when {
+            isDownload -> MediaType.OriginKind.Download
+            // NOTE: Don't change the order of the Screenshot and Camera branches, as the actual screenshot dir
+            // may be a child dir of the camera directory
+            relativePath.contains(Environment.DIRECTORY_SCREENSHOTS) -> MediaType.OriginKind.Screenshot
+            relativePath.contains(Environment.DIRECTORY_DCIM) -> MediaType.OriginKind.Camera
+            else -> MediaType.OriginKind.ThirdPartyApp
+        }.also {
+            i {
+                "relativePath: $relativePath\nDetermined OriginKind: ${it.name}"
+            }
         }
     }
 
@@ -66,7 +77,7 @@ data class FileMediaStoreData(
 
         fun fetch(
             uri: Uri, contentResolver: ContentResolver
-        ): FileMediaStoreData? = try {
+        ): MediaStoreFileData? = try {
             contentResolver.queryNonNullMediaStoreData(
                 uri, arrayOf(
                     MediaColumns._ID,
@@ -80,7 +91,7 @@ data class FileMediaStoreData(
             )?.run {
                 i { "Raw mediaStoreColumns: ${toList()}" }
 
-                FileMediaStoreData(
+                MediaStoreFileData(
                     id = get(0),
                     relativePath = get(1),
                     name = get(2),

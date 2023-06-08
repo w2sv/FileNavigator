@@ -56,7 +56,7 @@ class FileMoverActivity : ComponentActivity() {
             val mediaFile = MediaStoreCompat.fromMediaId(
                 this,
                 viewModel.mediaStoreFile.type.storageType,
-                viewModel.mediaStoreFile.mediaStoreData.id
+                viewModel.mediaStoreFile.data.id
             ) ?: return@registerForActivityResult
 
             contentResolver.takePersistableUriPermission(
