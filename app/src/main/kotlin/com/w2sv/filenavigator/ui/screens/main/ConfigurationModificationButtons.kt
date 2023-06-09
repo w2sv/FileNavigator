@@ -31,24 +31,18 @@ internal fun ConfigurationModificationButtonColumn(
     Column(modifier = modifier) {
         ConfigurationModificationFAB(
             iconRes = R.drawable.ic_save_24,
-            contentDescriptionRes = R.string.save_listener_configuration_button_cd,
+            contentDescriptionRes = R.string.update_listener_configuration_button_cd,
             onClick = {
                 with(mainScreenViewModel) {
                     nonAppliedListenerConfiguration
                         .launchSync()
                         .invokeOnCompletion {
-                            when (mainScreenViewModel.isListenerRunning.value) {
-                                true -> {
-                                    FileListenerService.reregisterMediaObservers(
-                                        context
-                                    )
-                                    context.showToast(R.string.saved_and_updated_listener_configuration)
-                                }
-
-                                false -> {
-                                    context.showToast(R.string.saved_listener_configuration)
-                                }
+                            if (mainScreenViewModel.isListenerRunning.value) {
+                                FileListenerService.reregisterMediaObservers(
+                                    context
+                                )
                             }
+                            context.showToast(R.string.updated_listener_configuration)
                         }
                 }
             }

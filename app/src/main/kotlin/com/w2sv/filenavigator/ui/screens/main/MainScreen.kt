@@ -96,7 +96,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                         exit = fadeOut() + slideOutVertically(),
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .offset(y = 52.dp)
+                            .offset(y = 72.dp)
                     ) {
                         ConfigurationModificationButtonColumn()
                     }

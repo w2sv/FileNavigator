@@ -34,9 +34,8 @@
     <string name="newly_downloaded_template">newly downloaded %1$s</string>
     <string name="new_third_party_file_template">new %1$s %2$s</string>
 
-    <string name="saved_listener_configuration">Saved listener configuration</string>
-    <string name="saved_and_updated_listener_configuration">Saved &amp; updated listener configuration</string>
-    <string name="save_listener_configuration_button_cd">Save listener configuration</string>
+    <string name="updated_listener_configuration">Updated listener configuration</string>
+    <string name="update_listener_configuration_button_cd">Update listener configuration</string>
     <string name="configure">Configure</string>
     <string name="tap_again_to_exit">Tag again to exit</string>
     <string name="alright">Alright</string>
