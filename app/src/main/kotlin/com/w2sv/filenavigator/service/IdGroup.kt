@@ -10,13 +10,13 @@ open class IdGroup(baseSeed: Int) : PriorityQueue<Int>() {
         lastOrNull()?.let { it + 1 }
             ?: idBase
 
-    fun getAndAddNewId(): Int =
+    fun addNewId(): Int =
         getNewId()
             .also {
                 add(it)
             }
 
-    fun getAndAddMultipleNewIds(n: Int): ArrayList<Int> =
+    fun addMultipleNewIds(n: Int): ArrayList<Int> =
         ArrayList((0 until n)
-            .map { getAndAddNewId() })
+            .map { addNewId() })
 }

@@ -193,9 +193,9 @@ class FileListenerService : Service() {
                     mediaStoreFile.data.relativePath
                 )
 
-            val notificationId = newFileDetectedNotificationIds.getAndAddNewId()
+            val notificationId = newFileDetectedNotificationIds.addNewId()
             val requestCodes =
-                newFileDetectedActionsPendingIntentRequestCodes.getAndAddMultipleNewIds(2)
+                newFileDetectedActionsPendingIntentRequestCodes.addMultipleNewIds(2)
 
             showNotification(
                 notificationId,
