@@ -11,8 +11,7 @@ import kotlinx.parcelize.Parcelize
 
 sealed class FileType(
     val storageType: com.anggrayudi.storage.media.MediaType,
-    @StringRes val labelRes: Int,
-    @StringRes val fileLabelRes: Int,
+    @StringRes val titleRes: Int,
     @DrawableRes val iconRes: Int,
     originKinds: List<OriginKind>
 ) : DataStoreVariable<Boolean>, Parcelable {
@@ -24,13 +23,12 @@ sealed class FileType(
     sealed class Media(
         storageType: com.anggrayudi.storage.media.MediaType,
         @StringRes labelRes: Int,
-        @StringRes fileLabelRes: Int,
+        @StringRes val fileDeclarationRes: Int,
         @DrawableRes iconRes: Int,
         originKinds: List<OriginKind>
     ) : FileType(
         storageType = storageType,
-        labelRes = labelRes,
-        fileLabelRes = fileLabelRes,
+        titleRes = labelRes,
         iconRes = iconRes,
         originKinds = originKinds
     ) {
@@ -80,45 +78,47 @@ sealed class FileType(
 
     sealed class NonMedia(
         @StringRes labelRes: Int,
-        @StringRes fileLabelRes: Int,
-        @DrawableRes iconRes: Int
+        @DrawableRes iconRes: Int,
+        val fileExtension: String
     ) : FileType(
-        com.anggrayudi.storage.media.MediaType.DOWNLOADS,
-        labelRes, fileLabelRes, iconRes, listOf(
+        storageType = com.anggrayudi.storage.media.MediaType.DOWNLOADS,
+        titleRes = labelRes,
+        iconRes = iconRes,
+        originKinds = listOf(
             OriginKind.Download
         )
     ) {
         companion object {
-            val all: List<NonMedia> = listOf(PDF, TXT, ZIP, APK)
+            val all: List<NonMedia> = listOf(PDF, Text, ZIP, APK)
         }
     }
 
     @Parcelize
     object PDF : NonMedia(
         R.string.pdf,
-        R.string.pdf,
-        R.drawable.ic_pdf_24
+        R.drawable.ic_pdf_24,
+        "pdf"
     )
 
     @Parcelize
-    object TXT : NonMedia(
-        R.string.txt,
-        R.string.txt_file,
-        R.drawable.ic_text_file_24
+    object Text : NonMedia(
+        R.string.text,
+        R.drawable.ic_text_file_24,
+        "txt"
     )
 
     @Parcelize
     object ZIP : NonMedia(
         R.string.zip,
-        R.string.zip_file,
-        R.drawable.ic_folder_zip_24
+        R.drawable.ic_folder_zip_24,
+        "zip"
     )
 
     @Parcelize
     object APK : NonMedia(
         R.string.apk,
-        R.string.apk_file,
         R.drawable.ic_apk_file_24,
+        "apk"
     )
 
     private val identifier = this::class.java.simpleName

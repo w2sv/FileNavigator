@@ -151,7 +151,7 @@ private fun HeaderSection(
             Spacer(Modifier.weight(0.2f))
             Box(Modifier.weight(0.6f), contentAlignment = Alignment.Center) {
                 RailwayText(
-                    text = stringResource(id = fileType.labelRes),
+                    text = stringResource(id = fileType.titleRes),
                     fontSize = 18.sp,
                     color = mainColor
                 )
@@ -168,7 +168,7 @@ private fun HeaderSection(
                                     showSnackbar(
                                         message = context.getString(
                                             R.string.snackbar_message,
-                                            context.getString(fileType.fileLabelRes)
+                                            context.getString(fileType.titleRes)
                                         )
                                     )
                                 }

@@ -17,11 +17,8 @@
     <string name="audio_file">Audio File</string>
     <string name="pdf">PDF</string>
     <string name="zip">ZIP</string>
-    <string name="zip_file">ZIP File</string>
     <string name="apk">APK</string>
-    <string name="apk_file">APK File</string>
-    <string name="txt">TXT</string>
-    <string name="txt_file">TXT File</string>
+    <string name="text">Text</string>
 
     <string name="navigated_file_types">Navigated File Types</string>
 
@@ -33,6 +30,7 @@
     <string name="new_photo">new Photo</string>
     <string name="new_screenshot">new Screenshot</string>
     <string name="new_video">new Video</string>
+    <string name="new_file">new %1$s File</string>
     <string name="newly_downloaded_template">newly downloaded %1$s</string>
     <string name="new_third_party_file_template">new %1$s %2$s</string>
 

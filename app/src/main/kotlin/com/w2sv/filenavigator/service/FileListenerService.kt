@@ -1,18 +1,17 @@
 package com.w2sv.filenavigator.service
 
 import android.app.PendingIntent
-import android.app.Service
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Handler
-import android.os.IBinder
 import android.os.Looper
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
+import com.anggrayudi.storage.media.MediaType
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.filenavigator.R
@@ -29,36 +28,58 @@ import slimber.log.i
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FileListenerService : Service() {
-
-    override fun onBind(intent: Intent?): IBinder? = null
+class FileListenerService : UnboundService() {
 
     @Inject
     lateinit var dataStoreRepository: DataStoreRepository
 
-    private lateinit var mediaObservers: List<MediaObserver>
+    private lateinit var fileObservers: List<FileObserver>
 
     private val newFileDetectedNotificationIds =
         IdGroup(AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal)
     private val newFileDetectedActionsPendingIntentRequestCodes = IdGroup(1)
 
-    private fun getMediaTypeObservers(): List<MediaObserver> {
-        val accountForMediaType = dataStoreRepository.accountForFileType.getSynchronousMap()
-        val accountForMediaTypeOrigin =
+    private fun getAndRegisterFileObservers(): List<FileObserver> {
+        val accountForFileType = dataStoreRepository.accountForFileType.getSynchronousMap()
+        val accountForFileTypeOrigin =
             dataStoreRepository.accountForFileTypeOrigin.getSynchronousMap()
 
-        return FileType.all
-            .filter { accountForMediaType.getValue(it) }
+        val mediaFileObservers = FileType.Media.all
+            .filter { accountForFileType.getValue(it) }
             .map { mediaType ->
-                MediaObserver(
+                MediaFileObserver(
                     mediaType,
                     mediaType
                         .origins
-                        .filter { origin -> accountForMediaTypeOrigin.getValue(origin) }
+                        .filter { origin -> accountForFileTypeOrigin.getValue(origin) }
                         .map { origin -> origin.kind }
                         .toSet()
                 )
             }
+
+        val nonMediaFileObserver =
+            FileType.NonMedia.all.filter { accountForFileType.getValue(it) }.run {
+                if (isNotEmpty()) {
+                    NonMediaFileObserver(this)
+                } else {
+                    null
+                }
+            }
+
+        return buildList {
+            addAll(mediaFileObservers)
+            nonMediaFileObserver?.let {
+                add(it)
+            }
+        }
+            .onEach {
+                contentResolver.registerContentObserver(
+                    it.contentObserverUri,
+                    true,
+                    it
+                )
+            }
+            .also { i { "Registered ${it.size} FileObservers" } }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -72,7 +93,8 @@ class FileListenerService : Service() {
             }
 
             ACTION_REREGISTER_MEDIA_OBSERVERS -> {
-                mediaObservers = getMediaTypeObservers()
+                unregisterContentObservers()
+                fileObservers = getAndRegisterFileObservers()
             }
 
             ACTION_CLEANUP_IDS -> {
@@ -125,14 +147,7 @@ class FileListenerService : Service() {
                         .build()
                 )
 
-                mediaObservers = getMediaTypeObservers()
-                    .onEach {
-                        contentResolver.registerContentObserver(
-                            it.mediaType.storageType.readUri!!,
-                            true,
-                            it
-                        )
-                    }
+                fileObservers = getAndRegisterFileObservers()
 
                 sendLocalBroadcast(ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED)
             }
@@ -142,15 +157,8 @@ class FileListenerService : Service() {
     }
 
     @Suppress("UnstableApiUsage")
-    private inner class MediaObserver(
-        val mediaType: FileType,
-        private val originKinds: Set<FileType.OriginKind>
-    ) :
+    private abstract inner class FileObserver(val contentObserverUri: Uri) :
         ContentObserver(Handler(Looper.getMainLooper())) {
-
-        init {
-            i { "Registered ${mediaType::class.java.simpleName} MediaTypeObserver with originKinds: ${originKinds.map { it.name }}" }
-        }
 
         override fun deliverSelfNotifications(): Boolean = false
 
@@ -163,31 +171,29 @@ class FileListenerService : Service() {
 
             uri ?: return
 
-            MediaStoreFileData.fetch(uri, contentResolver)?.let { mediaStoreData ->
-                if (mediaStoreData.isPending) return@let
+            MediaStoreFileData.fetch(uri, contentResolver)?.let { mediaStoreFileData ->
+                if (mediaStoreFileData.isPending) return@let
 
-                if (mediaStoreData.isNewlyAdded &&
+                if (mediaStoreFileData.isNewlyAdded &&
                     mediaStoreFileDataBlacklistCache.none {
                         it.pointsToSameContentAs(
-                            mediaStoreData
+                            mediaStoreFileData
                         )
-                    } &&
-                    originKinds.contains(mediaStoreData.originKind)
+                    }
                 ) {
-                    showNotification(
-                        MediaStoreFile(
-                            uri = uri,
-                            type = mediaType,
-                            data = mediaStoreData
-                        )
-                    )
+                    showNotificationIfApplicable(uri, mediaStoreFileData)
                 }
 
-                mediaStoreFileDataBlacklistCache.add(mediaStoreData)
+                mediaStoreFileDataBlacklistCache.add(mediaStoreFileData)
             }
         }
 
-        private fun showNotification(mediaStoreFile: MediaStoreFile) {
+        protected abstract fun showNotificationIfApplicable(
+            uri: Uri,
+            mediaStoreFileData: MediaStoreFileData
+        )
+
+        protected fun showNotification(mediaStoreFile: MediaStoreFile) {
             val notificationContentText =
                 getString(
                     R.string.found_at,
@@ -215,7 +221,7 @@ class FileListenerService : Service() {
                     .setLargeIcon(
                         AppCompatResources.getDrawable(
                             applicationContext,
-                            mediaType.iconRes
+                            mediaStoreFile.type.iconRes
                         )
                             ?.toBitmap()
                     )
@@ -264,7 +270,7 @@ class FileListenerService : Service() {
                                     .setAction(Intent.ACTION_VIEW)
                                     .setDataAndType(
                                         mediaStoreFile.uri,
-                                        mediaType.storageType.mimeType
+                                        mediaStoreFile.type.storageType.mimeType
                                     ),
                                 PendingIntent.FLAG_IMMUTABLE
                             )
@@ -273,8 +279,38 @@ class FileListenerService : Service() {
             )
         }
 
-        fun getNotificationTitleFormatArg(mediaStoreFile: MediaStoreFile): String =
-            when (mediaStoreFile.data.originKind) {
+        protected abstract fun getNotificationTitleFormatArg(mediaStoreFile: MediaStoreFile): String
+    }
+
+    private inner class MediaFileObserver(
+        private val mediaType: FileType,
+        private val originKinds: Set<FileType.OriginKind>
+    ) :
+        FileObserver(mediaType.storageType.readUri!!) {
+
+        init {
+            i { "Initialized ${mediaType::class.java.simpleName} MediaTypeObserver with originKinds: ${originKinds.map { it.name }}" }
+        }
+
+        override fun showNotificationIfApplicable(
+            uri: Uri,
+            mediaStoreFileData: MediaStoreFileData
+        ) {
+            if (originKinds.contains(mediaStoreFileData.originKind)) {
+                showNotification(
+                    MediaStoreFile(
+                        uri = uri,
+                        type = mediaType,
+                        data = mediaStoreFileData
+                    )
+                )
+            }
+        }
+
+        override fun getNotificationTitleFormatArg(mediaStoreFile: MediaStoreFile): String {
+            mediaStoreFile.type as FileType.Media
+
+            return when (mediaStoreFile.data.originKind) {
                 FileType.OriginKind.Screenshot -> getString(
                     R.string.new_screenshot
                 )
@@ -289,27 +325,59 @@ class FileListenerService : Service() {
 
                 FileType.OriginKind.Download -> getString(
                     R.string.newly_downloaded_template,
-                    getString(mediaStoreFile.type.fileLabelRes)
+                    getString(mediaStoreFile.type.fileDeclarationRes)
                 )
 
                 FileType.OriginKind.ThirdPartyApp -> getString(
                     R.string.new_third_party_file_template,
                     mediaStoreFile.data.dirName,
-                    getString(mediaStoreFile.type.fileLabelRes)
+                    getString(mediaStoreFile.type.fileDeclarationRes)
                 )
             }
+        }
+    }
+
+    private inner class NonMediaFileObserver(private val fileTypes: List<FileType.NonMedia>) :
+        FileObserver(MediaType.DOWNLOADS.readUri!!) {
+
+        init {
+            i { "Initialized NonMediaFileObserver with fileTypes: ${fileTypes.map { it::class.java.simpleName }}" }
+        }
+
+        override fun showNotificationIfApplicable(
+            uri: Uri,
+            mediaStoreFileData: MediaStoreFileData
+        ) {
+            fileTypes.firstOrNull { it.fileExtension == mediaStoreFileData.fileExtension }
+                ?.let { fileType ->
+                    showNotification(
+                        MediaStoreFile(
+                            uri = uri,
+                            type = fileType,
+                            data = mediaStoreFileData
+                        )
+                    )
+                }
+        }
+
+        override fun getNotificationTitleFormatArg(mediaStoreFile: MediaStoreFile): String =
+            getString(R.string.new_file, getString(mediaStoreFile.type.titleRes))
+    }
+
+    private fun unregisterContentObservers() {
+        fileObservers.forEach {
+            contentResolver.unregisterContentObserver(it)
+        }
+        i { "Unregistered mediaTypeObservers" }
     }
 
     /**
-     * Unregisters [mediaObservers].
+     * Unregisters [fileObservers].
      */
     override fun onDestroy() {
         super.onDestroy()
 
-        mediaObservers.forEach {
-            contentResolver.unregisterContentObserver(it)
-        }
-        i { "Unregistered mediaTypeObservers" }
+        unregisterContentObservers()
     }
 
     companion object {

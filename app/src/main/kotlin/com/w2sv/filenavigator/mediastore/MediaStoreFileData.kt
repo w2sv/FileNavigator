@@ -45,6 +45,11 @@ data class MediaStoreFileData(
         id == other.id || (size == other.size && nonIncrementedNameWOExtension == other.nonIncrementedNameWOExtension)    // TODO
 
     @IgnoredOnParcel
+    val fileExtension: String by lazy {
+        name.substringAfterLast(".")
+    }
+
+    @IgnoredOnParcel
     val nonIncrementedNameWOExtension: String by lazy {
         name.substringBeforeLast(".")  // remove file extension
             .replace(Regex("\\(\\d+\\)$"), "")  // remove trailing file incrementation parentheses
