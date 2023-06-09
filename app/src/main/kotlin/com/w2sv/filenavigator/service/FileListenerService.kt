@@ -62,6 +62,8 @@ class FileListenerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        i { "onStartCommand | action: ${intent?.action}" }
+
         when (intent?.action) {
             ACTION_STOP_SERVICE -> {
                 stopForeground(STOP_FOREGROUND_REMOVE)
@@ -157,7 +159,7 @@ class FileListenerService : Service() {
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             super.onChange(selfChange, uri)
 
-            i { "Registered a new uri: $uri" }
+            i { "onChange | Uri: $uri" }
 
             uri ?: return
 
@@ -338,7 +340,6 @@ class FileListenerService : Service() {
                 Intent(context, FileListenerService::class.java)
                     .setAction(ACTION_REREGISTER_MEDIA_OBSERVERS)
             )
-            i { "Reregistering MediaObservers" }
         }
 
         fun getStopIntent(context: Context): Intent =
