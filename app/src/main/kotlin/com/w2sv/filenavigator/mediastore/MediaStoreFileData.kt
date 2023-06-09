@@ -58,14 +58,14 @@ data class MediaStoreFileData(
     }
 
     @IgnoredOnParcel
-    val originKind: MediaType.OriginKind by lazy {
+    val originKind: FileType.OriginKind by lazy {
         when {
-            isDownload -> MediaType.OriginKind.Download
+            isDownload -> FileType.OriginKind.Download
             // NOTE: Don't change the order of the Screenshot and Camera branches, as the actual screenshot dir
             // may be a child dir of the camera directory
-            relativePath.contains(Environment.DIRECTORY_SCREENSHOTS) -> MediaType.OriginKind.Screenshot
-            relativePath.contains(Environment.DIRECTORY_DCIM) -> MediaType.OriginKind.Camera
-            else -> MediaType.OriginKind.ThirdPartyApp
+            relativePath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileType.OriginKind.Screenshot
+            relativePath.contains(Environment.DIRECTORY_DCIM) -> FileType.OriginKind.Camera
+            else -> FileType.OriginKind.ThirdPartyApp
         }.also {
             i {
                 "relativePath: $relativePath\nDetermined OriginKind: ${it.name}"

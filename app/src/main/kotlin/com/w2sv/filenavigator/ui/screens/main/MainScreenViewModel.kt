@@ -44,11 +44,11 @@ class MainScreenViewModel @Inject constructor(
     // ==============
 
     val accountForMediaType by lazy {
-        makeNonAppliedSnapshotStateMap(dataStoreRepository.accountForMediaType)
+        makeNonAppliedSnapshotStateMap(dataStoreRepository.accountForFileType)
     }
 
     val accountForMediaTypeOrigin by lazy {
-        makeNonAppliedSnapshotStateMap(dataStoreRepository.accountForMediaTypeOrigin)
+        makeNonAppliedSnapshotStateMap(dataStoreRepository.accountForFileTypeOrigin)
     }
 
     val nonAppliedListenerConfiguration by lazy {

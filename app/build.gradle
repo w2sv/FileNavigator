@@ -117,6 +117,5 @@ dependencies {
     implementation libs.slimber
     implementation libs.accompanist.permissions
     implementation libs.google.guava
-    implementation libs.okio
     implementation libs.simplestorage
 }

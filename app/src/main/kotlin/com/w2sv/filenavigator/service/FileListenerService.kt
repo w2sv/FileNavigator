@@ -17,9 +17,9 @@ import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.DataStoreRepository
+import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.mediastore.MediaStoreFile
 import com.w2sv.filenavigator.mediastore.MediaStoreFileData
-import com.w2sv.filenavigator.mediastore.MediaType
 import com.w2sv.filenavigator.ui.screens.main.MainActivity
 import com.w2sv.filenavigator.utils.getSynchronousMap
 import com.w2sv.filenavigator.utils.sendLocalBroadcast
@@ -43,11 +43,11 @@ class FileListenerService : Service() {
     private val newFileDetectedActionsPendingIntentRequestCodes = IdGroup(1)
 
     private fun getMediaTypeObservers(): List<MediaObserver> {
-        val accountForMediaType = dataStoreRepository.accountForMediaType.getSynchronousMap()
+        val accountForMediaType = dataStoreRepository.accountForFileType.getSynchronousMap()
         val accountForMediaTypeOrigin =
-            dataStoreRepository.accountForMediaTypeOrigin.getSynchronousMap()
+            dataStoreRepository.accountForFileTypeOrigin.getSynchronousMap()
 
-        return MediaType.values()
+        return FileType.all
             .filter { accountForMediaType.getValue(it) }
             .map { mediaType ->
                 MediaObserver(
@@ -143,13 +143,13 @@ class FileListenerService : Service() {
 
     @Suppress("UnstableApiUsage")
     private inner class MediaObserver(
-        val mediaType: MediaType,
-        private val originKinds: Set<MediaType.OriginKind>
+        val mediaType: FileType,
+        private val originKinds: Set<FileType.OriginKind>
     ) :
         ContentObserver(Handler(Looper.getMainLooper())) {
 
         init {
-            i { "Registered ${mediaType.name} MediaTypeObserver with originKinds: ${originKinds.map { it.name }}" }
+            i { "Registered ${mediaType::class.java.simpleName} MediaTypeObserver with originKinds: ${originKinds.map { it.name }}" }
         }
 
         override fun deliverSelfNotifications(): Boolean = false
@@ -275,24 +275,24 @@ class FileListenerService : Service() {
 
         fun getNotificationTitleFormatArg(mediaStoreFile: MediaStoreFile): String =
             when (mediaStoreFile.data.originKind) {
-                MediaType.OriginKind.Screenshot -> getString(
+                FileType.OriginKind.Screenshot -> getString(
                     R.string.new_screenshot
                 )
 
-                MediaType.OriginKind.Camera -> getString(
+                FileType.OriginKind.Camera -> getString(
                     when (mediaStoreFile.type) {
-                        MediaType.Image -> R.string.new_photo
-                        MediaType.Video -> R.string.new_video
+                        FileType.Image -> R.string.new_photo
+                        FileType.Video -> R.string.new_video
                         else -> throw Error()
                     }
                 )
 
-                MediaType.OriginKind.Download -> getString(
+                FileType.OriginKind.Download -> getString(
                     R.string.newly_downloaded_template,
                     getString(mediaStoreFile.type.fileLabelRes)
                 )
 
-                MediaType.OriginKind.ThirdPartyApp -> getString(
+                FileType.OriginKind.ThirdPartyApp -> getString(
                     R.string.new_third_party_file_template,
                     mediaStoreFile.data.dirName,
                     getString(mediaStoreFile.type.fileLabelRes)

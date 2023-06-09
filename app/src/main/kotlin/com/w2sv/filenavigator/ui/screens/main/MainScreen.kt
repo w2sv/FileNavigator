@@ -83,7 +83,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 verticalArrangement = Arrangement.SpaceAround
             ) {
                 RailwayText(
-                    text = stringResource(R.string.navigated_media_types),
+                    text = stringResource(R.string.navigated_file_types),
                     style = MaterialTheme.typography.headlineMedium
                 )
                 Box {

@@ -23,7 +23,7 @@
     <string name="txt">TXT</string>
     <string name="txt_file">TXT File</string>
 
-    <string name="navigated_media_types">Navigated Media Types</string>
+    <string name="navigated_file_types">Navigated File Types</string>
 
     <string name="download">Download</string>
     <string name="third_party_app">3rd Party Apps</string>

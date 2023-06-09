@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.mediastore.MediaType
+import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.ui.animateGridItemSpawn
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.theme.RailwayText
@@ -64,9 +64,9 @@ internal fun MediaTypeSelectionGrid(
         columns = GridCells.Fixed(nColumns),
         modifier = modifier.height(240.dp)
     ) {
-        items(MediaType.values().size) {
+        items(FileType.all.size) {
             MediaTypeCard(
-                mediaType = MediaType.values()[it],
+                fileType = FileType.all[it],
                 modifier = Modifier
                     .padding(8.dp)
                     .animateGridItemSpawn(it, nColumns, state)
@@ -84,14 +84,14 @@ enum class CardState {
 
 @Composable
 private fun MediaTypeCard(
-    mediaType: MediaType,
+    fileType: FileType,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     val cardState: CardState = when {
-        !mediaType.isCoreType && !mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState().value -> CardState.FileManagerPermissionMissing
-        !mainScreenViewModel.accountForMediaType.getValue(mediaType) -> CardState.MediaTypeDisabled
-        mediaType.origins.none { mainScreenViewModel.accountForMediaTypeOrigin.getValue(it) } -> CardState.AllOriginsDisabled
+        fileType is FileType.NonMedia && !mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState().value -> CardState.FileManagerPermissionMissing
+        !mainScreenViewModel.accountForMediaType.getValue(fileType) -> CardState.MediaTypeDisabled
+        fileType.origins.none { mainScreenViewModel.accountForMediaTypeOrigin.getValue(it) } -> CardState.AllOriginsDisabled
         else -> CardState.Enabled
     }
 
@@ -103,11 +103,11 @@ private fun MediaTypeCard(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             HeaderSection(
-                mediaType = mediaType,
+                fileType = fileType,
                 cardState = cardState
             )
             Divider()
-            OriginsSection(mediaType = mediaType, cardState = cardState)
+            OriginsSection(fileType = fileType, cardState = cardState)
         }
     }
 }
@@ -122,7 +122,7 @@ fun checkMarkColorOnCard(): Color =
 
 @Composable
 private fun HeaderSection(
-    mediaType: MediaType,
+    fileType: FileType,
     cardState: CardState,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
@@ -137,7 +137,7 @@ private fun HeaderSection(
 
     Column(modifier = modifier) {
         Icon(
-            painter = painterResource(id = mediaType.iconRes),
+            painter = painterResource(id = fileType.iconRes),
             contentDescription = null,
             modifier = Modifier
                 .size(38.dp)
@@ -151,7 +151,7 @@ private fun HeaderSection(
             Spacer(Modifier.weight(0.2f))
             Box(Modifier.weight(0.6f), contentAlignment = Alignment.Center) {
                 RailwayText(
-                    text = stringResource(id = mediaType.labelRes),
+                    text = stringResource(id = fileType.labelRes),
                     fontSize = 18.sp,
                     color = mainColor
                 )
@@ -168,13 +168,13 @@ private fun HeaderSection(
                                     showSnackbar(
                                         message = context.getString(
                                             R.string.snackbar_message,
-                                            context.getString(mediaType.fileLabelRes)
+                                            context.getString(fileType.fileLabelRes)
                                         )
                                     )
                                 }
                             }
 
-                            else -> mainScreenViewModel.accountForMediaType.toggle(mediaType)
+                            else -> mainScreenViewModel.accountForMediaType.toggle(fileType)
                         }
                     },
                     colors = CheckboxDefaults.colors(
@@ -189,13 +189,13 @@ private fun HeaderSection(
 
 @Composable
 private fun OriginsSection(
-    mediaType: MediaType,
+    fileType: FileType,
     cardState: CardState,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     Column(modifier = modifier) {
-        mediaType.origins.forEach { origin ->
+        fileType.origins.forEach { origin ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -235,7 +235,7 @@ private fun OriginsSection(
 private fun MediaTypeCardPreview() {
     FileNavigatorTheme {
         MediaTypeCard(
-            mediaType = MediaType.Image,
+            fileType = FileType.Image,
             modifier = Modifier.size(160.dp)
         )
     }

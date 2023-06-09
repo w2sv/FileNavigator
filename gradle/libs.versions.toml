@@ -1,4 +1,5 @@
 [versions]
+kotlinReflect = "1.8.21"
 minSdk = '29'  # min for MediaStore.Downloads.EXTERNAL_CONTENT_URI
 compileSdk = '33'
 
@@ -42,7 +43,6 @@ accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.30.1
 
 # other
 slimber = 'com.github.PaulWoitaschek:Slimber:2.0.0'
-okio = "com.squareup.okio:okio:3.3.0"
 simplestorage = "com.anggrayudi:storage:1.5.4"
 
 [plugins]

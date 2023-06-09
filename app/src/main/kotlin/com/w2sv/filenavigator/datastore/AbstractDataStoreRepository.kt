@@ -38,7 +38,7 @@ abstract class AbstractDataStoreRepository(
     // Maps
     // ============
 
-    protected fun <T, P : DataStoreVariable<T>> mapFromDataStoreProperties(properties: Array<P>): Map<P, Flow<T>> =
+    protected fun <T, P : DataStoreVariable<T>> mapFromDataStoreProperties(properties: Iterable<P>): Map<P, Flow<T>> =
         properties.associateWith { property ->
             dataStore.data.map {
                 it[property.preferencesKey] ?: property.defaultValue
