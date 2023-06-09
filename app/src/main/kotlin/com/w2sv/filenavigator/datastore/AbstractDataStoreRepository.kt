@@ -102,5 +102,10 @@ abstract class AbstractDataStoreRepository(
             coroutineScope.launch {
                 sync()
             }
+
+        fun NonAppliedState<*>.launchReset(): Job =
+            coroutineScope.launch {
+                reset()
+            }
     }
 }

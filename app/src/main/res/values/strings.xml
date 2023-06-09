@@ -23,7 +23,7 @@
     <string name="txt">TXT</string>
     <string name="txt_file">TXT File</string>
 
-    <string name="select_media_types">Select Media Types</string>
+    <string name="navigated_media_types">Navigated Media Types</string>
 
     <string name="download">Download</string>
     <string name="third_party_app">3rd Party Apps</string>
@@ -46,4 +46,5 @@
     <string name="manage_external_storage_rational">File Navigator requires permission to manage all files to be able to navigate file types other than Image, Video and Audio files.</string>
     <string name="snackbar_message">Navigation of %1$s files requires access to manage all files</string>
     <string name="grant">Grant</string>
+    <string name="reset_button_cd">Discard all unsaved changes</string>
 </resources>

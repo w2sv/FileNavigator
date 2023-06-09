@@ -20,7 +20,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,13 +46,12 @@ import kotlinx.coroutines.launch
 @Composable
 private fun MediaTypeSelectionGridPrev() {
     FileNavigatorTheme {
-        MediaTypeSelectionGrid(SnackbarHostState())
+        MediaTypeSelectionGrid()
     }
 }
 
 @Composable
 internal fun MediaTypeSelectionGrid(
-    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
     val state = rememberLazyListState()
@@ -69,7 +67,6 @@ internal fun MediaTypeSelectionGrid(
         items(MediaType.values().size) {
             MediaTypeCard(
                 mediaType = MediaType.values()[it],
-                snackbarHostState = snackbarHostState,
                 modifier = Modifier
                     .padding(8.dp)
                     .animateGridItemSpawn(it, nColumns, state)
@@ -88,7 +85,6 @@ enum class CardState {
 @Composable
 private fun MediaTypeCard(
     mediaType: MediaType,
-    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
@@ -108,8 +104,7 @@ private fun MediaTypeCard(
         ) {
             HeaderSection(
                 mediaType = mediaType,
-                cardState = cardState,
-                snackbarHostState = snackbarHostState
+                cardState = cardState
             )
             Divider()
             OriginsSection(mediaType = mediaType, cardState = cardState)
@@ -129,7 +124,6 @@ fun checkMarkColorOnCard(): Color =
 private fun HeaderSection(
     mediaType: MediaType,
     cardState: CardState,
-    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
@@ -169,7 +163,7 @@ private fun HeaderSection(
                     onCheckedChange = {
                         when (cardState) {
                             CardState.FileManagerPermissionMissing -> scope.launch {
-                                with(snackbarHostState) {
+                                with(mainScreenViewModel.snackbarHostState) {
                                     currentSnackbarData?.dismiss()
                                     showSnackbar(
                                         message = context.getString(
@@ -242,7 +236,6 @@ private fun MediaTypeCardPreview() {
     FileNavigatorTheme {
         MediaTypeCard(
             mediaType = MediaType.Image,
-            snackbarHostState = SnackbarHostState(),
             modifier = Modifier.size(160.dp)
         )
     }

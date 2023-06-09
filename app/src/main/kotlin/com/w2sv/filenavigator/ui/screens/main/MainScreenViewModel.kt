@@ -3,6 +3,7 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.content.Context
 import android.os.Build
 import android.os.Environment
+import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
@@ -28,6 +29,8 @@ class MainScreenViewModel @Inject constructor(
 
     val isListenerRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileListenerService>())
+
+    val snackbarHostState: SnackbarHostState = SnackbarHostState()
 
     // ==============
     // manageExternalStoragePermissionGranted

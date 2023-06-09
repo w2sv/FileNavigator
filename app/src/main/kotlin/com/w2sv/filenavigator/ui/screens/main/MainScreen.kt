@@ -3,7 +3,9 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.EaseOutCubic
@@ -15,6 +17,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -70,10 +73,8 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
             }
         }
 
-    val snackbarHostState = remember { SnackbarHostState() }
-
     Scaffold(snackbarHost = {
-        SnackbarHost(snackbarHostState) { snackbarData ->
+        SnackbarHost(mainScreenViewModel.snackbarHostState) { snackbarData ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 ManageAllFilesPermissionRequiredSnackbar(snackbarData)
             }
@@ -93,13 +94,12 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 verticalArrangement = Arrangement.SpaceAround
             ) {
                 RailwayText(
-                    text = stringResource(R.string.select_media_types),
+                    text = stringResource(R.string.navigated_media_types),
                     style = MaterialTheme.typography.headlineMedium
                 )
                 Box {
                     MediaTypeSelectionGrid(
-                        modifier = Modifier.heightIn(400.dp),
-                        snackbarHostState = snackbarHostState
+                        modifier = Modifier.heightIn(400.dp)
                     )
                     this@Column.AnimatedVisibility(
                         visible = mainScreenViewModel.nonAppliedListenerConfiguration.stateChanged.collectAsState().value,
@@ -107,30 +107,44 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                         exit = fadeOut() + slideOutVertically(),
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .offset(y = 32.dp)
+                            .offset(y = 52.dp)
                     ) {
-                        SaveConfigButton(
-                            onClick = {
-                                with(mainScreenViewModel) {
-                                    nonAppliedListenerConfiguration
-                                        .launchSync()
-                                        .invokeOnCompletion {
-                                            when (mainScreenViewModel.isListenerRunning.value) {
-                                                true -> {
-                                                    FileListenerService.reregisterMediaObservers(
-                                                        context
-                                                    )
-                                                    context.showToast(R.string.saved_and_updated_listener_configuration)
-                                                }
+                        Column {
+                            ConfigurationModificationFAB(
+                                iconRes = R.drawable.ic_save_24,
+                                contentDescriptionRes = R.string.save_listener_configuration_button_cd,
+                                onClick = {
+                                    with(mainScreenViewModel) {
+                                        nonAppliedListenerConfiguration
+                                            .launchSync()
+                                            .invokeOnCompletion {
+                                                when (mainScreenViewModel.isListenerRunning.value) {
+                                                    true -> {
+                                                        FileListenerService.reregisterMediaObservers(
+                                                            context
+                                                        )
+                                                        context.showToast(R.string.saved_and_updated_listener_configuration)
+                                                    }
 
-                                                false -> {
-                                                    context.showToast(R.string.saved_listener_configuration)
+                                                    false -> {
+                                                        context.showToast(R.string.saved_listener_configuration)
+                                                    }
                                                 }
                                             }
-                                        }
+                                    }
                                 }
-                            }
-                        )
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            ConfigurationModificationFAB(
+                                iconRes = R.drawable.ic_reset_24,
+                                contentDescriptionRes = R.string.reset_button_cd,
+                                onClick = {
+                                    with(mainScreenViewModel) {
+                                        nonAppliedListenerConfiguration.launchReset()
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
 
@@ -155,15 +169,20 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
 }
 
 @Composable
-fun SaveConfigButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun ConfigurationModificationFAB(
+    @DrawableRes iconRes: Int,
+    @StringRes contentDescriptionRes: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     FloatingActionButton(
         onClick = onClick,
         modifier = modifier,
         shape = CircleShape
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_save_24),
-            contentDescription = stringResource(id = R.string.save_listener_configuration_button_cd),
+            painter = painterResource(id = iconRes),
+            contentDescription = stringResource(id = contentDescriptionRes),
             modifier = Modifier.size(36.dp)
         )
     }
