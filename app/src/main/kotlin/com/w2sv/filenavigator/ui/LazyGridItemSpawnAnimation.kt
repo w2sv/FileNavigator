@@ -8,8 +8,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -26,7 +26,7 @@ fun Modifier.animateGridItemSpawnOnScrollDown(
     toAlpha: Float = 1f
 ): Modifier =
     composed {
-        state.calculateDelay(itemIndex, nColumns)?.let { delay ->
+        state.calculateDelay(itemIndex, nColumns).let { delay ->
             val (scale, alpha) = scaleAndAlpha(
                 fromScale = fromScale,
                 toScale = toScale,
@@ -40,7 +40,6 @@ fun Modifier.animateGridItemSpawnOnScrollDown(
             )
             this then graphicsLayer(alpha = alpha, scaleX = scale, scaleY = scale)
         }
-            ?: this
     }
 
 private enum class GridItemState { PLACING, PLACED }
@@ -52,20 +51,15 @@ private enum class GridItemState { PLACING, PLACED }
 private fun LazyListState.calculateDelay(
     index: Int,
     columnCount: Int
-): Int? {
-    val firstVisibleRow by remember { mutableStateOf(firstVisibleItemIndex) }
-
+): Int {
     val row = index / columnCount
-    if (firstVisibleRow >= row) {
-        return null
-    }
 
     val column = index % columnCount
     val nVisibleRows = layoutInfo.visibleItemsInfo.count()
 
     val rowDelay = 100 * when (nVisibleRows) {
         0 -> row // initial load
-        else -> nVisibleRows + firstVisibleRow - row
+        else -> nVisibleRows + remember { derivedStateOf { firstVisibleItemIndex } }.value - row
     }
     val columnDelay = column * 150
     return rowDelay + columnDelay
