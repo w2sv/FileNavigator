@@ -44,4 +44,6 @@
     <string name="alright">Alright</string>
     <string name="maybe_later">Maybe later</string>
     <string name="manage_external_storage_rational">File Navigator requires permission to manage all files to be able to navigate file types other than Image, Video and Audio files.</string>
+    <string name="snackbar_message">Navigation of %1$s files requires access to manage all files</string>
+    <string name="grant">Grant</string>
 </resources>

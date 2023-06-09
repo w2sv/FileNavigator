@@ -12,6 +12,7 @@ enum class MediaType(
     @StringRes val labelRes: Int,
     @StringRes val fileLabelRes: Int,
     @DrawableRes val iconRes: Int,
+    val isCoreType: Boolean,
     originKinds: List<OriginKind>
 ) : DataStoreVariable<Boolean> {
 
@@ -20,6 +21,7 @@ enum class MediaType(
         R.string.image,
         R.string.image,
         R.drawable.ic_image_24,
+        true,
         listOf(
             OriginKind.Camera,
             OriginKind.Screenshot,
@@ -32,6 +34,7 @@ enum class MediaType(
         R.string.video,
         R.string.video,
         R.drawable.ic_video_file_24,
+        true,
         listOf(
             OriginKind.Camera,
             OriginKind.Download,
@@ -43,6 +46,7 @@ enum class MediaType(
         R.string.audio,
         R.string.audio_file,
         R.drawable.ic_audio_file_24,
+        true,
         listOf(
             OriginKind.Download,
             OriginKind.ThirdPartyApp
@@ -53,6 +57,7 @@ enum class MediaType(
         R.string.pdf,
         R.string.pdf,
         R.drawable.ic_pdf_24,
+        false,
         listOf(
             OriginKind.Download
         )
@@ -62,6 +67,7 @@ enum class MediaType(
         R.string.txt,
         R.string.txt_file,
         R.drawable.ic_text_file_24,
+        false,
         listOf(
             OriginKind.Download
         )
@@ -71,6 +77,7 @@ enum class MediaType(
         R.string.zip,
         R.string.zip_file,
         R.drawable.ic_folder_zip_24,
+        false,
         listOf(
             OriginKind.Download
         )
@@ -80,6 +87,7 @@ enum class MediaType(
         R.string.apk,
         R.string.apk_file,
         R.drawable.ic_apk_file_24,
+        false,
         listOf(
             OriginKind.Download
         )

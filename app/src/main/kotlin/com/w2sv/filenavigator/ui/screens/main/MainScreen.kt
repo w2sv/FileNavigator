@@ -1,7 +1,9 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import android.Manifest
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.EaseOutCubic
@@ -27,10 +29,17 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarData
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -47,6 +56,7 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.service.FileListenerService
 import com.w2sv.filenavigator.ui.theme.RailwayText
+import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -60,61 +70,80 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
             }
         }
 
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .padding(all = 20.dp)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceAround
-        ) {
-            RailwayText(
-                text = stringResource(R.string.select_media_types),
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Box {
-                MediaTypeSelectionGrid(modifier = Modifier.heightIn(400.dp))
-                this@Column.AnimatedVisibility(
-                    visible = mainScreenViewModel.nonAppliedListenerConfiguration.stateChanged.collectAsState().value,
-                    enter = fadeIn() + slideInVertically(),
-                    exit = fadeOut() + slideOutVertically(),
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset(y = 32.dp)
-                ) {
-                    SaveConfigButton(
-                        onClick = {
-                            with(mainScreenViewModel) {
-                                nonAppliedListenerConfiguration
-                                    .launchSync()
-                                    .invokeOnCompletion {
-                                        when (mainScreenViewModel.isListenerRunning.value) {
-                                            true -> {
-                                                FileListenerService.reregisterMediaObservers(context)
-                                                context.showToast(R.string.saved_and_updated_listener_configuration)
-                                            }
+    val snackbarHostState = remember { SnackbarHostState() }
 
-                                            false -> {
-                                                context.showToast(R.string.saved_listener_configuration)
+    Scaffold(snackbarHost = {
+        SnackbarHost(snackbarHostState) { snackbarData ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                ManageAllFilesPermissionRequiredSnackbar(snackbarData)
+            }
+        }
+    }) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(all = 20.dp)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceAround
+            ) {
+                RailwayText(
+                    text = stringResource(R.string.select_media_types),
+                    style = MaterialTheme.typography.headlineMedium
+                )
+                Box {
+                    MediaTypeSelectionGrid(
+                        modifier = Modifier.heightIn(400.dp),
+                        snackbarHostState = snackbarHostState
+                    )
+                    this@Column.AnimatedVisibility(
+                        visible = mainScreenViewModel.nonAppliedListenerConfiguration.stateChanged.collectAsState().value,
+                        enter = fadeIn() + slideInVertically(),
+                        exit = fadeOut() + slideOutVertically(),
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .offset(y = 32.dp)
+                    ) {
+                        SaveConfigButton(
+                            onClick = {
+                                with(mainScreenViewModel) {
+                                    nonAppliedListenerConfiguration
+                                        .launchSync()
+                                        .invokeOnCompletion {
+                                            when (mainScreenViewModel.isListenerRunning.value) {
+                                                true -> {
+                                                    FileListenerService.reregisterMediaObservers(
+                                                        context
+                                                    )
+                                                    context.showToast(R.string.saved_and_updated_listener_configuration)
+                                                }
+
+                                                false -> {
+                                                    context.showToast(R.string.saved_listener_configuration)
+                                                }
                                             }
                                         }
-                                    }
+                                }
                             }
-                        }
-                    )
-                }
-            }
-
-            ListenerButton(
-                startListener = {
-                    when (permissionState.status.isGranted) {
-                        true -> FileListenerService.start(context)
-                        false -> permissionState.launchPermissionRequest()
+                        )
                     }
-                },
-                stopListener = { FileListenerService.stop(context) }
-            )
+                }
+
+                ListenerButton(
+                    startListener = {
+                        when (permissionState.status.isGranted) {
+                            true -> FileListenerService.start(context)
+                            false -> permissionState.launchPermissionRequest()
+                        }
+                    },
+                    stopListener = { FileListenerService.stop(context) }
+                )
+            }
         }
     }
 
@@ -137,6 +166,24 @@ fun SaveConfigButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             contentDescription = stringResource(id = R.string.save_listener_configuration_button_cd),
             modifier = Modifier.size(36.dp)
         )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.R)
+@Composable
+private fun ManageAllFilesPermissionRequiredSnackbar(snackbarData: SnackbarData) {
+    val context = LocalContext.current
+
+    Snackbar(
+        action = {
+            TextButton(onClick = {
+                goToManageExternalStorageSettings(context)
+            }) {
+                RailwayText(text = stringResource(R.string.grant))
+            }
+        }
+    ) {
+        RailwayText(text = snackbarData.visuals.message)
     }
 }
 

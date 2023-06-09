@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 
-fun Modifier.animateGridItemSpawnOnScrollDown(
+fun Modifier.animateGridItemSpawn(
     itemIndex: Int,
     nColumns: Int,
     state: LazyListState,
