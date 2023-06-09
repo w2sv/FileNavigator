@@ -3,9 +3,7 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.BackHandler
-import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.EaseOutCubic
@@ -17,36 +15,28 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,7 +45,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.service.FileListenerService
 import com.w2sv.filenavigator.ui.theme.RailwayText
@@ -67,8 +56,8 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
     val context = LocalContext.current
 
     val permissionState =
-        rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE) {
-            if (it) {
+        rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE) { granted ->
+            if (granted) {
                 FileListenerService.start(context)
             }
         }
@@ -109,42 +98,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                             .align(Alignment.BottomEnd)
                             .offset(y = 52.dp)
                     ) {
-                        Column {
-                            ConfigurationModificationFAB(
-                                iconRes = R.drawable.ic_save_24,
-                                contentDescriptionRes = R.string.save_listener_configuration_button_cd,
-                                onClick = {
-                                    with(mainScreenViewModel) {
-                                        nonAppliedListenerConfiguration
-                                            .launchSync()
-                                            .invokeOnCompletion {
-                                                when (mainScreenViewModel.isListenerRunning.value) {
-                                                    true -> {
-                                                        FileListenerService.reregisterMediaObservers(
-                                                            context
-                                                        )
-                                                        context.showToast(R.string.saved_and_updated_listener_configuration)
-                                                    }
-
-                                                    false -> {
-                                                        context.showToast(R.string.saved_listener_configuration)
-                                                    }
-                                                }
-                                            }
-                                    }
-                                }
-                            )
-                            Spacer(modifier = Modifier.height(10.dp))
-                            ConfigurationModificationFAB(
-                                iconRes = R.drawable.ic_reset_24,
-                                contentDescriptionRes = R.string.reset_button_cd,
-                                onClick = {
-                                    with(mainScreenViewModel) {
-                                        nonAppliedListenerConfiguration.launchReset()
-                                    }
-                                }
-                            )
-                        }
+                        ConfigurationModificationButtonColumn()
                     }
                 }
 
@@ -165,26 +119,6 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
 
     BackHandler {
         mainScreenViewModel.onBackPress(context)
-    }
-}
-
-@Composable
-private fun ConfigurationModificationFAB(
-    @DrawableRes iconRes: Int,
-    @StringRes contentDescriptionRes: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    FloatingActionButton(
-        onClick = onClick,
-        modifier = modifier,
-        shape = CircleShape
-    ) {
-        Icon(
-            painter = painterResource(id = iconRes),
-            contentDescription = stringResource(id = contentDescriptionRes),
-            modifier = Modifier.size(36.dp)
-        )
     }
 }
 
