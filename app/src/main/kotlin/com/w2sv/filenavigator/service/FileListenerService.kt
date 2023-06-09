@@ -38,6 +38,10 @@ class FileListenerService : Service() {
 
     private lateinit var mediaObservers: List<MediaObserver>
 
+    private val newFileDetectedNotificationIds =
+        IdGroup(AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal)
+    private val newFileDetectedActionsPendingIntentRequestCodes = IdGroup(1)
+
     private fun getMediaTypeObservers(): List<MediaObserver> {
         val accountForMediaType = dataStoreRepository.accountForMediaType.getSynchronousMap()
         val accountForMediaTypeOrigin =
@@ -67,6 +71,16 @@ class FileListenerService : Service() {
 
             ACTION_REREGISTER_MEDIA_OBSERVERS -> {
                 mediaObservers = getMediaTypeObservers()
+            }
+
+            ACTION_CLEANUP_IDS -> {
+                newFileDetectedNotificationIds.remove(intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1))
+                newFileDetectedActionsPendingIntentRequestCodes.removeAll(
+                    intent.getIntegerArrayListExtra(
+                        EXTRA_REQUEST_CODES
+                    )!!
+                        .toSet()
+                )
             }
 
             else -> {
@@ -179,8 +193,12 @@ class FileListenerService : Service() {
                     mediaStoreFile.data.relativePath
                 )
 
+            val notificationId = newFileDetectedNotificationIds.getAndAddNewId()
+            val requestCodes =
+                newFileDetectedActionsPendingIntentRequestCodes.getAndAddMultipleNewIds(2)
+
             showNotification(
-                AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal,
+                notificationId,
                 createNotificationChannelAndGetNotificationBuilder(
                     AppNotificationChannel.NEW_FILE_DETECTED
                 )
@@ -194,7 +212,7 @@ class FileListenerService : Service() {
                     .setSmallIcon(R.drawable.ic_file_move_24)
                     .setLargeIcon(
                         AppCompatResources.getDrawable(
-                            this@FileListenerService,
+                            applicationContext,
                             mediaType.iconRes
                         )
                             ?.toBitmap()
@@ -210,10 +228,25 @@ class FileListenerService : Service() {
                         NotificationCompat.Action(
                             R.drawable.ic_file_move_24,
                             getString(R.string.move),
-                            FileMoverActivity.makePendingIntent(
+                            PendingIntent.getActivity(
                                 applicationContext,
-                                mediaStoreFile,
-                                AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal
+                                requestCodes[0],
+                                Intent.makeRestartActivityTask(
+                                    ComponentName(
+                                        applicationContext,
+                                        FileMoverActivity::class.java
+                                    )
+                                )
+                                    .putExtra(EXTRA_MEDIA_STORE_FILE, mediaStoreFile)
+                                    .putExtra(
+                                        EXTRA_NOTIFICATION_ID,
+                                        notificationId
+                                    )
+                                    .putExtra(
+                                        EXTRA_REQUEST_CODES,
+                                        requestCodes
+                                    ),
+                                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
                             )
                         )
                     )
@@ -223,8 +256,8 @@ class FileListenerService : Service() {
                             R.drawable.ic_file_open_24,
                             getString(R.string.open),
                             PendingIntent.getActivity(
-                                this@FileListenerService,
-                                PendingIntentRequestCode.OpenFile.ordinal,
+                                applicationContext,
+                                requestCodes[1],
                                 Intent()
                                     .setAction(Intent.ACTION_VIEW)
                                     .setDataAndType(
@@ -282,7 +315,6 @@ class FileListenerService : Service() {
             context.startService(
                 Intent(context, FileListenerService::class.java)
             )
-            i { "Starting FileNavigator" }
         }
 
         fun stop(context: Context) {
@@ -290,7 +322,15 @@ class FileListenerService : Service() {
                 Intent(context, FileListenerService::class.java)
                     .setAction(ACTION_STOP_SERVICE)
             )
-            i { "Stopping FileNavigator" }
+        }
+
+        fun cleanUpIds(notificationId: Int, requestCodes: ArrayList<Int>, context: Context) {
+            context.startService(
+                Intent(context, FileListenerService::class.java)
+                    .setAction(ACTION_CLEANUP_IDS)
+                    .putExtra(EXTRA_NOTIFICATION_ID, notificationId)
+                    .putExtra(EXTRA_REQUEST_CODES, requestCodes)
+            )
         }
 
         fun reregisterMediaObservers(context: Context) {
@@ -305,11 +345,11 @@ class FileListenerService : Service() {
             Intent(context, FileListenerService::class.java)
                 .setAction(ACTION_STOP_SERVICE)
 
-        private const val ACTION_STOP_SERVICE = "com.w2sv.filenavigator.STOP"
-
         const val EXTRA_MEDIA_STORE_FILE =
             "com.w2sv.filenavigator.extra.MEDIA_STORE_FILE"
         const val EXTRA_NOTIFICATION_ID = "com.w2sv.filenavigator.extra.NOTIFICATION_ID"
+        const val EXTRA_REQUEST_CODES =
+            "com.w2sv.filenavigator.extra.ASSOCIATED_REQUEST_CODES"
 
         const val ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED =
             "com.w2sv.filenavigator.NOTIFY_FILE_LISTENER_SERVICE_STARTED"
@@ -317,5 +357,7 @@ class FileListenerService : Service() {
             "com.w2sv.filenavigator.NOTIFY_FILE_LISTENER_SERVICE_STOPPED"
         const val ACTION_REREGISTER_MEDIA_OBSERVERS =
             "com.w2sv.filenavigator.REREGISTER_MEDIA_OBSERVERS"
+        const val ACTION_CLEANUP_IDS = "com.w2sv.filenavigator.CLEANUP_IDS"
+        private const val ACTION_STOP_SERVICE = "com.w2sv.filenavigator.STOP"
     }
 }

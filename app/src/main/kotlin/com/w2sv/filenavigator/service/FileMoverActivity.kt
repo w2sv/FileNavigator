@@ -1,15 +1,10 @@
 package com.w2sv.filenavigator.service
 
-import android.app.PendingIntent
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.material3.Surface
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
@@ -20,7 +15,6 @@ import com.w2sv.androidutils.notifying.getNotificationManager
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.mediastore.MediaStoreFile
-import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +35,8 @@ class FileMoverActivity : ComponentActivity() {
             savedStateHandle[FileListenerService.EXTRA_MEDIA_STORE_FILE]!!
         val cancelNotificationId: Int =
             savedStateHandle[FileListenerService.EXTRA_NOTIFICATION_ID]!!
+        val requestCodes: ArrayList<Int> =
+            savedStateHandle[FileListenerService.EXTRA_REQUEST_CODES]!!
     }
 
     private val viewModel by viewModels<ViewModel>()
@@ -91,41 +87,15 @@ class FileMoverActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
-            FileNavigatorTheme {
-                FileNavigatorTheme {
-                    Surface {}
-                }
-            }
-        }
-
         getNotificationManager().cancel(viewModel.cancelNotificationId)
+
+        FileListenerService.cleanUpIds(
+            viewModel.cancelNotificationId,
+            viewModel.requestCodes,
+            this
+        )
 
         i { "Launching destinationSelectionLauncher" }
         destinationSelectionLauncher.launch(viewModel.mediaStoreFile.uri)
-    }
-
-    companion object {
-        fun makePendingIntent(
-            context: Context,
-            fileMediaStoreData: MediaStoreFile,
-            cancelNotificationId: Int
-        ): PendingIntent =
-            PendingIntent.getActivity(
-                context,
-                PendingIntentRequestCode.MoveFile.ordinal,
-                Intent.makeRestartActivityTask(
-                    ComponentName(
-                        context,
-                        FileMoverActivity::class.java
-                    )
-                )
-                    .putExtra(FileListenerService.EXTRA_MEDIA_STORE_FILE, fileMediaStoreData)
-                    .putExtra(
-                        FileListenerService.EXTRA_NOTIFICATION_ID,
-                        cancelNotificationId
-                    ),
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-            )
     }
 }
