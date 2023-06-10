@@ -3,17 +3,13 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.lifecycle.SelfManagingLocalBroadcastReceiver
-import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.filenavigator.service.FileListenerService
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -73,9 +69,5 @@ class MainActivity : ComponentActivity() {
         super.onStart()
 
         viewModel.updateManageExternalStoragePermissionGranted()
-
-        if (!isServiceRunning<FileListenerService>()) {
-            FileListenerService.start(this)
-        }  // TODO: remove
     }
 }
