@@ -17,12 +17,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.service.FileListenerService
+import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
+import com.w2sv.filenavigator.ui.SnackbarKind
 
 @Composable
 internal fun ConfigurationModificationButtonColumn(
+    showSnackbar: (ExtendedSnackbarVisuals) -> Unit,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
@@ -36,17 +38,31 @@ internal fun ConfigurationModificationButtonColumn(
                 // Do not sync if leading to disablement of all FileTypes
                 with(mainScreenViewModel) {
                     if (accountForFileType.values.none { it }) {
-                        context.showToast(R.string.all_file_types_disabled_notification)
+                        showSnackbar(
+                            ExtendedSnackbarVisuals(
+                                message = context.getString(
+                                    R.string.all_file_types_disabled_notification
+                                ),
+                                kind = SnackbarKind.Error
+                            )
+                        )
                     } else {
                         nonAppliedListenerConfiguration
                             .launchSync()
                             .invokeOnCompletion {
-                                if (mainScreenViewModel.isListenerRunning.value) {
+                                if (isListenerRunning.value) {
                                     FileListenerService.reregisterMediaObservers(
                                         context
                                     )
                                 }
-                                context.showToast(R.string.updated_listener_configuration)
+                                showSnackbar(
+                                    ExtendedSnackbarVisuals(
+                                        message = context.getString(
+                                            R.string.updated_listener_configuration
+                                        ),
+                                        kind = SnackbarKind.Success
+                                    )
+                                )
                             }
                     }
                 }

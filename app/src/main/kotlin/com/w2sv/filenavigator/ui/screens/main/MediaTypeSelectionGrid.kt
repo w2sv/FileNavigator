@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import android.content.res.Configuration
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,9 +42,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.mediastore.FileType
+import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
+import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.animateGridItemSpawn
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.theme.RailwayText
+import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.utils.toggle
 import kotlinx.coroutines.launch
 
@@ -206,9 +210,18 @@ private fun HeaderSection(
                                 with(mainScreenViewModel.snackbarHostState) {
                                     currentSnackbarData?.dismiss()
                                     showSnackbar(
-                                        message = context.getString(
-                                            R.string.snackbar_message,
-                                            context.getString(fileType.titleRes)
+                                        ExtendedSnackbarVisuals(
+                                            message = context.getString(
+                                                R.string.snackbar_message,
+                                                context.getString(fileType.titleRes)
+                                            ),
+                                            kind = SnackbarKind.Error,
+                                            action = {
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                                    goToManageExternalStorageSettings(context)
+                                                }
+                                            },
+                                            actionLabel = context.getString(R.string.grant)
                                         )
                                     )
                                 }

@@ -1,9 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import android.Manifest
-import android.os.Build
 import androidx.activity.compose.BackHandler
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.EaseOutCubic
@@ -26,14 +24,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Surface
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -47,13 +43,15 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.service.FileListenerService
+import com.w2sv.filenavigator.ui.AppSnackbar
 import com.w2sv.filenavigator.ui.theme.RailwayText
-import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val permissionState =
         rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE) { granted ->
@@ -64,9 +62,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
 
     Scaffold(snackbarHost = {
         SnackbarHost(mainScreenViewModel.snackbarHostState) { snackbarData ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                ManageAllFilesPermissionRequiredSnackbar(snackbarData)
-            }
+            AppSnackbar(snackbarData = snackbarData)
         }
     }) {
         Surface(
@@ -98,7 +94,16 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                             .align(Alignment.BottomEnd)
                             .offset(y = 72.dp)
                     ) {
-                        ConfigurationModificationButtonColumn()
+                        ConfigurationModificationButtonColumn(
+                            showSnackbar = { snackbarVisuals ->
+                                scope.launch {
+                                    with(mainScreenViewModel.snackbarHostState) {
+                                        currentSnackbarData?.dismiss()
+                                        showSnackbar(snackbarVisuals)
+                                    }
+                                }
+                            }
+                        )
                     }
                 }
 
@@ -124,24 +129,6 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
 
     BackHandler {
         mainScreenViewModel.onBackPress(context)
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.R)
-@Composable
-private fun ManageAllFilesPermissionRequiredSnackbar(snackbarData: SnackbarData) {
-    val context = LocalContext.current
-
-    Snackbar(
-        action = {
-            TextButton(onClick = {
-                goToManageExternalStorageSettings(context)
-            }) {
-                RailwayText(text = stringResource(R.string.grant))
-            }
-        }
-    ) {
-        RailwayText(text = snackbarData.visuals.message)
     }
 }
 
