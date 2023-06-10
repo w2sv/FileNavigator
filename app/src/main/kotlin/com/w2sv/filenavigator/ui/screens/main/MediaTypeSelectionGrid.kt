@@ -6,14 +6,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
@@ -55,23 +60,55 @@ internal fun MediaTypeSelectionGrid(
     modifier: Modifier = Modifier
 ) {
     val state = rememberLazyListState()
-    val nColumns = when (LocalConfiguration.current.orientation) {
-        Configuration.ORIENTATION_LANDSCAPE -> 3
-        else -> 2
-    }
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(nColumns),
-        modifier = modifier.height(240.dp)
-    ) {
-        items(FileType.all.size) {
-            MediaTypeCard(
-                fileType = FileType.all[it],
-                modifier = Modifier
-                    .padding(8.dp)
-                    .animateGridItemSpawn(it, nColumns, state)
-            )
+    when (LocalConfiguration.current.orientation) {
+        Configuration.ORIENTATION_PORTRAIT -> {
+            val nColumns = 2
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(nColumns),
+                modifier = modifier
+            ) {
+                content(nColumns = nColumns, state = state, makeCardsVerticallyScrollable = false)
+            }
         }
+
+        else -> {
+            val nColumns = 1
+
+            LazyHorizontalGrid(
+                rows = GridCells.Fixed(nColumns),
+                modifier = modifier
+            ) {
+                content(
+                    nColumns = nColumns,
+                    state = state,
+                    cardModifier = Modifier
+                        .width(180.dp),
+                    makeCardsVerticallyScrollable = true
+                )
+            }
+        }
+    }
+}
+
+private fun LazyGridScope.content(
+    nColumns: Int,
+    state: LazyListState,
+    makeCardsVerticallyScrollable: Boolean,
+    cardModifier: Modifier = Modifier
+) {
+    items(FileType.all.size) {
+        MediaTypeCard(
+            fileType = FileType.all[it],
+            modifier = cardModifier
+                .padding(8.dp)
+                .animateGridItemSpawn(it, nColumns, state),
+            columnModifier = if (makeCardsVerticallyScrollable) {
+                Modifier.verticalScroll(rememberScrollState())
+            } else
+                Modifier
+        )
     }
 }
 
@@ -86,6 +123,7 @@ enum class CardState {
 private fun MediaTypeCard(
     fileType: FileType,
     modifier: Modifier = Modifier,
+    columnModifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     val cardState: CardState = when {
@@ -97,9 +135,8 @@ private fun MediaTypeCard(
 
     ElevatedCard(modifier = modifier) {
         Column(
-            modifier = Modifier
-                .padding(10.dp)
-                .fillMaxHeight(),
+            modifier = columnModifier
+                .padding(10.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             HeaderSection(
@@ -107,7 +144,10 @@ private fun MediaTypeCard(
                 cardState = cardState
             )
             Divider()
-            OriginsSection(fileType = fileType, cardState = cardState)
+            OriginsSection(
+                fileType = fileType,
+                cardState = cardState
+            )
         }
     }
 }

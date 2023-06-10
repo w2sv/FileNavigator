@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -74,7 +76,8 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
         ) {
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 10.dp),
+                    .padding(horizontal = 10.dp)
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceAround
             ) {
@@ -85,7 +88,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                     )
                 }
 
-                Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.weight(0.8f), contentAlignment = Alignment.Center) {
                     MediaTypeSelectionGrid(Modifier.fillMaxHeight())
                     this@Column.AnimatedVisibility(
                         visible = mainScreenViewModel.nonAppliedListenerConfiguration.stateChanged.collectAsState().value,
