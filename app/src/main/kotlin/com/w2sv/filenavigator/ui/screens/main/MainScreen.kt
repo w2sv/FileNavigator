@@ -15,14 +15,12 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -76,20 +74,19 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
         ) {
             Column(
                 modifier = Modifier
-                    .padding(all = 20.dp)
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+                    .padding(horizontal = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceAround
             ) {
-                RailwayText(
-                    text = stringResource(R.string.navigated_file_types),
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                Box {
-                    MediaTypeSelectionGrid(
-                        modifier = Modifier.heightIn(400.dp)
+                Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
+                    RailwayText(
+                        text = stringResource(R.string.navigated_file_types),
+                        style = MaterialTheme.typography.headlineMedium
                     )
+                }
+
+                Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.Center) {
+                    MediaTypeSelectionGrid(Modifier.fillMaxHeight())
                     this@Column.AnimatedVisibility(
                         visible = mainScreenViewModel.nonAppliedListenerConfiguration.stateChanged.collectAsState().value,
                         enter = fadeIn() + slideInVertically(),
@@ -102,15 +99,20 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                     }
                 }
 
-                ListenerButton(
-                    startListener = {
-                        when (permissionState.status.isGranted) {
-                            true -> FileListenerService.start(context)
-                            false -> permissionState.launchPermissionRequest()
-                        }
-                    },
-                    stopListener = { FileListenerService.stop(context) }
-                )
+                Box(modifier = Modifier.weight(0.3f), contentAlignment = Alignment.Center) {
+                    ListenerButton(
+                        startListener = {
+                            when (permissionState.status.isGranted) {
+                                true -> FileListenerService.start(context)
+                                false -> permissionState.launchPermissionRequest()
+                            }
+                        },
+                        stopListener = { FileListenerService.stop(context) },
+                        modifier = Modifier
+                            .width(220.dp)
+                            .height(80.dp)
+                    )
+                }
             }
         }
     }
@@ -152,8 +154,6 @@ private fun ListenerButton(
     ElevatedButton(
         onClick = if (isListenerRunning) stopListener else startListener,
         modifier = modifier
-            .width(220.dp)
-            .height(80.dp)
     ) {
         Crossfade(
             targetState = isListenerRunning,
