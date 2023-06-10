@@ -128,8 +128,8 @@ private fun MediaTypeCard(
 ) {
     val cardState: CardState = when {
         fileType is FileType.NonMedia && !mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState().value -> CardState.FileManagerPermissionMissing
-        !mainScreenViewModel.accountForMediaType.getValue(fileType) -> CardState.MediaTypeDisabled
-        fileType.origins.none { mainScreenViewModel.accountForMediaTypeOrigin.getValue(it) } -> CardState.AllOriginsDisabled
+        !mainScreenViewModel.accountForFileType.getValue(fileType) -> CardState.MediaTypeDisabled
+        fileType.origins.none { mainScreenViewModel.accountForFileTypeOrigin.getValue(it) } -> CardState.AllOriginsDisabled
         else -> CardState.Enabled
     }
 
@@ -214,7 +214,7 @@ private fun HeaderSection(
                                 }
                             }
 
-                            else -> mainScreenViewModel.accountForMediaType.toggle(fileType)
+                            else -> mainScreenViewModel.accountForFileType.toggle(fileType)
                         }
                     },
                     colors = CheckboxDefaults.colors(
@@ -251,11 +251,11 @@ private fun OriginsSection(
                 }
                 Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.CenterEnd) {
                     Checkbox(
-                        checked = mainScreenViewModel.accountForMediaTypeOrigin.getValue(
+                        checked = mainScreenViewModel.accountForFileTypeOrigin.getValue(
                             origin
                         ),
                         onCheckedChange = {
-                            mainScreenViewModel.accountForMediaTypeOrigin.toggle(origin)
+                            mainScreenViewModel.accountForFileTypeOrigin.toggle(origin)
                         },
                         enabled = setOf(CardState.Enabled, CardState.AllOriginsDisabled).contains(
                             cardState

@@ -33,17 +33,22 @@ internal fun ConfigurationModificationButtonColumn(
             iconRes = R.drawable.ic_save_24,
             contentDescriptionRes = R.string.update_listener_configuration_button_cd,
             onClick = {
+                // Do not sync if leading to disablement of all FileTypes
                 with(mainScreenViewModel) {
-                    nonAppliedListenerConfiguration
-                        .launchSync()
-                        .invokeOnCompletion {
-                            if (mainScreenViewModel.isListenerRunning.value) {
-                                FileListenerService.reregisterMediaObservers(
-                                    context
-                                )
+                    if (accountForFileType.values.none { it }) {
+                        context.showToast(R.string.all_file_types_disabled_notification)
+                    } else {
+                        nonAppliedListenerConfiguration
+                            .launchSync()
+                            .invokeOnCompletion {
+                                if (mainScreenViewModel.isListenerRunning.value) {
+                                    FileListenerService.reregisterMediaObservers(
+                                        context
+                                    )
+                                }
+                                context.showToast(R.string.updated_listener_configuration)
                             }
-                            context.showToast(R.string.updated_listener_configuration)
-                        }
+                    }
                 }
             }
         )

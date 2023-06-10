@@ -44,4 +44,5 @@
     <string name="snackbar_message">Navigation of %1$s files requires access to manage all files</string>
     <string name="grant">Grant</string>
     <string name="reset_button_cd">Discard all unsaved changes</string>
+    <string name="all_file_types_disabled_notification">Enable at least one file type</string>
 </resources>
