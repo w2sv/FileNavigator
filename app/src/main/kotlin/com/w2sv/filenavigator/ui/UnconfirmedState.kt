@@ -1,10 +1,8 @@
 package com.w2sv.filenavigator.ui
 
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.filenavigator.datastore.AbstractDataStoreRepository
 import com.w2sv.filenavigator.datastore.DataStoreVariable
-import com.w2sv.filenavigator.datastore.DataStoreRepository
 import com.w2sv.filenavigator.utils.getMutableStateMap
 import com.w2sv.filenavigator.utils.getSynchronousMap
 import kotlinx.coroutines.CoroutineScope
@@ -15,33 +13,41 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 
-abstract class NonAppliedState<T> {
-    val stateChanged = MutableStateFlow(false)
-
-    protected fun MutableStateFlow<Boolean>.reset() {
-        value = false
-    }
+/**
+ * Base class for classes, encapsulating states being displayed by the UI but pending
+ * confirmation, which in turn triggers the synchronization with the respective repository.
+ */
+abstract class UnconfirmedState<T> {
+    val statesDissimilar = MutableStateFlow(false)
 
     abstract suspend fun sync()
     abstract suspend fun reset()
 }
 
-class NonAppliedSnapshotStateMap<K : DataStoreVariable<V>, V>(
+class UnconfirmedStateMap<K : DataStoreVariable<V>, V>(
     private val coroutineScope: CoroutineScope,
     private val appliedFlowMap: Map<K, Flow<V>>,
     private val dataStoreRepository: AbstractDataStoreRepository,
-    private val map: SnapshotStateMap<K, V> = appliedFlowMap
+    private val map: MutableMap<K, V> = appliedFlowMap
         .getSynchronousMap()
         .getMutableStateMap(),
-    private val onStateSynced: (Map<K, V>) -> Unit = {}
-) : NonAppliedState<Map<K, V>>(),
+    private val onStateSyncedListener: (Map<K, V>) -> Unit = {}
+) : UnconfirmedState<Map<K, V>>(),
     MutableMap<K, V> by map {
 
+    /**
+     * Tracking of keys which correspond to values, differing between [appliedFlowMap] and this
+     * for efficient syncing/resetting.
+     */
     private val dissimilarKeys = mutableSetOf<K>()
 
-    private val dissimilarEntries: Map<K, V>
-        get() = filterKeys { it in dissimilarKeys }
+    // ==============
+    // Modification
+    // ==============
 
+    /**
+     * Inherently updates [dissimilarKeys] and [statesDissimilar] in an asynchronous fashion.
+     */
     override fun put(key: K, value: V): V? =
         map.put(key, value)
             .also {
@@ -50,68 +56,80 @@ class NonAppliedSnapshotStateMap<K : DataStoreVariable<V>, V>(
                         true -> dissimilarKeys.remove(key)
                         false -> dissimilarKeys.add(key)
                     }
-                    stateChanged.value = dissimilarKeys.isNotEmpty()
+                    statesDissimilar.value = dissimilarKeys.isNotEmpty()
                 }
             }
 
-    override suspend fun sync() {
-        dataStoreRepository.saveMap(dissimilarEntries)
-        onStateSynced(this)
-        resetInternally()
+    override fun putAll(from: Map<out K, V>) {
+        from.forEach { (k, v) ->
+            put(k, v)
+        }
     }
 
-    override suspend fun reset() {
+    // =======================
+    // Syncing / Resetting
+    // =======================
+
+    override suspend fun sync() = withSubsequentInternalReset {
+        dataStoreRepository.saveMap(filterKeys { it in dissimilarKeys })
+        onStateSyncedListener(this)
+    }
+
+    override suspend fun reset() = withSubsequentInternalReset {
         dissimilarKeys
             .forEach {
+                // Call map.put directly to prevent unnecessary state updates
                 map[it] = appliedFlowMap.getValue(it).first()
             }
-        resetInternally()
     }
 
-    private fun resetInternally() {
+    private inline fun withSubsequentInternalReset(f: () -> Unit) {
+        f()
+
         dissimilarKeys.clear()
-        stateChanged.reset()
+        statesDissimilar.value = false
     }
 }
 
-class NonAppliedStateFlow<T>(
+class UnconfirmedStateFlow<T>(
     coroutineScope: CoroutineScope,
     private val appliedFlow: Flow<T>,
     private val syncState: suspend (T) -> Unit
-) : NonAppliedState<T>(),
+) : UnconfirmedState<T>(),
     MutableStateFlow<T> by MutableStateFlow(
         appliedFlow.getValueSynchronously()
     ) {
 
     init {
+        // Update [statesDissimilar] whenever a new value is collected
         coroutineScope.launch {
-            collect {
-                stateChanged.value = it != appliedFlow.first()
+            collect { newValue ->
+                statesDissimilar.value = newValue != appliedFlow.first()
             }
         }
     }
 
     override suspend fun sync() {
         syncState(value)
-        stateChanged.reset()
+        statesDissimilar.value = false
     }
 
     override suspend fun reset() {
-        value = appliedFlow.first()
+        value = appliedFlow.first()  // Triggers [statesDissimilar] updating flow collector anyways
     }
 }
 
-class NonAppliedStatesComposition(
-    vararg nonAppliedState: NonAppliedState<*>,
+class UnconfirmedStatesComposition(
+    vararg unconfirmedState: UnconfirmedState<*>,
     coroutineScope: CoroutineScope
-) : List<NonAppliedState<*>> by nonAppliedState.asList(),
-    NonAppliedState<List<NonAppliedState<*>>>() {
+) : List<UnconfirmedState<*>> by unconfirmedState.asList(),
+    UnconfirmedState<List<UnconfirmedState<*>>>() {
 
     private val changedStateIndices = mutableSetOf<Int>()
 
     init {
         coroutineScope.launch {
-            mapIndexed { i, it -> it.stateChanged.transform { emit(it to i) } }
+            mapIndexed { i, it -> it.statesDissimilar.transform { emit(it to i) } }
                 .merge()
                 .collect { (stateChanged, i) ->
                     if (stateChanged) {
@@ -120,7 +138,7 @@ class NonAppliedStatesComposition(
                         changedStateIndices.remove(i)
                     }
 
-                    this@NonAppliedStatesComposition.stateChanged.value =
+                    this@UnconfirmedStatesComposition.statesDissimilar.value =
                         changedStateIndices.isNotEmpty()
                 }
         }
@@ -128,7 +146,7 @@ class NonAppliedStatesComposition(
 
     override suspend fun sync() {
         forEach {
-            if (it.stateChanged.value) {
+            if (it.statesDissimilar.value) {
                 it.sync()
             }
         }
@@ -136,7 +154,7 @@ class NonAppliedStatesComposition(
 
     override suspend fun reset() {
         forEach {
-            if (it.stateChanged.value) {
+            if (it.statesDissimilar.value) {
                 it.reset()
             }
         }

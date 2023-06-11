@@ -5,10 +5,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.w2sv.filenavigator.ui.NonAppliedSnapshotStateMap
-import com.w2sv.filenavigator.ui.NonAppliedState
-import com.w2sv.filenavigator.ui.NonAppliedStateFlow
-import com.w2sv.filenavigator.ui.NonAppliedStatesComposition
+import com.w2sv.filenavigator.ui.UnconfirmedStateMap
+import com.w2sv.filenavigator.ui.UnconfirmedState
+import com.w2sv.filenavigator.ui.UnconfirmedStateFlow
+import com.w2sv.filenavigator.ui.UnconfirmedStatesComposition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -84,26 +84,26 @@ abstract class AbstractDataStoreRepository(
 
         override val coroutineScope: CoroutineScope get() = viewModelScope
 
-        fun <K : DataStoreVariable<V>, V> makeNonAppliedSnapshotStateMap(appliedFlowMap: Map<K, Flow<V>>): NonAppliedSnapshotStateMap<K, V> =
-            NonAppliedSnapshotStateMap(coroutineScope, appliedFlowMap, dataStoreRepository)
+        fun <K : DataStoreVariable<V>, V> makeNonAppliedSnapshotStateMap(appliedFlowMap: Map<K, Flow<V>>): UnconfirmedStateMap<K, V> =
+            UnconfirmedStateMap(coroutineScope, appliedFlowMap, dataStoreRepository)
 
         fun <T> makeNonAppliedStateFlow(
             appliedFlow: Flow<T>,
             preferencesKey: Preferences.Key<T>
-        ): NonAppliedStateFlow<T> =
-            NonAppliedStateFlow(coroutineScope, appliedFlow) {
+        ): UnconfirmedStateFlow<T> =
+            UnconfirmedStateFlow(coroutineScope, appliedFlow) {
                 dataStoreRepository.save(preferencesKey, it)
             }
 
-        fun makeNonAppliedStatesComposition(vararg nonAppliedState: NonAppliedState<*>): NonAppliedStatesComposition =
-            NonAppliedStatesComposition(*nonAppliedState, coroutineScope = coroutineScope)
+        fun makeNonAppliedStatesComposition(vararg unconfirmedState: UnconfirmedState<*>): UnconfirmedStatesComposition =
+            UnconfirmedStatesComposition(*unconfirmedState, coroutineScope = coroutineScope)
 
-        fun NonAppliedState<*>.launchSync(): Job =
+        fun UnconfirmedState<*>.launchSync(): Job =
             coroutineScope.launch {
                 sync()
             }
 
-        fun NonAppliedState<*>.launchReset(): Job =
+        fun UnconfirmedState<*>.launchReset(): Job =
             coroutineScope.launch {
                 reset()
             }
