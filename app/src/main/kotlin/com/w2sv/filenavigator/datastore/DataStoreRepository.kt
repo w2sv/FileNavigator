@@ -4,21 +4,19 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.w2sv.filenavigator.mediastore.FileType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class DataStoreRepository @Inject constructor(dataStore: DataStore<Preferences>) :
-    AbstractDataStoreRepository(dataStore) {
+    PreferencesDataStoreRepository(dataStore) {
 
-    val accountForFileType: Map<FileType, Flow<Boolean>> = mapFromDataStoreProperties(FileType.all)
+    val accountForFileType: Map<FileType, Flow<Boolean>> = getFlowMap(FileType.all)
 
-    val accountForFileTypeOrigin: Map<FileType.Origin, Flow<Boolean>> = mapFromDataStoreProperties(
+    val accountForFileTypeOrigin: Map<FileType.Origin, Flow<Boolean>> = getFlowMap(
         FileType.all
             .map { it.origins }
             .flatten()
     )
 
-    val showedManageExternalStorageRational: Flow<Boolean> = dataStore.data.map {
-        it[PreferencesKey.SHOWED_MANAGE_EXTERNAL_STORAGE_RATIONAL] ?: false
-    }
+    val showedManageExternalStorageRational: Flow<Boolean> =
+        getFlow(PreferencesKey.SHOWED_MANAGE_EXTERNAL_STORAGE_RATIONAL, false)
 }

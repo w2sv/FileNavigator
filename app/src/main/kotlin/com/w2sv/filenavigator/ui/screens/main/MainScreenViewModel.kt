@@ -7,9 +7,9 @@ import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.datastore.AbstractDataStoreRepository
 import com.w2sv.filenavigator.datastore.DataStoreRepository
 import com.w2sv.filenavigator.service.FileListenerService
+import com.w2sv.filenavigator.ui.UnconfirmedStatesHoldingViewModel
 import com.w2sv.filenavigator.utils.isExternalStorageManger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class MainScreenViewModel @Inject constructor(
     @ApplicationContext context: Context,
     dataStoreRepository: DataStoreRepository
-) : AbstractDataStoreRepository.InterfacingViewModel<DataStoreRepository>(dataStoreRepository) {
+) : UnconfirmedStatesHoldingViewModel<DataStoreRepository>(dataStoreRepository) {
 
     val isListenerRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileListenerService>())
@@ -44,15 +44,15 @@ class MainScreenViewModel @Inject constructor(
     // ==============
 
     val accountForFileType by lazy {
-        makeNonAppliedSnapshotStateMap(dataStoreRepository.accountForFileType)
+        makeUnconfirmedStateMap(dataStoreRepository.accountForFileType)
     }
 
     val accountForFileTypeOrigin by lazy {
-        makeNonAppliedSnapshotStateMap(dataStoreRepository.accountForFileTypeOrigin)
+        makeUnconfirmedStateMap(dataStoreRepository.accountForFileTypeOrigin)
     }
 
     val nonAppliedListenerConfiguration by lazy {
-        makeNonAppliedStatesComposition(accountForFileType, accountForFileTypeOrigin)
+        makeUnconfirmedStatesComposition(listOf(accountForFileType, accountForFileTypeOrigin))
     }
 
     // ==============

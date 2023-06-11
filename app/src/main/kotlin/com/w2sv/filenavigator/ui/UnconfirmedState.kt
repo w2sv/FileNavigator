@@ -1,13 +1,16 @@
 package com.w2sv.filenavigator.ui
 
+import androidx.datastore.preferences.core.Preferences
 import com.w2sv.androidutils.coroutines.getValueSynchronously
-import com.w2sv.filenavigator.datastore.AbstractDataStoreRepository
 import com.w2sv.filenavigator.datastore.DataStoreVariable
+import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.utils.getMutableStateMap
 import com.w2sv.filenavigator.utils.getSynchronousMap
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transform
@@ -18,7 +21,8 @@ import kotlinx.coroutines.launch
  * confirmation, which in turn triggers the synchronization with the respective repository.
  */
 abstract class UnconfirmedState<T> {
-    val statesDissimilar = MutableStateFlow(false)
+    val statesDissimilar: StateFlow<Boolean> get() = _statesDissimilar
+    protected val _statesDissimilar = MutableStateFlow(false)
 
     abstract suspend fun sync()
     abstract suspend fun reset()
@@ -27,11 +31,10 @@ abstract class UnconfirmedState<T> {
 class UnconfirmedStateMap<K : DataStoreVariable<V>, V>(
     private val coroutineScope: CoroutineScope,
     private val appliedFlowMap: Map<K, Flow<V>>,
-    private val dataStoreRepository: AbstractDataStoreRepository,
     private val map: MutableMap<K, V> = appliedFlowMap
         .getSynchronousMap()
         .getMutableStateMap(),
-    private val onStateSyncedListener: (Map<K, V>) -> Unit = {}
+    private val syncState: suspend (Map<K, V>) -> Unit
 ) : UnconfirmedState<Map<K, V>>(),
     MutableMap<K, V> by map {
 
@@ -56,7 +59,7 @@ class UnconfirmedStateMap<K : DataStoreVariable<V>, V>(
                         true -> dissimilarKeys.remove(key)
                         false -> dissimilarKeys.add(key)
                     }
-                    statesDissimilar.value = dissimilarKeys.isNotEmpty()
+                    _statesDissimilar.value = dissimilarKeys.isNotEmpty()
                 }
             }
 
@@ -71,8 +74,7 @@ class UnconfirmedStateMap<K : DataStoreVariable<V>, V>(
     // =======================
 
     override suspend fun sync() = withSubsequentInternalReset {
-        dataStoreRepository.saveMap(filterKeys { it in dissimilarKeys })
-        onStateSyncedListener(this)
+        syncState(filterKeys { it in dissimilarKeys })
     }
 
     override suspend fun reset() = withSubsequentInternalReset {
@@ -87,31 +89,30 @@ class UnconfirmedStateMap<K : DataStoreVariable<V>, V>(
         f()
 
         dissimilarKeys.clear()
-        statesDissimilar.value = false
+        _statesDissimilar.value = false
     }
 }
 
 class UnconfirmedStateFlow<T>(
     coroutineScope: CoroutineScope,
     private val appliedFlow: Flow<T>,
+    initialValue: T = appliedFlow.getValueSynchronously(),
     private val syncState: suspend (T) -> Unit
 ) : UnconfirmedState<T>(),
-    MutableStateFlow<T> by MutableStateFlow(
-        appliedFlow.getValueSynchronously()
-    ) {
+    MutableStateFlow<T> by MutableStateFlow(initialValue) {
 
     init {
         // Update [statesDissimilar] whenever a new value is collected
         coroutineScope.launch {
             collect { newValue ->
-                statesDissimilar.value = newValue != appliedFlow.first()
+                _statesDissimilar.value = newValue != appliedFlow.first()
             }
         }
     }
 
     override suspend fun sync() {
         syncState(value)
-        statesDissimilar.value = false
+        _statesDissimilar.value = false
     }
 
     override suspend fun reset() {
@@ -119,44 +120,85 @@ class UnconfirmedStateFlow<T>(
     }
 }
 
-class UnconfirmedStatesComposition(
-    vararg unconfirmedState: UnconfirmedState<*>,
-    coroutineScope: CoroutineScope
-) : List<UnconfirmedState<*>> by unconfirmedState.asList(),
-    UnconfirmedState<List<UnconfirmedState<*>>>() {
+typealias UnconfirmedStates = List<UnconfirmedState<*>>
 
-    private val changedStateIndices = mutableSetOf<Int>()
+class UnconfirmedStatesComposition(
+    unconfirmedStates: UnconfirmedStates,
+    coroutineScope: CoroutineScope
+) : UnconfirmedStates by unconfirmedStates,
+    UnconfirmedState<UnconfirmedStates>() {
+
+    private val changedStateInstanceIndices = mutableSetOf<Int>()
+    private val changedStateInstances = changedStateInstanceIndices.map { this[it] }
 
     init {
+        // Update [changedStateInstanceIndices] and [_statesDissimilar] upon change of one of
+        // the held element's [statesDissimilar]
         coroutineScope.launch {
             mapIndexed { i, it -> it.statesDissimilar.transform { emit(it to i) } }
                 .merge()
                 .collect { (stateChanged, i) ->
                     if (stateChanged) {
-                        changedStateIndices.add(i)
+                        changedStateInstanceIndices.add(i)
                     } else {
-                        changedStateIndices.remove(i)
+                        changedStateInstanceIndices.remove(i)
                     }
 
-                    this@UnconfirmedStatesComposition.statesDissimilar.value =
-                        changedStateIndices.isNotEmpty()
+                    _statesDissimilar.value = changedStateInstanceIndices.isNotEmpty()
                 }
         }
     }
 
     override suspend fun sync() {
-        forEach {
-            if (it.statesDissimilar.value) {
-                it.sync()
-            }
+        changedStateInstances.forEach {
+            it.sync()
         }
     }
 
     override suspend fun reset() {
-        forEach {
-            if (it.statesDissimilar.value) {
-                it.reset()
-            }
+        changedStateInstances.forEach {
+            it.reset()
         }
     }
+}
+
+abstract class UnconfirmedStatesHoldingViewModel<R : PreferencesDataStoreRepository>(
+    dataStoreRepository: R
+) : PreferencesDataStoreRepository.ViewModel<R>(dataStoreRepository) {
+
+    // =======================
+    // Instance creation
+    // =======================
+
+    fun <K : DataStoreVariable<V>, V> makeUnconfirmedStateMap(appliedFlowMap: Map<K, Flow<V>>): UnconfirmedStateMap<K, V> =
+        UnconfirmedStateMap(
+            coroutineScope,
+            appliedFlowMap,
+            syncState = { repository.saveMap(it) }
+        )
+
+    fun <T> makeUnconfirmedStateFlow(
+        appliedFlow: Flow<T>,
+        preferencesKey: Preferences.Key<T>
+    ): UnconfirmedStateFlow<T> =
+        UnconfirmedStateFlow(coroutineScope, appliedFlow) {
+            repository.save(preferencesKey, it)
+        }
+
+    fun makeUnconfirmedStatesComposition(unconfirmedStates: UnconfirmedStates): UnconfirmedStatesComposition =
+        UnconfirmedStatesComposition(unconfirmedStates, coroutineScope = coroutineScope)
+
+    // =======================
+    // Syncing / resetting on coroutine scope
+    // =======================
+
+    fun UnconfirmedState<*>.launchSync(): Job =
+        coroutineScope.launch {
+            sync()
+        }
+
+    fun UnconfirmedState<*>.launchReset(): Job =
+        coroutineScope.launch {
+            reset()
+        }
 }

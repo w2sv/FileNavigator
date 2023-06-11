@@ -57,7 +57,7 @@ fun EventualManageExternalStorageRational(mainScreenViewModel: MainScreenViewMod
         }
 
     if (!mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState().value) {
-        if (!mainScreenViewModel.dataStoreRepository.showedManageExternalStorageRational.collectAsState(
+        if (!mainScreenViewModel.repository.showedManageExternalStorageRational.collectAsState(
                 initial = false
             ).value
         ) {
