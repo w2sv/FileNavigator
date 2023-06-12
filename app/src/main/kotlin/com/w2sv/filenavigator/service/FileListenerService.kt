@@ -427,6 +427,6 @@ class FileListenerService : UnboundService() {
         const val ACTION_REREGISTER_MEDIA_OBSERVERS =
             "com.w2sv.filenavigator.REREGISTER_MEDIA_OBSERVERS"
         const val ACTION_CLEANUP_IDS = "com.w2sv.filenavigator.CLEANUP_IDS"
-        private const val ACTION_STOP_SERVICE = "com.w2sv.filenavigator.STOP"
+        const val ACTION_STOP_SERVICE = "com.w2sv.filenavigator.STOP"
     }
 }

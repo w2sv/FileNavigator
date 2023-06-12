@@ -14,7 +14,7 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
-    <!-- SDK >= 33 TODO: query permission -->
+    <!-- SDK >= 33 TODO: query permissions -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
@@ -45,6 +45,14 @@
         <activity android:name="com.w2sv.filenavigator.service.FileMoverActivity" />
 
         <service android:name="com.w2sv.filenavigator.service.FileListenerService" />
-    </application>
+
+        <receiver android:name=".PowerSaveModeChangedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.os.action.POWER_SAVE_MODE_CHANGED"/>
+            </intent-filter>
+        </receiver>
+
+</application>
 
 </manifest>

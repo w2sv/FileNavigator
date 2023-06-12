@@ -21,5 +21,5 @@ class DataStoreRepository @Inject constructor(dataStore: DataStore<Preferences>)
         getFlow(PreferencesKey.SHOWED_MANAGE_EXTERNAL_STORAGE_RATIONAL, false)
 
     val disableListenerOnLowBattery: Flow<Boolean> =
-        getFlow(PreferencesKey.DISABLE_LISTENER_ON_LOW_BATTERY, false)
+        getFlow(PreferencesKey.DISABLE_LISTENER_ON_LOW_BATTERY, true)
 }

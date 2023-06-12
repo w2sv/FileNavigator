@@ -4,23 +4,27 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.os.PowerManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.lifecycle.SelfManagingLocalBroadcastReceiver
+import com.w2sv.filenavigator.PowerSaveModeChangedReceiver
 import com.w2sv.filenavigator.service.FileListenerService
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import slimber.log.i
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModels<MainScreenViewModel>()
 
-    private class FileListenerServiceBroadcastReceiver(
+    private class FileListenerStatusChangedReceiver(
         context: Context,
         callback: (Context?, Intent?) -> Unit
     ) : SelfManagingLocalBroadcastReceiver.Impl(
@@ -33,9 +37,9 @@ class MainActivity : ComponentActivity() {
         callback
     )
 
-    private val fileListenerServiceBroadcastReceiver by lazy {
-        FileListenerServiceBroadcastReceiver(this) { _, intent ->
-            intent ?: return@FileListenerServiceBroadcastReceiver
+    private val fileListenerStatusChangedReceiver by lazy {
+        FileListenerStatusChangedReceiver(this) { _, intent ->
+            intent ?: return@FileListenerStatusChangedReceiver
 
             viewModel.isListenerRunning.value = when (intent.action) {
                 FileListenerService.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED -> true
@@ -45,22 +49,59 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val powerSaveModeChangedReceiver by lazy {
+        PowerSaveModeChangedReceiver()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
 
-        lifecycle.addObserver(fileListenerServiceBroadcastReceiver)
+        lifecycle.addObserver(fileListenerStatusChangedReceiver)
 
-        lifecycleScope.launch {
+        lifecycleScope.collectFlows()
+
+        setContent {
+            FileNavigatorTheme {
+                MainScreen()
+            }
+        }
+    }
+
+    private fun LifecycleCoroutineScope.collectFlows() {
+        launch {
             viewModel.exitApplication.collect {
                 finishAffinity()
             }
         }
 
-        setContent {
-            FileNavigatorTheme {
-                MainScreen()
+        launch {
+            viewModel.repository.disableListenerOnLowBattery.collect {
+                i { "Collected disableListenerOnLowBattery=$it" }
+
+                try {
+                    when (it) {
+                        true -> {
+                            registerReceiver(
+                                powerSaveModeChangedReceiver,
+                                IntentFilter()
+                                    .apply {
+                                        addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
+                                    }
+                            )
+                            i { "Registered ${powerSaveModeChangedReceiver::class.java.simpleName}" }
+                        }
+
+                        false -> {
+                            Intent.ACTION_BATTERY_CHANGED
+                            unregisterReceiver(powerSaveModeChangedReceiver)
+                            i { "Unregistered ${powerSaveModeChangedReceiver::class.java.simpleName}" }
+                        }
+                    }
+                } catch (e: IllegalArgumentException) {
+                    i(e)
+                }
             }
         }
     }
