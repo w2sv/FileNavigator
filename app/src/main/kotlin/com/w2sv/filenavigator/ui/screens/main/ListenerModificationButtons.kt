@@ -47,11 +47,12 @@ internal fun ListenerModificationButtonColumn(
                             )
                         )
                     } else {
-                        nonAppliedListenerConfiguration
+                        unconfirmedListenerConfiguration
                             .launchSync()
                             .invokeOnCompletion {
+                                // If FileListenerService is already running, relaunch with new file observer configuration
                                 if (isListenerRunning.value) {
-                                    FileListenerService.reregisterMediaObservers(
+                                    FileListenerService.reregisterFileObservers(
                                         context
                                     )
                                 }
@@ -74,7 +75,7 @@ internal fun ListenerModificationButtonColumn(
             contentDescriptionRes = R.string.reset_button_cd,
             onClick = {
                 with(mainScreenViewModel) {
-                    nonAppliedListenerConfiguration.launchReset()
+                    unconfirmedListenerConfiguration.launchReset()
                 }
             }
         )

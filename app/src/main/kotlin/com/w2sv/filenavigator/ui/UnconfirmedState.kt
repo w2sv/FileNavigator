@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
+import slimber.log.i
 
 /**
  * Base class for classes, encapsulating states being displayed by the UI but pending
@@ -23,6 +24,8 @@ import kotlinx.coroutines.launch
 abstract class UnconfirmedState<T> {
     val statesDissimilar: StateFlow<Boolean> get() = _statesDissimilar
     protected val _statesDissimilar = MutableStateFlow(false)
+
+    protected val logIdentifier: String get() = this::class.java.simpleName
 
     abstract suspend fun sync()
     abstract suspend fun reset()
@@ -74,6 +77,8 @@ class UnconfirmedStateMap<K : DataStoreVariable<V>, V>(
     // =======================
 
     override suspend fun sync() = withSubsequentInternalReset {
+        i { "Syncing $logIdentifier" }
+
         syncState(filterKeys { it in dissimilarKeys })
     }
 
@@ -111,11 +116,15 @@ class UnconfirmedStateFlow<T>(
     }
 
     override suspend fun sync() {
+        i { "Syncing $logIdentifier" }
+
         syncState(value)
         _statesDissimilar.value = false
     }
 
     override suspend fun reset() {
+        i { "Resetting $logIdentifier" }
+
         value = appliedFlow.first()  // Triggers [statesDissimilar] updating flow collector anyways
     }
 }
@@ -129,7 +138,7 @@ class UnconfirmedStatesComposition(
     UnconfirmedState<UnconfirmedStates>() {
 
     private val changedStateInstanceIndices = mutableSetOf<Int>()
-    private val changedStateInstances = changedStateInstanceIndices.map { this[it] }
+    private val changedStateInstances get() = changedStateInstanceIndices.map { this[it] }
 
     init {
         // Update [changedStateInstanceIndices] and [_statesDissimilar] upon change of one of
@@ -137,8 +146,8 @@ class UnconfirmedStatesComposition(
         coroutineScope.launch {
             mapIndexed { i, it -> it.statesDissimilar.transform { emit(it to i) } }
                 .merge()
-                .collect { (stateChanged, i) ->
-                    if (stateChanged) {
+                .collect { (statesDissimilar, i) ->
+                    if (statesDissimilar) {
                         changedStateInstanceIndices.add(i)
                     } else {
                         changedStateInstanceIndices.remove(i)
@@ -150,12 +159,16 @@ class UnconfirmedStatesComposition(
     }
 
     override suspend fun sync() {
+        i { "Syncing $logIdentifier" }
+
         changedStateInstances.forEach {
             it.sync()
         }
     }
 
     override suspend fun reset() {
+        i { "Resetting $logIdentifier" }
+
         changedStateInstances.forEach {
             it.reset()
         }

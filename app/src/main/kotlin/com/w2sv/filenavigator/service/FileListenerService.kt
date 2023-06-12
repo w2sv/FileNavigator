@@ -403,7 +403,7 @@ class FileListenerService : UnboundService() {
             )
         }
 
-        fun reregisterMediaObservers(context: Context) {
+        fun reregisterFileObservers(context: Context) {
             context.startService(
                 Intent(context, FileListenerService::class.java)
                     .setAction(ACTION_REREGISTER_MEDIA_OBSERVERS)

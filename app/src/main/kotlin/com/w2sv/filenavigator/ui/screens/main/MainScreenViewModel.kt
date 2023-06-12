@@ -57,7 +57,7 @@ class MainScreenViewModel @Inject constructor(
         makeUnconfirmedStateMap(dataStoreRepository.accountForFileTypeOrigin)
     }
 
-    val nonAppliedListenerConfiguration by lazy {
+    val unconfirmedListenerConfiguration by lazy {
         makeUnconfirmedStatesComposition(listOf(accountForFileType, accountForFileTypeOrigin))
     }
 

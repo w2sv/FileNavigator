@@ -102,7 +102,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 Box(modifier = Modifier.weight(0.8f), contentAlignment = Alignment.Center) {
                     MediaTypeSelectionGrid(Modifier.fillMaxHeight())
                     this@Column.AnimatedVisibility(
-                        visible = mainScreenViewModel.nonAppliedListenerConfiguration.statesDissimilar.collectAsState().value,
+                        visible = mainScreenViewModel.unconfirmedListenerConfiguration.statesDissimilar.collectAsState().value,
                         enter = fadeIn() + slideInVertically(),
                         exit = fadeOut() + slideOutVertically(),
                         modifier = Modifier
