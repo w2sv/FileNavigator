@@ -23,7 +23,7 @@ import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.SnackbarKind
 
 @Composable
-internal fun ConfigurationModificationButtonColumn(
+internal fun ListenerModificationButtonColumn(
     showSnackbar: (ExtendedSnackbarVisuals) -> Unit,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()

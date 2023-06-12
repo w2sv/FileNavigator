@@ -45,4 +45,9 @@
     <string name="grant">Grant</string>
     <string name="reset_button_cd">Discard all unsaved changes</string>
     <string name="all_file_types_disabled_notification">Enable at least one file type</string>
+    <string name="open_extended_settings_dialog">Open the extended settings dialog.</string>
+    <string name="apply">Apply</string>
+    <string name="cancel">Cancel</string>
+    <string name="disable_listener_on_low_battery">Disable listener on low battery</string>
+    <string name="extended_settings">Extended Settings</string>
 </resources>

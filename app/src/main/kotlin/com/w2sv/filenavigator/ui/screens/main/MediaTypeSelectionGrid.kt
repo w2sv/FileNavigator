@@ -274,6 +274,7 @@ private fun OriginsSection(
                             cardState
                         ),
                         colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.secondary,
                             checkmarkColor = checkMarkColorOnCard()
                         )
                     )

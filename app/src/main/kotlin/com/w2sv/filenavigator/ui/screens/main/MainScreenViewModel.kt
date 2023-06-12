@@ -8,6 +8,7 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.DataStoreRepository
+import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.service.FileListenerService
 import com.w2sv.filenavigator.ui.UnconfirmedStatesHoldingViewModel
 import com.w2sv.filenavigator.utils.isExternalStorageManger
@@ -28,6 +29,11 @@ class MainScreenViewModel @Inject constructor(
         MutableStateFlow(context.isServiceRunning<FileListenerService>())
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState()
+
+    val disableListenerOnLowBattery = makeUnconfirmedStateFlow(
+        dataStoreRepository.disableListenerOnLowBattery,
+        PreferencesKey.DISABLE_LISTENER_ON_LOW_BATTERY
+    )
 
     // ==============
     // manageExternalStoragePermissionGranted
