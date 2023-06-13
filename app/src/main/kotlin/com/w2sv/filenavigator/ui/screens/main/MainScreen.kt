@@ -53,10 +53,12 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.service.FileListenerService
+import com.w2sv.filenavigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.AppSnackbar
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.RailwayText
+import com.w2sv.filenavigator.ui.theme.md_negative
+import com.w2sv.filenavigator.ui.theme.md_positive
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -68,7 +70,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
     val permissionState =
         rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE) { granted ->
             if (granted) {
-                FileListenerService.start(context)
+                FileNavigatorService.start(context)
             }
         }
 
@@ -138,14 +140,14 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 }
 
                 Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
-                    LaunchListenerButton(
+                    StartNavigatorButton(
                         startListener = {
                             when (permissionState.status.isGranted) {
-                                true -> FileListenerService.start(context)
+                                true -> FileNavigatorService.start(context)
                                 false -> permissionState.launchPermissionRequest()
                             }
                         },
-                        stopListener = { FileListenerService.stop(context) },
+                        stopListener = { FileNavigatorService.stop(context) },
                         modifier = Modifier
                             .width(220.dp)
                             .height(80.dp)
@@ -163,29 +165,29 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
 }
 
 @Composable
-private fun LaunchListenerButton(
+private fun StartNavigatorButton(
     startListener: () -> Unit,
     stopListener: () -> Unit,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    val isListenerRunning by mainScreenViewModel.isListenerRunning.collectAsState()
+    val isNavigatorRunning by mainScreenViewModel.isNavigatorRunning.collectAsState()
 
     Crossfade(
-        targetState = isListenerRunning,
+        targetState = isNavigatorRunning,
         animationSpec = tween(durationMillis = 1250, delayMillis = 250, easing = EaseOutCubic),
         label = ""
     ) {
         val properties = when (it) {
             true -> ListenerButtonProperties(
-                Color.Red,
+                md_negative,
                 R.drawable.ic_stop_24,
                 R.string.stop_navigator,
                 stopListener
             )
 
             false -> ListenerButtonProperties(
-                Color.Green,
+                md_positive,
                 R.drawable.ic_start_24,
                 R.string.start_navigator,
                 startListener
@@ -210,12 +212,12 @@ private fun LaunchListenerButton(
                     painter = painterResource(id = properties.iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
-                    tint = MaterialTheme.colorScheme.secondary
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
                 RailwayText(
                     text = stringResource(id = properties.labelRes),
                     fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }

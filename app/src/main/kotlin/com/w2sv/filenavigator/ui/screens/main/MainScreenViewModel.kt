@@ -9,7 +9,7 @@ import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.DataStoreRepository
 import com.w2sv.filenavigator.datastore.PreferencesKey
-import com.w2sv.filenavigator.service.FileListenerService
+import com.w2sv.filenavigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.UnconfirmedStatesHoldingViewModel
 import com.w2sv.filenavigator.utils.isExternalStorageManger
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,8 +25,8 @@ class MainScreenViewModel @Inject constructor(
     dataStoreRepository: DataStoreRepository
 ) : UnconfirmedStatesHoldingViewModel<DataStoreRepository>(dataStoreRepository) {
 
-    val isListenerRunning: MutableStateFlow<Boolean> =
-        MutableStateFlow(context.isServiceRunning<FileListenerService>())
+    val isNavigatorRunning: MutableStateFlow<Boolean> =
+        MutableStateFlow(context.isServiceRunning<FileNavigatorService>())
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState()
 

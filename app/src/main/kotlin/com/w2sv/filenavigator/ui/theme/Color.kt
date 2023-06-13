@@ -64,4 +64,5 @@ val md_theme_dark_surfaceTint = Color(0xFFD0BCFF)
 val md_theme_dark_outlineVariant = Color(0xFF49454F)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-val md_success = Color.Green
+val md_positive = Color(12, 173, 34, 200)
+val md_negative = Color(201, 14, 52, 200)

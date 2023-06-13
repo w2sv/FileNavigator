@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.service.FileListenerService
+import com.w2sv.filenavigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.SnackbarKind
 
@@ -51,8 +51,8 @@ internal fun ListenerModificationButtonColumn(
                             .launchSync()
                             .invokeOnCompletion {
                                 // If FileListenerService is already running, relaunch with new file observer configuration
-                                if (isListenerRunning.value) {
-                                    FileListenerService.reregisterFileObservers(
+                                if (isNavigatorRunning.value) {
+                                    FileNavigatorService.reregisterFileObservers(
                                         context
                                     )
                                 }

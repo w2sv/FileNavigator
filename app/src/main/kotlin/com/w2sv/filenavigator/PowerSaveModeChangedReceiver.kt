@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.PowerManager
-import com.w2sv.filenavigator.service.FileListenerService
+import com.w2sv.filenavigator.service.FileNavigatorService
 import slimber.log.i
 
 class PowerSaveModeChangedReceiver : BroadcastReceiver() {
@@ -17,9 +17,9 @@ class PowerSaveModeChangedReceiver : BroadcastReceiver() {
         context?.run {
             getSystemService(PowerManager::class.java)?.isPowerSaveMode?.let { isPowerSaveMode ->
                 if (isPowerSaveMode) {
-                    FileListenerService.stop(applicationContext)
+                    FileNavigatorService.stop(applicationContext)
                 } else {
-                    FileListenerService.start(applicationContext)
+                    FileNavigatorService.start(applicationContext)
                 }
             }
         }

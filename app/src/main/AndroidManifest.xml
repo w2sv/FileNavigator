@@ -44,7 +44,7 @@
 
         <activity android:name="com.w2sv.filenavigator.service.FileMoverActivity" />
 
-        <service android:name="com.w2sv.filenavigator.service.FileListenerService" />
+        <service android:name="com.w2sv.filenavigator.service.FileNavigatorService" />
 
         <receiver android:name=".PowerSaveModeChangedReceiver"
             android:exported="true">

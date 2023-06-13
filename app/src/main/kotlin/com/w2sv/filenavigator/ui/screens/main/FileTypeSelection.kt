@@ -12,11 +12,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -35,6 +37,7 @@ import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.theme.RailwayText
+import com.w2sv.filenavigator.ui.theme.md_positive
 import com.w2sv.filenavigator.utils.toggle
 import kotlinx.coroutines.launch
 
@@ -124,7 +127,8 @@ private fun AccordionHeader(
                                 )
                             }
                         }
-                    }
+                    },
+                    colors = SwitchDefaults.colors(checkedTrackColor = md_positive)
                 )
             }
         }
@@ -222,7 +226,8 @@ private fun FileTypeOriginRow(
                                 )
                             }
                         }
-                    }
+                    },
+                    colors = CheckboxDefaults.colors(checkedColor = md_positive)
                 )
             }
         }

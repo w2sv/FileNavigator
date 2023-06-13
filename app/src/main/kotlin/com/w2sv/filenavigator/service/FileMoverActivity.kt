@@ -32,11 +32,11 @@ class FileMoverActivity : ComponentActivity() {
         androidx.lifecycle.ViewModel() {
 
         val mediaStoreFile: MediaStoreFile =
-            savedStateHandle[FileListenerService.EXTRA_MEDIA_STORE_FILE]!!
+            savedStateHandle[FileNavigatorService.EXTRA_MEDIA_STORE_FILE]!!
         val cancelNotificationId: Int =
-            savedStateHandle[FileListenerService.EXTRA_NOTIFICATION_ID]!!
+            savedStateHandle[FileNavigatorService.EXTRA_NOTIFICATION_ID]!!
         val requestCodes: ArrayList<Int> =
-            savedStateHandle[FileListenerService.EXTRA_REQUEST_CODES]!!
+            savedStateHandle[FileNavigatorService.EXTRA_REQUEST_CODES]!!
     }
 
     private val viewModel by viewModels<ViewModel>()
@@ -89,7 +89,7 @@ class FileMoverActivity : ComponentActivity() {
 
         getNotificationManager().cancel(viewModel.cancelNotificationId)
 
-        FileListenerService.cleanUpIds(
+        FileNavigatorService.cleanUpIds(
             viewModel.cancelNotificationId,
             viewModel.requestCodes,
             this

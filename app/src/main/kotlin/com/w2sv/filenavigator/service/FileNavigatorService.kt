@@ -28,7 +28,7 @@ import slimber.log.i
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FileListenerService : UnboundService() {
+class FileNavigatorService : UnboundService() {
 
     @Inject
     lateinit var dataStoreRepository: DataStoreRepository
@@ -383,20 +383,20 @@ class FileListenerService : UnboundService() {
     companion object {
         fun start(context: Context) {
             context.startService(
-                Intent(context, FileListenerService::class.java)
+                Intent(context, FileNavigatorService::class.java)
             )
         }
 
         fun stop(context: Context) {
             context.startService(
-                Intent(context, FileListenerService::class.java)
+                Intent(context, FileNavigatorService::class.java)
                     .setAction(ACTION_STOP_SERVICE)
             )
         }
 
         fun cleanUpIds(notificationId: Int, requestCodes: ArrayList<Int>, context: Context) {
             context.startService(
-                Intent(context, FileListenerService::class.java)
+                Intent(context, FileNavigatorService::class.java)
                     .setAction(ACTION_CLEANUP_IDS)
                     .putExtra(EXTRA_NOTIFICATION_ID, notificationId)
                     .putExtra(EXTRA_REQUEST_CODES, requestCodes)
@@ -405,13 +405,13 @@ class FileListenerService : UnboundService() {
 
         fun reregisterFileObservers(context: Context) {
             context.startService(
-                Intent(context, FileListenerService::class.java)
+                Intent(context, FileNavigatorService::class.java)
                     .setAction(ACTION_REREGISTER_MEDIA_OBSERVERS)
             )
         }
 
         fun getStopIntent(context: Context): Intent =
-            Intent(context, FileListenerService::class.java)
+            Intent(context, FileNavigatorService::class.java)
                 .setAction(ACTION_STOP_SERVICE)
 
         const val EXTRA_MEDIA_STORE_FILE =

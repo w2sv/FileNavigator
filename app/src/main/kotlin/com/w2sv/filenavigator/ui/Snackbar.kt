@@ -17,7 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.theme.RailwayText
-import com.w2sv.filenavigator.ui.theme.md_success
+import com.w2sv.filenavigator.ui.theme.md_positive
 
 class ExtendedSnackbarVisuals(
     override val message: String,
@@ -65,7 +65,7 @@ fun AppSnackbar(snackbarData: SnackbarData) {
                     SnackbarKind.Success -> Icon(
                         painter = painterResource(id = R.drawable.ic_success_24),
                         contentDescription = null,
-                        tint = md_success
+                        tint = md_positive
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
