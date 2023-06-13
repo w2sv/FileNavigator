@@ -91,16 +91,25 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceAround
             ) {
-                Box(modifier = Modifier.weight(0.3f), contentAlignment = Alignment.Center) {
-                    RailwayText(
-                        text = stringResource(R.string.navigated_file_types),
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                Box(modifier = Modifier.weight(0.3f), contentAlignment = Alignment.CenterStart) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        RailwayText(
+                            text = stringResource(R.string.app_name),
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        SettingsDialogButton(onClick = { showSettingsDialog = true })
+                    }
                 }
 
                 Box(modifier = Modifier.weight(0.8f), contentAlignment = Alignment.Center) {
-                    MediaTypeSelectionGrid(Modifier.fillMaxHeight())
+                    FileTypeAccordionColumn(Modifier.fillMaxHeight())
+
                     this@Column.AnimatedVisibility(
                         visible = mainScreenViewModel.unconfirmedListenerConfiguration.statesDissimilar.collectAsState().value,
                         enter = fadeIn() + slideInVertically(),
@@ -123,25 +132,18 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 }
 
                 Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        LaunchListenerButton(
-                            startListener = {
-                                when (permissionState.status.isGranted) {
-                                    true -> FileListenerService.start(context)
-                                    false -> permissionState.launchPermissionRequest()
-                                }
-                            },
-                            stopListener = { FileListenerService.stop(context) },
-                            modifier = Modifier
-                                .width(220.dp)
-                                .height(80.dp)
-                        )
-                        SettingsDialogButton(onClick = { showSettingsDialog = true })
-                    }
+                    LaunchListenerButton(
+                        startListener = {
+                            when (permissionState.status.isGranted) {
+                                true -> FileListenerService.start(context)
+                                false -> permissionState.launchPermissionRequest()
+                            }
+                        },
+                        stopListener = { FileListenerService.stop(context) },
+                        modifier = Modifier
+                            .width(220.dp)
+                            .height(80.dp)
+                    )
                 }
             }
         }

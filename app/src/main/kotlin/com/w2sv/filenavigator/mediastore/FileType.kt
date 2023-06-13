@@ -19,7 +19,7 @@ sealed class FileType(
 ) : DataStoreVariable<Boolean>, Parcelable {
 
     companion object {
-        val all: List<FileType> = Media.all + NonMedia.all
+        val all: List<FileType> get() = Media.all + NonMedia.all
     }
 
     sealed class Media(
@@ -37,7 +37,7 @@ sealed class FileType(
         originKinds = originKinds
     ) {
         companion object {
-            val all: List<Media> = listOf(Image, Video, Audio)
+            val all: List<Media> get() = listOf(Image, Video, Audio)
         }
     }
 
@@ -98,7 +98,7 @@ sealed class FileType(
         )
     ) {
         companion object {
-            val all: List<NonMedia> = listOf(PDF, Text, ZIP, APK)
+            val all: List<NonMedia> get() = listOf(PDF, Text, ZIP, APK)
         }
     }
 
