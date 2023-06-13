@@ -175,7 +175,7 @@ private fun LaunchListenerButton(
             label = ""
         ) {
             RailwayText(
-                text = stringResource(if (it) R.string.stop_listener else R.string.start_listener),
+                text = stringResource(if (it) R.string.stop_navigator else R.string.start_navigator),
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp
             )

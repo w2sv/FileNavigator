@@ -142,19 +142,24 @@ sealed class FileType(
     val origins: List<Origin> = originKinds.map { Origin(it, identifier) }
 
     enum class OriginKind(
-        @StringRes val labelRes: Int
+        @StringRes val labelRes: Int,
+        @DrawableRes val iconRes: Int
     ) {
         Camera(
-            R.string.camera
+            R.string.camera,
+            R.drawable.ic_camera_24
         ),
         Screenshot(
-            R.string.screenshot
+            R.string.screenshot,
+            R.drawable.ic_screenshot_24
         ),
         Download(
-            R.string.download
+            R.string.download,
+            R.drawable.ic_file_download_24
         ),
         ThirdPartyApp(
-            R.string.third_party_app
+            R.string.third_party_app,
+            R.drawable.ic_apps_24
         )
     }
 

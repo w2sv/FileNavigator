@@ -9,8 +9,8 @@
     <string name="stop">Stop</string>
     <string name="waiting_for_new_files_to_be_navigated">Waiting for new files to be navigated</string>
     <string name="found_at">%1$s found at %2$s</string>
-    <string name="start_listener">Start Listener</string>
-    <string name="stop_listener">Stop Listener</string>
+    <string name="start_navigator">Start Navigator</string>
+    <string name="stop_navigator">Stop Navigator</string>
     <string name="image">Image</string>
     <string name="video">Video</string>
     <string name="audio">Audio</string>
@@ -21,7 +21,7 @@
     <string name="text">Text</string>
 
     <string name="download">Download</string>
-    <string name="third_party_app">3rd Party Apps</string>
+    <string name="third_party_app">Other Apps</string>
     <string name="screenshot">Screenshot</string>
     <string name="camera">Camera</string>
 

@@ -53,8 +53,10 @@ private fun FileTypeAccordion(
 ) {
     Column(modifier = modifier) {
         AccordionHeader(fileType = fileType)
-        AnimatedVisibility(visible = mainScreenViewModel.accountForFileType.getValue(fileType)) {
-            AccordionCorpus(fileType = fileType)
+        if (fileType is FileType.Media) {
+            AnimatedVisibility(visible = mainScreenViewModel.accountForFileType.getValue(fileType)) {
+                AccordionCorpus(fileType = fileType)
+            }
         }
     }
 }
@@ -116,7 +118,7 @@ private fun AccordionCorpus(
     ) {
         Column {
             fileType.origins.forEachIndexed { i, origin ->
-                FileTypeOriginRow(origin = origin)
+                FileTypeOriginRow(fileType = fileType, origin = origin)
                 if (i != fileType.origins.lastIndex) {
                     Divider()
                 }
@@ -127,6 +129,7 @@ private fun AccordionCorpus(
 
 @Composable
 private fun FileTypeOriginRow(
+    fileType: FileType,
     origin: FileType.Origin,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
@@ -136,6 +139,8 @@ private fun FileTypeOriginRow(
         tonalElevation = 8.dp,
         modifier = modifier.fillMaxWidth()
     ) {
+        val nestedEntryColor = MaterialTheme.colorScheme.secondary.copy(0.7f)
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -146,12 +151,22 @@ private fun FileTypeOriginRow(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_right_24),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                    tint = nestedEntryColor,
                     modifier = Modifier.size(22.dp)
                 )
             }
-            Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.CenterStart) {
-                RailwayText(text = stringResource(id = origin.kind.labelRes))
+            Box(modifier = Modifier.weight(0.12f), contentAlignment = Alignment.CenterStart) {
+                Icon(
+                    painter = painterResource(id = origin.kind.iconRes),
+                    contentDescription = null,
+                    tint = fileType.color.copy(alpha = 0.6f)
+                )
+            }
+            Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
+                RailwayText(
+                    text = stringResource(id = origin.kind.labelRes),
+                    color = nestedEntryColor
+                )
             }
             Box(modifier = Modifier.weight(0.3f), contentAlignment = Alignment.Center) {
                 Checkbox(
