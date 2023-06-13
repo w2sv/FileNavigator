@@ -11,21 +11,31 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,14 +52,89 @@ import com.w2sv.filenavigator.utils.toggle
 import kotlinx.coroutines.launch
 
 @Composable
+private fun NonMediaTypeInfoDialog(onDismissRequest: () -> Unit, modifier: Modifier = Modifier) {
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_info_24),
+                contentDescription = null,
+                modifier = Modifier.size(
+                    dimensionResource(id = R.dimen.dialog_icon_size)
+                )
+            )
+        },
+        text = {
+            RailwayText(
+                text = stringResource(R.string.non_media_type_info_text),
+                textAlign = TextAlign.Center
+            )
+        },
+        confirmButton = {
+            ElevatedButton(onClick = onDismissRequest) {
+                RailwayText(text = stringResource(R.string.got_it))
+            }
+        }
+    )
+}
+
+@Composable
 fun FileTypeAccordionColumn(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .padding(horizontal = 10.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        FileType.all.forEach {
-            FileTypeAccordion(fileType = it, modifier = Modifier.padding(vertical = 4.dp))
+        val verticalPaddingModifier = Modifier.padding(vertical = 4.dp)
+
+        FileType.Media.all.forEach {
+            FileTypeAccordion(fileType = it, modifier = verticalPaddingModifier)
+        }
+        NonMediaTypesHeaderRow()
+        FileType.NonMedia.all.forEach {
+            FileTypeAccordion(fileType = it, modifier = verticalPaddingModifier)
+        }
+    }
+}
+
+@Composable
+fun NonMediaTypesHeaderRow(modifier: Modifier = Modifier) {
+    val color = MaterialTheme.colorScheme.secondary.copy(0.7f)
+
+    var showInfoDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+        .apply {
+            if (value) {
+                NonMediaTypeInfoDialog(onDismissRequest = {
+                    value = false
+                })
+            }
+        }
+
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
+        Box(modifier = Modifier.weight(0.8f), contentAlignment = Alignment.CenterStart) {
+            RailwayText(
+                text = stringResource(id = R.string.non_media_types),
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .padding(start = 32.dp),
+                fontStyle = FontStyle.Italic,
+                color = color
+            )
+        }
+        Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
+            IconButton(onClick = { showInfoDialog = true }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_info_24),
+                    contentDescription = stringResource(
+                        R.string.show_a_non_media_file_type_info_dialog
+                    ),
+                    tint = color,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
         }
     }
 }
@@ -93,7 +178,7 @@ private fun AccordionHeader(
                     tint = fileType.color
                 )
             }
-            Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.CenterStart) {
+            Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
                 RailwayText(
                     text = stringResource(id = fileType.titleRes),
                     fontSize = 18.sp
@@ -101,11 +186,11 @@ private fun AccordionHeader(
             }
             Box(
                 modifier = Modifier
-                    .weight(0.3f)
-                    .padding(8.dp),
+                    .weight(0.2f),
                 contentAlignment = Alignment.Center
             ) {
                 Switch(
+                    modifier = Modifier.padding(8.dp),
                     checked = mainScreenViewModel.accountForFileType.getValue(fileType),
                     onCheckedChange = { checkedNew ->
                         if (mainScreenViewModel.accountForFileType.values.atLeastOneTrueAfterValueChange(
@@ -200,7 +285,7 @@ private fun FileTypeOriginRow(
                     color = nestedEntryColor
                 )
             }
-            Box(modifier = Modifier.weight(0.3f), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
                 Checkbox(
                     checked = mainScreenViewModel.accountForFileTypeSource.getValue(source),
                     onCheckedChange = { checkedNew ->

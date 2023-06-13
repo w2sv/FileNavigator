@@ -32,7 +32,7 @@ internal fun ListenerModificationButtonColumn(
 
     Column(modifier = modifier) {
         ConfigurationModificationFAB(
-            iconRes = R.drawable.ic_save_24,
+            iconRes = R.drawable.ic_check_24,
             contentDescriptionRes = R.string.update_listener_configuration_button_cd,
             onClick = {
                 // Do not sync if leading to disablement of all FileTypes
@@ -71,7 +71,7 @@ internal fun ListenerModificationButtonColumn(
         )
         Spacer(modifier = Modifier.height(10.dp))
         ConfigurationModificationFAB(
-            iconRes = R.drawable.ic_reset_24,
+            iconRes = R.drawable.ic_delete_24,
             contentDescriptionRes = R.string.reset_button_cd,
             onClick = {
                 with(mainScreenViewModel) {

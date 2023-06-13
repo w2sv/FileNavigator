@@ -19,7 +19,7 @@ import com.w2sv.filenavigator.datastore.DataStoreRepository
 import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.mediastore.MediaStoreFile
 import com.w2sv.filenavigator.mediastore.MediaStoreFileData
-import com.w2sv.filenavigator.ui.screens.main.MainActivity
+import com.w2sv.filenavigator.MainActivity
 import com.w2sv.filenavigator.utils.getSynchronousMap
 import com.w2sv.filenavigator.utils.sendLocalBroadcast
 import com.w2sv.kotlinutils.extensions.nonZeroOrdinal

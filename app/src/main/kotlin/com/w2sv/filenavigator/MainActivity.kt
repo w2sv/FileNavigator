@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main
+package com.w2sv.filenavigator
 
 import android.content.Context
 import android.content.Intent
@@ -12,8 +12,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.lifecycle.SelfManagingLocalBroadcastReceiver
-import com.w2sv.filenavigator.PowerSaveModeChangedReceiver
 import com.w2sv.filenavigator.service.FileNavigatorService
+import com.w2sv.filenavigator.ui.screens.main.MainScreen
+import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
