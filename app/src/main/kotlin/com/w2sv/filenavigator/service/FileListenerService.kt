@@ -42,7 +42,7 @@ class FileListenerService : UnboundService() {
     private fun getAndRegisterFileObservers(): List<FileObserver> {
         val accountForFileType = dataStoreRepository.accountForFileType.getSynchronousMap()
         val accountForFileTypeOrigin =
-            dataStoreRepository.accountForFileTypeOrigin.getSynchronousMap()
+            dataStoreRepository.accountForFileTypeSource.getSynchronousMap()
 
         val mediaFileObservers = FileType.Media.all
             .filter { accountForFileType.getValue(it) }
@@ -50,7 +50,7 @@ class FileListenerService : UnboundService() {
                 MediaFileObserver(
                     mediaType,
                     mediaType
-                        .origins
+                        .sources
                         .filter { origin -> accountForFileTypeOrigin.getValue(origin) }
                         .map { origin -> origin.kind }
                         .toSet()
@@ -284,19 +284,19 @@ class FileListenerService : UnboundService() {
 
     private inner class MediaFileObserver(
         private val mediaType: FileType,
-        private val originKinds: Set<FileType.OriginKind>
+        private val sourceKinds: Set<FileType.SourceKind>
     ) :
         FileObserver(mediaType.storageType.readUri!!) {
 
         init {
-            i { "Initialized ${mediaType::class.java.simpleName} MediaTypeObserver with originKinds: ${originKinds.map { it.name }}" }
+            i { "Initialized ${mediaType::class.java.simpleName} MediaTypeObserver with originKinds: ${sourceKinds.map { it.name }}" }
         }
 
         override fun showNotificationIfApplicable(
             uri: Uri,
             mediaStoreFileData: MediaStoreFileData
         ) {
-            if (originKinds.contains(mediaStoreFileData.originKind)) {
+            if (sourceKinds.contains(mediaStoreFileData.sourceKind)) {
                 showNotification(
                     MediaStoreFile(
                         uri = uri,
@@ -310,12 +310,12 @@ class FileListenerService : UnboundService() {
         override fun getNotificationTitleFormatArg(mediaStoreFile: MediaStoreFile): String {
             mediaStoreFile.type as FileType.Media
 
-            return when (mediaStoreFile.data.originKind) {
-                FileType.OriginKind.Screenshot -> getString(
+            return when (mediaStoreFile.data.sourceKind) {
+                FileType.SourceKind.Screenshot -> getString(
                     R.string.new_screenshot
                 )
 
-                FileType.OriginKind.Camera -> getString(
+                FileType.SourceKind.Camera -> getString(
                     when (mediaStoreFile.type) {
                         FileType.Image -> R.string.new_photo
                         FileType.Video -> R.string.new_video
@@ -323,12 +323,12 @@ class FileListenerService : UnboundService() {
                     }
                 )
 
-                FileType.OriginKind.Download -> getString(
+                FileType.SourceKind.Download -> getString(
                     R.string.newly_downloaded_template,
                     getString(mediaStoreFile.type.fileDeclarationRes)
                 )
 
-                FileType.OriginKind.ThirdPartyApp -> getString(
+                FileType.SourceKind.ThirdPartyApp -> getString(
                     R.string.new_third_party_file_template,
                     mediaStoreFile.data.dirName,
                     getString(mediaStoreFile.type.fileDeclarationRes)

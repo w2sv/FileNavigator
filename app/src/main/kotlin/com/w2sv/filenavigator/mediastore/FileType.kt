@@ -15,7 +15,7 @@ sealed class FileType(
     @StringRes val titleRes: Int,
     @DrawableRes val iconRes: Int,
     val color: Color,
-    originKinds: List<OriginKind>
+    sourceKinds: List<SourceKind>
 ) : DataStoreVariable<Boolean>, Parcelable {
 
     companion object {
@@ -28,13 +28,13 @@ sealed class FileType(
         @StringRes val fileDeclarationRes: Int,
         @DrawableRes iconRes: Int,
         color: Color,
-        originKinds: List<OriginKind>
+        sourceKinds: List<SourceKind>
     ) : FileType(
         storageType = storageType,
         titleRes = labelRes,
         iconRes = iconRes,
         color = color,
-        originKinds = originKinds
+        sourceKinds = sourceKinds
     ) {
         companion object {
             val all: List<Media> get() = listOf(Image, Video, Audio)
@@ -49,10 +49,10 @@ sealed class FileType(
         R.drawable.ic_image_24,
         Color.Green,
         listOf(
-            OriginKind.Camera,
-            OriginKind.Screenshot,
-            OriginKind.Download,
-            OriginKind.ThirdPartyApp
+            SourceKind.Camera,
+            SourceKind.Screenshot,
+            SourceKind.Download,
+            SourceKind.ThirdPartyApp
         )
     )
 
@@ -64,9 +64,9 @@ sealed class FileType(
         R.drawable.ic_video_file_24,
         Color.Blue,
         listOf(
-            OriginKind.Camera,
-            OriginKind.Download,
-            OriginKind.ThirdPartyApp
+            SourceKind.Camera,
+            SourceKind.Download,
+            SourceKind.ThirdPartyApp
         )
     )
 
@@ -78,8 +78,8 @@ sealed class FileType(
         R.drawable.ic_audio_file_24,
         Color.Red,
         listOf(
-            OriginKind.Download,
-            OriginKind.ThirdPartyApp
+            SourceKind.Download,
+            SourceKind.ThirdPartyApp
         )
     )
 
@@ -93,8 +93,8 @@ sealed class FileType(
         titleRes = labelRes,
         iconRes = iconRes,
         color = color,
-        originKinds = listOf(
-            OriginKind.Download
+        sourceKinds = listOf(
+            SourceKind.Download
         )
     ) {
         companion object {
@@ -139,9 +139,9 @@ sealed class FileType(
     override val defaultValue: Boolean = true
     override val preferencesKey: Preferences.Key<Boolean> = booleanPreferencesKey(identifier)
 
-    val origins: List<Origin> = originKinds.map { Origin(it, identifier) }
+    val sources: List<Source> = sourceKinds.map { Source(it, identifier) }
 
-    enum class OriginKind(
+    enum class SourceKind(
         @StringRes val labelRes: Int,
         @DrawableRes val iconRes: Int
     ) {
@@ -163,7 +163,7 @@ sealed class FileType(
         )
     }
 
-    class Origin(val kind: OriginKind, mediaTypeIdentifier: String) :
+    class Source(val kind: SourceKind, mediaTypeIdentifier: String) :
         DataStoreVariable<Boolean> {
 
         override val defaultValue: Boolean = true

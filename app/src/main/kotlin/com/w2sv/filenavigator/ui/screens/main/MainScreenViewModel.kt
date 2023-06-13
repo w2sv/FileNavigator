@@ -53,12 +53,12 @@ class MainScreenViewModel @Inject constructor(
         makeUnconfirmedStateMap(dataStoreRepository.accountForFileType)
     }
 
-    val accountForFileTypeOrigin by lazy {
-        makeUnconfirmedStateMap(dataStoreRepository.accountForFileTypeOrigin)
+    val accountForFileTypeSource by lazy {
+        makeUnconfirmedStateMap(dataStoreRepository.accountForFileTypeSource)
     }
 
     val unconfirmedListenerConfiguration by lazy {
-        makeUnconfirmedStatesComposition(listOf(accountForFileType, accountForFileTypeOrigin))
+        makeUnconfirmedStatesComposition(listOf(accountForFileType, accountForFileTypeSource))
     }
 
     // ==============

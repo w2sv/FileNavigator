@@ -11,9 +11,9 @@ class DataStoreRepository @Inject constructor(dataStore: DataStore<Preferences>)
 
     val accountForFileType: Map<FileType, Flow<Boolean>> = getFlowMap(FileType.all)
 
-    val accountForFileTypeOrigin: Map<FileType.Origin, Flow<Boolean>> = getFlowMap(
+    val accountForFileTypeSource: Map<FileType.Source, Flow<Boolean>> = getFlowMap(
         FileType.all
-            .map { it.origins }
+            .map { it.sources }
             .flatten()
     )
 
