@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,13 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
@@ -33,22 +33,28 @@ import com.w2sv.filenavigator.utils.toggle
 
 @Composable
 fun FileTypeAccordionColumn(modifier: Modifier = Modifier) {
-    LazyColumn(modifier = modifier.padding(horizontal = 10.dp)) {
-        items(FileType.all) {
-            this@LazyColumn.FileTypeAccordion(fileType = it)
+    Column(
+        modifier = modifier
+            .padding(horizontal = 10.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        FileType.all.forEach {
+            FileTypeAccordion(fileType = it, modifier = Modifier.padding(vertical = 4.dp))
         }
     }
 }
 
 @Composable
-private fun LazyListScope.FileTypeAccordion(
+private fun FileTypeAccordion(
     fileType: FileType,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    AccordionHeader(fileType = fileType)
-    AnimatedVisibility(visible = mainScreenViewModel.accountForFileType.getValue(fileType)) {
-        AccordionCorpus(fileType = fileType)
+    Column(modifier = modifier) {
+        AccordionHeader(fileType = fileType)
+        AnimatedVisibility(visible = mainScreenViewModel.accountForFileType.getValue(fileType)) {
+            AccordionCorpus(fileType = fileType)
+        }
     }
 }
 
@@ -58,46 +64,54 @@ private fun AccordionHeader(
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(id = fileType.iconRes),
-            contentDescription = null,
-            modifier = Modifier.size(34.dp),
-            tint = fileType.color
-        )
-        Spacer(modifier = Modifier.width(14.dp))
-        RailwayText(
-            text = stringResource(id = fileType.titleRes),
-            fontSize = 18.sp
-        )
-        Spacer(modifier = Modifier.weight(0.8f))
-        Switch(
-            checked = mainScreenViewModel.accountForFileType.getValue(fileType),
-            onCheckedChange = {
-                mainScreenViewModel.accountForFileType.toggle(
-                    fileType
-                )
-            }
-        )
+    Surface(tonalElevation = 2.dp, shape = RoundedCornerShape(8.dp)) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = fileType.iconRes),
+                contentDescription = null,
+                modifier = Modifier.size(34.dp),
+                tint = fileType.color
+            )
+            Spacer(modifier = Modifier.width(14.dp))
+            RailwayText(
+                text = stringResource(id = fileType.titleRes),
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.weight(0.8f))
+            Switch(
+                checked = mainScreenViewModel.accountForFileType.getValue(fileType),
+                onCheckedChange = {
+                    mainScreenViewModel.accountForFileType.toggle(
+                        fileType
+                    )
+                }
+            )
+        }
     }
 }
 
 @Composable
-private fun LazyListScope.AccordionCorpus(
+private fun AccordionCorpus(
     fileType: FileType,
     modifier: Modifier = Modifier
 ) {
     Surface(
         shape = RoundedCornerShape(8.dp),
-        modifier = modifier.padding(top = 8.dp)
+        tonalElevation = 8.dp,
+        modifier = modifier.fillMaxWidth()
     ) {
-        items(fileType.origins) { origin ->
-            FileTypeOriginRow(origin = origin)
+        Column {
+            fileType.origins.forEachIndexed { i, origin ->
+                FileTypeOriginRow(origin = origin)
+                if (i != fileType.origins.lastIndex) {
+                    Divider()
+                }
+            }
         }
     }
 }
@@ -108,14 +122,26 @@ private fun FileTypeOriginRow(
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
-        RailwayText(text = stringResource(id = origin.kind.labelRes))
-        Checkbox(
-            checked = mainScreenViewModel.accountForFileTypeOrigin.getValue(origin),
-            onCheckedChange = {
-                mainScreenViewModel.accountForFileTypeOrigin.toggle(origin)
-            }
-        )
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        tonalElevation = 8.dp,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
+        ) {
+            RailwayText(text = stringResource(id = origin.kind.labelRes))
+            Checkbox(
+                checked = mainScreenViewModel.accountForFileTypeOrigin.getValue(origin),
+                onCheckedChange = {
+                    mainScreenViewModel.accountForFileTypeOrigin.toggle(origin)
+                }
+            )
+        }
     }
 }
 

@@ -107,7 +107,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                     }
                 }
 
-                Box(modifier = Modifier.weight(0.8f), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.weight(0.9f), contentAlignment = Alignment.Center) {
                     FileTypeAccordionColumn(Modifier.fillMaxHeight())
 
                     this@Column.AnimatedVisibility(
