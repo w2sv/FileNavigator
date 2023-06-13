@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
@@ -137,7 +138,7 @@ private fun MediaTypeCard(
         else -> CardState.Enabled
     }
 
-    ElevatedCard(modifier = modifier) {
+    ElevatedCard(modifier = modifier, elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)) {
         Column(
             modifier = columnModifier
                 .padding(10.dp),
@@ -174,10 +175,7 @@ private fun HeaderSection(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val mainColor = if (cardState == CardState.Enabled)
-        MaterialTheme.colorScheme.tertiary
-    else
-        disabledColor()
+    val isEnabled = cardState == CardState.Enabled
 
     Column(modifier = modifier) {
         Icon(
@@ -186,7 +184,7 @@ private fun HeaderSection(
             modifier = Modifier
                 .size(38.dp)
                 .align(Alignment.CenterHorizontally),
-            tint = mainColor
+            tint = if (isEnabled) fileType.color else disabledColor()
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -197,12 +195,12 @@ private fun HeaderSection(
                 RailwayText(
                     text = stringResource(id = fileType.titleRes),
                     fontSize = 18.sp,
-                    color = mainColor
+                    color = if (isEnabled) Color.Unspecified else disabledColor()
                 )
             }
             Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.CenterEnd) {
                 Checkbox(
-                    checked = cardState == CardState.Enabled,
+                    checked = isEnabled,
                     enabled = cardState != CardState.AllOriginsDisabled,
                     onCheckedChange = {
                         when (cardState) {
@@ -231,7 +229,7 @@ private fun HeaderSection(
                         }
                     },
                     colors = CheckboxDefaults.colors(
-                        checkedColor = mainColor,
+                        checkedColor = if (isEnabled) MaterialTheme.colorScheme.secondary else disabledColor(),
                         checkmarkColor = checkMarkColorOnCard()
                     )
                 )

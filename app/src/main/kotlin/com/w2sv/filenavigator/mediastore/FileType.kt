@@ -3,6 +3,7 @@ package com.w2sv.filenavigator.mediastore
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import com.w2sv.filenavigator.R
@@ -13,6 +14,7 @@ sealed class FileType(
     val storageType: com.anggrayudi.storage.media.MediaType,
     @StringRes val titleRes: Int,
     @DrawableRes val iconRes: Int,
+    val color: Color,
     originKinds: List<OriginKind>
 ) : DataStoreVariable<Boolean>, Parcelable {
 
@@ -25,11 +27,13 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @StringRes val fileDeclarationRes: Int,
         @DrawableRes iconRes: Int,
+        color: Color,
         originKinds: List<OriginKind>
     ) : FileType(
         storageType = storageType,
         titleRes = labelRes,
         iconRes = iconRes,
+        color = color,
         originKinds = originKinds
     ) {
         companion object {
@@ -43,6 +47,7 @@ sealed class FileType(
         R.string.image,
         R.string.image,
         R.drawable.ic_image_24,
+        Color.Green,
         listOf(
             OriginKind.Camera,
             OriginKind.Screenshot,
@@ -57,6 +62,7 @@ sealed class FileType(
         R.string.video,
         R.string.video,
         R.drawable.ic_video_file_24,
+        Color.Blue,
         listOf(
             OriginKind.Camera,
             OriginKind.Download,
@@ -70,6 +76,7 @@ sealed class FileType(
         R.string.audio,
         R.string.audio_file,
         R.drawable.ic_audio_file_24,
+        Color.Red,
         listOf(
             OriginKind.Download,
             OriginKind.ThirdPartyApp
@@ -79,11 +86,13 @@ sealed class FileType(
     sealed class NonMedia(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
+        color: Color,
         val fileExtension: String
     ) : FileType(
         storageType = com.anggrayudi.storage.media.MediaType.DOWNLOADS,
         titleRes = labelRes,
         iconRes = iconRes,
+        color = color,
         originKinds = listOf(
             OriginKind.Download
         )
@@ -97,6 +106,7 @@ sealed class FileType(
     object PDF : NonMedia(
         R.string.pdf,
         R.drawable.ic_pdf_24,
+        Color.Magenta,
         "pdf"
     )
 
@@ -104,6 +114,7 @@ sealed class FileType(
     object Text : NonMedia(
         R.string.text,
         R.drawable.ic_text_file_24,
+        Color.Yellow,
         "txt"
     )
 
@@ -111,6 +122,7 @@ sealed class FileType(
     object ZIP : NonMedia(
         R.string.zip,
         R.drawable.ic_folder_zip_24,
+        Color.Cyan,
         "zip"
     )
 
@@ -118,6 +130,7 @@ sealed class FileType(
     object APK : NonMedia(
         R.string.apk,
         R.drawable.ic_apk_file_24,
+        Color(187, 25, 212),
         "apk"
     )
 

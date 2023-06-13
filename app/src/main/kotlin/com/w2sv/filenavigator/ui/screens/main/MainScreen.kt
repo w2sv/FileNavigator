@@ -91,7 +91,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceAround
             ) {
-                Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.weight(0.3f), contentAlignment = Alignment.Center) {
                     RailwayText(
                         text = stringResource(R.string.navigated_file_types),
                         style = MaterialTheme.typography.headlineMedium,
@@ -122,7 +122,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                     }
                 }
 
-                Box(modifier = Modifier.weight(0.3f), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
