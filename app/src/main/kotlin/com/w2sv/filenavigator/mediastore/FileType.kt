@@ -47,7 +47,7 @@ sealed class FileType(
         R.string.image,
         R.string.image,
         R.drawable.ic_image_24,
-        Color.Green,
+        Color(0xFFBF1A2F),
         listOf(
             SourceKind.Camera,
             SourceKind.Screenshot,
@@ -62,7 +62,7 @@ sealed class FileType(
         R.string.video,
         R.string.video,
         R.drawable.ic_video_file_24,
-        Color.Blue,
+        Color(0xFFFFCB77),
         listOf(
             SourceKind.Camera,
             SourceKind.Download,
@@ -76,7 +76,7 @@ sealed class FileType(
         R.string.audio,
         R.string.audio_file,
         R.drawable.ic_audio_file_24,
-        Color.Red,
+        Color(0xFFF26430),
         listOf(
             SourceKind.Download,
             SourceKind.ThirdPartyApp
@@ -106,7 +106,7 @@ sealed class FileType(
     object PDF : NonMedia(
         R.string.pdf,
         R.drawable.ic_pdf_24,
-        Color.Magenta,
+        Color(0xFFD6BA73),
         "pdf"
     )
 
@@ -114,7 +114,7 @@ sealed class FileType(
     object Text : NonMedia(
         R.string.text,
         R.drawable.ic_text_file_24,
-        Color.Yellow,
+        Color(0xFFF00699),
         "txt"
     )
 
@@ -122,7 +122,7 @@ sealed class FileType(
     object ZIP : NonMedia(
         R.string.zip,
         R.drawable.ic_folder_zip_24,
-        Color.Cyan,
+        Color(0xFF826251),
         "zip"
     )
 
@@ -130,7 +130,7 @@ sealed class FileType(
     object APK : NonMedia(
         R.string.apk,
         R.drawable.ic_apk_file_24,
-        Color(187, 25, 212),
+        Color(0xFFFCB07E),
         "apk"
     )
 

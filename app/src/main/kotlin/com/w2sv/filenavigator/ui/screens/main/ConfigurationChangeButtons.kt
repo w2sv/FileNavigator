@@ -71,7 +71,7 @@ internal fun ListenerModificationButtonColumn(
         )
         Spacer(modifier = Modifier.height(10.dp))
         ConfigurationModificationFAB(
-            iconRes = R.drawable.ic_delete_24,
+            iconRes = R.drawable.ic_reset_24,
             contentDescriptionRes = R.string.reset_button_cd,
             onClick = {
                 with(mainScreenViewModel) {

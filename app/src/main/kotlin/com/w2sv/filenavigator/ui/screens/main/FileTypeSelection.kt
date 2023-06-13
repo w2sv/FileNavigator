@@ -47,7 +47,6 @@ import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.theme.RailwayText
-import com.w2sv.filenavigator.ui.theme.md_positive
 import com.w2sv.filenavigator.utils.toggle
 import kotlinx.coroutines.launch
 
@@ -190,6 +189,7 @@ private fun AccordionHeader(
                 contentAlignment = Alignment.Center
             ) {
                 Switch(
+                    colors = SwitchDefaults.colors(checkedTrackColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier.padding(8.dp),
                     checked = mainScreenViewModel.accountForFileType.getValue(fileType),
                     onCheckedChange = { checkedNew ->
@@ -212,8 +212,7 @@ private fun AccordionHeader(
                                 )
                             }
                         }
-                    },
-                    colors = SwitchDefaults.colors(checkedTrackColor = md_positive)
+                    }
                 )
             }
         }
@@ -256,7 +255,7 @@ private fun FileTypeOriginRow(
         tonalElevation = 8.dp,
         modifier = modifier.fillMaxWidth()
     ) {
-        val nestedEntryColor = MaterialTheme.colorScheme.secondary.copy(0.7f)
+        val nestedEntryColor = MaterialTheme.colorScheme.onSurface.copy(0.7f)
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -266,20 +265,12 @@ private fun FileTypeOriginRow(
         ) {
             Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_right_24),
-                    contentDescription = null,
-                    tint = nestedEntryColor,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-            Box(modifier = Modifier.weight(0.12f), contentAlignment = Alignment.CenterStart) {
-                Icon(
                     painter = painterResource(id = source.kind.iconRes),
                     contentDescription = null,
                     tint = fileType.color.copy(alpha = 0.6f)
                 )
             }
-            Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
+            Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
                 RailwayText(
                     text = stringResource(id = source.kind.labelRes),
                     color = nestedEntryColor
@@ -287,6 +278,7 @@ private fun FileTypeOriginRow(
             }
             Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
                 Checkbox(
+                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.secondary),
                     checked = mainScreenViewModel.accountForFileTypeSource.getValue(source),
                     onCheckedChange = { checkedNew ->
                         when (fileType.sources.map {
@@ -311,8 +303,7 @@ private fun FileTypeOriginRow(
                                 )
                             }
                         }
-                    },
-                    colors = CheckboxDefaults.colors(checkedColor = md_positive)
+                    }
                 )
             }
         }

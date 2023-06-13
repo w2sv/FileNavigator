@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,7 +31,7 @@ internal fun SettingsDialogButton(onClick: () -> Unit, modifier: Modifier = Modi
                 id = R.string.open_extended_settings_dialog
             ),
             tint = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.size(dimensionResource(id = R.dimen.dialog_icon_size))
+            modifier = Modifier.size(28.dp)
         )
     }
 }

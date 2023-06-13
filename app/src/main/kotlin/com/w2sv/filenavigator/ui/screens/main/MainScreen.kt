@@ -109,8 +109,8 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                     ) {
                         RailwayText(
                             text = stringResource(R.string.app_name),
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         SettingsDialogButton(onClick = { showSettingsDialog = true })
                     }
@@ -150,7 +150,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                         stopListener = { FileNavigatorService.stop(context) },
                         modifier = Modifier
                             .width(220.dp)
-                            .height(80.dp)
+                            .height(70.dp)
                     )
                 }
             }
@@ -179,14 +179,14 @@ private fun StartNavigatorButton(
         label = ""
     ) {
         val properties = when (it) {
-            true -> ListenerButtonProperties(
+            true -> NavigatorButtonProperties(
                 md_negative,
                 R.drawable.ic_stop_24,
                 R.string.stop_navigator,
                 stopListener
             )
 
-            false -> ListenerButtonProperties(
+            false -> NavigatorButtonProperties(
                 md_positive,
                 R.drawable.ic_start_24,
                 R.string.start_navigator,
@@ -197,11 +197,11 @@ private fun StartNavigatorButton(
         ElevatedButton(
             onClick = properties.onClick,
             modifier = modifier,
-            colors = ButtonDefaults.elevatedButtonColors(
-                containerColor = properties.color.copy(
-                    alpha = 0.6f
-                )
-            )
+//            colors = ButtonDefaults.elevatedButtonColors(
+//                containerColor = properties.color.copy(
+//                    alpha = 0.6f
+//                )
+//            )
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -212,7 +212,7 @@ private fun StartNavigatorButton(
                     painter = painterResource(id = properties.iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
-                    tint = MaterialTheme.colorScheme.onBackground
+                    tint = properties.color
                 )
                 RailwayText(
                     text = stringResource(id = properties.labelRes),
@@ -224,7 +224,7 @@ private fun StartNavigatorButton(
     }
 }
 
-private data class ListenerButtonProperties(
+private data class NavigatorButtonProperties(
     val color: Color,
     @DrawableRes val iconRes: Int,
     @StringRes val labelRes: Int,
