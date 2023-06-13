@@ -2,9 +2,9 @@ package com.w2sv.filenavigator.utils
 
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 fun <K, V> Map<K, V>.getMutableStateMap(): SnapshotStateMap<K, V> =
     mutableStateMapOf<K, V>()

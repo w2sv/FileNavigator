@@ -41,7 +41,7 @@ internal fun ListenerModificationButtonColumn(
                         showSnackbar(
                             ExtendedSnackbarVisuals(
                                 message = context.getString(
-                                    R.string.all_file_types_disabled_notification
+                                    R.string.leave_at_least_one_file_type_enabled
                                 ),
                                 kind = SnackbarKind.Error
                             )

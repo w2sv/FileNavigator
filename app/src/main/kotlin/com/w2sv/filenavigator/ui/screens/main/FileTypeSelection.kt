@@ -32,6 +32,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.SnackbarKind
+import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.utils.toggle
@@ -72,6 +73,9 @@ private fun AccordionHeader(
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     Surface(tonalElevation = 2.dp, shape = RoundedCornerShape(8.dp)) {
         Row(
             modifier = modifier
@@ -100,10 +104,26 @@ private fun AccordionHeader(
             ) {
                 Switch(
                     checked = mainScreenViewModel.accountForFileType.getValue(fileType),
-                    onCheckedChange = {
-                        mainScreenViewModel.accountForFileType.toggle(
-                            fileType
-                        )
+                    onCheckedChange = { checkedNew ->
+                        if (mainScreenViewModel.accountForFileType.values.atLeastOneTrueAfterValueChange(
+                                checkedNew
+                            )
+                        ) {
+                            mainScreenViewModel.accountForFileType.toggle(
+                                fileType
+                            )
+                        } else {
+                            scope.launch {
+                                mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                    ExtendedSnackbarVisuals(
+                                        message = context.getString(
+                                            R.string.leave_at_least_one_file_type_enabled
+                                        ),
+                                        kind = SnackbarKind.Error
+                                    )
+                                )
+                            }
+                        }
                     }
                 )
             }
@@ -180,26 +200,26 @@ private fun FileTypeOriginRow(
                 Checkbox(
                     checked = mainScreenViewModel.accountForFileTypeSource.getValue(source),
                     onCheckedChange = { checkedNew ->
-                        if (checkedNew || fileType.sources.count {
-                                mainScreenViewModel.accountForFileTypeSource.getValue(
-                                    it
-                                )
-                            } > 1) {
-                            mainScreenViewModel.accountForFileTypeSource[source] = checkedNew
-                        } else {
-                            scope.launch {
-                                with(mainScreenViewModel.snackbarHostState) {
-                                    currentSnackbarData?.dismiss()
-                                    showSnackbar(
-                                        ExtendedSnackbarVisuals(
-                                            message = context.getString(
-                                                R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type,
-                                                context.getString(fileType.titleRes)
-                                            ),
-                                            kind = SnackbarKind.Error
-                                        )
+                        when (fileType.sources.map {
+                            mainScreenViewModel.accountForFileTypeSource.getValue(
+                                it
+                            )
+                        }
+                            .atLeastOneTrueAfterValueChange(checkedNew)
+                        ) {
+                            true -> mainScreenViewModel.accountForFileTypeSource[source] =
+                                checkedNew
+
+                            false -> scope.launch {
+                                mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                    ExtendedSnackbarVisuals(
+                                        message = context.getString(
+                                            R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type,
+                                            context.getString(fileType.titleRes)
+                                        ),
+                                        kind = SnackbarKind.Error
                                     )
-                                }
+                                )
                             }
                         }
                     }
@@ -216,3 +236,6 @@ private fun HeaderPrev() {
         AccordionHeader(fileType = FileType.Image)
     }
 }
+
+fun Iterable<Boolean>.atLeastOneTrueAfterValueChange(newValue: Boolean): Boolean =
+    newValue || count { it } > 1

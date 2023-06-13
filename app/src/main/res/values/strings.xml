@@ -42,7 +42,7 @@
     <string name="snackbar_message">Navigation of %1$s files requires access to manage all files</string>
     <string name="grant">Grant</string>
     <string name="reset_button_cd">Discard all unsaved changes</string>
-    <string name="all_file_types_disabled_notification">Enable at least one file type</string>
+    <string name="leave_at_least_one_file_type_enabled">Leave at least one file type enabled</string>
     <string name="open_extended_settings_dialog">Open the extended settings dialog.</string>
     <string name="apply">Apply</string>
     <string name="cancel">Cancel</string>

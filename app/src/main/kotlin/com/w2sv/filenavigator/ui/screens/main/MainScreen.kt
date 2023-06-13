@@ -2,6 +2,8 @@ package com.w2sv.filenavigator.ui.screens.main
 
 import android.Manifest
 import androidx.activity.compose.BackHandler
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.EaseOutCubic
@@ -20,10 +22,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -37,9 +42,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,6 +55,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.service.FileListenerService
 import com.w2sv.filenavigator.ui.AppSnackbar
+import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.RailwayText
 import kotlinx.coroutines.launch
 
@@ -121,10 +128,9 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                         ListenerModificationButtonColumn(
                             showSnackbar = { snackbarVisuals ->
                                 scope.launch {
-                                    with(mainScreenViewModel.snackbarHostState) {
-                                        currentSnackbarData?.dismiss()
-                                        showSnackbar(snackbarVisuals)
-                                    }
+                                    mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                        snackbarVisuals
+                                    )
                                 }
                             }
                         )
@@ -165,20 +171,60 @@ private fun LaunchListenerButton(
 ) {
     val isListenerRunning by mainScreenViewModel.isListenerRunning.collectAsState()
 
-    ElevatedButton(
-        onClick = if (isListenerRunning) stopListener else startListener,
-        modifier = modifier
+    Crossfade(
+        targetState = isListenerRunning,
+        animationSpec = tween(durationMillis = 1250, delayMillis = 250, easing = EaseOutCubic),
+        label = ""
     ) {
-        Crossfade(
-            targetState = isListenerRunning,
-            animationSpec = tween(durationMillis = 1250, delayMillis = 250, easing = EaseOutCubic),
-            label = ""
-        ) {
-            RailwayText(
-                text = stringResource(if (it) R.string.stop_navigator else R.string.start_navigator),
-                textAlign = TextAlign.Center,
-                fontSize = 16.sp
+        val properties = when (it) {
+            true -> ListenerButtonProperties(
+                Color.Red,
+                R.drawable.ic_stop_24,
+                R.string.stop_navigator,
+                stopListener
             )
+
+            false -> ListenerButtonProperties(
+                Color.Green,
+                R.drawable.ic_start_24,
+                R.string.start_navigator,
+                startListener
+            )
+        }
+
+        ElevatedButton(
+            onClick = properties.onClick,
+            modifier = modifier,
+            colors = ButtonDefaults.elevatedButtonColors(
+                containerColor = properties.color.copy(
+                    alpha = 0.6f
+                )
+            )
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    painter = painterResource(id = properties.iconRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+                RailwayText(
+                    text = stringResource(id = properties.labelRes),
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
         }
     }
 }
+
+private data class ListenerButtonProperties(
+    val color: Color,
+    @DrawableRes val iconRes: Int,
+    @StringRes val labelRes: Int,
+    val onClick: () -> Unit
+)
