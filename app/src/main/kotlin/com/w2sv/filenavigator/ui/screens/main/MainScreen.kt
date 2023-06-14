@@ -145,7 +145,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                         enter = fadeIn() + slideInHorizontally(initialOffsetX = { it / 2 }),
                         exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it / 2 })
                     ) {
-                        ListenerModificationButtons(parentCoroutineScope = scope)
+                        NavigatorConfigurationButtons(parentCoroutineScope = scope)
                     }
                 }
             }

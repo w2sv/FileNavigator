@@ -8,4 +8,8 @@ object PreferencesKey {
 
     val DISABLE_LISTENER_ON_LOW_BATTERY =
         booleanPreferencesKey("disableListenerOnLowBattery")
+
+    val MANAGE_EXTERNAL_STORAGE_PERMISSION_PREVIOUSLY_GRANTED = booleanPreferencesKey(
+        "manageExternalStoragePermissionPreviouslyGranted"
+    )
 }

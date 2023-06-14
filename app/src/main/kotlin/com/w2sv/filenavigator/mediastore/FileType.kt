@@ -28,7 +28,8 @@ sealed class FileType(
         @StringRes val fileDeclarationRes: Int,
         @DrawableRes iconRes: Int,
         color: Color,
-        sourceKinds: List<SourceKind>
+        sourceKinds: List<SourceKind>,
+        override val defaultValue: Boolean = true
     ) : FileType(
         storageType = storageType,
         titleRes = labelRes,
@@ -87,7 +88,8 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
         color: Color,
-        val fileExtension: String
+        val fileExtension: String,
+        override val defaultValue: Boolean = false
     ) : FileType(
         storageType = com.anggrayudi.storage.media.MediaType.DOWNLOADS,
         titleRes = labelRes,
@@ -136,10 +138,12 @@ sealed class FileType(
 
     private val identifier = this::class.java.simpleName
 
-    override val defaultValue: Boolean = true
     override val preferencesKey: Preferences.Key<Boolean> = booleanPreferencesKey(identifier)
 
     val sources: List<Source> = sourceKinds.map { Source(it, identifier) }
+
+    val isMediaFileType: Boolean get() = this is Media
+    val navigationRequiresManageExternalStoragePermission: Boolean get() = !isMediaFileType
 
     enum class SourceKind(
         @StringRes val labelRes: Int,

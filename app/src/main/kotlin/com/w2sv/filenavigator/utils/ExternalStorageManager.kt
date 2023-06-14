@@ -18,5 +18,8 @@ fun goToManageExternalStorageSettings(context: Context) {
     )
 }
 
+fun manageExternalStoragePermissionRequired(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+
 fun isExternalStorageManger(): Boolean =
-    Build.VERSION.SDK_INT < Build.VERSION_CODES.R || Environment.isExternalStorageManager()
+    !manageExternalStoragePermissionRequired() || Environment.isExternalStorageManager()

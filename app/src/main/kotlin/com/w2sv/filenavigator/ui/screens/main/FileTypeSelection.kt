@@ -24,6 +24,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +49,10 @@ import com.w2sv.filenavigator.utils.toggle
 import kotlinx.coroutines.launch
 
 @Composable
-fun FileTypeSelectionColumn(modifier: Modifier = Modifier) {
+fun FileTypeSelectionColumn(
+    modifier: Modifier = Modifier,
+    mainScreenViewModel: MainScreenViewModel = viewModel()
+) {
     Column(
         modifier = modifier
             .padding(horizontal = 10.dp)
@@ -68,47 +72,65 @@ fun FileTypeSelectionColumn(modifier: Modifier = Modifier) {
             val verticalPaddingModifier = Modifier.padding(vertical = 4.dp)
 
             FileType.Media.all.forEach {
-                FileTypeAccordion(fileType = it, modifier = verticalPaddingModifier)
+                MediaFileTypeAccordion(fileType = it, modifier = verticalPaddingModifier)
             }
-            NonMediaTypesHeaderRow()
+
+            val manageExternalStoragePermissionGranted by mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState()
             FileType.NonMedia.all.forEach {
-                FileTypeAccordion(fileType = it, modifier = verticalPaddingModifier)
+                NonMediaFileTypeAccordion(
+                    fileType = it,
+                    manageExternalStoragePermissionGranted = manageExternalStoragePermissionGranted,
+                    modifier = verticalPaddingModifier
+                )
             }
         }
     }
 }
 
 @Composable
-private fun FileTypeAccordion(
+private fun MediaFileTypeAccordion(
     fileType: FileType,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     Column(modifier = modifier) {
-        FileTypeAccordionHeader(fileType = fileType)
+        FileTypeAccordionHeader(
+            fileType = fileType,
+            disabledForMissingManageExternalStoragePermission = false
+        )
 
-        if (fileType is FileType.Media) {
-            AnimatedVisibility(visible = mainScreenViewModel.fileTypeEnabled.getValue(fileType)) {
-                FileSourcesSurface(fileType = fileType)
-            }
+        AnimatedVisibility(visible = mainScreenViewModel.fileTypeEnabled.getValue(fileType)) {
+            FileSourcesSurface(fileType = fileType)
         }
+    }
+}
+
+@Composable
+private fun NonMediaFileTypeAccordion(
+    fileType: FileType,
+    manageExternalStoragePermissionGranted: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        FileTypeAccordionHeader(
+            fileType = fileType,
+            disabledForMissingManageExternalStoragePermission = !manageExternalStoragePermissionGranted
+        )
     }
 }
 
 @Composable
 private fun FileTypeAccordionHeader(
     fileType: FileType,
+    disabledForMissingManageExternalStoragePermission: Boolean,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val isManageExternalStoragePermissionMissing =
-        fileType is FileType.NonMedia && !mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState().value
-
     val isEnabled =
-        !isManageExternalStoragePermissionMissing && mainScreenViewModel.fileTypeEnabled.getValue(
+        !disabledForMissingManageExternalStoragePermission && mainScreenViewModel.fileTypeEnabled.getValue(
             fileType
         )
 
@@ -143,7 +165,7 @@ private fun FileTypeAccordionHeader(
                     modifier = Modifier.padding(8.dp),
                     checked = isEnabled,
                     onCheckedChange = { checkedNew ->
-                        when (isManageExternalStoragePermissionMissing) {
+                        when (disabledForMissingManageExternalStoragePermission) {
                             true -> scope.launch {
                                 mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
                                     ExtendedSnackbarVisuals(
@@ -272,14 +294,6 @@ private fun FileSourceRow(
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun HeaderPrev() {
-    FileNavigatorTheme {
-        FileTypeAccordionHeader(fileType = FileType.Image)
     }
 }
 

@@ -32,7 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun ListenerModificationButtons(
+internal fun NavigatorConfigurationButtons(
     parentCoroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
