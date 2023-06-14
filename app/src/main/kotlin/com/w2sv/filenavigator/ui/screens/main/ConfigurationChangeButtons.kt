@@ -55,16 +55,16 @@ internal fun NavigatorConfigurationButtons(
                                     context
                                 )
                             }
-                            parentCoroutineScope.launch {
-                                snackbarHostState.showSnackbar(
-                                    ExtendedSnackbarVisuals(
-                                        message = context.getString(
-                                            R.string.updated_listener_configuration
-                                        ),
-                                        kind = SnackbarKind.Success
-                                    )
-                                )
-                            }
+//                            parentCoroutineScope.launch {
+//                                snackbarHostState.showSnackbar(
+//                                    ExtendedSnackbarVisuals(
+//                                        message = context.getString(
+//                                            R.string.updated_listener_configuration
+//                                        ),
+//                                        kind = SnackbarKind.Success
+//                                    )
+//                                )
+//                            }
                         }
                 }
             }

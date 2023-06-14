@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import slimber.log.i
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,24 +48,27 @@ class MainScreenViewModel @Inject constructor(
 
     fun updateManageExternalStoragePermissionGranted() {
         _manageExternalStoragePermissionGranted.value = isExternalStorageManger()
-//            .also {
-//                if (it != repository.manageExternalStoragePermissionPreviouslyGranted.getValueSynchronously()){
-//                    if (it){
-//
-//                    }
-//                }
-//                if (!it && FileType.NonMedia.all.any { nonMediaFileType ->
-//                        fileTypeEnabled.getValue(
-//                            nonMediaFileType
-//                        )
-//                    }) {
-//                    coroutineScope.launch {
-//                        repository.saveMap(
-//                            FileType.NonMedia.all.associateWith { false }
-//                        )
-//                    }
-//                }
-//            }
+            .also { newValue ->
+                if (newValue != repository.manageExternalStoragePermissionPreviouslyGranted.getValueSynchronously()) {
+                    i { "New manageExternalStoragePermissionGranted = $newValue diverting from previous value" }
+
+                    coroutineScope.launch {
+                        repository.saveMap(
+                            FileType.NonMedia.all.associateWith { newValue }
+                        )
+                        FileType.NonMedia.all.forEach {
+                            fileTypeEnabled[it] = newValue
+                        }
+                    }
+
+                    coroutineScope.launch {
+                        repository.save(
+                            PreferencesKey.MANAGE_EXTERNAL_STORAGE_PERMISSION_PREVIOUSLY_GRANTED,
+                            newValue
+                        )
+                    }
+                }
+            }
     }
 
     // ==============
