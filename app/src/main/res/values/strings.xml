@@ -54,4 +54,6 @@
     <string name="show_a_non_media_file_type_info_dialog">Show the Non-Media file type info dialog</string>
     <string name="non_media_type_info_text">As opposed to media file types, which offer various source registration possibilities for each type, only downloaded non-media file types may be registered by the navigator. This is due to system API restrictions.</string>
     <string name="navigated_file_types">Navigated File Types</string>
+    <string name="discard_changes">Discard Changes</string>
+    <string name="confirm_changes">Confirm Changes</string>
 </resources>

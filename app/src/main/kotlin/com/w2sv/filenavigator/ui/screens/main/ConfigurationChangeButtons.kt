@@ -3,16 +3,19 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -22,6 +25,9 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.SnackbarKind
+import com.w2sv.filenavigator.ui.theme.RailwayText
+import com.w2sv.filenavigator.ui.theme.md_negative
+import com.w2sv.filenavigator.ui.theme.md_positive
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -34,9 +40,10 @@ internal fun ListenerModificationButtons(
     val context: Context = LocalContext.current
 
     Row(modifier = modifier) {
-        FloatingActionButton(
+        ConfigurationChangeButton(
             iconRes = R.drawable.ic_check_24,
-            contentDescriptionRes = R.string.update_listener_configuration_button_cd,
+            md_positive,
+            R.string.confirm_changes,
             onClick = {
                 with(mainScreenViewModel) {
                     unconfirmedNavigatorConfiguration
@@ -65,9 +72,10 @@ internal fun ListenerModificationButtons(
 
         Spacer(modifier = Modifier.width(10.dp))
 
-        FloatingActionButton(
-            iconRes = R.drawable.ic_reset_24,
-            contentDescriptionRes = R.string.reset_button_cd,
+        ConfigurationChangeButton(
+            iconRes = R.drawable.ic_cancel_24,
+            md_negative,
+            R.string.discard_changes,
             onClick = {
                 with(mainScreenViewModel) {
                     unconfirmedNavigatorConfiguration.launchReset()
@@ -78,22 +86,24 @@ internal fun ListenerModificationButtons(
 }
 
 @Composable
-private fun FloatingActionButton(
+private fun ConfigurationChangeButton(
     @DrawableRes iconRes: Int,
-    @StringRes contentDescriptionRes: Int,
+    color: Color,
+    @StringRes textRes: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    FloatingActionButton(
+    ElevatedButton(
         onClick = onClick,
         modifier = modifier,
-        shape = CircleShape,
-        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-    ) {
-        Icon(
-            painter = painterResource(id = iconRes),
-            contentDescription = stringResource(id = contentDescriptionRes),
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.elevatedButtonColors(
+            contentColor = MaterialTheme.colorScheme.onBackground
         )
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(painter = painterResource(id = iconRes), contentDescription = null, tint = color)
+            RailwayText(text = stringResource(id = textRes))
+        }
     }
 }
