@@ -10,8 +10,8 @@ import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -55,11 +54,9 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.AppSnackbar
-import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -87,11 +84,11 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
         SnackbarHost(mainScreenViewModel.snackbarHostState) { snackbarData ->
             AppSnackbar(snackbarData = snackbarData)
         }
-    }) {
+    }) { paddingValues ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(paddingValues)
         ) {
             Column(
                 modifier = Modifier
@@ -119,40 +116,37 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
 
                 Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.Center) {
                     FileTypeSelectionColumn(Modifier.fillMaxHeight())
-
-                    this@Column.AnimatedVisibility(
-                        visible = mainScreenViewModel.unconfirmedNavigatorConfiguration.statesDissimilar.collectAsState().value,
-                        enter = fadeIn() + slideInVertically(),
-                        exit = fadeOut() + slideOutVertically(),
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .offset(y = 82.dp)
-                    ) {
-                        ListenerModificationButtonColumn(
-                            showSnackbar = { snackbarVisuals ->
-                                scope.launch {
-                                    mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-                                        snackbarVisuals
-                                    )
-                                }
-                            }
-                        )
-                    }
                 }
 
                 Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
-                    StartNavigatorButton(
-                        startListener = {
-                            when (permissionState.status.isGranted) {
-                                true -> FileNavigatorService.start(context)
-                                false -> permissionState.launchPermissionRequest()
-                            }
-                        },
-                        stopListener = { FileNavigatorService.stop(context) },
-                        modifier = Modifier
-                            .width(220.dp)
-                            .height(70.dp)
-                    )
+                    val unconfirmedConfigurationChangesPresent by mainScreenViewModel.unconfirmedNavigatorConfiguration.statesDissimilar.collectAsState()
+
+                    this@Column.AnimatedVisibility(
+                        visible = !unconfirmedConfigurationChangesPresent,
+                        enter = fadeIn() + slideInHorizontally(),
+                        exit = fadeOut() + slideOutHorizontally()
+                    ) {
+                        StartNavigatorButton(
+                            startListener = {
+                                when (permissionState.status.isGranted) {
+                                    true -> FileNavigatorService.start(context)
+                                    false -> permissionState.launchPermissionRequest()
+                                }
+                            },
+                            stopListener = { FileNavigatorService.stop(context) },
+                            modifier = Modifier
+                                .width(220.dp)
+                                .height(70.dp)
+                        )
+                    }
+
+                    this@Column.AnimatedVisibility(
+                        visible = unconfirmedConfigurationChangesPresent,
+                        enter = fadeIn() + slideInHorizontally(initialOffsetX = { it / 2 }),
+                        exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it / 2 })
+                    ) {
+                        ListenerModificationButtons(parentCoroutineScope = scope)
+                    }
                 }
             }
         }

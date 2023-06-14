@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -50,16 +52,28 @@ fun FileTypeSelectionColumn(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .padding(horizontal = 10.dp)
-            .verticalScroll(rememberScrollState())
     ) {
-        val verticalPaddingModifier = Modifier.padding(vertical = 4.dp)
+        RailwayText(
+            text = stringResource(id = R.string.navigated_file_types),
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
 
-        FileType.Media.all.forEach {
-            FileTypeAccordion(fileType = it, modifier = verticalPaddingModifier)
-        }
-        NonMediaTypesHeaderRow()
-        FileType.NonMedia.all.forEach {
-            FileTypeAccordion(fileType = it, modifier = verticalPaddingModifier)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Column(
+            modifier = modifier
+                .verticalScroll(rememberScrollState())
+        ) {
+            val verticalPaddingModifier = Modifier.padding(vertical = 4.dp)
+
+            FileType.Media.all.forEach {
+                FileTypeAccordion(fileType = it, modifier = verticalPaddingModifier)
+            }
+            NonMediaTypesHeaderRow()
+            FileType.NonMedia.all.forEach {
+                FileTypeAccordion(fileType = it, modifier = verticalPaddingModifier)
+            }
         }
     }
 }
