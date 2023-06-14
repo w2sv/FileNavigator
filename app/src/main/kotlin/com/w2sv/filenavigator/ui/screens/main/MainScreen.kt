@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +27,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -100,7 +100,8 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceAround
             ) {
-                Box(modifier = Modifier.weight(0.3f), contentAlignment = Alignment.CenterStart) {
+                Spacer(modifier = Modifier.weight(0.05f))
+                Box(modifier = Modifier.weight(0.15f), contentAlignment = Alignment.CenterStart) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -116,8 +117,8 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                     }
                 }
 
-                Box(modifier = Modifier.weight(0.9f), contentAlignment = Alignment.Center) {
-                    FileTypeAccordionColumn(Modifier.fillMaxHeight())
+                Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.Center) {
+                    FileTypeSelectionColumn(Modifier.fillMaxHeight())
 
                     this@Column.AnimatedVisibility(
                         visible = mainScreenViewModel.unconfirmedListenerConfiguration.statesDissimilar.collectAsState().value,
@@ -125,7 +126,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                         exit = fadeOut() + slideOutVertically(),
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .offset(y = 72.dp)
+                            .offset(y = 82.dp)
                     ) {
                         ListenerModificationButtonColumn(
                             showSnackbar = { snackbarVisuals ->

@@ -1,5 +1,7 @@
 package com.w2sv.filenavigator.ui.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val md_theme_light_primary = Color(0xFF00696E)
@@ -66,3 +68,6 @@ val md_theme_dark_scrim = Color(0xFF000000)
 
 val md_positive = Color(12, 173, 34, 200)
 val md_negative = Color(201, 14, 52, 200)
+
+@Composable
+fun disabledColor(): Color = MaterialTheme.colorScheme.onSurface.copy(0.38f)

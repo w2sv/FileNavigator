@@ -48,7 +48,7 @@
     <string name="cancel">Cancel</string>
     <string name="disable_listener_on_low_battery">Disable listener on low battery</string>
     <string name="extended_settings">Extended Settings</string>
-    <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">Leave at least one %1$s file source selected or disable the entire file type</string>
+    <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">Leave at least one file source selected or disable the file type as a whole</string>
     <string name="non_media_types">Non-Media Types</string>
     <string name="got_it">Got it</string>
     <string name="show_a_non_media_file_type_info_dialog">Show the Non-Media file type info dialog</string>

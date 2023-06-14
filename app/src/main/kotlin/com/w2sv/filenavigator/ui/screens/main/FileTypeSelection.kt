@@ -30,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -47,39 +48,12 @@ import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.theme.RailwayText
+import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.utils.toggle
 import kotlinx.coroutines.launch
 
 @Composable
-private fun NonMediaTypeInfoDialog(onDismissRequest: () -> Unit, modifier: Modifier = Modifier) {
-    AlertDialog(
-        modifier = modifier,
-        onDismissRequest = onDismissRequest,
-        icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_info_24),
-                contentDescription = null,
-                modifier = Modifier.size(
-                    dimensionResource(id = R.dimen.dialog_icon_size)
-                )
-            )
-        },
-        text = {
-            RailwayText(
-                text = stringResource(R.string.non_media_type_info_text),
-                textAlign = TextAlign.Center
-            )
-        },
-        confirmButton = {
-            ElevatedButton(onClick = onDismissRequest) {
-                RailwayText(text = stringResource(R.string.got_it))
-            }
-        }
-    )
-}
-
-@Composable
-fun FileTypeAccordionColumn(modifier: Modifier = Modifier) {
+fun FileTypeSelectionColumn(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .padding(horizontal = 10.dp)
@@ -98,70 +72,32 @@ fun FileTypeAccordionColumn(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NonMediaTypesHeaderRow(modifier: Modifier = Modifier) {
-    val color = MaterialTheme.colorScheme.secondary.copy(0.7f)
-
-    var showInfoDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-        .apply {
-            if (value) {
-                NonMediaTypeInfoDialog(onDismissRequest = {
-                    value = false
-                })
-            }
-        }
-
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
-        Box(modifier = Modifier.weight(0.8f), contentAlignment = Alignment.CenterStart) {
-            RailwayText(
-                text = stringResource(id = R.string.non_media_types),
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .padding(start = 32.dp),
-                fontStyle = FontStyle.Italic,
-                color = color
-            )
-        }
-        Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
-            IconButton(onClick = { showInfoDialog = true }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_info_24),
-                    contentDescription = stringResource(
-                        R.string.show_a_non_media_file_type_info_dialog
-                    ),
-                    tint = color,
-                    modifier = Modifier.size(30.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun FileTypeAccordion(
     fileType: FileType,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     Column(modifier = modifier) {
-        AccordionHeader(fileType = fileType)
+        FileTypeAccordionHeader(fileType = fileType)
+
         if (fileType is FileType.Media) {
             AnimatedVisibility(visible = mainScreenViewModel.accountForFileType.getValue(fileType)) {
-                AccordionCorpus(fileType = fileType)
+                FileSourcesSurface(fileType = fileType)
             }
         }
     }
 }
 
 @Composable
-private fun AccordionHeader(
+private fun FileTypeAccordionHeader(
     fileType: FileType,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    val isEnabled = mainScreenViewModel.accountForFileType.getValue(fileType)
 
     Surface(tonalElevation = 2.dp, shape = RoundedCornerShape(8.dp)) {
         Row(
@@ -174,13 +110,14 @@ private fun AccordionHeader(
                     painter = painterResource(id = fileType.iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(34.dp),
-                    tint = fileType.color
+                    tint = if (isEnabled) fileType.color else disabledColor()
                 )
             }
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
                 RailwayText(
                     text = stringResource(id = fileType.titleRes),
-                    fontSize = 18.sp
+                    fontSize = 18.sp,
+                    color = if (isEnabled) Color.Unspecified else disabledColor()
                 )
             }
             Box(
@@ -191,7 +128,7 @@ private fun AccordionHeader(
                 Switch(
                     colors = SwitchDefaults.colors(checkedTrackColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier.padding(8.dp),
-                    checked = mainScreenViewModel.accountForFileType.getValue(fileType),
+                    checked = isEnabled,
                     onCheckedChange = { checkedNew ->
                         if (mainScreenViewModel.accountForFileType.values.atLeastOneTrueAfterValueChange(
                                 checkedNew
@@ -220,7 +157,7 @@ private fun AccordionHeader(
 }
 
 @Composable
-private fun AccordionCorpus(
+private fun FileSourcesSurface(
     fileType: FileType,
     modifier: Modifier = Modifier
 ) {
@@ -231,7 +168,7 @@ private fun AccordionCorpus(
     ) {
         Column {
             fileType.sources.forEachIndexed { i, origin ->
-                FileTypeOriginRow(fileType = fileType, source = origin)
+                FileSourceRow(fileType = fileType, source = origin)
                 if (i != fileType.sources.lastIndex) {
                     Divider()
                 }
@@ -241,7 +178,7 @@ private fun AccordionCorpus(
 }
 
 @Composable
-private fun FileTypeOriginRow(
+private fun FileSourceRow(
     fileType: FileType,
     source: FileType.Source,
     modifier: Modifier = Modifier,
@@ -250,13 +187,13 @@ private fun FileTypeOriginRow(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
+    val isEnabled = mainScreenViewModel.accountForFileTypeSource.getValue(source)
+
     Surface(
         shape = RoundedCornerShape(8.dp),
         tonalElevation = 8.dp,
         modifier = modifier.fillMaxWidth()
     ) {
-        val nestedEntryColor = MaterialTheme.colorScheme.onSurface.copy(0.7f)
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -267,37 +204,33 @@ private fun FileTypeOriginRow(
                 Icon(
                     painter = painterResource(id = source.kind.iconRes),
                     contentDescription = null,
-                    tint = fileType.color.copy(alpha = 0.6f)
+                    tint = if (isEnabled) fileType.color.copy(alpha = 0.75f) else disabledColor()
                 )
             }
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
                 RailwayText(
                     text = stringResource(id = source.kind.labelRes),
-                    color = nestedEntryColor
+                    color = MaterialTheme.colorScheme.onSurface.copy(0.7f)
                 )
             }
             Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
                 Checkbox(
                     colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.secondary),
-                    checked = mainScreenViewModel.accountForFileTypeSource.getValue(source),
+                    checked = isEnabled,
                     onCheckedChange = { checkedNew ->
-                        when (fileType.sources.map {
-                            mainScreenViewModel.accountForFileTypeSource.getValue(
-                                it
-                            )
-                        }
-                            .atLeastOneTrueAfterValueChange(checkedNew)
+                        if (fileType.sources.map {
+                                mainScreenViewModel.accountForFileTypeSource.getValue(
+                                    it
+                                )
+                            }
+                                .atLeastOneTrueAfterValueChange(checkedNew)
                         ) {
-                            true -> mainScreenViewModel.accountForFileTypeSource[source] =
-                                checkedNew
-
-                            false -> scope.launch {
+                            mainScreenViewModel.accountForFileTypeSource[source] = checkedNew
+                        } else {
+                            scope.launch {
                                 mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
                                     ExtendedSnackbarVisuals(
-                                        message = context.getString(
-                                            R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type,
-                                            context.getString(fileType.titleRes)
-                                        ),
+                                        message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
                                         kind = SnackbarKind.Error
                                     )
                                 )
@@ -314,7 +247,7 @@ private fun FileTypeOriginRow(
 @Composable
 private fun HeaderPrev() {
     FileNavigatorTheme {
-        AccordionHeader(fileType = FileType.Image)
+        FileTypeAccordionHeader(fileType = FileType.Image)
     }
 }
 
