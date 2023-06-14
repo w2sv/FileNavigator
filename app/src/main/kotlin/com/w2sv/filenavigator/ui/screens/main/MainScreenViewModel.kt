@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,26 +40,27 @@ class MainScreenViewModel @Inject constructor(
     // manageExternalStoragePermissionGranted
     // ==============
 
-    val manageExternalStoragePermissionGranted = MutableStateFlow(false)
+    val manageExternalStoragePermissionGranted: StateFlow<Boolean> get() = _manageExternalStoragePermissionGranted
+    private val _manageExternalStoragePermissionGranted = MutableStateFlow(false)
 
     fun updateManageExternalStoragePermissionGranted() {
-        manageExternalStoragePermissionGranted.value = isExternalStorageManger()
+        _manageExternalStoragePermissionGranted.value = isExternalStorageManger()
     }
 
     // ==============
-    // Listener Configuration
+    // Navigator Configuration
     // ==============
 
-    val accountForFileType by lazy {
-        makeUnconfirmedStateMap(dataStoreRepository.accountForFileType)
+    val fileTypeEnabled by lazy {
+        makeUnconfirmedStateMap(dataStoreRepository.fileTypeEnabled)
     }
 
-    val accountForFileTypeSource by lazy {
-        makeUnconfirmedStateMap(dataStoreRepository.accountForFileTypeSource)
+    val fileSourceEnabled by lazy {
+        makeUnconfirmedStateMap(dataStoreRepository.fileSourceEnabled)
     }
 
-    val unconfirmedListenerConfiguration by lazy {
-        makeUnconfirmedStatesComposition(listOf(accountForFileType, accountForFileTypeSource))
+    val unconfirmedNavigatorConfiguration by lazy {
+        makeUnconfirmedStatesComposition(listOf(fileTypeEnabled, fileSourceEnabled))
     }
 
     // ==============

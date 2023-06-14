@@ -121,7 +121,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                     FileTypeSelectionColumn(Modifier.fillMaxHeight())
 
                     this@Column.AnimatedVisibility(
-                        visible = mainScreenViewModel.unconfirmedListenerConfiguration.statesDissimilar.collectAsState().value,
+                        visible = mainScreenViewModel.unconfirmedNavigatorConfiguration.statesDissimilar.collectAsState().value,
                         enter = fadeIn() + slideInVertically(),
                         exit = fadeOut() + slideOutVertically(),
                         modifier = Modifier

@@ -99,6 +99,6 @@ private fun ManageExternalStorageRational(
                 contentDescription = null
             )
         },
-        text = { RailwayText(text = stringResource(id = R.string.manage_external_storage_rational)) }
+        text = { RailwayText(text = stringResource(id = R.string.manage_external_storage_permission_rational)) }
     )
 }

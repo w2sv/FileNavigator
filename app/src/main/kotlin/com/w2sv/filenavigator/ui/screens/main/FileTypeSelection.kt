@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.main
 
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,32 +12,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +41,7 @@ import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.ui.theme.disabledColor
+import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.utils.toggle
 import kotlinx.coroutines.launch
 
@@ -81,7 +74,7 @@ private fun FileTypeAccordion(
         FileTypeAccordionHeader(fileType = fileType)
 
         if (fileType is FileType.Media) {
-            AnimatedVisibility(visible = mainScreenViewModel.accountForFileType.getValue(fileType)) {
+            AnimatedVisibility(visible = mainScreenViewModel.fileTypeEnabled.getValue(fileType)) {
                 FileSourcesSurface(fileType = fileType)
             }
         }
@@ -97,7 +90,13 @@ private fun FileTypeAccordionHeader(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val isEnabled = mainScreenViewModel.accountForFileType.getValue(fileType)
+    val isManageExternalStoragePermissionMissing =
+        fileType is FileType.NonMedia && !mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState().value
+
+    val isEnabled =
+        !isManageExternalStoragePermissionMissing && mainScreenViewModel.fileTypeEnabled.getValue(
+            fileType
+        )
 
     Surface(tonalElevation = 2.dp, shape = RoundedCornerShape(8.dp)) {
         Row(
@@ -130,23 +129,42 @@ private fun FileTypeAccordionHeader(
                     modifier = Modifier.padding(8.dp),
                     checked = isEnabled,
                     onCheckedChange = { checkedNew ->
-                        if (mainScreenViewModel.accountForFileType.values.atLeastOneTrueAfterValueChange(
-                                checkedNew
-                            )
-                        ) {
-                            mainScreenViewModel.accountForFileType.toggle(
-                                fileType
-                            )
-                        } else {
-                            scope.launch {
+                        when (isManageExternalStoragePermissionMissing) {
+                            true -> scope.launch {
                                 mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
                                     ExtendedSnackbarVisuals(
                                         message = context.getString(
-                                            R.string.leave_at_least_one_file_type_enabled
+                                            R.string.manage_external_storage_permission_required_notification
                                         ),
-                                        kind = SnackbarKind.Error
+                                        kind = SnackbarKind.Error,
+                                        action = {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                                goToManageExternalStorageSettings(context)
+                                            }
+                                        },
+                                        actionLabel = context.getString(R.string.grant)
                                     )
                                 )
+                            }
+
+                            false -> {
+                                if (mainScreenViewModel.fileTypeEnabled.values.atLeastOneTrueAfterValueChange(
+                                        checkedNew
+                                    )
+                                ) {
+                                    mainScreenViewModel.fileTypeEnabled.toggle(fileType)
+                                } else {
+                                    scope.launch {
+                                        mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                            ExtendedSnackbarVisuals(
+                                                message = context.getString(
+                                                    R.string.leave_at_least_one_file_type_enabled
+                                                ),
+                                                kind = SnackbarKind.Error
+                                            )
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -187,7 +205,7 @@ private fun FileSourceRow(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val isEnabled = mainScreenViewModel.accountForFileTypeSource.getValue(source)
+    val isEnabled = mainScreenViewModel.fileSourceEnabled.getValue(source)
 
     Surface(
         shape = RoundedCornerShape(8.dp),
@@ -210,7 +228,7 @@ private fun FileSourceRow(
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
                 RailwayText(
                     text = stringResource(id = source.kind.labelRes),
-                    color = MaterialTheme.colorScheme.onSurface.copy(0.7f)
+                    color = if (isEnabled) MaterialTheme.colorScheme.onSurface.copy(0.7f) else disabledColor()
                 )
             }
             Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
@@ -219,13 +237,13 @@ private fun FileSourceRow(
                     checked = isEnabled,
                     onCheckedChange = { checkedNew ->
                         if (fileType.sources.map {
-                                mainScreenViewModel.accountForFileTypeSource.getValue(
+                                mainScreenViewModel.fileSourceEnabled.getValue(
                                     it
                                 )
                             }
                                 .atLeastOneTrueAfterValueChange(checkedNew)
                         ) {
-                            mainScreenViewModel.accountForFileTypeSource[source] = checkedNew
+                            mainScreenViewModel.fileSourceEnabled[source] = checkedNew
                         } else {
                             scope.launch {
                                 mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(

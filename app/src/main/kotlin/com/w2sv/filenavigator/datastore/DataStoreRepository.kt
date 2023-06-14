@@ -9,9 +9,9 @@ import javax.inject.Inject
 class DataStoreRepository @Inject constructor(dataStore: DataStore<Preferences>) :
     PreferencesDataStoreRepository(dataStore) {
 
-    val accountForFileType: Map<FileType, Flow<Boolean>> = getFlowMap(FileType.all)
+    val fileTypeEnabled: Map<FileType, Flow<Boolean>> = getFlowMap(FileType.all)
 
-    val accountForFileTypeSource: Map<FileType.Source, Flow<Boolean>> = getFlowMap(
+    val fileSourceEnabled: Map<FileType.Source, Flow<Boolean>> = getFlowMap(
         FileType.all
             .map { it.sources }
             .flatten()

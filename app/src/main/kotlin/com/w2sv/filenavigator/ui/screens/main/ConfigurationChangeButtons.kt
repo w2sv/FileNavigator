@@ -37,7 +37,7 @@ internal fun ListenerModificationButtonColumn(
             onClick = {
                 // Do not sync if leading to disablement of all FileTypes
                 with(mainScreenViewModel) {
-                    if (accountForFileType.values.none { it }) {
+                    if (fileTypeEnabled.values.none { it }) {
                         showSnackbar(
                             ExtendedSnackbarVisuals(
                                 message = context.getString(
@@ -47,7 +47,7 @@ internal fun ListenerModificationButtonColumn(
                             )
                         )
                     } else {
-                        unconfirmedListenerConfiguration
+                        unconfirmedNavigatorConfiguration
                             .launchSync()
                             .invokeOnCompletion {
                                 // If FileListenerService is already running, relaunch with new file observer configuration
@@ -75,7 +75,7 @@ internal fun ListenerModificationButtonColumn(
             contentDescriptionRes = R.string.reset_button_cd,
             onClick = {
                 with(mainScreenViewModel) {
-                    unconfirmedListenerConfiguration.launchReset()
+                    unconfirmedNavigatorConfiguration.launchReset()
                 }
             }
         )

@@ -38,8 +38,8 @@
     <string name="tap_again_to_exit">Tag again to exit</string>
     <string name="alright">Alright</string>
     <string name="maybe_later">Maybe later</string>
-    <string name="manage_external_storage_rational">File Navigator requires permission to manage all files to be able to navigate file types other than Image, Video and Audio files.</string>
-    <string name="snackbar_message">Navigation of %1$s files requires access to manage all files</string>
+    <string name="manage_external_storage_permission_rational">File Navigator requires permission to manage all files to be able to navigate file types other than Image, Video and Audio files.</string>
+    <string name="manage_external_storage_permission_required_notification">Navigation of non-media file types requires access to manage all files</string>
     <string name="grant">Grant</string>
     <string name="reset_button_cd">Discard all unsaved changes</string>
     <string name="leave_at_least_one_file_type_enabled">Leave at least one file type enabled</string>

@@ -12,6 +12,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -54,7 +55,7 @@ fun AppSnackbar(snackbarData: SnackbarData) {
             }
         }
     ) {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             (snackbarData.visuals as? ExtendedSnackbarVisuals)?.run {
                 when (kind) {
                     SnackbarKind.Error -> Icon(
@@ -69,7 +70,7 @@ fun AppSnackbar(snackbarData: SnackbarData) {
                         tint = md_positive
                     )
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(10.dp))
             }
             RailwayText(text = snackbarData.visuals.message)
         }
