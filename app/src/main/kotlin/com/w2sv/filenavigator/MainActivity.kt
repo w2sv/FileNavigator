@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.os.PowerManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -53,10 +52,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val powerSaveModeChangedReceiver by lazy {
-        PowerSaveModeChangedReceiver()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
 
@@ -90,27 +85,14 @@ class MainActivity : ComponentActivity() {
             viewModel.repository.disableListenerOnLowBattery.collect {
                 i { "Collected disableListenerOnLowBattery=$it" }
 
-                try {
-                    when (it) {
-                        true -> {
-                            registerReceiver(
-                                powerSaveModeChangedReceiver,
-                                IntentFilter()
-                                    .apply {
-                                        addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
-                                    }
-                            )
-                            i { "Registered ${powerSaveModeChangedReceiver::class.java.simpleName}" }
-                        }
-
-                        false -> {
-                            Intent.ACTION_BATTERY_CHANGED
-                            unregisterReceiver(powerSaveModeChangedReceiver)
-                            i { "Unregistered ${powerSaveModeChangedReceiver::class.java.simpleName}" }
-                        }
+                when (it) {
+                    true -> {
+                        startService(PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity))
                     }
-                } catch (e: IllegalArgumentException) {
-                    i(e)
+
+                    false -> {
+                        stopService(PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity))
+                    }
                 }
             }
         }

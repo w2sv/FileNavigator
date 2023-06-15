@@ -3,8 +3,10 @@ package com.w2sv.filenavigator
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.PowerManager
 import com.w2sv.filenavigator.service.FileNavigatorService
+import com.w2sv.filenavigator.service.UnboundService
 import slimber.log.i
 
 class PowerSaveModeChangedReceiver : BroadcastReceiver() {
@@ -15,7 +17,7 @@ class PowerSaveModeChangedReceiver : BroadcastReceiver() {
         i { "Received intent $intent" }
 
         context?.run {
-            getSystemService(PowerManager::class.java)?.isPowerSaveMode?.let { isPowerSaveMode ->
+            powerSaveModeActivated?.let { isPowerSaveMode ->
                 if (isPowerSaveMode) {
                     FileNavigatorService.stop(applicationContext)
                 } else {
@@ -24,4 +26,58 @@ class PowerSaveModeChangedReceiver : BroadcastReceiver() {
             }
         }
     }
+
+    fun register(context: Context) {
+        context.registerReceiver(
+            this,
+            IntentFilter()
+                .apply {
+                    addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
+                }
+        )
+        i { "Registered ${this::class.java.simpleName}" }
+    }
+
+    fun unregister(context: Context) {
+        context.unregisterReceiver(this)
+        i { "Unregistered ${this::class.java.simpleName}" }
+    }
+
+    class HostService : UnboundService() {
+
+        private val powerSaveModeChangedReceiver by lazy {
+            PowerSaveModeChangedReceiver()
+        }
+
+        override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+            i { "${this::class.java.simpleName}.onStartCommand | $intent" }
+            try {
+                powerSaveModeChangedReceiver.register(this)
+            } catch (e: RuntimeException) {
+                i(e)
+            }
+
+            return super.onStartCommand(intent, flags, startId)
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+
+            i { "${this::class.java.simpleName}.onDestroy" }
+
+            try {
+                powerSaveModeChangedReceiver.unregister(this)
+            } catch (e: RuntimeException) {
+                i(e)
+            }
+        }
+
+        companion object {
+            fun getIntent(context: Context): Intent =
+                Intent(context, HostService::class.java)
+        }
+    }
 }
+
+val Context.powerSaveModeActivated: Boolean?
+    get() = getSystemService(PowerManager::class.java)?.isPowerSaveMode

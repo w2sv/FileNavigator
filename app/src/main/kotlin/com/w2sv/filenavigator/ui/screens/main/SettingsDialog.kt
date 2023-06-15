@@ -64,11 +64,6 @@ internal fun SettingsDialog(
                 contentDescription = null
             )
         },
-//        title = {
-//            RailwayText(
-//                text = stringResource(id = R.string.extended_settings)
-//            )
-//        },
         onDismissRequest = onDismissRequest,
         confirmButton = {
             ElevatedButton(

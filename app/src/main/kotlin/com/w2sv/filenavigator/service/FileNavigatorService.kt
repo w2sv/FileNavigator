@@ -14,12 +14,12 @@ import androidx.core.graphics.drawable.toBitmap
 import com.anggrayudi.storage.media.MediaType
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.notifying.showNotification
+import com.w2sv.filenavigator.MainActivity
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.DataStoreRepository
 import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.mediastore.MediaStoreFile
 import com.w2sv.filenavigator.mediastore.MediaStoreFileData
-import com.w2sv.filenavigator.MainActivity
 import com.w2sv.filenavigator.utils.getSynchronousMap
 import com.w2sv.filenavigator.utils.sendLocalBroadcast
 import com.w2sv.kotlinutils.extensions.nonZeroOrdinal
@@ -87,9 +87,7 @@ class FileNavigatorService : UnboundService() {
 
         when (intent?.action) {
             ACTION_STOP_SERVICE -> {
-                stopForeground(STOP_FOREGROUND_REMOVE)
-                stopSelf()
-                sendLocalBroadcast(ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED)
+                stop()
             }
 
             ACTION_REREGISTER_MEDIA_OBSERVERS -> {
@@ -107,53 +105,66 @@ class FileNavigatorService : UnboundService() {
                 )
             }
 
-            else -> {
-                startForeground(
-                    AppNotificationChannel.STARTED_FOREGROUND_SERVICE.nonZeroOrdinal,
-                    createNotificationChannelAndGetNotificationBuilder(
-                        AppNotificationChannel.STARTED_FOREGROUND_SERVICE
-                    )
-                        .setSmallIcon(R.drawable.ic_file_move_24)
-                        .setContentTitle(getString(AppNotificationChannel.STARTED_FOREGROUND_SERVICE.titleRes))
-                        .setContentText(getString(R.string.waiting_for_new_files_to_be_navigated))
-                        // add configure action
-                        .addAction(
-                            NotificationCompat.Action(
-                                R.drawable.ic_settings_24,
-                                getString(R.string.configure),
-                                PendingIntent.getActivity(
-                                    applicationContext,
-                                    PendingIntentRequestCode.ConfigureFileNavigator.ordinal,
-                                    Intent.makeRestartActivityTask(
-                                        ComponentName(this, MainActivity::class.java)
-                                    ),
-                                    PendingIntent.FLAG_IMMUTABLE
-                                )
-                            )
-                        )
-                        // add stop action
-                        .addAction(
-                            NotificationCompat.Action(
-                                R.drawable.ic_cancel_24,
-                                getString(R.string.stop),
-                                PendingIntent.getService(
-                                    applicationContext,
-                                    PendingIntentRequestCode.StopFileNavigator.ordinal,
-                                    getStopIntent(applicationContext),
-                                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-                                ),
-                            )
-                        )
-                        .build()
-                )
-
-                fileObservers = getAndRegisterFileObservers()
-
-                sendLocalBroadcast(ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED)
+            else -> try {
+                start()
+            } catch (e: RuntimeException) {
+                i(e)
+                stopSelf()
             }
         }
 
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun start() {
+        startForeground(
+            AppNotificationChannel.STARTED_FOREGROUND_SERVICE.nonZeroOrdinal,
+            createNotificationChannelAndGetNotificationBuilder(
+                AppNotificationChannel.STARTED_FOREGROUND_SERVICE
+            )
+                .setSmallIcon(R.drawable.ic_file_move_24)
+                .setContentTitle(getString(AppNotificationChannel.STARTED_FOREGROUND_SERVICE.titleRes))
+                .setContentText(getString(R.string.waiting_for_new_files_to_be_navigated))
+                // add configure action
+                .addAction(
+                    NotificationCompat.Action(
+                        R.drawable.ic_settings_24,
+                        getString(R.string.configure),
+                        PendingIntent.getActivity(
+                            applicationContext,
+                            PendingIntentRequestCode.ConfigureFileNavigator.ordinal,
+                            Intent.makeRestartActivityTask(
+                                ComponentName(this, MainActivity::class.java)
+                            ),
+                            PendingIntent.FLAG_IMMUTABLE
+                        )
+                    )
+                )
+                // add stop action
+                .addAction(
+                    NotificationCompat.Action(
+                        R.drawable.ic_cancel_24,
+                        getString(R.string.stop),
+                        PendingIntent.getService(
+                            applicationContext,
+                            PendingIntentRequestCode.StopFileNavigator.ordinal,
+                            getStopIntent(applicationContext),
+                            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+                        ),
+                    )
+                )
+                .build()
+        )
+
+        fileObservers = getAndRegisterFileObservers()
+
+        sendLocalBroadcast(ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED)
+    }
+
+    private fun stop() {
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+        sendLocalBroadcast(ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED)
     }
 
     @Suppress("UnstableApiUsage")
@@ -368,35 +379,35 @@ class FileNavigatorService : UnboundService() {
         fileObservers.forEach {
             contentResolver.unregisterContentObserver(it)
         }
-        i { "Unregistered mediaTypeObservers" }
+        i { "Unregistered fileObservers" }
     }
 
-    /**
-     * Unregisters [fileObservers].
-     */
     override fun onDestroy() {
         super.onDestroy()
 
-        unregisterContentObservers()
+        try {
+            unregisterContentObservers()
+        } catch (e: UninitializedPropertyAccessException) {
+            i(e)
+        }
     }
 
     companion object {
         fun start(context: Context) {
             context.startService(
-                Intent(context, FileNavigatorService::class.java)
+                getIntent(context)
             )
         }
 
         fun stop(context: Context) {
             context.startService(
-                Intent(context, FileNavigatorService::class.java)
-                    .setAction(ACTION_STOP_SERVICE)
+                getStopIntent(context)
             )
         }
 
         fun cleanUpIds(notificationId: Int, requestCodes: ArrayList<Int>, context: Context) {
             context.startService(
-                Intent(context, FileNavigatorService::class.java)
+                getIntent(context)
                     .setAction(ACTION_CLEANUP_IDS)
                     .putExtra(EXTRA_NOTIFICATION_ID, notificationId)
                     .putExtra(EXTRA_REQUEST_CODES, requestCodes)
@@ -405,14 +416,17 @@ class FileNavigatorService : UnboundService() {
 
         fun reregisterFileObservers(context: Context) {
             context.startService(
-                Intent(context, FileNavigatorService::class.java)
+                getIntent(context)
                     .setAction(ACTION_REREGISTER_MEDIA_OBSERVERS)
             )
         }
 
         fun getStopIntent(context: Context): Intent =
-            Intent(context, FileNavigatorService::class.java)
+            getIntent(context)
                 .setAction(ACTION_STOP_SERVICE)
+
+        private fun getIntent(context: Context): Intent =
+            Intent(context, FileNavigatorService::class.java)
 
         const val EXTRA_MEDIA_STORE_FILE =
             "com.w2sv.filenavigator.extra.MEDIA_STORE_FILE"
