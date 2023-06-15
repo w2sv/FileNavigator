@@ -142,6 +142,7 @@ sealed class FileType(
 
     val sources: List<Source> = sourceKinds.map { Source(it, identifier) }
 
+    val isMediaType: Boolean get() = this is Media
     val navigationRequiresManageExternalStoragePermission: Boolean get() = this is NonMedia
 
     enum class SourceKind(

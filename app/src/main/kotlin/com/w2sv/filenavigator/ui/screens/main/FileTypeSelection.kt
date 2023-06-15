@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,7 +40,6 @@ import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
-import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
@@ -53,6 +51,8 @@ fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
+    val manageExternalStoragePermissionGranted by mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState()
+
     Column(
         modifier = modifier
             .padding(horizontal = 10.dp)
@@ -69,18 +69,11 @@ fun FileTypeSelectionColumn(
             modifier = modifier
                 .verticalScroll(rememberScrollState())
         ) {
-            val verticalPaddingModifier = Modifier.padding(vertical = 4.dp)
-
-            FileType.Media.all.forEach {
-                MediaFileTypeAccordion(fileType = it, modifier = verticalPaddingModifier)
-            }
-
-            val manageExternalStoragePermissionGranted by mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState()
-            FileType.NonMedia.all.forEach {
-                NonMediaFileTypeAccordion(
+            FileType.all.forEach {
+                FileTypeAccordion(
                     fileType = it,
                     manageExternalStoragePermissionGranted = manageExternalStoragePermissionGranted,
-                    modifier = verticalPaddingModifier
+                    modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
         }
@@ -88,34 +81,20 @@ fun FileTypeSelectionColumn(
 }
 
 @Composable
-private fun MediaFileTypeAccordion(
+private fun FileTypeAccordion(
     fileType: FileType,
+    manageExternalStoragePermissionGranted: Boolean,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     Column(modifier = modifier) {
         FileTypeAccordionHeader(
             fileType = fileType,
-            disabledForMissingManageExternalStoragePermission = false
+            disabledForMissingManageExternalStoragePermission = fileType.navigationRequiresManageExternalStoragePermission && !manageExternalStoragePermissionGranted
         )
-
         AnimatedVisibility(visible = mainScreenViewModel.fileTypeEnabled.getValue(fileType)) {
             FileSourcesSurface(fileType = fileType)
         }
-    }
-}
-
-@Composable
-private fun NonMediaFileTypeAccordion(
-    fileType: FileType,
-    manageExternalStoragePermissionGranted: Boolean,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        FileTypeAccordionHeader(
-            fileType = fileType,
-            disabledForMissingManageExternalStoragePermission = !manageExternalStoragePermissionGranted
-        )
     }
 }
 
@@ -253,6 +232,7 @@ private fun FileSourceRow(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = modifier
                 .fillMaxWidth()
+                .height(46.dp)
         ) {
             Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
                 Icon(
@@ -268,30 +248,32 @@ private fun FileSourceRow(
                 )
             }
             Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
-                Checkbox(
-                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.secondary),
-                    checked = isEnabled,
-                    onCheckedChange = { checkedNew ->
-                        if (fileType.sources.map {
-                                mainScreenViewModel.fileSourceEnabled.getValue(
-                                    it
-                                )
-                            }
-                                .atLeastOneTrueAfterValueChange(checkedNew)
-                        ) {
-                            mainScreenViewModel.fileSourceEnabled[source] = checkedNew
-                        } else {
-                            scope.launch {
-                                mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-                                    ExtendedSnackbarVisuals(
-                                        message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
-                                        kind = SnackbarKind.Error
+                if (fileType.isMediaType) {
+                    Checkbox(
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.secondary),
+                        checked = isEnabled,
+                        onCheckedChange = { checkedNew ->
+                            if (fileType.sources.map {
+                                    mainScreenViewModel.fileSourceEnabled.getValue(
+                                        it
                                     )
-                                )
+                                }
+                                    .atLeastOneTrueAfterValueChange(checkedNew)
+                            ) {
+                                mainScreenViewModel.fileSourceEnabled[source] = checkedNew
+                            } else {
+                                scope.launch {
+                                    mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                        ExtendedSnackbarVisuals(
+                                            message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
+                                            kind = SnackbarKind.Error
+                                        )
+                                    )
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
