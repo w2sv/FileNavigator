@@ -137,6 +137,10 @@ internal fun StartNavigatorButton(
                 R.string.start_navigator
             ) {
                 when {
+                    mainScreenViewModel.manageExternalStoragePermissionGranted.value || permissionState.allPermissionsGranted -> {
+                        startNavigatorOrShowConfirmationDialog()
+                    }
+
                     !mainScreenViewModel.repository.showedPermissionsRational.getValueSynchronously() -> {
                         showPermissionsRational = true
                     }
@@ -155,10 +159,6 @@ internal fun StartNavigatorButton(
 
                     !permissionState.allPermissionsGranted -> {
                         permissionState.launchMultiplePermissionRequest()
-                    }
-
-                    else -> {
-                        startNavigatorOrShowConfirmationDialog()
                     }
                 }
             }
