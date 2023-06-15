@@ -56,4 +56,8 @@
     <string name="navigated_file_types">Navigated File Types</string>
     <string name="discard_changes">Discard Changes</string>
     <string name="confirm_changes">Confirm Changes</string>
+    <string name="device_default">Device Default</string>
+    <string name="dark">Dark</string>
+    <string name="light">Light</string>
+    <string name="theme_button_cd">Enable the %s theme.</string>
 </resources>

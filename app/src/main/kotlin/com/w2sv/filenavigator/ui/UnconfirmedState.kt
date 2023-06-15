@@ -198,6 +198,14 @@ abstract class UnconfirmedStatesHoldingViewModel<R : PreferencesDataStoreReposit
             repository.save(preferencesKey, it)
         }
 
+    inline fun <reified T : Enum<T>> makeUnconfirmedEnumStateFlow(
+        appliedFlow: Flow<T>,
+        preferencesKey: Preferences.Key<Int>
+    ): UnconfirmedStateFlow<T> =
+        UnconfirmedStateFlow(coroutineScope, appliedFlow) {
+            repository.save(preferencesKey, it)
+        }
+
     fun makeUnconfirmedStatesComposition(unconfirmedStates: UnconfirmedStates): UnconfirmedStatesComposition =
         UnconfirmedStatesComposition(unconfirmedStates, coroutineScope = coroutineScope)
 

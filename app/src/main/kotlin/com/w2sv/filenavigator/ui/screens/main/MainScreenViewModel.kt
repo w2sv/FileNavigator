@@ -39,6 +39,14 @@ class MainScreenViewModel @Inject constructor(
         PreferencesKey.DISABLE_LISTENER_ON_LOW_BATTERY
     )
 
+    val inAppTheme = makeUnconfirmedEnumStateFlow(
+        dataStoreRepository.inAppTheme,
+        PreferencesKey.IN_APP_THEME
+    )
+
+    val unconfirmedExtendedSettings =
+        makeUnconfirmedStatesComposition(listOf(disableListenerOnLowBattery, inAppTheme))
+
     // ==============
     // manageExternalStoragePermissionGranted
     // ==============

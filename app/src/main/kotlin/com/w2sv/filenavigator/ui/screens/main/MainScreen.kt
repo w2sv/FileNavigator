@@ -57,17 +57,9 @@ import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
     val context = LocalContext.current
-
-    val permissionState =
-        rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE) { granted ->
-            if (granted) {
-                FileNavigatorService.start(context)
-            }
-        }
 
     var showSettingsDialog by rememberSaveable {
         mutableStateOf(false)
@@ -125,13 +117,6 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                         exit = fadeOut() + slideOutHorizontally()
                     ) {
                         StartNavigatorButton(
-                            startListener = {
-                                when (permissionState.status.isGranted) {
-                                    true -> FileNavigatorService.start(context)
-                                    false -> permissionState.launchPermissionRequest()
-                                }
-                            },
-                            stopListener = { FileNavigatorService.stop(context) },
                             modifier = Modifier
                                 .width(220.dp)
                                 .height(70.dp)
@@ -157,14 +142,21 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun StartNavigatorButton(
-    startListener: () -> Unit,
-    stopListener: () -> Unit,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+
     val isNavigatorRunning by mainScreenViewModel.isNavigatorRunning.collectAsState()
+    val permissionState =
+        rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE) { granted ->
+            if (granted) {
+                FileNavigatorService.start(context)
+            }
+        }
 
     Crossfade(
         targetState = isNavigatorRunning,
@@ -175,26 +167,24 @@ private fun StartNavigatorButton(
             true -> NavigatorButtonProperties(
                 md_negative,
                 R.drawable.ic_stop_24,
-                R.string.stop_navigator,
-                stopListener
-            )
+                R.string.stop_navigator
+            ) { FileNavigatorService.stop(context) }
 
             false -> NavigatorButtonProperties(
                 md_positive,
                 R.drawable.ic_start_24,
-                R.string.start_navigator,
-                startListener
-            )
+                R.string.start_navigator
+            ) {
+                when (permissionState.status.isGranted) {
+                    true -> FileNavigatorService.start(context)
+                    false -> permissionState.launchPermissionRequest()
+                }
+            }
         }
 
         ElevatedButton(
             onClick = properties.onClick,
-            modifier = modifier,
-//            colors = ButtonDefaults.elevatedButtonColors(
-//                containerColor = properties.color.copy(
-//                    alpha = 0.6f
-//                )
-//            )
+            modifier = modifier
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

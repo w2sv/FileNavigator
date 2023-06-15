@@ -8,11 +8,14 @@ import android.os.PowerManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.collectAsState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.lifecycle.SelfManagingLocalBroadcastReceiver
 import com.w2sv.filenavigator.service.FileNavigatorService
+import com.w2sv.filenavigator.ui.Theme
 import com.w2sv.filenavigator.ui.screens.main.MainScreen
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
@@ -64,7 +67,13 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.collectFlows()
 
         setContent {
-            FileNavigatorTheme {
+            FileNavigatorTheme(
+                useDarkTheme = when (viewModel.repository.inAppTheme.collectAsState(initial = Theme.DeviceDefault).value) {
+                    Theme.Dark -> true
+                    Theme.Light -> false
+                    Theme.DeviceDefault -> isSystemInDarkTheme()
+                }
+            ) {
                 MainScreen()
             }
         }
