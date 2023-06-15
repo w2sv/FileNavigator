@@ -32,8 +32,6 @@
     <string name="newly_downloaded_template">newly downloaded %1$s</string>
     <string name="new_third_party_file_template">new %1$s %2$s</string>
 
-    <string name="updated_listener_configuration">Updated listener configuration</string>
-    <string name="update_listener_configuration_button_cd">Update listener configuration</string>
     <string name="configure">Configure</string>
     <string name="tap_again_to_exit">Tag again to exit</string>
     <string name="alright">Alright</string>
@@ -41,18 +39,13 @@
     <string name="manage_external_storage_permission_rational">File Navigator requires permission to manage all files to be able to navigate file types other than Image, Video and Audio files.</string>
     <string name="manage_external_storage_permission_required_notification">Navigation of non-media file types requires access to manage all files</string>
     <string name="grant">Grant</string>
-    <string name="reset_button_cd">Discard all unsaved changes</string>
     <string name="leave_at_least_one_file_type_enabled">Leave at least one file type enabled</string>
     <string name="open_extended_settings_dialog">Open the extended settings dialog.</string>
     <string name="apply">Apply</string>
     <string name="cancel">Cancel</string>
     <string name="disable_listener_on_low_battery">Disable listener on low battery</string>
-    <string name="extended_settings">Extended Settings</string>
     <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">Leave at least one file source selected or disable the file type as a whole</string>
-    <string name="non_media_types">Non-Media Types</string>
     <string name="got_it">Got it</string>
-    <string name="show_a_non_media_file_type_info_dialog">Show the Non-Media file type info dialog</string>
-    <string name="non_media_type_info_text">As opposed to media file types, which offer various source registration possibilities for each type, only downloaded non-media file types may be registered by the navigator. This is due to system API restrictions.</string>
     <string name="navigated_file_types">Navigated File Types</string>
     <string name="discard_changes">Discard Changes</string>
     <string name="confirm_changes">Confirm Changes</string>
