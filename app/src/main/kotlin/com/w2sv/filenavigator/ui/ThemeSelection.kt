@@ -110,7 +110,7 @@ private fun ThemeColumn(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RailwayText(
+        AppFontText(
             text = stringResource(id = properties.label),
             fontSize = 12.sp,
             color = MaterialTheme.colorScheme.onSurface,

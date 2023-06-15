@@ -71,7 +71,7 @@ private val darkColors = darkColorScheme(
 )
 
 @Composable
-fun FileNavigatorTheme(
+fun AppTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {

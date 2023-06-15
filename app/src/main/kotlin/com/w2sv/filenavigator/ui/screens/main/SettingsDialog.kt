@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,10 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.AppCheckbox
 import com.w2sv.filenavigator.ui.DialogButton
+import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.ThemeSelectionRow
-import com.w2sv.filenavigator.ui.RailwayText
-import com.w2sv.filenavigator.utils.toggle
 
 @Composable
 internal fun SettingsDialogButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -74,17 +72,21 @@ internal fun SettingsDialog(
                 },
                 enabled = mainScreenViewModel.unconfirmedExtendedSettings.statesDissimilar.collectAsState().value
             ) {
-                RailwayText(text = stringResource(id = R.string.apply))
+                AppFontText(text = stringResource(id = R.string.apply))
             }
         },
         dismissButton = {
             DialogButton(onClick = onDismissRequest) {
-                RailwayText(text = stringResource(id = R.string.cancel))
+                AppFontText(text = stringResource(id = R.string.cancel))
             }
         },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                RailwayText(text = stringResource(R.string.theme), fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                AppFontText(
+                    text = stringResource(R.string.theme),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ThemeSelectionRow(
@@ -97,11 +99,13 @@ internal fun SettingsDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    RailwayText(text = stringResource(id = R.string.disable_listener_on_low_battery))
+                    AppFontText(text = stringResource(id = R.string.disable_listener_on_low_battery))
                     Spacer(modifier = Modifier.weight(1f))
-                    Checkbox(
+                    AppCheckbox(
                         checked = mainScreenViewModel.disableListenerOnLowBattery.collectAsState().value,
-                        onCheckedChange = { mainScreenViewModel.disableListenerOnLowBattery.toggle() }
+                        onCheckedChange = {
+                            mainScreenViewModel.disableListenerOnLowBattery.value = it
+                        }
                     )
                 }
             }

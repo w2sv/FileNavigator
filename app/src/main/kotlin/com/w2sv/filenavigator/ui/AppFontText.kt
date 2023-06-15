@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.TextUnit
 import com.w2sv.filenavigator.R
 
 @Composable
-fun RailwayText(
+fun AppFontText(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,

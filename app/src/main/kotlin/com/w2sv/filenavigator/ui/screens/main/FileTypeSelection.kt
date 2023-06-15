@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,10 +35,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.mediastore.FileType
+import com.w2sv.filenavigator.ui.AppCheckbox
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
+import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
-import com.w2sv.filenavigator.ui.RailwayText
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.utils.toggle
@@ -57,7 +56,7 @@ fun FileTypeSelectionColumn(
         modifier = modifier
             .padding(horizontal = 10.dp)
     ) {
-        RailwayText(
+        AppFontText(
             text = stringResource(id = R.string.navigated_file_types),
             fontSize = 20.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -128,7 +127,7 @@ private fun FileTypeAccordionHeader(
                 )
             }
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
-                RailwayText(
+                AppFontText(
                     text = stringResource(id = fileType.titleRes),
                     fontSize = 18.sp,
                     color = if (isEnabled) Color.Unspecified else disabledColor()
@@ -242,15 +241,14 @@ private fun FileSourceRow(
                 )
             }
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
-                RailwayText(
+                AppFontText(
                     text = stringResource(id = source.kind.labelRes),
                     color = if (isEnabled) MaterialTheme.colorScheme.onSurface.copy(0.7f) else disabledColor()
                 )
             }
             Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
                 if (fileType.isMediaType) {
-                    Checkbox(
-                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.secondary),
+                    AppCheckbox(
                         checked = isEnabled,
                         onCheckedChange = { checkedNew ->
                             if (fileType.sources.map {

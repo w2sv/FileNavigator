@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.service.FileNavigatorService
-import com.w2sv.filenavigator.ui.RailwayText
+import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
 
@@ -88,7 +88,7 @@ private fun ConfigurationChangeButton(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(painter = painterResource(id = iconRes), contentDescription = null, tint = color)
-            RailwayText(text = stringResource(id = textRes))
+            AppFontText(text = stringResource(id = textRes))
         }
     }
 }

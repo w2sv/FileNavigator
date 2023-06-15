@@ -48,7 +48,7 @@ fun AppSnackbar(snackbarData: SnackbarData) {
                 TextButton(onClick = {
                     action.invoke()
                 }) {
-                    RailwayText(text = visuals.actionLabel!!)
+                    AppFontText(text = visuals.actionLabel!!)
                 }
             }
         }
@@ -72,7 +72,7 @@ fun AppSnackbar(snackbarData: SnackbarData) {
                 }
                 Spacer(modifier = Modifier.width(10.dp))
             }
-            RailwayText(text = snackbarData.visuals.message)
+            AppFontText(text = snackbarData.visuals.message)
         }
     }
 }

@@ -3,7 +3,6 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,7 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.ui.DialogButton
-import com.w2sv.filenavigator.ui.RailwayText
+import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -81,8 +80,8 @@ private fun ManageExternalStorageRationalDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         dismissButton = {
-            ElevatedButton(onClick = onDismissRequest) {
-                RailwayText(text = stringResource(id = R.string.maybe_later))
+            DialogButton(onClick = onDismissRequest) {
+                AppFontText(text = stringResource(id = R.string.maybe_later))
             }
         },
         confirmButton = {
@@ -90,7 +89,7 @@ private fun ManageExternalStorageRationalDialog(
                 onDismissRequest()
                 onConfirmation()
             }) {
-                RailwayText(text = stringResource(id = R.string.alright))
+                AppFontText(text = stringResource(id = R.string.alright))
             }
         },
         icon = {
@@ -100,6 +99,6 @@ private fun ManageExternalStorageRationalDialog(
                 contentDescription = null
             )
         },
-        text = { RailwayText(text = stringResource(id = R.string.manage_external_storage_permission_rational)) }
+        text = { AppFontText(text = stringResource(id = R.string.manage_external_storage_permission_rational)) }
     )
 }

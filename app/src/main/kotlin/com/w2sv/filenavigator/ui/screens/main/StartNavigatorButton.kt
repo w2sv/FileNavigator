@@ -39,7 +39,7 @@ import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.DialogButton
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
-import com.w2sv.filenavigator.ui.RailwayText
+import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
@@ -180,7 +180,7 @@ internal fun StartNavigatorButton(
                     modifier = Modifier.size(32.dp),
                     tint = properties.color
                 )
-                RailwayText(
+                AppFontText(
                     text = stringResource(id = properties.labelRes),
                     fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.onBackground
@@ -197,14 +197,14 @@ private fun PermissionsRationalDialog(onDismissRequest: () -> Unit, modifier: Mo
         onDismissRequest = onDismissRequest,
         confirmButton = {
             DialogButton(onClick = onDismissRequest) {
-                RailwayText(text = stringResource(id = R.string.got_it))
+                AppFontText(text = stringResource(id = R.string.got_it))
             }
         },
         icon = {
             Icon(painter = painterResource(id = R.drawable.ic_info_24), contentDescription = null)
         },
         text = {
-            RailwayText(
+            AppFontText(
                 text = stringResource(
                     id = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                         R.string.tiramisu_permissions_rational
@@ -238,16 +238,16 @@ private fun StartNavigatorOnLowBatteryConfirmationDialog(
                     closeDialog()
                 }
             ) {
-                RailwayText(text = stringResource(R.string.yes))
+                AppFontText(text = stringResource(R.string.yes))
             }
         },
         dismissButton = {
             ElevatedButton(onClick = closeDialog) {
-                RailwayText(text = stringResource(R.string.no))
+                AppFontText(text = stringResource(R.string.no))
             }
         },
         text = {
-            RailwayText(text = stringResource(R.string.start_navigator_confirmation_dialog_text))
+            AppFontText(text = stringResource(R.string.start_navigator_confirmation_dialog_text))
         }
     )
 }

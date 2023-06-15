@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.AppSnackbar
-import com.w2sv.filenavigator.ui.RailwayText
+import com.w2sv.filenavigator.ui.AppFontText
 
 @Composable
 fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
@@ -77,7 +77,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                             .padding(horizontal = 20.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        RailwayText(
+                        AppFontText(
                             text = stringResource(R.string.app_name),
                             style = MaterialTheme.typography.headlineLarge,
                             color = MaterialTheme.colorScheme.onBackground

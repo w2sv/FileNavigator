@@ -17,7 +17,7 @@ import com.w2sv.filenavigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.Theme
 import com.w2sv.filenavigator.ui.screens.main.MainScreen
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
-import com.w2sv.filenavigator.ui.theme.FileNavigatorTheme
+import com.w2sv.filenavigator.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import slimber.log.i
@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.collectFlows()
 
         setContent {
-            FileNavigatorTheme(
+            AppTheme(
                 useDarkTheme = when (viewModel.repository.inAppTheme.collectAsState(initial = Theme.DeviceDefault).value) {
                     Theme.Dark -> true
                     Theme.Light -> false
