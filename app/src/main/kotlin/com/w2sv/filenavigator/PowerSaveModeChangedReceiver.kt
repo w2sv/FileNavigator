@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.os.PowerManager
 import com.w2sv.filenavigator.service.FileNavigatorService
 import com.w2sv.filenavigator.service.UnboundService
+import com.w2sv.filenavigator.utils.powerSaveModeActivated
 import slimber.log.i
 
 class PowerSaveModeChangedReceiver : BroadcastReceiver() {
@@ -17,12 +18,10 @@ class PowerSaveModeChangedReceiver : BroadcastReceiver() {
         i { "Received intent $intent" }
 
         context?.run {
-            powerSaveModeActivated?.let { isPowerSaveMode ->
-                if (isPowerSaveMode) {
-                    FileNavigatorService.stop(applicationContext)
-                } else {
-                    FileNavigatorService.start(applicationContext)
-                }
+            when (powerSaveModeActivated) {
+                true -> FileNavigatorService.stop(applicationContext)
+                false -> FileNavigatorService.start(applicationContext)
+                else -> Unit
             }
         }
     }
@@ -78,6 +77,3 @@ class PowerSaveModeChangedReceiver : BroadcastReceiver() {
         }
     }
 }
-
-val Context.powerSaveModeActivated: Boolean?
-    get() = getSystemService(PowerManager::class.java)?.isPowerSaveMode

@@ -7,6 +7,8 @@ object PreferencesKey {
     val SHOWED_MANAGE_EXTERNAL_STORAGE_RATIONAL =
         booleanPreferencesKey("showedManageExternalStorageRational")
 
+    val SHOWED_PERMISSIONS_RATIONAL = booleanPreferencesKey("showedPermissionsRational")
+
     val DISABLE_LISTENER_ON_LOW_BATTERY =
         booleanPreferencesKey("disableListenerOnLowBattery")
 
