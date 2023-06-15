@@ -23,17 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.service.FileNavigatorService
-import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
-import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun NavigatorConfigurationButtons(
-    parentCoroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
@@ -55,16 +51,6 @@ internal fun NavigatorConfigurationButtons(
                                     context
                                 )
                             }
-//                            parentCoroutineScope.launch {
-//                                snackbarHostState.showSnackbar(
-//                                    ExtendedSnackbarVisuals(
-//                                        message = context.getString(
-//                                            R.string.updated_listener_configuration
-//                                        ),
-//                                        kind = SnackbarKind.Success
-//                                    )
-//                                )
-//                            }
                         }
                 }
             }

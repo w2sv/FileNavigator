@@ -36,7 +36,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -62,7 +61,6 @@ import com.w2sv.filenavigator.ui.theme.md_positive
 @Composable
 fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
     val permissionState =
         rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE) { granted ->
@@ -145,7 +143,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                         enter = fadeIn() + slideInHorizontally(initialOffsetX = { it / 2 }),
                         exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it / 2 })
                     ) {
-                        NavigatorConfigurationButtons(parentCoroutineScope = scope)
+                        NavigatorConfigurationButtons()
                     }
                 }
             }
