@@ -37,9 +37,10 @@ import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.service.FileNavigatorService
+import com.w2sv.filenavigator.ui.DialogButton
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
+import com.w2sv.filenavigator.ui.RailwayText
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
-import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
 import com.w2sv.filenavigator.utils.goToAppSettings
@@ -195,7 +196,7 @@ private fun PermissionsRationalDialog(onDismissRequest: () -> Unit, modifier: Mo
         modifier = modifier,
         onDismissRequest = onDismissRequest,
         confirmButton = {
-            ElevatedButton(onClick = onDismissRequest) {
+            DialogButton(onClick = onDismissRequest) {
                 RailwayText(text = stringResource(id = R.string.got_it))
             }
         },
@@ -227,14 +228,16 @@ private fun StartNavigatorOnLowBatteryConfirmationDialog(
         modifier = modifier,
         onDismissRequest = closeDialog,
         confirmButton = {
-            ElevatedButton(onClick = {
-                FileNavigatorService.start(context)
-                with(mainScreenViewModel) {
-                    disableListenerOnLowBattery.value = false
-                    disableListenerOnLowBattery.launchSync()
+            DialogButton(
+                onClick = {
+                    FileNavigatorService.start(context)
+                    with(mainScreenViewModel) {
+                        disableListenerOnLowBattery.value = false
+                        disableListenerOnLowBattery.launchSync()
+                    }
+                    closeDialog()
                 }
-                closeDialog()
-            }) {
+            ) {
                 RailwayText(text = stringResource(R.string.yes))
             }
         },

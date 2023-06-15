@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.theme
+package com.w2sv.filenavigator.ui
 
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text

@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.AppSnackbar
-import com.w2sv.filenavigator.ui.theme.RailwayText
+import com.w2sv.filenavigator.ui.RailwayText
 
 @Composable
 fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {

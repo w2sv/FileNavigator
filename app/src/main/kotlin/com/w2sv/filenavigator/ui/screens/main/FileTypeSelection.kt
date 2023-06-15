@@ -40,7 +40,7 @@ import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
-import com.w2sv.filenavigator.ui.theme.RailwayText
+import com.w2sv.filenavigator.ui.RailwayText
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.utils.toggle

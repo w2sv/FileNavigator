@@ -36,7 +36,7 @@
     <string name="tap_again_to_exit">Tag again to exit</string>
     <string name="alright">Alright</string>
     <string name="maybe_later">Maybe later</string>
-    <string name="manage_external_storage_permission_rational">File Navigator requires permission to manage all files to be able to navigate file types other than Image, Video and Audio files.</string>
+    <string name="manage_external_storage_permission_rational">File Navigator requires permission to manage all files to be able to move newly registered files</string>
     <string name="manage_external_storage_permission_required_notification">Navigation of non-media file types requires access to manage all files</string>
     <string name="grant">Grant</string>
     <string name="leave_at_least_one_file_type_enabled">Leave at least one file type enabled</string>
@@ -60,4 +60,5 @@
     <string name="non_tiramisu_permission_rational">File Navigator requires the read external storage permission to register new files.</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="go_to_the_app_settings_to_grant_the_required_permissions">Go to the app settings to grant the required permissions</string>
+    <string name="theme">Theme</string>
 </resources>

@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.theme.RailwayText
 
 enum class Theme {
     Light,
@@ -37,7 +36,6 @@ enum class Theme {
 @Composable
 fun ThemeSelectionRow(
     modifier: Modifier = Modifier,
-    customThemeIndicatorProperties: ThemeIndicatorProperties? = null,
     selected: () -> Theme,
     onSelected: (Theme) -> Unit
 ) {
@@ -73,12 +71,9 @@ fun ThemeSelectionRow(
                     buttonColoring = ButtonColoring.Uniform(Color.Black)
                 )
             )
-            customThemeIndicatorProperties?.let {
-                add(it)
-            }
         }
             .forEach { properties ->
-                ThemeIndicator(
+                ThemeColumn(
                     properties = properties,
                     isSelected = { properties.theme == selected() },
                     modifier = Modifier.padding(
@@ -104,7 +99,7 @@ sealed class ButtonColoring(val containerColor: Color) {
 }
 
 @Composable
-private fun ThemeIndicator(
+private fun ThemeColumn(
     properties: ThemeIndicatorProperties,
     isSelected: () -> Boolean,
     modifier: Modifier = Modifier,

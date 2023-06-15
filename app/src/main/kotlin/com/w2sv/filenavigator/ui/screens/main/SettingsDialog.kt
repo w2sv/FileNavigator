@@ -24,8 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.DialogButton
 import com.w2sv.filenavigator.ui.ThemeSelectionRow
-import com.w2sv.filenavigator.ui.theme.RailwayText
+import com.w2sv.filenavigator.ui.RailwayText
 import com.w2sv.filenavigator.utils.toggle
 
 @Composable
@@ -66,7 +67,7 @@ internal fun SettingsDialog(
         },
         onDismissRequest = onDismissRequest,
         confirmButton = {
-            ElevatedButton(
+            DialogButton(
                 onClick = {
                     with(mainScreenViewModel) { unconfirmedExtendedSettings.launchSync() }
                     closeDialog()
@@ -77,13 +78,13 @@ internal fun SettingsDialog(
             }
         },
         dismissButton = {
-            ElevatedButton(onClick = onDismissRequest) {
+            DialogButton(onClick = onDismissRequest) {
                 RailwayText(text = stringResource(id = R.string.cancel))
             }
         },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                RailwayText(text = "Theme", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                RailwayText(text = stringResource(R.string.theme), fontSize = 18.sp, fontWeight = FontWeight.Medium)
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ThemeSelectionRow(

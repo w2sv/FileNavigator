@@ -21,7 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesKey
-import com.w2sv.filenavigator.ui.theme.RailwayText
+import com.w2sv.filenavigator.ui.DialogButton
+import com.w2sv.filenavigator.ui.RailwayText
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,7 +38,7 @@ fun EventualManageExternalStorageRational(mainScreenViewModel: MainScreenViewMod
     }
         .apply {
             if (value) {
-                ManageExternalStorageRational(
+                ManageExternalStorageRationalDialog(
                     onConfirmation = {
                         goToManageExternalStorageSettings(
                             context
@@ -73,7 +74,7 @@ fun EventualManageExternalStorageRational(mainScreenViewModel: MainScreenViewMod
 }
 
 @Composable
-private fun ManageExternalStorageRational(
+private fun ManageExternalStorageRationalDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit
 ) {
@@ -85,7 +86,7 @@ private fun ManageExternalStorageRational(
             }
         },
         confirmButton = {
-            ElevatedButton(onClick = {
+            DialogButton(onClick = {
                 onDismissRequest()
                 onConfirmation()
             }) {
