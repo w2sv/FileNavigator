@@ -22,7 +22,7 @@ import com.w2sv.filenavigator.ui.theme.md_positive
 
 class ExtendedSnackbarVisuals(
     override val message: String,
-    val kind: SnackbarKind,
+    val kind: SnackbarKind? = null,
     override val duration: SnackbarDuration = SnackbarDuration.Short,
     override val actionLabel: String? = null,
     val action: (() -> Unit)? = null,
@@ -68,6 +68,8 @@ fun AppSnackbar(snackbarData: SnackbarData) {
                         contentDescription = null,
                         tint = md_positive
                     )
+
+                    null -> Unit
                 }
                 Spacer(modifier = Modifier.width(10.dp))
             }

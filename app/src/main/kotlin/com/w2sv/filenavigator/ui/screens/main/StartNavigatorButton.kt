@@ -37,9 +37,12 @@ import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.service.FileNavigatorService
+import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
+import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.RailwayText
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
+import com.w2sv.filenavigator.utils.goToAppSettings
 import com.w2sv.filenavigator.utils.powerSaveModeActivated
 import kotlinx.coroutines.launch
 
@@ -136,6 +139,18 @@ internal fun StartNavigatorButton(
                 when {
                     !mainScreenViewModel.repository.showedPermissionsRational.getValueSynchronously() -> {
                         showPermissionsRational = true
+                    }
+
+                    !permissionState.shouldShowRationale -> {
+                        scope.launch {
+                            mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                ExtendedSnackbarVisuals(
+                                    message = context.getString(R.string.go_to_the_app_settings_to_grant_the_required_permissions),
+                                    actionLabel = context.getString(R.string.go_to_settings),
+                                    action = { goToAppSettings(context) }
+                                )
+                            )
+                        }
                     }
 
                     !permissionState.allPermissionsGranted -> {

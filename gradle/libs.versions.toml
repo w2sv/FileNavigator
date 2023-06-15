@@ -25,7 +25,7 @@ androidx-core = 'androidx.core:core-ktx:1.10.1'
 androidx-localbroadcastmanager = 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
 androidx-splashscreen = 'androidx.core:core-splashscreen:1.0.1'
 androidx-lifecycle-runtime = { module = 'androidx.lifecycle:lifecycle-runtime-ktx', version.ref = 'lifecycle' }
-androidx-compose-bom = 'androidx.compose:compose-bom:2023.05.01'
+androidx-compose-bom = "androidx.compose:compose-bom:2023.06.00"
 androidx-compose-material3 = 'androidx.compose.material3:material3:1.1.0'
 androidx-compose-ui = { module = 'androidx.compose.ui:ui', version.ref = 'compose-tooling' }
 androidx-compose-ui-tooling-preview = { module = 'androidx.compose.ui:ui-tooling-preview', version.ref = 'compose-tooling' }
@@ -36,7 +36,7 @@ androidx-datastore-preferences = 'androidx.datastore:datastore-preferences:1.0.0
 
 # google
 google-material = 'com.google.android.material:material:1.9.0'
-google-guava = 'com.google.guava:guava:31.1-jre'
+google-guava = "com.google.guava:guava:32.0.1-jre"
 google-hilt = { module = 'com.google.dagger:hilt-android', version.ref = 'hilt' }
 google-hilt-kapt = { module = 'com.google.dagger:hilt-android-compiler', version.ref = 'hilt' }
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.30.1"
