@@ -36,6 +36,19 @@ internal fun NavigatorConfigurationButtons(
 
     Row(modifier = modifier) {
         ConfigurationChangeButton(
+            iconRes = R.drawable.ic_cancel_24,
+            md_negative,
+            R.string.discard_changes,
+            onClick = {
+                with(mainScreenViewModel) {
+                    unconfirmedNavigatorConfiguration.launchReset()
+                }
+            }
+        )
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        ConfigurationChangeButton(
             iconRes = R.drawable.ic_check_24,
             md_positive,
             R.string.confirm_changes,
@@ -51,19 +64,6 @@ internal fun NavigatorConfigurationButtons(
                                 )
                             }
                         }
-                }
-            }
-        )
-
-        Spacer(modifier = Modifier.width(10.dp))
-
-        ConfigurationChangeButton(
-            iconRes = R.drawable.ic_cancel_24,
-            md_negative,
-            R.string.discard_changes,
-            onClick = {
-                with(mainScreenViewModel) {
-                    unconfirmedNavigatorConfiguration.launchReset()
                 }
             }
         )
