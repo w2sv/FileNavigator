@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -19,6 +21,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -31,6 +34,40 @@ enum class Theme {
     Light,
     DeviceDefault,
     Dark
+}
+
+@Composable
+fun ThemeSelectionDialog(
+    onDismissRequest: () -> Unit,
+    selectedTheme: () -> Theme,
+    onThemeSelected: (Theme) -> Unit,
+    applyButtonEnabled: () -> Boolean,
+    onApplyButtonClick: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { AppFontText(text = stringResource(id = R.string.theme)) },
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_nightlight_24),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        confirmButton = {
+            DialogButton(onClick = { onApplyButtonClick() }, enabled = applyButtonEnabled()) {
+                AppFontText(text = stringResource(id = R.string.apply))
+            }
+        },
+        dismissButton = {
+            DialogButton(onClick = onDismissRequest) {
+                AppFontText(text = stringResource(id = R.string.cancel))
+            }
+        },
+        text = {
+            ThemeSelectionRow(selected = selectedTheme, onSelected = onThemeSelected)
+        }
+    )
 }
 
 @Composable

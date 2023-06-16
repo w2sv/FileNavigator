@@ -43,7 +43,7 @@
     <string name="open_extended_settings_dialog">Open the extended settings dialog.</string>
     <string name="apply">Apply</string>
     <string name="cancel">Cancel</string>
-    <string name="disable_listener_on_low_battery">Disable listener on low battery</string>
+    <string name="disable_navigator_on_low_battery">Disable navigator on low battery</string>
     <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">Leave at least one file source selected or disable the file type as a whole</string>
     <string name="got_it">Got it</string>
     <string name="navigated_file_types">Navigated File Types</string>
@@ -61,4 +61,12 @@
     <string name="go_to_settings">Go to settings</string>
     <string name="go_to_the_app_settings_to_grant_the_required_permissions">Go to the app settings to grant the required permissions</string>
     <string name="theme">Theme</string>
+    <string name="open_navigation_drawer">Open navigation drawer</string>
+    <string name="share">Share</string>
+    <string name="rate">Rate</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="share_action_text">Check out File Navigator!\\nhttps://play.google.com/store/apps/details?id=com.w2sv.filenavigator</string>
+    <string name="you_re_not_signed_into_the_play_store">You\'re not signed into the Play Store</string>
+    <string name="version">Version: %s</string>
+    <string name="navigator_settings">Navigator Settings</string>
 </resources>
