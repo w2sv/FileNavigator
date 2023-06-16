@@ -1,15 +1,21 @@
 package com.w2sv.filenavigator
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.view.View
+import android.view.animation.AnticipateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
+import androidx.core.animation.doOnEnd
+import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.lifecycle.SelfManagingLocalBroadcastReceiver
@@ -53,7 +59,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        installSplashScreen().setOnExitAnimationListener(SwipeRightSplashScreenExitAnimation())
 
         super.onCreate(savedInstanceState)
 
@@ -102,5 +108,24 @@ class MainActivity : ComponentActivity() {
         super.onStart()
 
         viewModel.updateManageExternalStoragePermissionGranted()
+    }
+}
+
+class SwipeRightSplashScreenExitAnimation : SplashScreen.OnExitAnimationListener {
+    override fun onSplashScreenExit(splashScreenViewProvider: SplashScreenViewProvider) {
+        ObjectAnimator.ofFloat(
+            splashScreenViewProvider.view,
+            View.TRANSLATION_X,
+            0f,
+            splashScreenViewProvider.view.width.toFloat()
+        )
+            .apply {
+                interpolator = AnticipateInterpolator()
+                duration = 400L
+                doOnEnd {
+                    splashScreenViewProvider.remove()
+                }
+            }
+            .start()
     }
 }
