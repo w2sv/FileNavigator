@@ -3,8 +3,8 @@
     <style name="Theme.FileNavigator" parent="android:Theme.Material.Light.NoActionBar" />
 
     <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_adaptive_fore</item>
-        <item name="windowSplashScreenBackground">@mipmap/ic_launcher_adaptive_back</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
         <item name="postSplashScreenTheme">@style/Theme.FileNavigator</item>
     </style>
 </resources>
