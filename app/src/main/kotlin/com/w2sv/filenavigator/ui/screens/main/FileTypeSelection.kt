@@ -59,7 +59,7 @@ fun FileTypeSelectionColumn(
         AppFontText(
             text = stringResource(id = R.string.navigated_file_types),
             fontSize = 20.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.secondary
         )
 
         Spacer(modifier = Modifier.height(8.dp))

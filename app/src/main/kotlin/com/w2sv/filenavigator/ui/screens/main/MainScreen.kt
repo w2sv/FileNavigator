@@ -27,11 +27,8 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -100,7 +97,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
-                    Spacer(modifier = Modifier.weight(0.05f))
+                    Spacer(modifier = Modifier.weight(0.075f))
 
                     Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.Center) {
                         FileTypeSelectionColumn(Modifier.fillMaxHeight())

@@ -51,7 +51,7 @@ fun ThemeSelectionDialog(
             Icon(
                 painter = painterResource(id = R.drawable.ic_nightlight_24),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.secondary
             )
         },
         confirmButton = {
