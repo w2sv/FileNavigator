@@ -193,7 +193,7 @@ internal fun EventualManageExternalStoragePermissionRational(mainScreenViewModel
             }
         }
 
-    if (mainScreenViewModel.storageAccessStatus.collectAsState().value == StorageAccessStatus.NoAccess && !mainScreenViewModel.repository.showedManageExternalStorageRational.collectAsState(
+    if (!mainScreenViewModel.anyStorageAccessGranted.collectAsState().value && !mainScreenViewModel.repository.showedManageExternalStorageRational.collectAsState(
             initial = false
         ).value
     ) {

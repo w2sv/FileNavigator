@@ -14,6 +14,7 @@ import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.UnconfirmedStatesHoldingViewModel
 import com.w2sv.filenavigator.utils.StorageAccessStatus
+import com.w2sv.filenavigator.utils.mapState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -53,6 +54,8 @@ class MainScreenViewModel @Inject constructor(
 
     val storageAccessStatus: StateFlow<StorageAccessStatus> get() = _storageAccessStatus
     private val _storageAccessStatus = MutableStateFlow(StorageAccessStatus.NoAccess)
+
+    val anyStorageAccessGranted: StateFlow<Boolean> = storageAccessStatus.mapState { it != StorageAccessStatus.NoAccess }
 
     fun updateStorageAccessStatus(context: Context) {
         _storageAccessStatus.value = StorageAccessStatus.get(context)

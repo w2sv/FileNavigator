@@ -160,12 +160,12 @@ internal fun StartNavigatorButton(
             }
         }
 
-        val manageExternalStoragePermissionGranted by mainScreenViewModel.storageAccessStatus.collectAsState()
+        val anyStorageAccessGranted by mainScreenViewModel.anyStorageAccessGranted.collectAsState()
 
         ElevatedButton(
             onClick = properties.onClick,
             modifier = modifier,
-            enabled = manageExternalStoragePermissionGranted
+            enabled = anyStorageAccessGranted
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -176,12 +176,12 @@ internal fun StartNavigatorButton(
                     painter = painterResource(id = properties.iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
-                    tint = if (manageExternalStoragePermissionGranted) properties.color else disabledColor()
+                    tint = if (anyStorageAccessGranted) properties.color else disabledColor()
                 )
                 AppFontText(
                     text = stringResource(id = properties.labelRes),
                     fontSize = 18.sp,
-                    color = if (manageExternalStoragePermissionGranted) MaterialTheme.colorScheme.onBackground else disabledColor()
+                    color = if (anyStorageAccessGranted) MaterialTheme.colorScheme.onBackground else disabledColor()
                 )
             }
         }
