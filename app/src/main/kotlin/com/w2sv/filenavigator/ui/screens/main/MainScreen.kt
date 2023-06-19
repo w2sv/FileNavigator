@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -71,13 +72,6 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
         }
     }
 
-    val minValue = with(LocalDensity.current) { 360.dp.toPx() }
-//    val screenWidthPx = with(LocalDensity.current) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
-
-    val drawerProgress by remember {
-        drawerState.offsetFraction(minValue.toInt())
-    }
-
     NavigationDrawer(drawerState, closeDrawer) {
         Scaffold(
             snackbarHost = {
@@ -89,54 +83,11 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
                 AppTopBar(onNavigationIconClick = openDrawer)
             }
         ) { paddingValues ->
-            Surface(
-                modifier = Modifier
+            ScaffoldContent(
+                drawerState = drawerState, modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .verticalScroll(rememberScrollState())
-                        .graphicsLayer(
-                            scaleX = 1 - drawerProgress,
-                            translationX = LocalConfiguration.current.screenWidthDp * drawerProgress,
-                            alpha = 1 - drawerProgress
-                        ),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceAround
-                ) {
-                    Spacer(modifier = Modifier.weight(0.075f))
-
-                    Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.Center) {
-                        FileTypeSelectionColumn(Modifier.fillMaxHeight())
-                    }
-
-                    Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
-                        val unconfirmedConfigurationChangesPresent by mainScreenViewModel.unconfirmedNavigatorConfiguration.statesDissimilar.collectAsState()
-
-                        this@Column.AnimatedVisibility(
-                            visible = !unconfirmedConfigurationChangesPresent,
-                            enter = fadeIn() + slideInHorizontally(),
-                            exit = fadeOut() + slideOutHorizontally()
-                        ) {
-                            StartNavigatorButton(
-                                modifier = Modifier
-                                    .width(220.dp)
-                                    .height(70.dp)
-                            )
-                        }
-
-                        this@Column.AnimatedVisibility(
-                            visible = unconfirmedConfigurationChangesPresent,
-                            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it / 2 }),
-                            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it / 2 })
-                        ) {
-                            NavigatorConfigurationButtons()
-                        }
-                    }
-                }
-            }
+            )
         }
     }
 
@@ -146,6 +97,66 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
         when (drawerState.currentValue) {
             DrawerValue.Closed -> mainScreenViewModel.onBackPress(context)
             DrawerValue.Open -> closeDrawer()
+        }
+    }
+}
+
+@Composable
+internal fun ScaffoldContent(
+    drawerState: DrawerState,
+    modifier: Modifier = Modifier,
+    mainScreenViewModel: MainScreenViewModel = viewModel()
+) {
+    val minValue = with(LocalDensity.current) { 360.dp.toPx() }
+
+    val drawerProgress by remember {
+        drawerState.offsetFraction(minValue.toInt())
+    }
+
+    Surface(
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .verticalScroll(rememberScrollState())
+                .graphicsLayer(
+                    scaleX = 1 - drawerProgress,
+                    translationX = LocalConfiguration.current.screenWidthDp * drawerProgress,
+                    alpha = 1 - drawerProgress
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceAround
+        ) {
+            Spacer(modifier = Modifier.weight(0.075f))
+
+            Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.Center) {
+                FileTypeSelectionColumn(Modifier.fillMaxHeight())
+            }
+
+            Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
+                val unconfirmedConfigurationChangesPresent by mainScreenViewModel.unconfirmedNavigatorConfiguration.statesDissimilar.collectAsState()
+
+                this@Column.AnimatedVisibility(
+                    visible = !unconfirmedConfigurationChangesPresent,
+                    enter = fadeIn() + slideInHorizontally(),
+                    exit = fadeOut() + slideOutHorizontally()
+                ) {
+                    StartNavigatorButton(
+                        modifier = Modifier
+                            .width(220.dp)
+                            .height(70.dp)
+                    )
+                }
+
+                this@Column.AnimatedVisibility(
+                    visible = unconfirmedConfigurationChangesPresent,
+                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it / 2 }),
+                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it / 2 })
+                ) {
+                    NavigatorConfigurationButtons()
+                }
+            }
         }
     }
 }
