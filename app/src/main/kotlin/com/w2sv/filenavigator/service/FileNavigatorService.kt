@@ -40,12 +40,12 @@ class FileNavigatorService : UnboundService() {
     private val newFileDetectedActionsPendingIntentRequestCodes = IdGroup(1)
 
     private fun getAndRegisterFileObservers(): List<FileObserver> {
-        val accountForFileType = dataStoreRepository.fileTypeEnabled.getSynchronousMap()
+        val fileTypeStatus = dataStoreRepository.fileTypeStatus.getSynchronousMap()
         val accountForFileTypeOrigin =
             dataStoreRepository.fileSourceEnabled.getSynchronousMap()
 
         val mediaFileObservers = FileType.Media.all
-            .filter { accountForFileType.getValue(it) }
+            .filter { fileTypeStatus.getValue(it) == FileType.Status.Enabled }
             .map { mediaType ->
                 MediaFileObserver(
                     mediaType,
@@ -58,13 +58,14 @@ class FileNavigatorService : UnboundService() {
             }
 
         val nonMediaFileObserver =
-            FileType.NonMedia.all.filter { accountForFileType.getValue(it) }.run {
-                if (isNotEmpty()) {
-                    NonMediaFileObserver(this)
-                } else {
-                    null
+            FileType.NonMedia.all.filter { fileTypeStatus.getValue(it) == FileType.Status.Enabled }
+                .run {
+                    if (isNotEmpty()) {
+                        NonMediaFileObserver(this)
+                    } else {
+                        null
+                    }
                 }
-            }
 
         return buildList {
             addAll(mediaFileObservers)
@@ -167,7 +168,6 @@ class FileNavigatorService : UnboundService() {
         sendLocalBroadcast(ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED)
     }
 
-    @Suppress("UnstableApiUsage")
     private abstract inner class FileObserver(val contentObserverUri: Uri) :
         ContentObserver(Handler(Looper.getMainLooper())) {
 

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.ui.AppSnackbar
+import com.w2sv.filenavigator.utils.StorageAccessStatus
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -181,7 +182,7 @@ internal fun EventualManageExternalStoragePermissionRational(mainScreenViewModel
             }
         }
 
-    if (!mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState().value && !mainScreenViewModel.repository.showedManageExternalStorageRational.collectAsState(
+    if (mainScreenViewModel.storageAccessStatus.collectAsState().value == StorageAccessStatus.NoAccess && !mainScreenViewModel.repository.showedManageExternalStorageRational.collectAsState(
             initial = false
         ).value
     ) {

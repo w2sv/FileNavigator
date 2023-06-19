@@ -23,8 +23,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,17 +42,13 @@ import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
-import com.w2sv.filenavigator.utils.toggle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun FileTypeSelectionColumn(
-    modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel()
+    modifier: Modifier = Modifier
 ) {
-    val manageExternalStoragePermissionGranted by mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState()
-
     Column(
         modifier = modifier
             .padding(horizontal = 10.dp)
@@ -74,7 +68,6 @@ fun FileTypeSelectionColumn(
             FileType.all.forEach {
                 FileTypeAccordion(
                     fileType = it,
-                    manageExternalStoragePermissionGranted = manageExternalStoragePermissionGranted,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
@@ -85,16 +78,17 @@ fun FileTypeSelectionColumn(
 @Composable
 private fun FileTypeAccordion(
     fileType: FileType,
-    manageExternalStoragePermissionGranted: Boolean,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
+    val fileTypeEnabled = mainScreenViewModel.fileTypeStatus.getValue(fileType).isEnabled
+
     Column(modifier = modifier) {
         FileTypeAccordionHeader(
             fileType = fileType,
-            manageExternalStoragePermissionGranted = manageExternalStoragePermissionGranted
+            isEnabled = fileTypeEnabled
         )
-        AnimatedVisibility(visible = mainScreenViewModel.fileTypeEnabled.getValue(fileType)) {
+        AnimatedVisibility(visible = fileTypeEnabled) {
             FileSourcesSurface(fileType = fileType)
         }
     }
@@ -103,17 +97,12 @@ private fun FileTypeAccordion(
 @Composable
 private fun FileTypeAccordionHeader(
     fileType: FileType,
-    manageExternalStoragePermissionGranted: Boolean,
+    isEnabled: Boolean,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-
-    val isEnabled =
-        manageExternalStoragePermissionGranted && mainScreenViewModel.fileTypeEnabled.getValue(
-            fileType
-        )
 
     Surface(tonalElevation = 2.dp, shape = RoundedCornerShape(8.dp)) {
         Row(
@@ -146,33 +135,27 @@ private fun FileTypeAccordionHeader(
                     modifier = Modifier.padding(8.dp),
                     checked = isEnabled,
                     onCheckedChange = { checkedNew ->
-                        when (manageExternalStoragePermissionGranted) {
-                            false -> {
-                                scope.launchManageExternalStorageSnackbar(
-                                    mainScreenViewModel.snackbarHostState,
-                                    context
-                                )
-                            }
-
-                            true -> {
-                                if (mainScreenViewModel.fileTypeEnabled.values.atLeastOneTrueAfterValueChange(
-                                        checkedNew
-                                    )
-                                ) {
-                                    mainScreenViewModel.fileTypeEnabled.toggle(fileType)
-                                } else {
-                                    scope.launch {
-                                        mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-                                            ExtendedSnackbarVisuals(
-                                                message = context.getString(
-                                                    R.string.leave_at_least_one_file_type_enabled
-                                                ),
-                                                kind = SnackbarKind.Error
-                                            )
+                        when (val status = mainScreenViewModel.fileTypeStatus.getValue(fileType)) {
+                            FileType.Status.Enabled, FileType.Status.Disabled -> {
+                                if (mainScreenViewModel.fileTypeStatus.values.map { it.isEnabled }
+                                        .atLeastOneTrueAfterValueChange(
+                                            checkedNew
                                         )
-                                    }
+                                ) {
+                                    mainScreenViewModel.fileTypeStatus.toggle(fileType)
+                                } else {
+                                    scope.showLeaveAtLeastOneFileTypeEnabledSnackbar(
+                                        mainScreenViewModel.snackbarHostState,
+                                        context
+                                    )
                                 }
                             }
+
+                            FileType.Status.DisabledForNoFileAccess, FileType.Status.DisabledForMediaAccessOnly -> scope.showManageExternalStorageSnackbar(
+                                status,
+                                mainScreenViewModel.snackbarHostState,
+                                context
+                            )
                         }
                     }
                 )
@@ -181,7 +164,11 @@ private fun FileTypeAccordionHeader(
     }
 }
 
-fun CoroutineScope.launchManageExternalStorageSnackbar(
+/**
+ * Assumes [fileTypeStatus] to be one of [FileType.Status.DisabledForNoFileAccess], [FileType.Status.DisabledForMediaAccessOnly].
+ */
+private fun CoroutineScope.showManageExternalStorageSnackbar(
+    fileTypeStatus: FileType.Status,
     snackbarHostState: SnackbarHostState,
     context: Context
 ) {
@@ -189,15 +176,34 @@ fun CoroutineScope.launchManageExternalStorageSnackbar(
         snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
             ExtendedSnackbarVisuals(
                 message = context.getString(
-                    R.string.manage_external_storage_permission_rational
+                    if (fileTypeStatus == FileType.Status.DisabledForNoFileAccess)
+                        R.string.manage_external_storage_permission_rational
+                    else
+                        R.string.non_media_files_require_all_files_access
                 ),
                 kind = SnackbarKind.Error,
+                actionLabel = context.getString(R.string.grant),
                 action = {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         goToManageExternalStorageSettings(context)
                     }
-                },
-                actionLabel = context.getString(R.string.grant)
+                }
+            )
+        )
+    }
+}
+
+private fun CoroutineScope.showLeaveAtLeastOneFileTypeEnabledSnackbar(
+    snackbarHostState: SnackbarHostState,
+    context: Context
+) {
+    launch {
+        snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+            ExtendedSnackbarVisuals(
+                message = context.getString(
+                    R.string.leave_at_least_one_file_type_enabled
+                ),
+                kind = SnackbarKind.Error
             )
         )
     }
@@ -294,3 +300,13 @@ private fun FileSourceRow(
 
 fun Iterable<Boolean>.atLeastOneTrueAfterValueChange(newValue: Boolean): Boolean =
     newValue || count { it } > 1
+
+/**
+ * Assumes value corresponding to [key] to be one of [FileType.Status.Enabled] or [FileType.Status.Disabled].
+ */
+fun <K> MutableMap<K, FileType.Status>.toggle(key: K) {
+    put(
+        key,
+        if (getValue(key) == FileType.Status.Disabled) FileType.Status.Enabled else FileType.Status.Disabled
+    )
+}

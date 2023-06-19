@@ -29,7 +29,7 @@ abstract class PreferencesDataStoreRepository(
     // Enums
     // ============
 
-    protected inline fun <reified T : Enum<T>> getEnumFLow(
+    protected inline fun <reified T : Enum<T>> getEnumFlow(
         preferencesKey: Preferences.Key<Int>,
         defaultValue: T
     ): Flow<T> =
@@ -50,17 +50,34 @@ abstract class PreferencesDataStoreRepository(
     // Maps
     // ============
 
-    protected fun <T, P : DataStoreVariable<T>> getFlowMap(properties: Iterable<P>): Map<P, Flow<T>> =
+    protected fun <T, P : DataStoreEntry.UniType<T>> getFlowMap(properties: Iterable<P>): Map<P, Flow<T>> =
         properties.associateWith { property ->
             getFlow(property.preferencesKey, property.defaultValue)
         }
 
-    suspend fun <T, P : DataStoreVariable<T>> saveMap(
-        map: Map<P, T>
+    protected inline fun <reified V : Enum<V>, K : DataStoreEntry.EnumValued<V>> getEnumValuedFlowMap(
+        properties: Iterable<K>
+    ): Map<K, Flow<V>> =
+        properties.associateWith { property ->
+            getEnumFlow(property.preferencesKey, property.defaultValue)
+        }
+
+    suspend fun <V, K : DataStoreEntry.UniType<V>> saveMap(
+        map: Map<K, V>
     ) {
         dataStore.edit {
             map.forEach { (property, value) ->
                 it[property.preferencesKey] = value
+            }
+        }
+    }
+
+    suspend fun <V: Enum<V>, K : DataStoreEntry.EnumValued<V>> saveEnumValuedMap(
+        map: Map<K, V>
+    ) {
+        dataStore.edit {
+            map.forEach { (key, value) ->
+                it[key.preferencesKey] = value.ordinal
             }
         }
     }
@@ -78,7 +95,7 @@ abstract class PreferencesDataStoreRepository(
             }
         }
 
-        fun <T, P : DataStoreVariable<T>> saveMapToDataStore(
+        fun <T, P : DataStoreEntry.UniType<T>> saveMapToDataStore(
             map: Map<P, T>
         ) {
             coroutineScope.launch {

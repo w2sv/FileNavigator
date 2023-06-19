@@ -160,7 +160,7 @@ internal fun StartNavigatorButton(
             }
         }
 
-        val manageExternalStoragePermissionGranted by mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState()
+        val manageExternalStoragePermissionGranted by mainScreenViewModel.storageAccessStatus.collectAsState()
 
         ElevatedButton(
             onClick = properties.onClick,

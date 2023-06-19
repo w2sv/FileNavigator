@@ -13,7 +13,7 @@ import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.UnconfirmedStatesHoldingViewModel
-import com.w2sv.filenavigator.utils.isExternalStorageManger
+import com.w2sv.filenavigator.utils.StorageAccessStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,43 +48,70 @@ class MainScreenViewModel @Inject constructor(
         makeUnconfirmedStatesComposition(listOf(disableListenerOnLowBattery, inAppTheme))
 
     // ==============
-    // manageExternalStoragePermissionGranted
+    // StorageAccessStatus
     // ==============
 
-    val manageExternalStoragePermissionGranted: StateFlow<Boolean> get() = _manageExternalStoragePermissionGranted
-    private val _manageExternalStoragePermissionGranted = MutableStateFlow(false)
+    val storageAccessStatus: StateFlow<StorageAccessStatus> get() = _storageAccessStatus
+    private val _storageAccessStatus = MutableStateFlow(StorageAccessStatus.NoAccess)
 
-    fun updateManageExternalStoragePermissionGranted() {
-        _manageExternalStoragePermissionGranted.value = isExternalStorageManger()
-            .also { newValue ->
-                if (newValue != repository.manageExternalStoragePermissionPreviouslyGranted.getValueSynchronously()) {
-                    i { "New manageExternalStoragePermissionGranted = $newValue diverting from previous value" }
+    fun updateStorageAccessStatus(context: Context) {
+        _storageAccessStatus.value = StorageAccessStatus.get(context)
+            .also { status ->
+                val previousStatus = repository.previousStorageAccessStatus.getValueSynchronously()
 
-                    coroutineScope.launch {
-                        repository.saveMap(
-                            FileType.all.associateWith { newValue }
+                if (status != previousStatus) {
+                    i { "New manageExternalStoragePermissionGranted = $status diverting from previous = $previousStatus" }
+
+                    when (status) {
+                        StorageAccessStatus.NoAccess -> setFileTypeStatuses(
+                            FileType.all,
+                            FileType.Status.DisabledForNoFileAccess
                         )
-                        FileType.all.forEach {
-                            fileTypeEnabled[it] = newValue
+
+                        StorageAccessStatus.MediaFilesOnly -> {
+                            setFileTypeStatuses(
+                                FileType.NonMedia.all,
+                                FileType.Status.DisabledForMediaAccessOnly
+                            )
+
+                            if (previousStatus == StorageAccessStatus.NoAccess) {
+                                setFileTypeStatuses(FileType.Media.all, FileType.Status.Enabled)
+                            }
                         }
+
+                        StorageAccessStatus.AllFiles -> setFileTypeStatuses(
+                            FileType.all,
+                            FileType.Status.Enabled
+                        )
                     }
 
                     coroutineScope.launch {
                         repository.save(
-                            PreferencesKey.MANAGE_EXTERNAL_STORAGE_PERMISSION_PREVIOUSLY_GRANTED,
-                            newValue
+                            PreferencesKey.PREVIOUS_STORAGE_ACCESS_STATUS,
+                            status
                         )
                     }
                 }
             }
     }
 
+    private fun setFileTypeStatuses(fileTypes: Iterable<FileType>, newStatus: FileType.Status) {
+        coroutineScope.launch {
+            repository.saveEnumValuedMap(
+                fileTypes.associateWith { newStatus }
+            )
+            fileTypes.forEach {
+                fileTypeStatus[it] = newStatus
+            }
+        }
+    }
+
     // ==============
     // Navigator Configuration
     // ==============
 
-    val fileTypeEnabled by lazy {
-        makeUnconfirmedStateMap(dataStoreRepository.fileTypeEnabled)
+    val fileTypeStatus by lazy {
+        makeUnconfirmedEnumValuedStateMap(dataStoreRepository.fileTypeStatus)
     }
 
     val fileSourceEnabled by lazy {
@@ -92,7 +119,7 @@ class MainScreenViewModel @Inject constructor(
     }
 
     val unconfirmedNavigatorConfiguration by lazy {
-        makeUnconfirmedStatesComposition(listOf(fileTypeEnabled, fileSourceEnabled))
+        makeUnconfirmedStatesComposition(listOf(fileTypeStatus, fileSourceEnabled))
     }
 
     // ==============

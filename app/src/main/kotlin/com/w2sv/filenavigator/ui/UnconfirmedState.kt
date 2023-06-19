@@ -2,7 +2,7 @@ package com.w2sv.filenavigator.ui
 
 import androidx.datastore.preferences.core.Preferences
 import com.w2sv.androidutils.coroutines.getValueSynchronously
-import com.w2sv.filenavigator.datastore.DataStoreVariable
+import com.w2sv.filenavigator.datastore.DataStoreEntry
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.utils.getMutableStateMap
 import com.w2sv.filenavigator.utils.getSynchronousMap
@@ -31,15 +31,15 @@ abstract class UnconfirmedState<T> {
     abstract suspend fun reset()
 }
 
-class UnconfirmedStateMap<K : DataStoreVariable<V>, V>(
+class UnconfirmedStateMap<K : DataStoreEntry<V1, V2>, V1, V2>(
     private val coroutineScope: CoroutineScope,
-    private val appliedFlowMap: Map<K, Flow<V>>,
-    private val map: MutableMap<K, V> = appliedFlowMap
+    private val appliedFlowMap: Map<K, Flow<V1>>,
+    private val map: MutableMap<K, V1> = appliedFlowMap
         .getSynchronousMap()
         .getMutableStateMap(),
-    private val syncState: suspend (Map<K, V>) -> Unit
-) : UnconfirmedState<Map<K, V>>(),
-    MutableMap<K, V> by map {
+    private val syncState: suspend (Map<K, V1>) -> Unit
+) : UnconfirmedState<Map<K, V1>>(),
+    MutableMap<K, V1> by map {
 
     /**
      * Tracking of keys which correspond to values, differing between [appliedFlowMap] and this
@@ -54,7 +54,7 @@ class UnconfirmedStateMap<K : DataStoreVariable<V>, V>(
     /**
      * Inherently updates [dissimilarKeys] and [statesDissimilar] in an asynchronous fashion.
      */
-    override fun put(key: K, value: V): V? =
+    override fun put(key: K, value: V1): V1? =
         map.put(key, value)
             .also {
                 coroutineScope.launch {
@@ -66,7 +66,7 @@ class UnconfirmedStateMap<K : DataStoreVariable<V>, V>(
                 }
             }
 
-    override fun putAll(from: Map<out K, V>) {
+    override fun putAll(from: Map<out K, V1>) {
         from.forEach { (k, v) ->
             put(k, v)
         }
@@ -183,11 +183,20 @@ abstract class UnconfirmedStatesHoldingViewModel<R : PreferencesDataStoreReposit
     // Instance creation
     // =======================
 
-    fun <K : DataStoreVariable<V>, V> makeUnconfirmedStateMap(appliedFlowMap: Map<K, Flow<V>>): UnconfirmedStateMap<K, V> =
+    fun <K : DataStoreEntry.UniType<V>, V> makeUnconfirmedStateMap(appliedFlowMap: Map<K, Flow<V>>): UnconfirmedStateMap<K, V, V> =
         UnconfirmedStateMap(
             coroutineScope,
             appliedFlowMap,
             syncState = { repository.saveMap(it) }
+        )
+
+    fun <K : DataStoreEntry.EnumValued<V>, V : Enum<V>> makeUnconfirmedEnumValuedStateMap(
+        appliedFlowMap: Map<K, Flow<V>>
+    ): UnconfirmedStateMap<K, V, Int> =
+        UnconfirmedStateMap(
+            coroutineScope,
+            appliedFlowMap,
+            syncState = { repository.saveEnumValuedMap(it) }
         )
 
     fun <T> makeUnconfirmedStateFlow(

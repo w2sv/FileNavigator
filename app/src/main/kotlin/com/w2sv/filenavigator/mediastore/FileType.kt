@@ -6,8 +6,9 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.datastore.DataStoreVariable
+import com.w2sv.filenavigator.datastore.DataStoreEntry
 import kotlinx.parcelize.Parcelize
 
 sealed class FileType(
@@ -16,15 +17,17 @@ sealed class FileType(
     @DrawableRes val iconRes: Int,
     val color: Color,
     sourceKinds: List<SourceKind>,
-    override val defaultValue: Boolean = false
-) : DataStoreVariable<Boolean>, Parcelable {
+    override val defaultValue: Status = Status.DisabledForNoFileAccess
+) : DataStoreEntry.EnumValued<FileType.Status>, Parcelable {
 
-//    enum class Status{
-//        Enabled,
-//        Disabled,
-//        DisabledForMediaAccessOnly,
-//        DisabledForNoFileAccess
-//    }
+    enum class Status {
+        Enabled,
+        Disabled,
+        DisabledForMediaAccessOnly,
+        DisabledForNoFileAccess;
+
+        val isEnabled: Boolean get() = this == Enabled
+    }
 
     companion object {
         val all: List<FileType> get() = Media.all + NonMedia.all
@@ -144,7 +147,7 @@ sealed class FileType(
 
     private val identifier = this::class.java.simpleName
 
-    override val preferencesKey: Preferences.Key<Boolean> = booleanPreferencesKey(identifier)
+    override val preferencesKey: Preferences.Key<Int> = intPreferencesKey(identifier)
 
     val sources: List<Source> = sourceKinds.map { Source(it, identifier) }
 
@@ -174,7 +177,7 @@ sealed class FileType(
     }
 
     class Source(val kind: SourceKind, mediaTypeIdentifier: String) :
-        DataStoreVariable<Boolean> {
+        DataStoreEntry.UniType<Boolean> {
 
         override val defaultValue: Boolean = true
         override val preferencesKey: Preferences.Key<Boolean> by lazy {

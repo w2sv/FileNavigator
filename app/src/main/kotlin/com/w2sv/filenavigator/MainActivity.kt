@@ -107,7 +107,7 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        viewModel.updateManageExternalStoragePermissionGranted()
+        viewModel.updateStorageAccessStatus(this)
     }
 }
 
