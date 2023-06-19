@@ -19,6 +19,13 @@ sealed class FileType(
     override val defaultValue: Boolean = false
 ) : DataStoreVariable<Boolean>, Parcelable {
 
+//    enum class Status{
+//        Enabled,
+//        Disabled,
+//        DisabledForMediaAccessOnly,
+//        DisabledForNoFileAccess
+//    }
+
     companion object {
         val all: List<FileType> get() = Media.all + NonMedia.all
     }

@@ -181,18 +181,16 @@ internal fun EventualManageExternalStoragePermissionRational(mainScreenViewModel
             }
         }
 
-    if (!mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState().value) {
-        if (!mainScreenViewModel.repository.showedManageExternalStorageRational.collectAsState(
-                initial = false
-            ).value
-        ) {
-            LaunchedEffect(
-                key1 = Unit,
-                block = {
-                    delay(1000L)
-                    showManageExternalStorageRational = true
-                }
-            )
-        }
+    if (!mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState().value && !mainScreenViewModel.repository.showedManageExternalStorageRational.collectAsState(
+            initial = false
+        ).value
+    ) {
+        LaunchedEffect(
+            key1 = Unit,
+            block = {
+                delay(1000L)
+                showManageExternalStorageRational = true
+            }
+        )
     }
 }
