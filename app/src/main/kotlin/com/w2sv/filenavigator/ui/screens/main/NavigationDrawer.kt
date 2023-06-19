@@ -97,7 +97,7 @@ fun NavigationDrawer(
     }
         .apply {
             if (value) {
-                SettingsDialog(closeDialog = { value = false })
+                NavigatorSettingsDialog(closeDialog = { value = false })
             }
         }
 

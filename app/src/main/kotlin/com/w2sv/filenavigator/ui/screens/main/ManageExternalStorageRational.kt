@@ -37,7 +37,7 @@ fun EventualManageExternalStorageRational(mainScreenViewModel: MainScreenViewMod
     }
         .apply {
             if (value) {
-                ManageExternalStorageRationalDialog(
+                ManageExternalStorageDialog(
                     onConfirmation = {
                         goToManageExternalStorageSettings(
                             context
@@ -73,7 +73,7 @@ fun EventualManageExternalStorageRational(mainScreenViewModel: MainScreenViewMod
 }
 
 @Composable
-private fun ManageExternalStorageRationalDialog(
+private fun ManageExternalStorageDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit
 ) {
@@ -89,7 +89,7 @@ private fun ManageExternalStorageRationalDialog(
                 onDismissRequest()
                 onConfirmation()
             }) {
-                AppFontText(text = stringResource(id = R.string.alright))
+                AppFontText(text = stringResource(id = R.string.grant))
             }
         },
         icon = {

@@ -33,7 +33,7 @@
     <string name="new_third_party_file_template">new %1$s %2$s</string>
 
     <string name="configure">Configure</string>
-    <string name="tap_again_to_exit">Tag again to exit</string>
+    <string name="tap_again_to_exit">Tap again to exit</string>
     <string name="alright">Alright</string>
     <string name="maybe_later">Maybe later</string>
     <string name="manage_external_storage_permission_rational">File Navigator requires permission to manage all files to be able to move newly registered files.</string>

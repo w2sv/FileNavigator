@@ -19,7 +19,7 @@ import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.DialogButton
 
 @Composable
-internal fun SettingsDialog(
+internal fun NavigatorSettingsDialog(
     closeDialog: () -> Unit,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
@@ -37,6 +37,9 @@ internal fun SettingsDialog(
                 painter = painterResource(id = R.drawable.ic_settings_24),
                 contentDescription = null
             )
+        },
+        title = {
+            AppFontText(text = stringResource(id = R.string.navigator_settings))
         },
         onDismissRequest = onDismissRequest,
         confirmButton = {

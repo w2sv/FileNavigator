@@ -83,16 +83,22 @@ internal fun StartNavigatorButton(
     }
     val permissionState =
         rememberMultiplePermissionsState(permissions = buildList {
-            add(Manifest.permission.READ_EXTERNAL_STORAGE)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                addAll(
-                    listOf(
-                        Manifest.permission.READ_MEDIA_AUDIO,
-                        Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO,
-                        Manifest.permission.POST_NOTIFICATIONS
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            if (!mainScreenViewModel.manageExternalStoragePermissionGranted.value){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    addAll(
+                        listOf(
+                            Manifest.permission.READ_MEDIA_AUDIO,
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_VIDEO,
+                        )
                     )
-                )
+                }
+                else {
+                    add(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
             }
         }) { isGranted ->
             if (isGranted.values.all { it }) {
@@ -138,12 +144,16 @@ internal fun StartNavigatorButton(
                 R.string.start_navigator
             ) {
                 when {
-                    mainScreenViewModel.manageExternalStoragePermissionGranted.value || permissionState.allPermissionsGranted -> {
+                    !mainScreenViewModel.repository.showedPermissionsRational.getValueSynchronously() -> {
+                        showPermissionsRational = true
+                    }
+
+                    permissionState.allPermissionsGranted -> {
                         startNavigatorOrShowConfirmationDialog()
                     }
 
-                    !mainScreenViewModel.repository.showedPermissionsRational.getValueSynchronously() -> {
-                        showPermissionsRational = true
+                    !permissionState.allPermissionsGranted -> {
+                        permissionState.launchMultiplePermissionRequest()
                     }
 
                     !permissionState.shouldShowRationale -> {
@@ -156,10 +166,6 @@ internal fun StartNavigatorButton(
                                 )
                             )
                         }
-                    }
-
-                    !permissionState.allPermissionsGranted -> {
-                        permissionState.launchMultiplePermissionRequest()
                     }
                 }
             }
