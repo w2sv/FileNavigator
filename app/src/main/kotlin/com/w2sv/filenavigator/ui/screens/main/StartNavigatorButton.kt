@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,10 +36,10 @@ import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.service.FileNavigatorService
-import com.w2sv.filenavigator.ui.DialogButton
-import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.AppFontText
+import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
+import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
 import com.w2sv.filenavigator.utils.goToAppSettings
@@ -83,22 +82,8 @@ internal fun StartNavigatorButton(
     }
     val permissionState =
         rememberMultiplePermissionsState(permissions = buildList {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 add(Manifest.permission.POST_NOTIFICATIONS)
-            }
-            if (!mainScreenViewModel.manageExternalStoragePermissionGranted.value){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    addAll(
-                        listOf(
-                            Manifest.permission.READ_MEDIA_AUDIO,
-                            Manifest.permission.READ_MEDIA_IMAGES,
-                            Manifest.permission.READ_MEDIA_VIDEO,
-                        )
-                    )
-                }
-                else {
-                    add(Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
             }
         }) { isGranted ->
             if (isGranted.values.all { it }) {
@@ -111,12 +96,12 @@ internal fun StartNavigatorButton(
     }
         .apply {
             if (value) {
-                PermissionsRationalDialog(
+                PostNotificationsPermissionDialog(
                     onDismissRequest = {
                         value = false
                         scope.launch {
                             mainScreenViewModel.repository.save(
-                                PreferencesKey.SHOWED_PERMISSIONS_RATIONAL,
+                                PreferencesKey.SHOWED_POST_NOTIFICATIONS_PERMISSION_RATIONAL,
                                 true
                             )
                         }
@@ -144,36 +129,43 @@ internal fun StartNavigatorButton(
                 R.string.start_navigator
             ) {
                 when {
-                    !mainScreenViewModel.repository.showedPermissionsRational.getValueSynchronously() -> {
-                        showPermissionsRational = true
-                    }
-
-                    permissionState.allPermissionsGranted -> {
-                        startNavigatorOrShowConfirmationDialog()
-                    }
-
                     !permissionState.allPermissionsGranted -> {
-                        permissionState.launchMultiplePermissionRequest()
+                        when {
+                            !mainScreenViewModel.repository.showedPostNotificationsPermissionsRational.getValueSynchronously() -> {
+                                showPermissionsRational = true
+                            }
+
+                            !permissionState.shouldShowRationale -> {
+                                scope.launch {
+                                    mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                        ExtendedSnackbarVisuals(
+                                            message = context.getString(R.string.go_to_the_app_settings_to_grant_the_required_permissions),
+                                            actionLabel = context.getString(R.string.go_to_settings),
+                                            action = { goToAppSettings(context) }
+                                        )
+                                    )
+                                }
+                            }
+
+                            else -> {
+                                permissionState.launchMultiplePermissionRequest()
+                            }
+                        }
                     }
 
-                    !permissionState.shouldShowRationale -> {
-                        scope.launch {
-                            mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-                                ExtendedSnackbarVisuals(
-                                    message = context.getString(R.string.go_to_the_app_settings_to_grant_the_required_permissions),
-                                    actionLabel = context.getString(R.string.go_to_settings),
-                                    action = { goToAppSettings(context) }
-                                )
-                            )
-                        }
+                    else -> {
+                        startNavigatorOrShowConfirmationDialog()
                     }
                 }
             }
         }
 
+        val manageExternalStoragePermissionGranted by mainScreenViewModel.manageExternalStoragePermissionGranted.collectAsState()
+
         ElevatedButton(
             onClick = properties.onClick,
-            modifier = modifier
+            modifier = modifier,
+            enabled = manageExternalStoragePermissionGranted
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -184,76 +176,14 @@ internal fun StartNavigatorButton(
                     painter = painterResource(id = properties.iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
-                    tint = properties.color
+                    tint = if (manageExternalStoragePermissionGranted) properties.color else disabledColor()
                 )
                 AppFontText(
                     text = stringResource(id = properties.labelRes),
                     fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = if (manageExternalStoragePermissionGranted) MaterialTheme.colorScheme.onBackground else disabledColor()
                 )
             }
         }
     }
-}
-
-@Composable
-private fun PermissionsRationalDialog(onDismissRequest: () -> Unit, modifier: Modifier = Modifier) {
-    AlertDialog(
-        modifier = modifier,
-        onDismissRequest = onDismissRequest,
-        confirmButton = {
-            DialogButton(onClick = onDismissRequest) {
-                AppFontText(text = stringResource(id = R.string.got_it))
-            }
-        },
-        icon = {
-            Icon(painter = painterResource(id = R.drawable.ic_info_24), contentDescription = null)
-        },
-        text = {
-            AppFontText(
-                text = stringResource(
-                    id = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                        R.string.tiramisu_permissions_rational
-                    else
-                        R.string.non_tiramisu_permission_rational
-                )
-            )
-        }
-    )
-}
-
-@Composable
-private fun StartNavigatorOnLowBatteryConfirmationDialog(
-    closeDialog: () -> Unit,
-    modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel()
-) {
-    val context = LocalContext.current
-
-    AlertDialog(
-        modifier = modifier,
-        onDismissRequest = closeDialog,
-        confirmButton = {
-            DialogButton(
-                onClick = {
-                    FileNavigatorService.start(context)
-                    with(mainScreenViewModel) {
-                        disableListenerOnLowBattery.value = false
-                        disableListenerOnLowBattery.launchSync()
-                    }
-                    closeDialog()
-                }
-            ) {
-                AppFontText(text = stringResource(R.string.yes))
-            }
-        },
-        dismissButton = {
-            ElevatedButton(onClick = closeDialog) {
-                AppFontText(text = stringResource(R.string.no))
-            }
-        },
-        text = {
-            AppFontText(text = stringResource(R.string.start_navigator_confirmation_dialog_text))
-        }
-    )
 }

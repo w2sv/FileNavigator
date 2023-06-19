@@ -62,9 +62,9 @@ class MainScreenViewModel @Inject constructor(
 
                     coroutineScope.launch {
                         repository.saveMap(
-                            FileType.NonMedia.all.associateWith { newValue }
+                            FileType.all.associateWith { newValue }
                         )
-                        FileType.NonMedia.all.forEach {
+                        FileType.all.forEach {
                             fileTypeEnabled[it] = newValue
                         }
                     }

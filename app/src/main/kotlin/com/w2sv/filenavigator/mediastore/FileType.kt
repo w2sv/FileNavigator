@@ -15,7 +15,8 @@ sealed class FileType(
     @StringRes val titleRes: Int,
     @DrawableRes val iconRes: Int,
     val color: Color,
-    sourceKinds: List<SourceKind>
+    sourceKinds: List<SourceKind>,
+    override val defaultValue: Boolean = false
 ) : DataStoreVariable<Boolean>, Parcelable {
 
     companion object {
@@ -28,8 +29,7 @@ sealed class FileType(
         @StringRes val fileDeclarationRes: Int,
         @DrawableRes iconRes: Int,
         color: Color,
-        sourceKinds: List<SourceKind>,
-        override val defaultValue: Boolean = true
+        sourceKinds: List<SourceKind>
     ) : FileType(
         storageType = storageType,
         titleRes = labelRes,
@@ -88,8 +88,7 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
         color: Color,
-        val fileExtension: String,
-        override val defaultValue: Boolean = false
+        val fileExtension: String
     ) : FileType(
         storageType = com.anggrayudi.storage.media.MediaType.DOWNLOADS,
         titleRes = labelRes,

@@ -36,8 +36,7 @@
     <string name="tap_again_to_exit">Tap again to exit</string>
     <string name="alright">Alright</string>
     <string name="maybe_later">Maybe later</string>
-    <string name="manage_external_storage_permission_rational">File Navigator requires permission to manage all files to be able to move newly registered files.</string>
-    <string name="manage_external_storage_permission_required_notification">Navigation of non-media file types requires access to manage all files</string>
+    <string name="manage_external_storage_permission_rational">File Navigator requires permission to manage all files to be able to move newly registered ones.</string>
     <string name="grant">Grant</string>
     <string name="leave_at_least_one_file_type_enabled">Leave at least one file type enabled</string>
     <string name="open_extended_settings_dialog">Open the extended settings dialog.</string>
@@ -56,8 +55,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="start_navigator_confirmation_dialog_text">Do you want to start the navigator despite your device being low on battery?</string>
-    <string name="tiramisu_permissions_rational"><![CDATA[File Navigator requires the read media permission to register new files & the post notifications permission to notify you about it.]]></string>
-    <string name="non_tiramisu_permission_rational">File Navigator requires the read external storage permission to register new files.</string>
+    <string name="post_notifications_permission_rational">File Navigator requires permission to post notifications to notify you about having registered new, navigatable files.</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="go_to_the_app_settings_to_grant_the_required_permissions">Go to the app settings to grant the required permissions</string>
     <string name="theme">Theme</string>

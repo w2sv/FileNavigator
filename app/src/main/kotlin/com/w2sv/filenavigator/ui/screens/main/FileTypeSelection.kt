@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.main
 
+import android.content.Context
 import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -36,13 +38,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.ui.AppCheckbox
-import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.AppFontText
+import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.utils.toggle
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -89,7 +92,7 @@ private fun FileTypeAccordion(
     Column(modifier = modifier) {
         FileTypeAccordionHeader(
             fileType = fileType,
-            disabledForMissingManageExternalStoragePermission = fileType.navigationRequiresManageExternalStoragePermission && !manageExternalStoragePermissionGranted
+            manageExternalStoragePermissionGranted = manageExternalStoragePermissionGranted
         )
         AnimatedVisibility(visible = mainScreenViewModel.fileTypeEnabled.getValue(fileType)) {
             FileSourcesSurface(fileType = fileType)
@@ -100,7 +103,7 @@ private fun FileTypeAccordion(
 @Composable
 private fun FileTypeAccordionHeader(
     fileType: FileType,
-    disabledForMissingManageExternalStoragePermission: Boolean,
+    manageExternalStoragePermissionGranted: Boolean,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
@@ -108,7 +111,7 @@ private fun FileTypeAccordionHeader(
     val scope = rememberCoroutineScope()
 
     val isEnabled =
-        !disabledForMissingManageExternalStoragePermission && mainScreenViewModel.fileTypeEnabled.getValue(
+        manageExternalStoragePermissionGranted && mainScreenViewModel.fileTypeEnabled.getValue(
             fileType
         )
 
@@ -143,25 +146,15 @@ private fun FileTypeAccordionHeader(
                     modifier = Modifier.padding(8.dp),
                     checked = isEnabled,
                     onCheckedChange = { checkedNew ->
-                        when (disabledForMissingManageExternalStoragePermission) {
-                            true -> scope.launch {
-                                mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-                                    ExtendedSnackbarVisuals(
-                                        message = context.getString(
-                                            R.string.manage_external_storage_permission_required_notification
-                                        ),
-                                        kind = SnackbarKind.Error,
-                                        action = {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                                goToManageExternalStorageSettings(context)
-                                            }
-                                        },
-                                        actionLabel = context.getString(R.string.grant)
-                                    )
+                        when (manageExternalStoragePermissionGranted) {
+                            false -> {
+                                scope.launchManageExternalStorageSnackbar(
+                                    mainScreenViewModel.snackbarHostState,
+                                    context
                                 )
                             }
 
-                            false -> {
+                            true -> {
                                 if (mainScreenViewModel.fileTypeEnabled.values.atLeastOneTrueAfterValueChange(
                                         checkedNew
                                     )
@@ -185,6 +178,28 @@ private fun FileTypeAccordionHeader(
                 )
             }
         }
+    }
+}
+
+fun CoroutineScope.launchManageExternalStorageSnackbar(
+    snackbarHostState: SnackbarHostState,
+    context: Context
+) {
+    launch {
+        snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+            ExtendedSnackbarVisuals(
+                message = context.getString(
+                    R.string.manage_external_storage_permission_rational
+                ),
+                kind = SnackbarKind.Error,
+                action = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        goToManageExternalStorageSettings(context)
+                    }
+                },
+                actionLabel = context.getString(R.string.grant)
+            )
+        )
     }
 }
 
