@@ -11,14 +11,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.file.getSimplePath
-import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
-import com.anggrayudi.storage.media.MediaType
+import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.getNotificationManager
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.mediastore.FileType
-import com.w2sv.filenavigator.mediastore.MediaStoreFile
+import com.w2sv.filenavigator.datastore.AbstractPreferencesDataStoreRepository
+import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
+import com.w2sv.filenavigator.mediastore.MoveFile
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -31,12 +31,21 @@ class FileMoverActivity : ComponentActivity() {
 
     @HiltViewModel
     class ViewModel @Inject constructor(
-        savedStateHandle: SavedStateHandle
+        savedStateHandle: SavedStateHandle,
+        dataStoreRepository: PreferencesDataStoreRepository
     ) :
-        androidx.lifecycle.ViewModel() {
+        AbstractPreferencesDataStoreRepository.ViewModel<PreferencesDataStoreRepository>(
+            dataStoreRepository
+        ) {
 
-        val mediaStoreFile: MediaStoreFile =
+        val moveFile: MoveFile =
             savedStateHandle[FileNavigatorService.EXTRA_MEDIA_STORE_FILE]!!
+        val defaultTargetDir: Uri? =
+            dataStoreRepository.getDefaultFileSourceTargetDirFlow(moveFile.defaultTargetDir)
+                .getValueSynchronously()
+                .also {
+                    i { "Retrieved ${moveFile.defaultTargetDir.preferencesKey} = $it" }
+                }
         val cancelNotificationId: Int =
             savedStateHandle[FileNavigatorService.EXTRA_NOTIFICATION_ID]!!
         val requestCodes: ArrayList<Int> =
@@ -55,8 +64,8 @@ class FileMoverActivity : ComponentActivity() {
                 DocumentFile.fromTreeUri(this, treeUri) ?: return@registerForActivityResult
             val mediaFile = MediaStoreCompat.fromMediaId(
                 this,
-                viewModel.mediaStoreFile.type.storageType,
-                viewModel.mediaStoreFile.data.id
+                viewModel.moveFile.type.storageType,
+                viewModel.moveFile.data.id
             ) ?: return@registerForActivityResult
 
             contentResolver.takePersistableUriPermission(
@@ -85,7 +94,16 @@ class FileMoverActivity : ComponentActivity() {
                 )
             }
 
-            finish()
+            with(viewModel) {
+                saveToDataStore(
+                    moveFile.defaultTargetDir.preferencesKey,
+                    treeUri
+                )
+                    .invokeOnCompletion {
+                        i { "Saved $treeUri as ${moveFile.defaultTargetDir.preferencesKey} to preferences" }
+                        finish()
+                    }
+            }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,6 +118,6 @@ class FileMoverActivity : ComponentActivity() {
         )
 
         i { "Launching destinationSelectionLauncher" }
-        destinationSelectionLauncher.launch(null)
+        destinationSelectionLauncher.launch(viewModel.defaultTargetDir)
     }
 }

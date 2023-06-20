@@ -8,7 +8,7 @@ import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.datastore.DataStoreRepository
+import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.service.FileNavigatorService
@@ -27,8 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
     @ApplicationContext context: Context,
-    dataStoreRepository: DataStoreRepository
-) : UnconfirmedStatesHoldingViewModel<DataStoreRepository>(dataStoreRepository) {
+    dataStoreRepository: PreferencesDataStoreRepository
+) : UnconfirmedStatesHoldingViewModel<PreferencesDataStoreRepository>(dataStoreRepository) {
 
     val isNavigatorRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileNavigatorService>())
@@ -60,7 +60,7 @@ class MainScreenViewModel @Inject constructor(
     fun updateStorageAccessStatus(context: Context) {
         _storageAccessStatus.value = StorageAccessStatus.get(context)
             .also { status ->
-                val previousStatus = repository.previousStorageAccessStatus.getValueSynchronously()
+                val previousStatus = dataStoreRepository.previousStorageAccessStatus.getValueSynchronously()
 
                 if (status != previousStatus) {
                     i { "New manageExternalStoragePermissionGranted = $status diverting from previous = $previousStatus" }
@@ -89,7 +89,7 @@ class MainScreenViewModel @Inject constructor(
                     }
 
                     coroutineScope.launch {
-                        repository.save(
+                        dataStoreRepository.save(
                             PreferencesKey.PREVIOUS_STORAGE_ACCESS_STATUS,
                             status
                         )
@@ -100,7 +100,7 @@ class MainScreenViewModel @Inject constructor(
 
     private fun setFileTypeStatuses(fileTypes: Iterable<FileType>, newStatus: FileType.Status) {
         coroutineScope.launch {
-            repository.saveEnumValuedMap(
+            dataStoreRepository.saveEnumValuedMap(
                 fileTypes.associateWith { newStatus }
             )
             fileTypes.forEach {

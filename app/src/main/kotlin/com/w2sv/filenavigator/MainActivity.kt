@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme(
-                useDarkTheme = when (viewModel.repository.inAppTheme.collectAsState(initial = Theme.DeviceDefault).value) {
+                useDarkTheme = when (viewModel.dataStoreRepository.inAppTheme.collectAsState(initial = Theme.DeviceDefault).value) {
                     Theme.Dark -> true
                     Theme.Light -> false
                     Theme.DeviceDefault -> isSystemInDarkTheme()
@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
         }
 
         launch {
-            viewModel.repository.disableListenerOnLowBattery.collect {
+            viewModel.dataStoreRepository.disableListenerOnLowBattery.collect {
                 i { "Collected disableListenerOnLowBattery=$it" }
 
                 when (it) {

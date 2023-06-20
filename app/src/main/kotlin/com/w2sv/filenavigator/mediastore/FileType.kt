@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.mediastore
 
+import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -7,8 +8,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.DataStoreEntry
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 sealed class FileType(
@@ -63,7 +66,7 @@ sealed class FileType(
             SourceKind.Camera,
             SourceKind.Screenshot,
             SourceKind.Download,
-            SourceKind.ThirdPartyApp
+            SourceKind.OtherApp
         )
     )
 
@@ -77,7 +80,7 @@ sealed class FileType(
         listOf(
             SourceKind.Camera,
             SourceKind.Download,
-            SourceKind.ThirdPartyApp
+            SourceKind.OtherApp
         )
     )
 
@@ -90,7 +93,7 @@ sealed class FileType(
         Color(0xFFF26430),
         listOf(
             SourceKind.Download,
-            SourceKind.ThirdPartyApp
+            SourceKind.OtherApp
         )
     )
 
@@ -145,14 +148,13 @@ sealed class FileType(
         "apk"
     )
 
-    private val identifier = this::class.java.simpleName
+    val identifier = this::class.java.simpleName
 
     override val preferencesKey: Preferences.Key<Int> = intPreferencesKey(identifier)
 
-    val sources: List<Source> = sourceKinds.map { Source(it, identifier) }
+    val sources: List<Source> = sourceKinds.map { Source(identifier, it) }
 
     val isMediaType: Boolean get() = this is Media
-    val navigationRequiresManageExternalStoragePermission: Boolean get() = this is NonMedia
 
     enum class SourceKind(
         @StringRes val labelRes: Int,
@@ -170,18 +172,35 @@ sealed class FileType(
             R.string.download,
             R.drawable.ic_file_download_24
         ),
-        ThirdPartyApp(
+        OtherApp(
             R.string.third_party_app,
             R.drawable.ic_apps_24
         )
     }
 
-    class Source(val kind: SourceKind, mediaTypeIdentifier: String) :
+    class Source(val fileTypeIdentifier: String, val kind: SourceKind) :
         DataStoreEntry.UniType<Boolean> {
 
         override val defaultValue: Boolean = true
         override val preferencesKey: Preferences.Key<Boolean> by lazy {
-            booleanPreferencesKey("$mediaTypeIdentifier.$kind")
+            booleanPreferencesKey("$fileTypeIdentifier.$kind.SOURCE")
+        }
+
+        val defaultTargetDir by lazy {
+            DefaultTargetDir(fileTypeIdentifier, kind)
+        }
+
+        @Parcelize
+        class DefaultTargetDir(private val fileTypeIdentifier: String, val kind: SourceKind) :
+            DataStoreEntry.UriValued, Parcelable {
+
+            @IgnoredOnParcel
+            override val defaultValue: Uri? = null
+
+            @IgnoredOnParcel
+            override val preferencesKey: Preferences.Key<String> by lazy {
+                stringPreferencesKey("$fileTypeIdentifier.$kind.DEFAULT_TARGET_DIR")
+            }
         }
     }
 }

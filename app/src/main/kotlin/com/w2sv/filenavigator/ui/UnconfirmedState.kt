@@ -3,7 +3,7 @@ package com.w2sv.filenavigator.ui
 import androidx.datastore.preferences.core.Preferences
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.filenavigator.datastore.DataStoreEntry
-import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
+import com.w2sv.filenavigator.datastore.AbstractPreferencesDataStoreRepository
 import com.w2sv.filenavigator.utils.getMutableStateMap
 import com.w2sv.filenavigator.utils.getSynchronousMap
 import kotlinx.coroutines.CoroutineScope
@@ -175,9 +175,9 @@ class UnconfirmedStatesComposition(
     }
 }
 
-abstract class UnconfirmedStatesHoldingViewModel<R : PreferencesDataStoreRepository>(
+abstract class UnconfirmedStatesHoldingViewModel<R : AbstractPreferencesDataStoreRepository>(
     dataStoreRepository: R
-) : PreferencesDataStoreRepository.ViewModel<R>(dataStoreRepository) {
+) : AbstractPreferencesDataStoreRepository.ViewModel<R>(dataStoreRepository) {
 
     // =======================
     // Instance creation
@@ -187,7 +187,7 @@ abstract class UnconfirmedStatesHoldingViewModel<R : PreferencesDataStoreReposit
         UnconfirmedStateMap(
             coroutineScope,
             appliedFlowMap,
-            syncState = { repository.saveMap(it) }
+            syncState = { dataStoreRepository.saveMap(it) }
         )
 
     fun <K : DataStoreEntry.EnumValued<V>, V : Enum<V>> makeUnconfirmedEnumValuedStateMap(
@@ -196,7 +196,7 @@ abstract class UnconfirmedStatesHoldingViewModel<R : PreferencesDataStoreReposit
         UnconfirmedStateMap(
             coroutineScope,
             appliedFlowMap,
-            syncState = { repository.saveEnumValuedMap(it) }
+            syncState = { dataStoreRepository.saveEnumValuedMap(it) }
         )
 
     fun <T> makeUnconfirmedStateFlow(
@@ -204,7 +204,7 @@ abstract class UnconfirmedStatesHoldingViewModel<R : PreferencesDataStoreReposit
         preferencesKey: Preferences.Key<T>
     ): UnconfirmedStateFlow<T> =
         UnconfirmedStateFlow(coroutineScope, appliedFlow) {
-            repository.save(preferencesKey, it)
+            dataStoreRepository.save(preferencesKey, it)
         }
 
     inline fun <reified T : Enum<T>> makeUnconfirmedEnumStateFlow(
@@ -212,7 +212,7 @@ abstract class UnconfirmedStatesHoldingViewModel<R : PreferencesDataStoreReposit
         preferencesKey: Preferences.Key<Int>
     ): UnconfirmedStateFlow<T> =
         UnconfirmedStateFlow(coroutineScope, appliedFlow) {
-            repository.save(preferencesKey, it)
+            dataStoreRepository.save(preferencesKey, it)
         }
 
     fun makeUnconfirmedStatesComposition(unconfirmedStates: UnconfirmedStates): UnconfirmedStatesComposition =

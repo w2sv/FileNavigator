@@ -1,113 +1,44 @@
 package com.w2sv.filenavigator.datastore
 
+import android.net.Uri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.lifecycle.viewModelScope
-import com.w2sv.kotlinutils.extensions.getByOrdinal
-import kotlinx.coroutines.CoroutineScope
+import com.w2sv.filenavigator.mediastore.FileType
+import com.w2sv.filenavigator.ui.Theme
+import com.w2sv.filenavigator.utils.StorageAccessStatus
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-abstract class PreferencesDataStoreRepository(
-    protected val dataStore: DataStore<Preferences>
-) {
+class PreferencesDataStoreRepository @Inject constructor(dataStore: DataStore<Preferences>) :
+    AbstractPreferencesDataStoreRepository(dataStore) {
 
-    protected fun <T> getFlow(preferencesKey: Preferences.Key<T>, defaultValue: T): Flow<T> =
-        dataStore.data.map {
-            it[preferencesKey] ?: defaultValue
-        }
+    val fileTypeStatus: Map<FileType, Flow<FileType.Status>> = getEnumValuedFlowMap(FileType.all)
 
-    suspend fun <T> save(preferencesKey: Preferences.Key<T>, value: T) {
-        dataStore.edit {
-            it[preferencesKey] = value
-        }
-    }
+    val fileSourceEnabled: Map<FileType.Source, Flow<Boolean>> = getFlowMap(
+        FileType.all
+            .map { it.sources }
+            .flatten()
+    )
 
-    // ============
-    // Enums
-    // ============
+    fun getDefaultFileSourceTargetDirFlow(defaultTargetDir: FileType.Source.DefaultTargetDir): Flow<Uri?> =
+        getUriFlow(defaultTargetDir.preferencesKey, defaultTargetDir.defaultValue)
 
-    protected inline fun <reified T : Enum<T>> getEnumFlow(
-        preferencesKey: Preferences.Key<Int>,
-        defaultValue: T
-    ): Flow<T> =
-        dataStore.data.map {
-            it[preferencesKey]
-                ?.let { ordinal -> getByOrdinal<T>(ordinal) }
-                ?: defaultValue
-        }
+    val showedManageExternalStorageRational: Flow<Boolean> =
+        getFlow(PreferencesKey.SHOWED_MANAGE_EXTERNAL_STORAGE_RATIONAL, false)
 
-    suspend fun save(
-        preferencesKey: Preferences.Key<Int>,
-        enum: Enum<*>
-    ) {
-        save(preferencesKey, enum.ordinal)
-    }
+    val showedPostNotificationsPermissionsRational: Flow<Boolean> =
+        getFlow(PreferencesKey.SHOWED_POST_NOTIFICATIONS_PERMISSION_RATIONAL, false)
 
-    // ============
-    // Maps
-    // ============
+    val disableListenerOnLowBattery: Flow<Boolean> =
+        getFlow(PreferencesKey.DISABLE_LISTENER_ON_LOW_BATTERY, false)
 
-    protected fun <T, P : DataStoreEntry.UniType<T>> getFlowMap(properties: Iterable<P>): Map<P, Flow<T>> =
-        properties.associateWith { property ->
-            getFlow(property.preferencesKey, property.defaultValue)
-        }
+    val previousStorageAccessStatus: Flow<StorageAccessStatus> = getEnumFlow(
+        PreferencesKey.PREVIOUS_STORAGE_ACCESS_STATUS,
+        StorageAccessStatus.NoAccess
+    )
 
-    protected inline fun <reified V : Enum<V>, K : DataStoreEntry.EnumValued<V>> getEnumValuedFlowMap(
-        properties: Iterable<K>
-    ): Map<K, Flow<V>> =
-        properties.associateWith { property ->
-            getEnumFlow(property.preferencesKey, property.defaultValue)
-        }
-
-    suspend fun <V, K : DataStoreEntry.UniType<V>> saveMap(
-        map: Map<K, V>
-    ) {
-        dataStore.edit {
-            map.forEach { (property, value) ->
-                it[property.preferencesKey] = value
-            }
-        }
-    }
-
-    suspend fun <V: Enum<V>, K : DataStoreEntry.EnumValued<V>> saveEnumValuedMap(
-        map: Map<K, V>
-    ) {
-        dataStore.edit {
-            map.forEach { (key, value) ->
-                it[key.preferencesKey] = value.ordinal
-            }
-        }
-    }
-
-    /**
-     * Interface for classes interfacing with a [PreferencesDataStoreRepository] via a held [coroutineScope].
-     */
-    interface Interface {
-        val repository: PreferencesDataStoreRepository
-        val coroutineScope: CoroutineScope
-
-        fun <T> saveToDataStore(key: Preferences.Key<T>, value: T) {
-            coroutineScope.launch {
-                repository.save(key, value)
-            }
-        }
-
-        fun <T, P : DataStoreEntry.UniType<T>> saveMapToDataStore(
-            map: Map<P, T>
-        ) {
-            coroutineScope.launch {
-                repository.saveMap(map)
-            }
-        }
-    }
-
-    abstract class ViewModel<R : PreferencesDataStoreRepository>(override val repository: R) :
-        androidx.lifecycle.ViewModel(),
-        Interface {
-
-        override val coroutineScope: CoroutineScope get() = viewModelScope
-    }
+    val inAppTheme: Flow<Theme> = getEnumFlow(
+        PreferencesKey.IN_APP_THEME,
+        Theme.DeviceDefault
+    )
 }

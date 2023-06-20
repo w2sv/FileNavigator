@@ -70,7 +70,7 @@ data class MediaStoreFileData(
             // may be a child dir of the camera directory
             relativePath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileType.SourceKind.Screenshot
             relativePath.contains(Environment.DIRECTORY_DCIM) -> FileType.SourceKind.Camera
-            else -> FileType.SourceKind.ThirdPartyApp
+            else -> FileType.SourceKind.OtherApp
         }.also {
             i {
                 "relativePath: $relativePath\nDetermined OriginKind: ${it.name}"

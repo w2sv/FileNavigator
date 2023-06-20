@@ -100,7 +100,7 @@ internal fun StartNavigatorButton(
                     onDismissRequest = {
                         value = false
                         scope.launch {
-                            mainScreenViewModel.repository.save(
+                            mainScreenViewModel.dataStoreRepository.save(
                                 PreferencesKey.SHOWED_POST_NOTIFICATIONS_PERMISSION_RATIONAL,
                                 true
                             )
@@ -131,7 +131,7 @@ internal fun StartNavigatorButton(
                 when {
                     !permissionState.allPermissionsGranted -> {
                         when {
-                            !mainScreenViewModel.repository.showedPostNotificationsPermissionsRational.getValueSynchronously() -> {
+                            !mainScreenViewModel.dataStoreRepository.showedPostNotificationsPermissionsRational.getValueSynchronously() -> {
                                 showPermissionsRational = true
                             }
 

@@ -16,10 +16,10 @@ import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.filenavigator.MainActivity
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.datastore.DataStoreRepository
+import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.mediastore.FileType
-import com.w2sv.filenavigator.mediastore.MediaStoreFile
 import com.w2sv.filenavigator.mediastore.MediaStoreFileData
+import com.w2sv.filenavigator.mediastore.MoveFile
 import com.w2sv.filenavigator.utils.getSynchronousMap
 import com.w2sv.filenavigator.utils.sendLocalBroadcast
 import com.w2sv.kotlinutils.extensions.nonZeroOrdinal
@@ -31,7 +31,7 @@ import javax.inject.Inject
 class FileNavigatorService : UnboundService() {
 
     @Inject
-    lateinit var dataStoreRepository: DataStoreRepository
+    lateinit var dataStoreRepository: PreferencesDataStoreRepository
 
     private lateinit var fileObservers: List<FileObserver>
 
@@ -204,12 +204,12 @@ class FileNavigatorService : UnboundService() {
             mediaStoreFileData: MediaStoreFileData
         )
 
-        protected fun showNotification(mediaStoreFile: MediaStoreFile) {
+        protected fun showNotification(moveFile: MoveFile) {
             val notificationContentText =
                 getString(
                     R.string.found_at,
-                    mediaStoreFile.data.name,
-                    mediaStoreFile.data.relativePath
+                    moveFile.data.name,
+                    moveFile.data.relativePath
                 )
 
             val notificationId = newFileDetectedNotificationIds.addNewId()
@@ -224,7 +224,7 @@ class FileNavigatorService : UnboundService() {
                     .setContentTitle(
                         getString(
                             AppNotificationChannel.NEW_FILE_DETECTED.titleRes,
-                            getNotificationTitleFormatArg(mediaStoreFile)
+                            getNotificationTitleFormatArg(moveFile)
                         )
                     )
                     // set icons
@@ -232,7 +232,7 @@ class FileNavigatorService : UnboundService() {
                     .setLargeIcon(
                         AppCompatResources.getDrawable(
                             applicationContext,
-                            mediaStoreFile.type.iconRes
+                            moveFile.type.iconRes
                         )
                             ?.toBitmap()
                     )
@@ -256,7 +256,7 @@ class FileNavigatorService : UnboundService() {
                                         FileMoverActivity::class.java
                                     )
                                 )
-                                    .putExtra(EXTRA_MEDIA_STORE_FILE, mediaStoreFile)
+                                    .putExtra(EXTRA_MEDIA_STORE_FILE, moveFile)
                                     .putExtra(
                                         EXTRA_NOTIFICATION_ID,
                                         notificationId
@@ -280,8 +280,8 @@ class FileNavigatorService : UnboundService() {
                                 Intent()
                                     .setAction(Intent.ACTION_VIEW)
                                     .setDataAndType(
-                                        mediaStoreFile.uri,
-                                        mediaStoreFile.type.storageType.mimeType
+                                        moveFile.uri,
+                                        moveFile.type.storageType.mimeType
                                     ),
                                 PendingIntent.FLAG_IMMUTABLE
                             )
@@ -290,17 +290,17 @@ class FileNavigatorService : UnboundService() {
             )
         }
 
-        protected abstract fun getNotificationTitleFormatArg(mediaStoreFile: MediaStoreFile): String
+        protected abstract fun getNotificationTitleFormatArg(moveFile: MoveFile): String
     }
 
     private inner class MediaFileObserver(
-        private val mediaType: FileType,
+        private val fileType: FileType,
         private val sourceKinds: Set<FileType.SourceKind>
     ) :
-        FileObserver(mediaType.storageType.readUri!!) {
+        FileObserver(fileType.storageType.readUri!!) {
 
         init {
-            i { "Initialized ${mediaType::class.java.simpleName} MediaTypeObserver with originKinds: ${sourceKinds.map { it.name }}" }
+            i { "Initialized ${fileType::class.java.simpleName} MediaTypeObserver with originKinds: ${sourceKinds.map { it.name }}" }
         }
 
         override fun showNotificationIfApplicable(
@@ -309,25 +309,29 @@ class FileNavigatorService : UnboundService() {
         ) {
             if (sourceKinds.contains(mediaStoreFileData.sourceKind)) {
                 showNotification(
-                    MediaStoreFile(
+                    MoveFile(
                         uri = uri,
-                        type = mediaType,
+                        type = fileType,
+                        defaultTargetDir = FileType.Source.DefaultTargetDir(
+                            fileType.identifier,
+                            mediaStoreFileData.sourceKind
+                        ),
                         data = mediaStoreFileData
                     )
                 )
             }
         }
 
-        override fun getNotificationTitleFormatArg(mediaStoreFile: MediaStoreFile): String {
-            mediaStoreFile.type as FileType.Media
+        override fun getNotificationTitleFormatArg(moveFile: MoveFile): String {
+            moveFile.type as FileType.Media
 
-            return when (mediaStoreFile.data.sourceKind) {
+            return when (moveFile.data.sourceKind) {
                 FileType.SourceKind.Screenshot -> getString(
                     R.string.new_screenshot
                 )
 
                 FileType.SourceKind.Camera -> getString(
-                    when (mediaStoreFile.type) {
+                    when (moveFile.type) {
                         FileType.Image -> R.string.new_photo
                         FileType.Video -> R.string.new_video
                         else -> throw Error()
@@ -336,13 +340,13 @@ class FileNavigatorService : UnboundService() {
 
                 FileType.SourceKind.Download -> getString(
                     R.string.newly_downloaded_template,
-                    getString(mediaStoreFile.type.fileDeclarationRes)
+                    getString(moveFile.type.fileDeclarationRes)
                 )
 
-                FileType.SourceKind.ThirdPartyApp -> getString(
+                FileType.SourceKind.OtherApp -> getString(
                     R.string.new_third_party_file_template,
-                    mediaStoreFile.data.dirName,
-                    getString(mediaStoreFile.type.fileDeclarationRes)
+                    moveFile.data.dirName,
+                    getString(moveFile.type.fileDeclarationRes)
                 )
             }
         }
@@ -362,17 +366,21 @@ class FileNavigatorService : UnboundService() {
             fileTypes.firstOrNull { it.fileExtension == mediaStoreFileData.fileExtension }
                 ?.let { fileType ->
                     showNotification(
-                        MediaStoreFile(
+                        MoveFile(
                             uri = uri,
                             type = fileType,
+                            defaultTargetDir = FileType.Source.DefaultTargetDir(
+                                fileType.identifier,
+                                mediaStoreFileData.sourceKind
+                            ),
                             data = mediaStoreFileData
                         )
                     )
                 }
         }
 
-        override fun getNotificationTitleFormatArg(mediaStoreFile: MediaStoreFile): String =
-            getString(R.string.new_file, getString(mediaStoreFile.type.titleRes))
+        override fun getNotificationTitleFormatArg(moveFile: MoveFile): String =
+            getString(R.string.new_file, getString(moveFile.type.titleRes))
     }
 
     private fun unregisterContentObservers() {

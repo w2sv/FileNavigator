@@ -8,8 +8,9 @@ import kotlinx.parcelize.Parcelize
  * @param uri The MediaStore URI.
  */
 @Parcelize
-data class MediaStoreFile(
+data class MoveFile(
     val uri: Uri,
     val type: FileType,
+    val defaultTargetDir: FileType.Source.DefaultTargetDir,
     val data: MediaStoreFileData
 ) : Parcelable
