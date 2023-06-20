@@ -75,17 +75,28 @@ class FileMoverActivity : ComponentActivity() {
             i { "DocumentTree Uri: $treeUri" }
 
             // Exit on null treeUri (received on exiting folder picker via back press)
-            treeUri ?: return@registerForActivityResult
+            treeUri ?: run {
+                finish()
+                return@registerForActivityResult
+            }
 
             // Exit on unsuccessful conversion to SimpleStorage objects
             val targetDirectoryDocumentFile =
-                DocumentFile.fromTreeUri(this, treeUri) ?: return@registerForActivityResult
-            viewModel.moveMediaFile ?: return@registerForActivityResult
+                DocumentFile.fromTreeUri(this, treeUri) ?: run {
+                    finish()
+                    return@registerForActivityResult
+                }
+            viewModel.moveMediaFile ?: run {
+                finish()
+                return@registerForActivityResult
+            }
 
             contentResolver.takePersistableUriPermission(
                 treeUri,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
+
+            viewModel.notificationParameters.cancelUnderlyingNotification(this)
 
             // Move file
             lifecycleScope.launch(Dispatchers.IO) {
@@ -129,7 +140,6 @@ class FileMoverActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.notificationParameters.cancelUnderlyingNotification(this)
         destinationSelectionLauncher.launch(viewModel.defaultTargetDirDocumentUri)
     }
 }

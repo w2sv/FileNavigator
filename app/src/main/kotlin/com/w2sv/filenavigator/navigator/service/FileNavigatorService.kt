@@ -266,7 +266,7 @@ class FileNavigatorService : UnboundService() {
                                         MoveFile.NotificationParameters.EXTRA,
                                         notificationParameters
                                     ),
-                                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+                                PendingIntent.FLAG_IMMUTABLE
                             )
                         )
                     )
