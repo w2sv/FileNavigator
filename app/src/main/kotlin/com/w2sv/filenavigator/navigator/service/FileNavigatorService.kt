@@ -48,7 +48,7 @@ class FileNavigatorService : UnboundService() {
     private fun getAndRegisterFileObservers(): List<FileObserver> {
         val fileTypeStatus = dataStoreRepository.fileTypeStatus.getSynchronousMap()
         val accountForFileTypeOrigin =
-            dataStoreRepository.fileSourceEnabled.getSynchronousMap()
+            dataStoreRepository.mediaFileSourceEnabled.getSynchronousMap()
 
         val mediaFileObservers = FileType.Media.all
             .filter { fileTypeStatus.getValue(it) == FileType.Status.Enabled }

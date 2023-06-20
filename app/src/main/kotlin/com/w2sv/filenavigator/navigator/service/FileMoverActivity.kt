@@ -95,7 +95,7 @@ class FileMoverActivity : ComponentActivity() {
                         override fun onCompleted(result: Any) {
                             showToast(
                                 getString(
-                                    R.string.successfully_moved_file_to,
+                                    R.string.moved_file_to,
                                     targetDirectoryDocumentFile.getSimplePath(this@FileMoverActivity)
                                 )
                             )

@@ -18,7 +18,7 @@ class PreferencesDataStoreRepository @Inject constructor(dataStore: DataStore<Pr
 
     val fileTypeStatus: Map<FileType, Flow<FileType.Status>> = getEnumValuedFlowMap(FileType.all)
 
-    val fileSourceEnabled: Map<FileType.Source, Flow<Boolean>> = getFlowMap(
+    val mediaFileSourceEnabled: Map<FileType.Source, Flow<Boolean>> = getFlowMap(
         FileType.Media.all
             .map { it.sources }
             .flatten()

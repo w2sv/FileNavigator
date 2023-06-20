@@ -31,14 +31,14 @@ sealed class FileType(
     val isMediaType: Boolean get() = this is Media
 
     sealed class Media(
-        storageType: com.anggrayudi.storage.media.MediaType,
+        simpleStorageType: com.anggrayudi.storage.media.MediaType,
         @StringRes labelRes: Int,
         @StringRes val fileDeclarationRes: Int,
         @DrawableRes iconRes: Int,
         color: Color,
         sourceKinds: List<SourceKind>
     ) : FileType(
-        simpleStorageType = storageType,
+        simpleStorageType = simpleStorageType,
         titleRes = labelRes,
         iconRes = iconRes,
         color = color,

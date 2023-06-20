@@ -121,15 +121,15 @@ class MainScreenViewModel @Inject constructor(
 
     val fileTypeStatus by lazy {
         makeUnconfirmedEnumValuedStateMap(
-            dataStoreRepository.fileTypeStatus,
-            { it.getSynchronousMap().getMutableStateMap() }
+            appliedFlowMap = dataStoreRepository.fileTypeStatus,
+            makeMutableMap = { it.getSynchronousMap().getMutableStateMap() }
         )
     }
 
     val fileSourceEnabled by lazy {
         makeUnconfirmedStateMap(
-            dataStoreRepository.fileSourceEnabled,
-            { it.getSynchronousMap().getMutableStateMap() }
+            appliedFlowMap = dataStoreRepository.mediaFileSourceEnabled,
+            makeMutableMap = { it.getSynchronousMap().getMutableStateMap() }
         )
     }
 
