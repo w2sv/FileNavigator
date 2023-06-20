@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.anggrayudi.storage.media.MediaType
 import com.google.common.collect.EvictingQueue
+import com.w2sv.androidutils.coroutines.getSynchronousMap
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.filenavigator.MainActivity
@@ -21,7 +22,6 @@ import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.mediastore.MediaStoreFileData
 import com.w2sv.filenavigator.mediastore.MoveFile
-import com.w2sv.filenavigator.utils.getSynchronousMap
 import com.w2sv.filenavigator.utils.sendLocalBroadcast
 import com.w2sv.kotlinutils.extensions.nonZeroOrdinal
 import dagger.hilt.android.AndroidEntryPoint

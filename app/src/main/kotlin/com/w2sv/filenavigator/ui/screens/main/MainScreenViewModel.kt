@@ -3,18 +3,20 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.viewModelScope
+import com.w2sv.androidutils.coroutines.getSynchronousMap
 import com.w2sv.androidutils.coroutines.getValueSynchronously
+import com.w2sv.androidutils.coroutines.mapState
 import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.androidutils.services.isServiceRunning
+import com.w2sv.androidutils.ui.PreferencesDataStoreBackedUnconfirmedStatesViewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.service.FileNavigatorService
-import com.w2sv.filenavigator.ui.UnconfirmedStatesHoldingViewModel
 import com.w2sv.filenavigator.utils.StorageAccessStatus
-import com.w2sv.filenavigator.utils.mapState
+import com.w2sv.filenavigator.utils.getMutableStateMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,7 +30,9 @@ import javax.inject.Inject
 class MainScreenViewModel @Inject constructor(
     @ApplicationContext context: Context,
     dataStoreRepository: PreferencesDataStoreRepository
-) : UnconfirmedStatesHoldingViewModel<PreferencesDataStoreRepository>(dataStoreRepository) {
+) : PreferencesDataStoreBackedUnconfirmedStatesViewModel<PreferencesDataStoreRepository>(
+    dataStoreRepository
+) {
 
     val isNavigatorRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileNavigatorService>())
@@ -55,12 +59,14 @@ class MainScreenViewModel @Inject constructor(
     val storageAccessStatus: StateFlow<StorageAccessStatus> get() = _storageAccessStatus
     private val _storageAccessStatus = MutableStateFlow(StorageAccessStatus.NoAccess)
 
-    val anyStorageAccessGranted: StateFlow<Boolean> = storageAccessStatus.mapState { it != StorageAccessStatus.NoAccess }
+    val anyStorageAccessGranted: StateFlow<Boolean> =
+        storageAccessStatus.mapState { it != StorageAccessStatus.NoAccess }
 
     fun updateStorageAccessStatus(context: Context) {
         _storageAccessStatus.value = StorageAccessStatus.get(context)
             .also { status ->
-                val previousStatus = dataStoreRepository.previousStorageAccessStatus.getValueSynchronously()
+                val previousStatus =
+                    dataStoreRepository.previousStorageAccessStatus.getValueSynchronously()
 
                 if (status != previousStatus) {
                     i { "New manageExternalStoragePermissionGranted = $status diverting from previous = $previousStatus" }
@@ -114,11 +120,17 @@ class MainScreenViewModel @Inject constructor(
     // ==============
 
     val fileTypeStatus by lazy {
-        makeUnconfirmedEnumValuedStateMap(dataStoreRepository.fileTypeStatus)
+        makeUnconfirmedEnumValuedStateMap(
+            dataStoreRepository.fileTypeStatus,
+            { it.getSynchronousMap().getMutableStateMap() }
+        )
     }
 
     val fileSourceEnabled by lazy {
-        makeUnconfirmedStateMap(dataStoreRepository.fileSourceEnabled)
+        makeUnconfirmedStateMap(
+            dataStoreRepository.fileSourceEnabled,
+            { it.getSynchronousMap().getMutableStateMap() }
+        )
     }
 
     val unconfirmedNavigatorConfiguration by lazy {

@@ -33,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.w2sv.androidutils.coroutines.getValueSynchronously
+import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.service.FileNavigatorService
@@ -42,7 +43,6 @@ import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
-import com.w2sv.filenavigator.utils.goToAppSettings
 import com.w2sv.filenavigator.utils.powerSaveModeActivated
 import kotlinx.coroutines.launch
 

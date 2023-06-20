@@ -9,8 +9,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.datastore.DataStoreEntry
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -205,7 +205,10 @@ sealed class FileType(
         }
 
         @Parcelize
-        class DefaultTargetDir(override val fileTypeIdentifier: String, override val  kind: SourceKind) :
+        class DefaultTargetDir(
+            override val fileTypeIdentifier: String,
+            override val kind: SourceKind
+        ) :
             DataStoreEntry.UriValued,
             FileSourceKindDataStoreEntry(PreferenceKeySuffix.DefaultTargetDir),
             Parcelable {

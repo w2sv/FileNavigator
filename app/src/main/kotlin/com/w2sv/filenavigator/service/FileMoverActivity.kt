@@ -14,9 +14,9 @@ import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.file.getSimplePath
 import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.coroutines.getValueSynchronously
+import com.w2sv.androidutils.datastorage.datastore.preferences.AbstractPreferencesDataStoreRepository
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.datastore.AbstractPreferencesDataStoreRepository
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.mediastore.MoveFile
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,7 +78,8 @@ class FileMoverActivity : ComponentActivity() {
             treeUri ?: return@registerForActivityResult
 
             // Exit on unsuccessful conversion to SimpleStorage objects
-            val targetDirectoryDocumentFile = DocumentFile.fromTreeUri(this, treeUri) ?: return@registerForActivityResult
+            val targetDirectoryDocumentFile =
+                DocumentFile.fromTreeUri(this, treeUri) ?: return@registerForActivityResult
             viewModel.moveMediaFile ?: return@registerForActivityResult
 
             contentResolver.takePersistableUriPermission(

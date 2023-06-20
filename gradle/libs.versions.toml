@@ -16,7 +16,7 @@ lifecycle = "2.6.1"
 [libraries]
 
 # owned
-androidutils = 'com.github.w2sv:AndroidUtils:0.2.1-rc1'
+androidutils = 'com.github.w2sv:AndroidUtils:0.3.1-rc2'
 kotlinutils = 'com.github.w2sv:KotlinUtils:0.0.7-rc2'
 
 # androidx
