@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.service
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,10 +11,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.file.getSimplePath
+import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
+import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.notifying.getNotificationManager
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.mediastore.FileType
 import com.w2sv.filenavigator.mediastore.MediaStoreFile
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -81,7 +85,7 @@ class FileMoverActivity : ComponentActivity() {
                 )
             }
 
-            finishAndRemoveTask()
+            finish()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,6 +100,6 @@ class FileMoverActivity : ComponentActivity() {
         )
 
         i { "Launching destinationSelectionLauncher" }
-        destinationSelectionLauncher.launch(viewModel.mediaStoreFile.uri)
+        destinationSelectionLauncher.launch(null)
     }
 }

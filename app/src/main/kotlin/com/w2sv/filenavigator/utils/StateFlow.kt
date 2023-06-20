@@ -16,8 +16,10 @@ fun MutableStateFlow<Boolean>.toggle() {
 }
 
 /**
- * Does not produce the same value in a raw, so respect "distinct until changed emissions"
- * */
+ * Does not produce the same value in a row, so respect "distinct until changed emissions"
+ *
+ * Source: https://github.com/Kotlin/kotlinx.coroutines/issues/2631#issuecomment-870565860
+ */
 class DerivedStateFlow<T>(
     private val getValue: () -> T,
     private val flow: Flow<T>
