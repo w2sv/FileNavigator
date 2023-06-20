@@ -3,7 +3,7 @@
     <string name="moved_file_to">Moved file to %1$s</string>
     <string name="couldn_t_move_file">Couldn\'t move file</string>
     <string name="move">Move</string>
-    <string name="open">Open</string>
+    <string name="view">View</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
     <string name="new_file_detected_template">%1s Detected</string>
     <string name="stop">Stop</string>

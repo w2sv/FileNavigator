@@ -274,7 +274,7 @@ class FileNavigatorService : UnboundService() {
                     .addAction(
                         NotificationCompat.Action(
                             R.drawable.ic_file_open_24,
-                            getString(R.string.open),
+                            getString(R.string.view),
                             PendingIntent.getActivity(
                                 applicationContext,
                                 notificationParameters.requestCodes[1],
