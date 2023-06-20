@@ -15,26 +15,13 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 sealed class FileType(
-    val storageType: com.anggrayudi.storage.media.MediaType,
+    val simpleStorageType: com.anggrayudi.storage.media.MediaType,
     @StringRes val titleRes: Int,
     @DrawableRes val iconRes: Int,
     val color: Color,
     sourceKinds: List<SourceKind>,
     override val defaultValue: Status = Status.DisabledForNoFileAccess
 ) : DataStoreEntry.EnumValued<FileType.Status>, Parcelable {
-
-    enum class Status {
-        Enabled,
-        Disabled,
-        DisabledForMediaAccessOnly,
-        DisabledForNoFileAccess;
-
-        val isEnabled: Boolean get() = this == Enabled
-    }
-
-    companion object {
-        val all: List<FileType> get() = Media.all + NonMedia.all
-    }
 
     sealed class Media(
         storageType: com.anggrayudi.storage.media.MediaType,
@@ -44,7 +31,7 @@ sealed class FileType(
         color: Color,
         sourceKinds: List<SourceKind>
     ) : FileType(
-        storageType = storageType,
+        simpleStorageType = storageType,
         titleRes = labelRes,
         iconRes = iconRes,
         color = color,
@@ -103,7 +90,7 @@ sealed class FileType(
         color: Color,
         val fileExtension: String
     ) : FileType(
-        storageType = com.anggrayudi.storage.media.MediaType.DOWNLOADS,
+        simpleStorageType = com.anggrayudi.storage.media.MediaType.DOWNLOADS,
         titleRes = labelRes,
         iconRes = iconRes,
         color = color,
@@ -148,13 +135,26 @@ sealed class FileType(
         "apk"
     )
 
-    val identifier = this::class.java.simpleName
+    val identifier: String = this::class.java.simpleName
 
     override val preferencesKey: Preferences.Key<Int> = intPreferencesKey(identifier)
 
     val sources: List<Source> = sourceKinds.map { Source(identifier, it) }
 
     val isMediaType: Boolean get() = this is Media
+
+    enum class Status {
+        Enabled,
+        Disabled,
+        DisabledForMediaAccessOnly,
+        DisabledForNoFileAccess;
+
+        val isEnabled: Boolean get() = this == Enabled
+    }
+
+    companion object {
+        val all: List<FileType> get() = Media.all + NonMedia.all
+    }
 
     enum class SourceKind(
         @StringRes val labelRes: Int,
@@ -178,28 +178,46 @@ sealed class FileType(
         )
     }
 
-    class Source(val fileTypeIdentifier: String, val kind: SourceKind) :
-        DataStoreEntry.UniType<Boolean> {
+    abstract class FileSourceKindDataStoreEntry(
+        keySuffix: PreferenceKeySuffix
+    ) {
+        abstract val fileTypeIdentifier: String
+        abstract val kind: SourceKind
 
-        override val defaultValue: Boolean = true
-        override val preferencesKey: Preferences.Key<Boolean> by lazy {
-            booleanPreferencesKey("$fileTypeIdentifier.$kind.SOURCE")
+        protected val preferencesKeyTitle: String by lazy {
+            "$fileTypeIdentifier.$kind.${keySuffix.name}"
         }
 
-        val defaultTargetDir by lazy {
-            DefaultTargetDir(fileTypeIdentifier, kind)
+        enum class PreferenceKeySuffix {
+            Source,
+            DefaultTargetDir
+        }
+    }
+
+    class Source(override val fileTypeIdentifier: String, override val kind: SourceKind) :
+        DataStoreEntry.UniType<Boolean>,
+        FileSourceKindDataStoreEntry(PreferenceKeySuffix.Source) {
+
+        override val defaultValue: Boolean = true
+
+        override val preferencesKey: Preferences.Key<Boolean> by lazy {
+            booleanPreferencesKey(preferencesKeyTitle)
         }
 
         @Parcelize
-        class DefaultTargetDir(private val fileTypeIdentifier: String, val kind: SourceKind) :
-            DataStoreEntry.UriValued, Parcelable {
+        class DefaultTargetDir(override val fileTypeIdentifier: String, override val  kind: SourceKind) :
+            DataStoreEntry.UriValued,
+            FileSourceKindDataStoreEntry(PreferenceKeySuffix.DefaultTargetDir),
+            Parcelable {
 
             @IgnoredOnParcel
             override val defaultValue: Uri? = null
 
             @IgnoredOnParcel
             override val preferencesKey: Preferences.Key<String> by lazy {
-                stringPreferencesKey("$fileTypeIdentifier.$kind.DEFAULT_TARGET_DIR")
+                stringPreferencesKey(
+                    preferencesKeyTitle
+                )
             }
         }
     }

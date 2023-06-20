@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.service
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,9 +12,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.file.getSimplePath
-import com.anggrayudi.storage.media.MediaStoreCompat
+import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.coroutines.getValueSynchronously
-import com.w2sv.androidutils.notifying.getNotificationManager
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.AbstractPreferencesDataStoreRepository
@@ -21,6 +21,7 @@ import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.mediastore.MoveFile
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import slimber.log.i
@@ -32,24 +33,39 @@ class FileMoverActivity : ComponentActivity() {
     @HiltViewModel
     class ViewModel @Inject constructor(
         savedStateHandle: SavedStateHandle,
-        dataStoreRepository: PreferencesDataStoreRepository
+        dataStoreRepository: PreferencesDataStoreRepository,
+        @ApplicationContext context: Context
     ) :
         AbstractPreferencesDataStoreRepository.ViewModel<PreferencesDataStoreRepository>(
             dataStoreRepository
         ) {
 
+        // ===============
+        // Intent Extras
+        // ===============
+
         val moveFile: MoveFile =
-            savedStateHandle[FileNavigatorService.EXTRA_MEDIA_STORE_FILE]!!
-        val defaultTargetDir: Uri? =
-            dataStoreRepository.getDefaultFileSourceTargetDirFlow(moveFile.defaultTargetDir)
+            savedStateHandle[FileNavigatorService.EXTRA_MOVE_FILE]!!
+
+        val notificationParameters: MoveFile.NotificationParameters =
+            savedStateHandle[MoveFile.NotificationParameters.EXTRA]!!
+
+        // ===============
+        // Extra Downstream
+        // ===============
+
+        val moveMediaFile: MediaFile? = moveFile.getMediaFile(context)
+
+        // ===============
+        // DataStore Attributes
+        // ===============
+
+        val defaultTargetDirDocumentUri: Uri? =
+            dataStoreRepository.getUriFlow(moveFile.defaultTargetDir)
                 .getValueSynchronously()
                 .also {
                     i { "Retrieved ${moveFile.defaultTargetDir.preferencesKey} = $it" }
                 }
-        val cancelNotificationId: Int =
-            savedStateHandle[FileNavigatorService.EXTRA_NOTIFICATION_ID]!!
-        val requestCodes: ArrayList<Int> =
-            savedStateHandle[FileNavigatorService.EXTRA_REQUEST_CODES]!!
     }
 
     private val viewModel by viewModels<ViewModel>()
@@ -58,23 +74,21 @@ class FileMoverActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { treeUri ->
             i { "DocumentTree Uri: $treeUri" }
 
+            // Exit on null treeUri (received on exiting folder picker via back press)
             treeUri ?: return@registerForActivityResult
 
-            val targetDirectoryDocumentFile =
-                DocumentFile.fromTreeUri(this, treeUri) ?: return@registerForActivityResult
-            val mediaFile = MediaStoreCompat.fromMediaId(
-                this,
-                viewModel.moveFile.type.storageType,
-                viewModel.moveFile.data.id
-            ) ?: return@registerForActivityResult
+            // Exit on unsuccessful conversion to SimpleStorage objects
+            val targetDirectoryDocumentFile = DocumentFile.fromTreeUri(this, treeUri) ?: return@registerForActivityResult
+            viewModel.moveMediaFile ?: return@registerForActivityResult
 
             contentResolver.takePersistableUriPermission(
                 treeUri,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
 
+            // Move file
             lifecycleScope.launch(Dispatchers.IO) {
-                mediaFile.moveTo(
+                viewModel.moveMediaFile!!.moveTo(
                     targetDirectoryDocumentFile,
                     callback = object : FileCallback() {
                         override fun onCompleted(result: Any) {
@@ -94,30 +108,27 @@ class FileMoverActivity : ComponentActivity() {
                 )
             }
 
-            with(viewModel) {
-                saveToDataStore(
-                    moveFile.defaultTargetDir.preferencesKey,
-                    treeUri
-                )
-                    .invokeOnCompletion {
-                        i { "Saved $treeUri as ${moveFile.defaultTargetDir.preferencesKey} to preferences" }
-                        finish()
-                    }
+            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri) {
+                // Save targetDirectoryDocumentFile to DataStore and finish activity on saving completed
+                with(viewModel) {
+                    saveToDataStore(
+                        moveFile.defaultTargetDir.preferencesKey,
+                        targetDirectoryDocumentFile.uri
+                    )
+                        .invokeOnCompletion {
+                            i { "Saved ${targetDirectoryDocumentFile.uri} as ${moveFile.defaultTargetDir.preferencesKey} to preferences" }
+                            finish()
+                        }
+                }
+            } else {
+                finish()
             }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        getNotificationManager().cancel(viewModel.cancelNotificationId)
-
-        FileNavigatorService.cleanUpIds(
-            viewModel.cancelNotificationId,
-            viewModel.requestCodes,
-            this
-        )
-
-        i { "Launching destinationSelectionLauncher" }
-        destinationSelectionLauncher.launch(viewModel.defaultTargetDir)
+        viewModel.notificationParameters.cancelUnderlyingNotification(this)
+        destinationSelectionLauncher.launch(viewModel.defaultTargetDirDocumentUri)
     }
 }

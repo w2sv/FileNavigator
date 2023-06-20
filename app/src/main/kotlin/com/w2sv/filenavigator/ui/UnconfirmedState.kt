@@ -196,7 +196,7 @@ abstract class UnconfirmedStatesHoldingViewModel<R : AbstractPreferencesDataStor
         UnconfirmedStateMap(
             coroutineScope,
             appliedFlowMap,
-            syncState = { dataStoreRepository.saveEnumValuedMap(it) }
+            syncState = { dataStoreRepository.saveMap(it) }
         )
 
     fun <T> makeUnconfirmedStateFlow(
