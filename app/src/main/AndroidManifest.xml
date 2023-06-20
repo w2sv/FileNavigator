@@ -42,9 +42,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.w2sv.filenavigator.service.FileMoverActivity" />
+        <activity android:name="com.w2sv.filenavigator.navigator.service.FileMoverActivity" />
 
-        <service android:name="com.w2sv.filenavigator.service.FileNavigatorService" />
+        <service android:name="com.w2sv.filenavigator.navigator.service.FileNavigatorService" />
         <service android:name="com.w2sv.filenavigator.PowerSaveModeChangedReceiver$HostService" />
 
         <receiver android:name=".PowerSaveModeChangedReceiver"

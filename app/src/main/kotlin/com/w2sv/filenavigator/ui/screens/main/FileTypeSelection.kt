@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.mediastore.FileType
+import com.w2sv.filenavigator.FileType
 import com.w2sv.filenavigator.ui.AppCheckbox
 import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals

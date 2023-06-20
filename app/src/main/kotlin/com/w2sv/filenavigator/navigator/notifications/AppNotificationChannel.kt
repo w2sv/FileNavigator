@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.service
+package com.w2sv.filenavigator.navigator.notifications
 
 import androidx.annotation.StringRes
 import com.w2sv.filenavigator.R

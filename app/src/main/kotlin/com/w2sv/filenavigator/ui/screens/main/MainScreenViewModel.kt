@@ -13,8 +13,8 @@ import com.w2sv.androidutils.ui.PreferencesDataStoreBackedUnconfirmedStatesViewM
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.datastore.PreferencesKey
-import com.w2sv.filenavigator.mediastore.FileType
-import com.w2sv.filenavigator.service.FileNavigatorService
+import com.w2sv.filenavigator.FileType
+import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.utils.StorageAccessStatus
 import com.w2sv.filenavigator.utils.getMutableStateMap
 import dagger.hilt.android.lifecycle.HiltViewModel

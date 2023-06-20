@@ -36,7 +36,7 @@ import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesKey
-import com.w2sv.filenavigator.service.FileNavigatorService
+import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable

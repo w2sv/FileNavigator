@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.service
+package com.w2sv.filenavigator.navigator.notifications
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

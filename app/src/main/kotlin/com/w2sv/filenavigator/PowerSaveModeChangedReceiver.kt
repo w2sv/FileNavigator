@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.PowerManager
-import com.w2sv.filenavigator.service.FileNavigatorService
-import com.w2sv.filenavigator.service.UnboundService
+import com.w2sv.androidutils.services.UnboundService
+import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.utils.powerSaveModeActivated
 import slimber.log.i
 

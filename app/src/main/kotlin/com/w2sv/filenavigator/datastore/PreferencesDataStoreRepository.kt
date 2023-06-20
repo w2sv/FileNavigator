@@ -3,7 +3,7 @@ package com.w2sv.filenavigator.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.w2sv.androidutils.datastorage.datastore.preferences.AbstractPreferencesDataStoreRepository
-import com.w2sv.filenavigator.mediastore.FileType
+import com.w2sv.filenavigator.FileType
 import com.w2sv.filenavigator.ui.Theme
 import com.w2sv.filenavigator.utils.StorageAccessStatus
 import kotlinx.coroutines.flow.Flow

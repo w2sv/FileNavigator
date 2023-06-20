@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.service
+package com.w2sv.filenavigator.navigator.service
 
 import android.content.Context
 import android.content.Intent
@@ -18,7 +18,7 @@ import com.w2sv.androidutils.datastorage.datastore.preferences.AbstractPreferenc
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
-import com.w2sv.filenavigator.mediastore.MoveFile
+import com.w2sv.filenavigator.navigator.MoveFile
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.mediastore
+package com.w2sv.filenavigator.navigator.mediastore
 
 import android.content.ContentResolver
 import android.net.Uri

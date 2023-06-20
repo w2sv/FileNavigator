@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.mediastore
+package com.w2sv.filenavigator.navigator.mediastore
 
 import android.content.ContentResolver
 import android.database.CursorIndexOutOfBoundsException
@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore.MediaColumns
+import com.w2sv.filenavigator.FileType
 import com.w2sv.kotlinutils.dateFromUnixTimestamp
 import com.w2sv.kotlinutils.timeDelta
 import kotlinx.parcelize.IgnoredOnParcel

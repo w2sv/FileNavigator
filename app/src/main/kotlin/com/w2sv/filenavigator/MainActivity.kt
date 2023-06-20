@@ -19,7 +19,7 @@ import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.lifecycle.SelfManagingLocalBroadcastReceiver
-import com.w2sv.filenavigator.service.FileNavigatorService
+import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.Theme
 import com.w2sv.filenavigator.ui.screens.main.MainScreen
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
