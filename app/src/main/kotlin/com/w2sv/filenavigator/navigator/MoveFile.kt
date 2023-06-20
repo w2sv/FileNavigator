@@ -9,6 +9,7 @@ import com.w2sv.androidutils.notifying.getNotificationManager
 import com.w2sv.filenavigator.FileType
 import com.w2sv.filenavigator.navigator.mediastore.MediaStoreFileData
 import com.w2sv.filenavigator.navigator.service.FileNavigatorService
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -18,9 +19,14 @@ import kotlinx.parcelize.Parcelize
 data class MoveFile(
     val uri: Uri,
     val type: FileType,
-    val defaultTargetDir: FileType.Source.DefaultTargetDir,
+    val sourceKind: FileType.SourceKind,
     val data: MediaStoreFileData
 ) : Parcelable {
+
+    @IgnoredOnParcel
+    val defaultTargetDir: FileType.Source.DefaultTargetDir by lazy {
+        FileType.Source.DefaultTargetDir(type.identifier, sourceKind)
+    }
 
     fun getMediaFile(context: Context): MediaFile? =
         MediaStoreCompat.fromMediaId(

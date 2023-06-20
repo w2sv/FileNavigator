@@ -63,21 +63,17 @@ data class MediaStoreFileData(
             .substringAfterLast(File.separator)
     }
 
-    @IgnoredOnParcel
-    val sourceKind: FileType.SourceKind by lazy {
-        when {
-            isDownload -> FileType.SourceKind.Download
-            // NOTE: Don't change the order of the Screenshot and Camera branches, as the actual screenshot dir
-            // may be a child dir of the camera directory
-            relativePath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileType.SourceKind.Screenshot
-            relativePath.contains(Environment.DIRECTORY_DCIM) -> FileType.SourceKind.Camera
-            else -> FileType.SourceKind.OtherApp
-        }.also {
-            i {
-                "relativePath: $relativePath\nDetermined OriginKind: ${it.name}"
-            }
-        }
+    fun getSourceKind(): FileType.SourceKind = when {
+        isDownload -> FileType.SourceKind.Download
+        // NOTE: Don't change the order of the Screenshot and Camera branches, as the actual screenshot dir
+        // may be a child dir of the camera directory
+        relativePath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileType.SourceKind.Screenshot
+        relativePath.contains(Environment.DIRECTORY_DCIM) -> FileType.SourceKind.Camera
+        else -> FileType.SourceKind.OtherApp
     }
+        .also {
+            i { "Determined SourceKind: ${it.name}" }
+        }
 
     companion object {
 
@@ -95,8 +91,6 @@ data class MediaStoreFileData(
                     MediaColumns.IS_PENDING
                 )
             )?.run {
-                i { "Raw mediaStoreColumns: ${toList()}" }
-
                 MediaStoreFileData(
                     id = get(0),
                     relativePath = get(1),
@@ -106,6 +100,9 @@ data class MediaStoreFileData(
                     isDownload = parseBoolean(get(5)),
                     isPendingFlag = parseBoolean(get(6))
                 )
+                    .also {
+                        i { it.toString() }
+                    }
             }
         } catch (e: CursorIndexOutOfBoundsException) {
             i { e.toString() }

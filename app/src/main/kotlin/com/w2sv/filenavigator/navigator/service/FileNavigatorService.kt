@@ -18,12 +18,12 @@ import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.UniqueIds
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.androidutils.services.UnboundService
+import com.w2sv.filenavigator.FileType
 import com.w2sv.filenavigator.MainActivity
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
-import com.w2sv.filenavigator.FileType
-import com.w2sv.filenavigator.navigator.mediastore.MediaStoreFileData
 import com.w2sv.filenavigator.navigator.MoveFile
+import com.w2sv.filenavigator.navigator.mediastore.MediaStoreFileData
 import com.w2sv.filenavigator.navigator.notifications.AppNotificationChannel
 import com.w2sv.filenavigator.navigator.notifications.PendingIntentRequestCode
 import com.w2sv.filenavigator.navigator.notifications.createNotificationChannelAndGetNotificationBuilder
@@ -42,11 +42,11 @@ class FileNavigatorService : UnboundService() {
     private lateinit var fileObservers: List<FileObserver>
 
     private val newFileDetectedNotificationIds =
-        UniqueIds(AppNotificationChannel.NEW_FILE_DETECTED.nonZeroOrdinal)
+        UniqueIds(AppNotificationChannel.NewFileDetected.idGroupSeed)
     private val newFileDetectedActionsPendingIntentRequestCodes = UniqueIds(1)
 
     private fun getAndRegisterFileObservers(): List<FileObserver> {
-        val fileTypeStatus = dataStoreRepository.fileTypeStatus.getSynchronousMap()
+        val fileTypeStatus = dataStoreRepository.fileTypeEnabled.getSynchronousMap()
         val accountForFileTypeOrigin =
             dataStoreRepository.fileSourceEnabled.getSynchronousMap()
 
@@ -123,12 +123,12 @@ class FileNavigatorService : UnboundService() {
 
     private fun start() {
         startForeground(
-            AppNotificationChannel.STARTED_FOREGROUND_SERVICE.nonZeroOrdinal,
+            AppNotificationChannel.StartedForegroundService.nonZeroOrdinal,
             createNotificationChannelAndGetNotificationBuilder(
-                AppNotificationChannel.STARTED_FOREGROUND_SERVICE
+                AppNotificationChannel.StartedForegroundService
             )
                 .setSmallIcon(R.drawable.ic_file_move_24)
-                .setContentTitle(getString(AppNotificationChannel.STARTED_FOREGROUND_SERVICE.titleRes))
+                .setContentTitle(getString(AppNotificationChannel.StartedForegroundService.titleRes))
                 .setContentText(getString(R.string.waiting_for_new_files_to_be_navigated))
                 // add configure action
                 .addAction(
@@ -224,20 +224,20 @@ class FileNavigatorService : UnboundService() {
             showNotification(
                 notificationParameters.notificationId,
                 createNotificationChannelAndGetNotificationBuilder(
-                    AppNotificationChannel.NEW_FILE_DETECTED
+                    AppNotificationChannel.NewFileDetected
                 )
                     .setContentTitle(
                         getString(
-                            AppNotificationChannel.NEW_FILE_DETECTED.titleRes,
+                            AppNotificationChannel.NewFileDetected.titleRes,
                             getNotificationTitleFormatArg(moveFile)
                         )
                     )
                     // set icons
-                    .setSmallIcon(R.drawable.ic_file_move_24)
+                    .setSmallIcon(moveFile.type.iconRes)
                     .setLargeIcon(
                         AppCompatResources.getDrawable(
                             applicationContext,
-                            moveFile.type.iconRes
+                            moveFile.sourceKind.iconRes
                         )
                             ?.toBitmap()
                     )
@@ -308,15 +308,14 @@ class FileNavigatorService : UnboundService() {
             uri: Uri,
             mediaStoreFileData: MediaStoreFileData
         ) {
-            if (sourceKinds.contains(mediaStoreFileData.sourceKind)) {
+            val sourceKind = mediaStoreFileData.getSourceKind()
+
+            if (sourceKinds.contains(sourceKind)) {
                 showNotification(
                     MoveFile(
                         uri = uri,
                         type = fileType,
-                        defaultTargetDir = FileType.Source.DefaultTargetDir(
-                            fileType.identifier,
-                            mediaStoreFileData.sourceKind
-                        ),
+                        sourceKind = sourceKind,
                         data = mediaStoreFileData
                     )
                 )
@@ -326,7 +325,7 @@ class FileNavigatorService : UnboundService() {
         override fun getNotificationTitleFormatArg(moveFile: MoveFile): String {
             moveFile.type as FileType.Media
 
-            return when (moveFile.data.sourceKind) {
+            return when (moveFile.data.getSourceKind()) {
                 FileType.SourceKind.Screenshot -> getString(
                     R.string.new_screenshot
                 )
@@ -370,10 +369,7 @@ class FileNavigatorService : UnboundService() {
                         MoveFile(
                             uri = uri,
                             type = fileType,
-                            defaultTargetDir = FileType.Source.DefaultTargetDir(
-                                fileType.identifier,
-                                mediaStoreFileData.sourceKind
-                            ),
+                            sourceKind = FileType.SourceKind.Download,
                             data = mediaStoreFileData
                         )
                     )
@@ -414,7 +410,10 @@ class FileNavigatorService : UnboundService() {
             )
         }
 
-        fun onNotificationCancelled(notificationParameters: MoveFile.NotificationParameters, context: Context) {
+        fun onNotificationCancelled(
+            notificationParameters: MoveFile.NotificationParameters,
+            context: Context
+        ) {
             context.startService(
                 getIntent(context)
                     .setAction(ACTION_CLEANUP_IDS)
