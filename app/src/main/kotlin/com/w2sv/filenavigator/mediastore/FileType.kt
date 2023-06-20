@@ -23,6 +23,14 @@ sealed class FileType(
     override val defaultValue: Status = Status.DisabledForNoFileAccess
 ) : DataStoreEntry.EnumValued<FileType.Status>, Parcelable {
 
+    val identifier: String = this::class.java.simpleName
+
+    override val preferencesKey: Preferences.Key<Int> = intPreferencesKey(identifier)
+
+    val sources: List<Source> = sourceKinds.map { Source(identifier, it) }
+
+    val isMediaType: Boolean get() = this is Media
+
     sealed class Media(
         storageType: com.anggrayudi.storage.media.MediaType,
         @StringRes labelRes: Int,
@@ -134,14 +142,6 @@ sealed class FileType(
         Color(0xFFFCB07E),
         "apk"
     )
-
-    val identifier: String = this::class.java.simpleName
-
-    override val preferencesKey: Preferences.Key<Int> = intPreferencesKey(identifier)
-
-    val sources: List<Source> = sourceKinds.map { Source(identifier, it) }
-
-    val isMediaType: Boolean get() = this is Media
 
     enum class Status {
         Enabled,
