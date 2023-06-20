@@ -100,7 +100,7 @@ class MainScreenViewModel @Inject constructor(
 
     private fun setFileTypeStatuses(fileTypes: Iterable<FileType>, newStatus: FileType.Status) {
         coroutineScope.launch {
-            dataStoreRepository.saveMap(
+            dataStoreRepository.saveEnumValuedMap(
                 fileTypes.associateWith { newStatus }
             )
             fileTypes.forEach {

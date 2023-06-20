@@ -45,52 +45,52 @@ sealed class FileType(
         color = color,
         sourceKinds = sourceKinds
     ) {
+        @Parcelize
+        object Image : Media(
+            com.anggrayudi.storage.media.MediaType.IMAGE,
+            R.string.image,
+            R.string.image,
+            R.drawable.ic_image_24,
+            Color(0xFFBF1A2F),
+            listOf(
+                SourceKind.Camera,
+                SourceKind.Screenshot,
+                SourceKind.Download,
+                SourceKind.OtherApp
+            )
+        )
+
+        @Parcelize
+        object Video : Media(
+            com.anggrayudi.storage.media.MediaType.VIDEO,
+            R.string.video,
+            R.string.video,
+            R.drawable.ic_video_file_24,
+            Color(0xFFFFCB77),
+            listOf(
+                SourceKind.Camera,
+                SourceKind.Download,
+                SourceKind.OtherApp
+            )
+        )
+
+        @Parcelize
+        object Audio : Media(
+            com.anggrayudi.storage.media.MediaType.AUDIO,
+            R.string.audio,
+            R.string.audio_file,
+            R.drawable.ic_audio_file_24,
+            Color(0xFFF26430),
+            listOf(
+                SourceKind.Download,
+                SourceKind.OtherApp
+            )
+        )
+
         companion object {
             val all: List<Media> get() = listOf(Image, Video, Audio)
         }
     }
-
-    @Parcelize
-    object Image : Media(
-        com.anggrayudi.storage.media.MediaType.IMAGE,
-        R.string.image,
-        R.string.image,
-        R.drawable.ic_image_24,
-        Color(0xFFBF1A2F),
-        listOf(
-            SourceKind.Camera,
-            SourceKind.Screenshot,
-            SourceKind.Download,
-            SourceKind.OtherApp
-        )
-    )
-
-    @Parcelize
-    object Video : Media(
-        com.anggrayudi.storage.media.MediaType.VIDEO,
-        R.string.video,
-        R.string.video,
-        R.drawable.ic_video_file_24,
-        Color(0xFFFFCB77),
-        listOf(
-            SourceKind.Camera,
-            SourceKind.Download,
-            SourceKind.OtherApp
-        )
-    )
-
-    @Parcelize
-    object Audio : Media(
-        com.anggrayudi.storage.media.MediaType.AUDIO,
-        R.string.audio,
-        R.string.audio_file,
-        R.drawable.ic_audio_file_24,
-        Color(0xFFF26430),
-        listOf(
-            SourceKind.Download,
-            SourceKind.OtherApp
-        )
-    )
 
     sealed class NonMedia(
         @StringRes labelRes: Int,
@@ -106,42 +106,42 @@ sealed class FileType(
             SourceKind.Download
         )
     ) {
+        @Parcelize
+        object PDF : NonMedia(
+            R.string.pdf,
+            R.drawable.ic_pdf_24,
+            Color(0xFFD6BA73),
+            "pdf"
+        )
+
+        @Parcelize
+        object Text : NonMedia(
+            R.string.text,
+            R.drawable.ic_text_file_24,
+            Color(0xFFF00699),
+            "txt"
+        )
+
+        @Parcelize
+        object ZIP : NonMedia(
+            R.string.zip,
+            R.drawable.ic_folder_zip_24,
+            Color(0xFF826251),
+            "zip"
+        )
+
+        @Parcelize
+        object APK : NonMedia(
+            R.string.apk,
+            R.drawable.ic_apk_file_24,
+            Color(0xFFFCB07E),
+            "apk"
+        )
+
         companion object {
             val all: List<NonMedia> get() = listOf(PDF, Text, ZIP, APK)
         }
     }
-
-    @Parcelize
-    object PDF : NonMedia(
-        R.string.pdf,
-        R.drawable.ic_pdf_24,
-        Color(0xFFD6BA73),
-        "pdf"
-    )
-
-    @Parcelize
-    object Text : NonMedia(
-        R.string.text,
-        R.drawable.ic_text_file_24,
-        Color(0xFFF00699),
-        "txt"
-    )
-
-    @Parcelize
-    object ZIP : NonMedia(
-        R.string.zip,
-        R.drawable.ic_folder_zip_24,
-        Color(0xFF826251),
-        "zip"
-    )
-
-    @Parcelize
-    object APK : NonMedia(
-        R.string.apk,
-        R.drawable.ic_apk_file_24,
-        Color(0xFFFCB07E),
-        "apk"
-    )
 
     enum class Status {
         Enabled,

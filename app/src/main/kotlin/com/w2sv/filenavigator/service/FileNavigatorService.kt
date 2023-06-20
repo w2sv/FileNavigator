@@ -328,8 +328,8 @@ class FileNavigatorService : UnboundService() {
 
                 FileType.SourceKind.Camera -> getString(
                     when (moveFile.type) {
-                        FileType.Image -> R.string.new_photo
-                        FileType.Video -> R.string.new_video
+                        FileType.Media.Image -> R.string.new_photo
+                        FileType.Media.Video -> R.string.new_video
                         else -> throw Error()
                     }
                 )

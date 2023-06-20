@@ -58,13 +58,13 @@ abstract class AbstractPreferencesDataStoreRepository(
     // Enums
     // ============
 
-    protected inline fun <reified T : Enum<T>> getEnumFlow(
+    protected inline fun <reified E : Enum<E>> getEnumFlow(
         preferencesKey: Preferences.Key<Int>,
-        defaultValue: T
-    ): Flow<T> =
+        defaultValue: E
+    ): Flow<E> =
         dataStore.data.map {
             it[preferencesKey]
-                ?.let { ordinal -> getByOrdinal<T>(ordinal) }
+                ?.let { ordinal -> getByOrdinal<E>(ordinal) }
                 ?: defaultValue
         }
 
@@ -79,13 +79,13 @@ abstract class AbstractPreferencesDataStoreRepository(
     // Simple Maps
     // ============
 
-    protected fun <T, DSE : DataStoreEntry.UniType<T>> getFlowMap(properties: Iterable<DSE>): Map<DSE, Flow<T>> =
+    protected fun <DSE : DataStoreEntry.UniType<V>, V> getFlowMap(properties: Iterable<DSE>): Map<DSE, Flow<V>> =
         properties.associateWith { property ->
             getFlow(property.preferencesKey, property.defaultValue)
         }
 
-    suspend fun <V, K : DataStoreEntry.UniType<V>> saveMap(
-        map: Map<K, V>
+    suspend fun <DSE : DataStoreEntry.UniType<V>, V> saveMap(
+        map: Map<DSE, V>
     ) {
         dataStore.edit {
             map.forEach { (entry, value) ->
@@ -103,7 +103,7 @@ abstract class AbstractPreferencesDataStoreRepository(
             getUriFlow(it.preferencesKey, it.defaultValue)
         }
 
-    suspend fun <DSE : DataStoreEntry.UriValued> saveMap(map: Map<DSE, Uri?>) {
+    suspend fun <DSE : DataStoreEntry.UriValued> saveUriValuedMap(map: Map<DSE, Uri?>) {
         dataStore.edit {
             map.forEach { (entry, value) ->
                 save(entry.preferencesKey, value)
@@ -115,15 +115,15 @@ abstract class AbstractPreferencesDataStoreRepository(
     // EnumValued Maps
     // ============
 
-    protected inline fun <reified V : Enum<V>, K : DataStoreEntry.EnumValued<V>> getEnumValuedFlowMap(
-        properties: Iterable<K>
-    ): Map<K, Flow<V>> =
+    protected inline fun <DSE : DataStoreEntry.EnumValued<V>, reified V : Enum<V>> getEnumValuedFlowMap(
+        properties: Iterable<DSE>
+    ): Map<DSE, Flow<V>> =
         properties.associateWith { property ->
             getEnumFlow(property.preferencesKey, property.defaultValue)
         }
 
-    suspend fun <V : Enum<V>, K : DataStoreEntry.EnumValued<V>> saveMap(
-        map: Map<K, V>
+    suspend fun <DSE : DataStoreEntry.EnumValued<V>, V : Enum<V>> saveEnumValuedMap(
+        map: Map<DSE, V>
     ) {
         dataStore.edit {
             map.forEach { (entry, value) ->
