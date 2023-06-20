@@ -46,7 +46,7 @@ class FileNavigatorService : UnboundService() {
     private val newFileDetectedActionsPendingIntentRequestCodes = UniqueIds(1)
 
     private fun getAndRegisterFileObservers(): List<FileObserver> {
-        val fileTypeStatus = dataStoreRepository.fileTypeEnabled.getSynchronousMap()
+        val fileTypeStatus = dataStoreRepository.fileTypeStatus.getSynchronousMap()
         val accountForFileTypeOrigin =
             dataStoreRepository.fileSourceEnabled.getSynchronousMap()
 
