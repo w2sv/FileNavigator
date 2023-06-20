@@ -240,7 +240,7 @@ private fun FileSourceRow(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val isEnabled = mainScreenViewModel.fileSourceEnabled.getValue(source)
+    val isEnabled = if (fileType.isMediaType) mainScreenViewModel.fileSourceEnabled.getValue(source) else true
 
     Surface(
         shape = RoundedCornerShape(8.dp),
