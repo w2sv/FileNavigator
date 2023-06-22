@@ -295,7 +295,7 @@ class FileNavigatorService : UnboundService() {
     }
 
     private inner class MediaFileObserver(
-        private val fileType: FileType,
+        private val fileType: FileType.Media,
         private val sourceKinds: Set<FileType.SourceKind>
     ) :
         FileObserver(fileType.simpleStorageType.readUri!!) {
@@ -308,17 +308,19 @@ class FileNavigatorService : UnboundService() {
             uri: Uri,
             mediaStoreFileData: MediaStoreFileData
         ) {
-            val sourceKind = mediaStoreFileData.getSourceKind()
+            if (fileType.matchesFileExtension(mediaStoreFileData.fileExtension)) {
+                val sourceKind = mediaStoreFileData.getSourceKind()
 
-            if (sourceKinds.contains(sourceKind)) {
-                showNotification(
-                    MoveFile(
-                        uri = uri,
-                        type = fileType,
-                        sourceKind = sourceKind,
-                        data = mediaStoreFileData
+                if (sourceKinds.contains(sourceKind)) {
+                    showNotification(
+                        MoveFile(
+                            uri = uri,
+                            type = fileType,
+                            sourceKind = sourceKind,
+                            data = mediaStoreFileData
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -363,7 +365,7 @@ class FileNavigatorService : UnboundService() {
             uri: Uri,
             mediaStoreFileData: MediaStoreFileData
         ) {
-            fileTypes.firstOrNull { it.fileExtension == mediaStoreFileData.fileExtension }
+            fileTypes.firstOrNull { it.matchesFileExtension(mediaStoreFileData.fileExtension) }
                 ?.let { fileType ->
                     showNotification(
                         MoveFile(

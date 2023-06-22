@@ -16,7 +16,7 @@
     <string name="audio">Audio</string>
     <string name="audio_file">Audio File</string>
     <string name="pdf">PDF</string>
-    <string name="zip">ZIP</string>
+    <string name="archive">Archive</string>
     <string name="apk">APK</string>
     <string name="text">Text</string>
 
@@ -68,4 +68,5 @@
     <string name="version">Version: %s</string>
     <string name="navigator_settings">Navigator Settings</string>
     <string name="non_media_files_require_all_files_access">Navigation of non-media files requires permission to manage all files.</string>
+    <string name="gif">GIF</string>
 </resources>

@@ -9,64 +9,96 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 sealed class FileType(
-    val simpleStorageType: com.anggrayudi.storage.media.MediaType,
     @StringRes val titleRes: Int,
     @DrawableRes val iconRes: Int,
     val color: Color,
-    sourceKinds: List<SourceKind>,
-    override val defaultValue: Status = Status.DisabledForNoFileAccess
+    val simpleStorageType: MediaType,
+    sourceKinds: List<SourceKind>
 ) : DataStoreEntry.EnumValued<FileType.Status>, Parcelable {
 
     val identifier: String = this::class.java.simpleName
 
     override val preferencesKey: Preferences.Key<Int> = intPreferencesKey(identifier)
+    override val defaultValue: Status = Status.DisabledForNoFileAccess
 
     val sources: List<Source> = sourceKinds.map { Source(identifier, it) }
 
     val isMediaType: Boolean get() = this is Media
 
+    abstract fun matchesFileExtension(extension: String): Boolean
+
     sealed class Media(
-        simpleStorageType: com.anggrayudi.storage.media.MediaType,
         @StringRes labelRes: Int,
         @StringRes val fileDeclarationRes: Int,
         @DrawableRes iconRes: Int,
         color: Color,
-        sourceKinds: List<SourceKind>
+        simpleStorageType: MediaType,
+        sourceKinds: List<SourceKind>,
+        val fileExtensions: Set<String>? = null,
+        val ignoreFileExtensionsOf: Media? = null
     ) : FileType(
-        simpleStorageType = simpleStorageType,
         titleRes = labelRes,
         iconRes = iconRes,
         color = color,
-        sourceKinds = sourceKinds
+        simpleStorageType = simpleStorageType,
+        sourceKinds = sourceKinds,
     ) {
+
+        override fun matchesFileExtension(extension: String): Boolean =
+            when {
+                fileExtensions != null -> fileExtensions.contains(extension)
+
+                ignoreFileExtensionsOf != null -> !ignoreFileExtensionsOf.fileExtensions!!.contains(
+                    extension
+                )
+
+                else -> true
+            }
+
         @Parcelize
         object Image : Media(
-            com.anggrayudi.storage.media.MediaType.IMAGE,
-            R.string.image,
-            R.string.image,
-            R.drawable.ic_image_24,
-            Color(0xFFBF1A2F),
-            listOf(
+            labelRes = R.string.image,
+            fileDeclarationRes = R.string.image,
+            iconRes = R.drawable.ic_image_24,
+            color = Color(0xFFBF1A2F),
+            simpleStorageType = MediaType.IMAGE,
+            sourceKinds = listOf(
                 SourceKind.Camera,
                 SourceKind.Screenshot,
                 SourceKind.Download,
                 SourceKind.OtherApp
-            )
+            ),
+            ignoreFileExtensionsOf = GIF
+        )
+
+        @Parcelize
+        object GIF : Media(
+            labelRes = R.string.gif,
+            fileDeclarationRes = R.string.gif,
+            iconRes = R.drawable.ic_gif_box_24,
+            color = Color(0xFF49C6E5),
+            simpleStorageType = MediaType.IMAGE,
+            sourceKinds = listOf(
+                SourceKind.Download,
+                SourceKind.OtherApp
+            ),
+            fileExtensions = setOf("gif", "GIF", "giff")
         )
 
         @Parcelize
         object Video : Media(
-            com.anggrayudi.storage.media.MediaType.VIDEO,
-            R.string.video,
-            R.string.video,
-            R.drawable.ic_video_file_24,
-            Color(0xFFFFCB77),
-            listOf(
+            labelRes = R.string.video,
+            fileDeclarationRes = R.string.video,
+            iconRes = R.drawable.ic_video_file_24,
+            color = Color(0xFFFFCB77),
+            simpleStorageType = MediaType.VIDEO,
+            sourceKinds = listOf(
                 SourceKind.Camera,
                 SourceKind.Download,
                 SourceKind.OtherApp
@@ -75,19 +107,19 @@ sealed class FileType(
 
         @Parcelize
         object Audio : Media(
-            com.anggrayudi.storage.media.MediaType.AUDIO,
-            R.string.audio,
-            R.string.audio_file,
-            R.drawable.ic_audio_file_24,
-            Color(0xFFF26430),
-            listOf(
+            labelRes = R.string.audio,
+            fileDeclarationRes = R.string.audio_file,
+            iconRes = R.drawable.ic_audio_file_24,
+            color = Color(0xFFF26430),
+            simpleStorageType = MediaType.AUDIO,
+            sourceKinds = listOf(
                 SourceKind.Download,
                 SourceKind.OtherApp
             )
         )
 
         companion object {
-            val all: List<Media> get() = listOf(Image, Video, Audio)
+            val all: List<Media> get() = listOf(Image, Video, GIF, Audio)
         }
     }
 
@@ -95,22 +127,26 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
         color: Color,
-        val fileExtension: String
+        val fileExtensions: Set<String>
     ) : FileType(
-        simpleStorageType = com.anggrayudi.storage.media.MediaType.DOWNLOADS,
         titleRes = labelRes,
         iconRes = iconRes,
         color = color,
+        simpleStorageType = MediaType.DOWNLOADS,
         sourceKinds = listOf(
             SourceKind.Download
         )
     ) {
+
+        override fun matchesFileExtension(extension: String): Boolean =
+            fileExtensions.contains(extension)
+
         @Parcelize
         object PDF : NonMedia(
             R.string.pdf,
             R.drawable.ic_pdf_24,
             Color(0xFFD6BA73),
-            "pdf"
+            setOf("pdf")
         )
 
         @Parcelize
@@ -118,15 +154,53 @@ sealed class FileType(
             R.string.text,
             R.drawable.ic_text_file_24,
             Color(0xFFF00699),
-            "txt"
+            setOf(
+                "txt",
+                "text",
+                "asc",
+                "csv",
+                "xml",
+                "json",
+                "md",
+                "doc",
+                "docx",
+                "odt",
+                "wpd",
+                "cfg",
+                "log",
+                "ini",
+                "properties"
+            )
         )
 
         @Parcelize
-        object ZIP : NonMedia(
-            R.string.zip,
+        object Archive : NonMedia(
+            R.string.archive,
             R.drawable.ic_folder_zip_24,
             Color(0xFF826251),
-            "zip"
+            setOf(
+                "zip",
+                "rar",
+                "tar",
+                "7z",
+                "gz",
+                "bz2",
+                "xz",
+                "z",
+                "iso",
+                "cab",
+                "tbz",
+                "pkg",
+                "deb",
+                "rpm",
+                "sit",
+                "dmg",
+                "jar",
+                "war",
+                "ear",
+                "zipx",
+                "tgz"
+            )
         )
 
         @Parcelize
@@ -134,11 +208,11 @@ sealed class FileType(
             R.string.apk,
             R.drawable.ic_apk_file_24,
             Color(0xFFFCB07E),
-            "apk"
+            setOf("apk")
         )
 
         companion object {
-            val all: List<NonMedia> get() = listOf(PDF, Text, ZIP, APK)
+            val all: List<NonMedia> get() = listOf(PDF, Text, Archive, APK)
         }
     }
 
