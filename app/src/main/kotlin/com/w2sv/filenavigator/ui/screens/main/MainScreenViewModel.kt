@@ -139,13 +139,6 @@ class MainScreenViewModel @Inject constructor(
         makeUnconfirmedStatesComposition(listOf(unconfirmedFileTypeStatus, unconfirmedFileSourceEnablement))
     }
 
-    val unconfirmedFileSourceDefaultDestinationLocked by lazy {
-        makeUnconfirmedStateMap(
-            appliedFlowMap = dataStoreRepository.fileSourceDefaultDestinationLocked,
-            makeMutableMap = { it.getSynchronousMap().getMutableStateMap() }
-        )
-    }
-
     val defaultDestinationPickerFileSource: MutableStateFlow<FileType.Source?> = MutableStateFlow(null)
 
     // ==============
