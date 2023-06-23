@@ -1,6 +1,8 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -147,7 +149,6 @@ private fun DefaultMoveDestinationDialog(
                             DocumentFile.fromSingleUri(context, it)?.getSimplePath(context)
                         } ?: "Not set yet",
                         fontStyle = FontStyle.Italic,
-                        textAlign = TextAlign.Center,
                         modifier = Modifier.weight(0.8f)
                     )
                     IconButton(onClick = setDefaultDestination, modifier = Modifier.weight(0.15f)) {
@@ -165,11 +166,20 @@ private fun DefaultMoveDestinationDialog(
                         modifier = Modifier.weight(0.15f),
                         enabled = lockingEnabled
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_lock_open_24),
-                            contentDescription = null,
-                            tint = if (lockingEnabled) MaterialTheme.colorScheme.secondary else disabledColor()
-                        )
+                        AnimatedVisibility(visible = isLocked) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_lock_closed_24),
+                                contentDescription = null,
+                                tint = if (lockingEnabled) MaterialTheme.colorScheme.secondary else disabledColor()
+                            )
+                        }
+                        AnimatedVisibility(visible = !isLocked) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_lock_open_24),
+                                contentDescription = null,
+                                tint = if (lockingEnabled) MaterialTheme.colorScheme.secondary else disabledColor()
+                            )
+                        }
                     }
                 }
             }
