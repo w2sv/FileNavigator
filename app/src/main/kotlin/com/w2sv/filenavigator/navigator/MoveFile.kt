@@ -24,8 +24,8 @@ data class MoveFile(
 ) : Parcelable {
 
     @IgnoredOnParcel
-    val defaultMoveDestination: FileType.Source.DefaultDestination by lazy {
-        FileType.Source(type, sourceKind).defaultDestination
+    val source: FileType.Source by lazy {
+        FileType.Source(type, sourceKind)
     }
 
     fun getMediaFile(context: Context): MediaFile? =

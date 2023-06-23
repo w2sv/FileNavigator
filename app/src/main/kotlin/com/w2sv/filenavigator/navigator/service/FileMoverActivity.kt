@@ -61,10 +61,10 @@ class FileMoverActivity : ComponentActivity() {
         // ===============
 
         val defaultTargetDirDocumentUri: Uri? =
-            dataStoreRepository.getUriFlow(moveFile.defaultMoveDestination)
+            dataStoreRepository.getUriFlow(moveFile.source.defaultDestination)
                 .getValueSynchronously()
                 .also {
-                    i { "Retrieved ${moveFile.defaultMoveDestination.preferencesKey} = $it" }
+                    i { "Retrieved ${moveFile.source.defaultDestination.preferencesKey} = $it" }
                 }
     }
 
@@ -120,15 +120,19 @@ class FileMoverActivity : ComponentActivity() {
                 )
             }
 
-            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri) {
+            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri && !viewModel.dataStoreRepository.getFileSourceDefaultDestinationIsLocked(
+                    viewModel.moveFile.source
+                )
+                    .getValueSynchronously()
+            ) {
                 // Save targetDirectoryDocumentFile to DataStore and finish activity on saving completed
                 with(viewModel) {
                     saveToDataStore(
-                        moveFile.defaultMoveDestination.preferencesKey,
+                        moveFile.source.defaultDestination.preferencesKey,
                         targetDirectoryDocumentFile.uri
                     )
                         .invokeOnCompletion {
-                            i { "Saved ${targetDirectoryDocumentFile.uri} as ${moveFile.defaultMoveDestination.preferencesKey} to preferences" }
+                            i { "Saved ${targetDirectoryDocumentFile.uri} as ${moveFile.source.defaultDestination.preferencesKey} to preferences" }
                             finish()
                         }
                 }

@@ -27,16 +27,14 @@ class PreferencesDataStoreRepository @Inject constructor(dataStore: DataStore<Pr
             .map { it.isEnabled }
     )
 
-    val fileSourceDefaultDestinationLocked: Map<FileType.Source.DefaultDestinationLocked, Flow<Boolean>> =
-        getFlowMap(
-            FileType.all
-                .map { it.sources }
-                .flatten()
-                .map { it.defaultDestinationLocked }
-        )
-
     fun getFileSourceDefaultDestination(source: FileType.Source): Flow<Uri?> =
         getUriFlow(source.defaultDestination)
+
+    fun getFileSourceDefaultDestinationIsLocked(source: FileType.Source): Flow<Boolean> =
+        getFlow(
+            source.defaultDestinationIsLocked.preferencesKey,
+            source.defaultDestinationIsLocked.defaultValue
+        )
 
     val defaultFileSourceMoveDestination: Map<FileType.Source.DefaultDestination, Flow<Uri?>> =
         getUriFlowMap(

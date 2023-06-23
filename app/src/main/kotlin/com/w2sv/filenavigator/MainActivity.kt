@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
 
             if (treeUri != null) {
                 DocumentFile.fromTreeUri(this, treeUri)?.let { documentFile ->
-                    val fileSource = viewModel.defaultDestinationPickerFileSource.value!!
+                    val fileSource = viewModel.launchDefaultMoveDestinationPickerFor.value!!
 
                     with(viewModel) {
                         saveToDataStore(
@@ -77,14 +77,14 @@ class MainActivity : ComponentActivity() {
                                 i { "Saved ${documentFile.uri} as ${fileSource.defaultDestination.preferencesKey} to preferences" }
                             }
                         saveToDataStore(
-                            fileSource.defaultDestinationLocked.preferencesKey,
+                            fileSource.defaultDestinationIsLocked.preferencesKey,
                             true
                         )
                     }
                 }
             }
 
-            viewModel.defaultDestinationPickerFileSource.value = null
+            viewModel.launchDefaultMoveDestinationPickerFor.value = null
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,7 +117,7 @@ class MainActivity : ComponentActivity() {
         }
 
         launch {
-            viewModel.defaultDestinationPickerFileSource.collect {
+            viewModel.launchDefaultMoveDestinationPickerFor.collect {
                 if (it != null) {
                     defaultDestinationSelectionLauncher.launch(null)
                 }  // TODO

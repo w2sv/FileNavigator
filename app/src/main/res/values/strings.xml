@@ -72,4 +72,6 @@
     <string name="open_target_directory_settings">Open the target directory settings dialog.</string>
     <string name="change_default_move_destination">Change default move destination.</string>
     <string name="close">Close</string>
+    <string name="delete_set_default_move_destination">Delete set default move destination</string>
+    <string name="not_set">Not set</string>
 </resources>

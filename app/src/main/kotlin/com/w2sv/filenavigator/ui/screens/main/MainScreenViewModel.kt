@@ -19,11 +19,9 @@ import com.w2sv.filenavigator.utils.StorageAccessStatus
 import com.w2sv.filenavigator.utils.getMutableStateMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import slimber.log.i
 import javax.inject.Inject
@@ -139,7 +137,7 @@ class MainScreenViewModel @Inject constructor(
         makeUnconfirmedStatesComposition(listOf(unconfirmedFileTypeStatus, unconfirmedFileSourceEnablement))
     }
 
-    val defaultDestinationPickerFileSource: MutableStateFlow<FileType.Source?> = MutableStateFlow(null)
+    val launchDefaultMoveDestinationPickerFor: MutableStateFlow<FileType.Source?> = MutableStateFlow(null)
 
     // ==============
     // BackPress Handling

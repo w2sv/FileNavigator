@@ -61,12 +61,12 @@ fun OpenFileSourceDefaultDestinationDialogButton(
                     fileSource = it,
                     defaultMoveDestination = defaultMoveDestination,
                     setDefaultDestination = {
-                        mainScreenViewModel.defaultDestinationPickerFileSource.value = source
+                        mainScreenViewModel.launchDefaultMoveDestinationPickerFor.value = source
                     },
                     resetDefaultDestination = {
                         with(mainScreenViewModel) {
                             saveToDataStore(source.defaultDestination.preferencesKey, null)
-                            saveToDataStore(source.defaultDestinationLocked.preferencesKey, false)
+                            saveToDataStore(source.defaultDestinationIsLocked.preferencesKey, false)
                         }
                     },
                     closeDialog = { value = null }
@@ -147,7 +147,7 @@ private fun DefaultMoveDestinationDialog(
                 AppFontText(
                     text = defaultMoveDestination?.let {
                         DocumentFile.fromSingleUri(context, it)?.getSimplePath(context)
-                    } ?: "Not set",
+                    } ?: stringResource(R.string.not_set),
                     fontStyle = FontStyle.Italic,
                     fontSize = 16.sp,
                     modifier = Modifier.weight(0.8f),
@@ -169,7 +169,7 @@ private fun DefaultMoveDestinationDialog(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_delete_24),
-                        contentDescription = "",
+                        contentDescription = stringResource(R.string.delete_set_default_move_destination),
                         tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else disabledColor()
                     )
                 }

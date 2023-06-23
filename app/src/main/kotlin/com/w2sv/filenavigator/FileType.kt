@@ -257,7 +257,7 @@ sealed class FileType(
     }
 
     @Parcelize
-    class Source(val fileType: FileType, val kind: SourceKind): Parcelable {
+    class Source(val fileType: FileType, val kind: SourceKind) : Parcelable {
 
         private fun getPreferencesKeyTitle(keySuffix: String): String =
             "${fileType.identifier}.$kind.$keySuffix"
@@ -272,8 +272,8 @@ sealed class FileType(
             null
         )
 
-        inner class DefaultDestinationLocked : DataStoreEntry.UniType.Impl<Boolean>(
-            booleanPreferencesKey(getPreferencesKeyTitle("DEFAULT_DESTINATION_LOCKED")),
+        inner class DefaultDestinationIsLocked : DataStoreEntry.UniType.Impl<Boolean>(
+            booleanPreferencesKey(getPreferencesKeyTitle("DEFAULT_DESTINATION_IS_LOCKED")),
             false
         )
 
@@ -288,12 +288,12 @@ sealed class FileType(
         }
 
         @IgnoredOnParcel
-        val defaultDestinationLocked by lazy {
-            DefaultDestinationLocked()
+        val defaultDestinationIsLocked by lazy {
+            DefaultDestinationIsLocked()
         }
 
         fun getTitle(context: Context): String =
-            when(kind) {
+            when (kind) {
                 SourceKind.Screenshot -> "Screenshot"
                 SourceKind.Camera -> {
                     if (fileType == Media.Image)
@@ -301,6 +301,7 @@ sealed class FileType(
                     else
                         "Video"
                 }
+
                 SourceKind.Download -> "${context.getString(fileType.titleRes)} Download"
                 SourceKind.OtherApp -> "External App ${context.getString(fileType.titleRes)}"
             }
