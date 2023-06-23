@@ -1,11 +1,10 @@
 package com.w2sv.filenavigator
 
-import android.net.Uri
+import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -20,14 +19,15 @@ sealed class FileType(
     val color: Color,
     val simpleStorageType: MediaType,
     sourceKinds: List<SourceKind>
-) : DataStoreEntry.EnumValued<FileType.Status>, Parcelable {
+) : Parcelable {
 
     val identifier: String = this::class.java.simpleName
 
-    override val preferencesKey: Preferences.Key<Int> = intPreferencesKey(identifier)
-    override val defaultValue: Status = Status.DisabledForNoFileAccess
+    val status by lazy {
+        Status.StoreEntry(this)
+    }
 
-    val sources: List<Source> = sourceKinds.map { Source(identifier, it) }
+    val sources: List<Source> = sourceKinds.map { Source(this, it) }
 
     val isMediaType: Boolean get() = this is Media
 
@@ -223,6 +223,11 @@ sealed class FileType(
         DisabledForNoFileAccess;
 
         val isEnabled: Boolean get() = this == Enabled
+
+        class StoreEntry(fileType: FileType) : DataStoreEntry.EnumValued.Impl<Status>(
+            intPreferencesKey(fileType.identifier),
+            DisabledForNoFileAccess
+        )
     }
 
     companion object {
@@ -251,50 +256,53 @@ sealed class FileType(
         )
     }
 
-    abstract class FileSourceKindDataStoreEntry(
-        keySuffix: PreferenceKeySuffix
-    ) {
-        abstract val fileTypeIdentifier: String
-        abstract val kind: SourceKind
+    @Parcelize
+    class Source(val fileType: FileType, val kind: SourceKind): Parcelable {
 
-        protected val preferencesKeyTitle: String by lazy {
-            "$fileTypeIdentifier.$kind.${keySuffix.name}"
+        private fun getPreferencesKeyTitle(keySuffix: String): String =
+            "${fileType.identifier}.$kind.$keySuffix"
+
+        inner class IsEnabled : DataStoreEntry.UniType.Impl<Boolean>(
+            booleanPreferencesKey(getPreferencesKeyTitle("IS_ENABLED")),
+            true
+        )
+
+        inner class DefaultDestination : DataStoreEntry.UriValued.Impl(
+            stringPreferencesKey(getPreferencesKeyTitle("DEFAULT_DESTINATION")),
+            null
+        )
+
+        inner class DefaultDestinationLocked : DataStoreEntry.UniType.Impl<Boolean>(
+            booleanPreferencesKey(getPreferencesKeyTitle("DEFAULT_DESTINATION_LOCKED")),
+            false
+        )
+
+        @IgnoredOnParcel
+        val isEnabled by lazy {
+            IsEnabled()
         }
 
-        enum class PreferenceKeySuffix {
-            Source,
-            DefaultTargetDir
-        }
-    }
-
-    class Source(override val fileTypeIdentifier: String, override val kind: SourceKind) :
-        DataStoreEntry.UniType<Boolean>,
-        FileSourceKindDataStoreEntry(PreferenceKeySuffix.Source) {
-
-        override val defaultValue: Boolean = true
-
-        override val preferencesKey: Preferences.Key<Boolean> by lazy {
-            booleanPreferencesKey(preferencesKeyTitle)
+        @IgnoredOnParcel
+        val defaultDestination by lazy {
+            DefaultDestination()
         }
 
-        @Parcelize
-        class DefaultTargetDir(
-            override val fileTypeIdentifier: String,
-            override val kind: SourceKind
-        ) :
-            DataStoreEntry.UriValued,
-            FileSourceKindDataStoreEntry(PreferenceKeySuffix.DefaultTargetDir),
-            Parcelable {
+        @IgnoredOnParcel
+        val defaultDestinationLocked by lazy {
+            DefaultDestinationLocked()
+        }
 
-            @IgnoredOnParcel
-            override val defaultValue: Uri? = null
-
-            @IgnoredOnParcel
-            override val preferencesKey: Preferences.Key<String> by lazy {
-                stringPreferencesKey(
-                    preferencesKeyTitle
-                )
+        fun getTitle(context: Context): String =
+            when(kind) {
+                SourceKind.Screenshot -> "Screenshot"
+                SourceKind.Camera -> {
+                    if (fileType == Media.Image)
+                        "Photo"
+                    else
+                        "Video"
+                }
+                SourceKind.Download -> "${context.getString(fileType.titleRes)} Download"
+                SourceKind.OtherApp -> "External App ${context.getString(fileType.titleRes)}"
             }
-        }
     }
 }

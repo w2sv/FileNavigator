@@ -33,8 +33,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.FileType
+import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.AppCheckbox
 import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
@@ -81,7 +81,8 @@ private fun FileTypeAccordion(
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    val fileTypeEnabled = mainScreenViewModel.fileTypeStatus.getValue(fileType).isEnabled
+    val fileTypeEnabled =
+        mainScreenViewModel.unconfirmedFileTypeStatus.getValue(fileType.status).isEnabled
 
     Column(modifier = modifier) {
         FileTypeAccordionHeader(
@@ -135,14 +136,15 @@ private fun FileTypeAccordionHeader(
                     modifier = Modifier.padding(8.dp),
                     checked = isEnabled,
                     onCheckedChange = { checkedNew ->
-                        when (val status = mainScreenViewModel.fileTypeStatus.getValue(fileType)) {
+                        when (val status =
+                            mainScreenViewModel.unconfirmedFileTypeStatus.getValue(fileType.status)) {
                             FileType.Status.Enabled, FileType.Status.Disabled -> {
-                                if (mainScreenViewModel.fileTypeStatus.values.map { it.isEnabled }
+                                if (mainScreenViewModel.unconfirmedFileTypeStatus.values.map { it.isEnabled }
                                         .atLeastOneTrueAfterValueChange(
                                             checkedNew
                                         )
                                 ) {
-                                    mainScreenViewModel.fileTypeStatus.toggle(fileType)
+                                    mainScreenViewModel.unconfirmedFileTypeStatus.toggle(fileType.status)
                                 } else {
                                     scope.showLeaveAtLeastOneFileTypeEnabledSnackbar(
                                         mainScreenViewModel.snackbarHostState,
@@ -240,7 +242,10 @@ private fun FileSourceRow(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val isEnabled = if (fileType.isMediaType) mainScreenViewModel.fileSourceEnabled.getValue(source) else true
+    val isEnabled =
+        if (fileType.isMediaType) mainScreenViewModel.unconfirmedFileSourceEnablement.getValue(
+            source.isEnabled
+        ) else true
 
     Surface(
         shape = RoundedCornerShape(8.dp),
@@ -254,6 +259,7 @@ private fun FileSourceRow(
                 .fillMaxWidth()
                 .height(46.dp)
         ) {
+            // Source icon
             Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
                 Icon(
                     painter = painterResource(id = source.kind.iconRes),
@@ -261,25 +267,28 @@ private fun FileSourceRow(
                     tint = if (isEnabled) fileType.color.copy(alpha = 0.75f) else disabledColor()
                 )
             }
-            Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
+            // Source label
+            Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
                 AppFontText(
                     text = stringResource(id = source.kind.labelRes),
                     color = if (isEnabled) MaterialTheme.colorScheme.onSurface.copy(0.7f) else disabledColor()
                 )
             }
-            Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
+            // Checkbox
+            Box(modifier = Modifier.weight(0.12f), contentAlignment = Alignment.Center) {
                 if (fileType.isMediaType) {
                     AppCheckbox(
                         checked = isEnabled,
                         onCheckedChange = { checkedNew ->
                             if (fileType.sources.map {
-                                    mainScreenViewModel.fileSourceEnabled.getValue(
-                                        it
+                                    mainScreenViewModel.unconfirmedFileSourceEnablement.getValue(
+                                        it.isEnabled
                                     )
                                 }
                                     .atLeastOneTrueAfterValueChange(checkedNew)
                             ) {
-                                mainScreenViewModel.fileSourceEnabled[source] = checkedNew
+                                mainScreenViewModel.unconfirmedFileSourceEnablement[source.isEnabled] =
+                                    checkedNew
                             } else {
                                 scope.launch {
                                     mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
@@ -294,6 +303,15 @@ private fun FileSourceRow(
                     )
                 }
             }
+            // Dialog Button
+            Box(modifier = Modifier.weight(0.12f), contentAlignment = Alignment.Center) {
+                OpenFileSourceDefaultDestinationDialogButton(
+                    source = source,
+                    enabled = isEnabled,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+            Spacer(modifier = Modifier.weight(0.02f))
         }
     }
 }

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.animation.AnticipateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
@@ -16,6 +17,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
+import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.lifecycle.SelfManagingLocalBroadcastReceiver
@@ -58,6 +60,26 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val defaultDestinationSelectionLauncher =
+        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { treeUri ->
+            i { "DocumentTree Uri: $treeUri" }
+
+            if (treeUri != null) {
+                DocumentFile.fromTreeUri(this, treeUri)?.let { documentFile ->
+                    with(viewModel) {
+                        saveToDataStore(
+                            viewModel.defaultDestinationPickerFileSource.value!!.defaultDestination.preferencesKey,
+                            documentFile.uri
+                        )
+                            .invokeOnCompletion {
+                                i { "Saved ${documentFile.uri} as ${viewModel.defaultDestinationPickerFileSource.value!!.defaultDestination.preferencesKey} to preferences" }
+                                viewModel.defaultDestinationPickerFileSource.value = null
+                            }
+                    }
+                }
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setOnExitAnimationListener(SwipeRightSplashScreenExitAnimation())
 
@@ -88,6 +110,14 @@ class MainActivity : ComponentActivity() {
         }
 
         launch {
+            viewModel.defaultDestinationPickerFileSource.collect {
+                if (it != null) {
+                    defaultDestinationSelectionLauncher.launch(null)
+                }  // TODO
+            }
+        }
+
+        launch {
             viewModel.dataStoreRepository.disableListenerOnLowBattery.collect {
                 i { "Collected disableListenerOnLowBattery=$it" }
 
@@ -111,7 +141,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-class SwipeRightSplashScreenExitAnimation : SplashScreen.OnExitAnimationListener {
+private class SwipeRightSplashScreenExitAnimation : SplashScreen.OnExitAnimationListener {
     override fun onSplashScreenExit(splashScreenViewProvider: SplashScreenViewProvider) {
         ObjectAnimator.ofFloat(
             splashScreenViewProvider.view,

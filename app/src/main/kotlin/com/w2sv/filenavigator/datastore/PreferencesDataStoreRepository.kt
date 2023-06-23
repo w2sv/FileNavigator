@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.datastore
 
+import android.net.Uri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.w2sv.androidutils.datastorage.datastore.preferences.AbstractPreferencesDataStoreRepository
@@ -16,13 +17,34 @@ class PreferencesDataStoreRepository @Inject constructor(dataStore: DataStore<Pr
     // FileType-related
     // =======================
 
-    val fileTypeStatus: Map<FileType, Flow<FileType.Status>> = getEnumValuedFlowMap(FileType.all)
+    val fileTypeStatus: Map<FileType.Status.StoreEntry, Flow<FileType.Status>> =
+        getEnumValuedFlowMap(FileType.all.map { it.status })
 
-    val mediaFileSourceEnabled: Map<FileType.Source, Flow<Boolean>> = getFlowMap(
+    val mediaFileSourceEnabled: Map<FileType.Source.IsEnabled, Flow<Boolean>> = getFlowMap(
         FileType.Media.all
             .map { it.sources }
             .flatten()
+            .map { it.isEnabled }
     )
+
+    val fileSourceDefaultDestinationLocked: Map<FileType.Source.DefaultDestinationLocked, Flow<Boolean>> =
+        getFlowMap(
+            FileType.all
+                .map { it.sources }
+                .flatten()
+                .map { it.defaultDestinationLocked }
+        )
+
+    fun getFileSourceDefaultDestination(source: FileType.Source): Flow<Uri?> =
+        getUriFlow(source.defaultDestination)
+
+    val defaultFileSourceMoveDestination: Map<FileType.Source.DefaultDestination, Flow<Uri?>> =
+        getUriFlowMap(
+            FileType.all
+                .map { it.sources }
+                .flatten()
+                .map { it.defaultDestination }
+        )
 
     // =======================
     // Internally set flags

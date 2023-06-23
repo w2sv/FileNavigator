@@ -69,4 +69,7 @@
     <string name="navigator_settings">Navigator Settings</string>
     <string name="non_media_files_require_all_files_access">Navigation of non-media files requires permission to manage all files.</string>
     <string name="gif">GIF</string>
+    <string name="open_target_directory_settings">Open the target directory settings dialog.</string>
+    <string name="change_default_move_destination">Change default move destination.</string>
+    <string name="close">Close</string>
 </resources>

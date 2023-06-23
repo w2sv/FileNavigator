@@ -51,20 +51,20 @@ class FileNavigatorService : UnboundService() {
             dataStoreRepository.mediaFileSourceEnabled.getSynchronousMap()
 
         val mediaFileObservers = FileType.Media.all
-            .filter { fileTypeStatus.getValue(it) == FileType.Status.Enabled }
+            .filter { fileTypeStatus.getValue(it.status) == FileType.Status.Enabled }
             .map { mediaType ->
                 MediaFileObserver(
                     mediaType,
                     mediaType
                         .sources
-                        .filter { origin -> accountForFileTypeOrigin.getValue(origin) }
+                        .filter { origin -> accountForFileTypeOrigin.getValue(origin.isEnabled) }
                         .map { origin -> origin.kind }
                         .toSet()
                 )
             }
 
         val nonMediaFileObserver =
-            FileType.NonMedia.all.filter { fileTypeStatus.getValue(it) == FileType.Status.Enabled }
+            FileType.NonMedia.all.filter { fileTypeStatus.getValue(it.status) == FileType.Status.Enabled }
                 .run {
                     if (isNotEmpty()) {
                         NonMediaFileObserver(this)

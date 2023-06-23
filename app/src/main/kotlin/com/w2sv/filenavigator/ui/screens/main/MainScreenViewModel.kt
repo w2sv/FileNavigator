@@ -10,18 +10,20 @@ import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.androidutils.ui.PreferencesDataStoreBackedUnconfirmedStatesViewModel
+import com.w2sv.filenavigator.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.datastore.PreferencesKey
-import com.w2sv.filenavigator.FileType
 import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.utils.StorageAccessStatus
 import com.w2sv.filenavigator.utils.getMutableStateMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import slimber.log.i
 import javax.inject.Inject
@@ -107,10 +109,10 @@ class MainScreenViewModel @Inject constructor(
     private fun setFileTypeStatuses(fileTypes: Iterable<FileType>, newStatus: FileType.Status) {
         coroutineScope.launch {
             dataStoreRepository.saveEnumValuedMap(
-                fileTypes.associateWith { newStatus }
+                fileTypes.map { it.status }.associateWith { newStatus }
             )
             fileTypes.forEach {
-                fileTypeStatus[it] = newStatus
+                unconfirmedFileTypeStatus[it.status] = newStatus
             }
         }
     }
@@ -119,14 +121,14 @@ class MainScreenViewModel @Inject constructor(
     // Navigator Configuration
     // ==============
 
-    val fileTypeStatus by lazy {
+    val unconfirmedFileTypeStatus by lazy {
         makeUnconfirmedEnumValuedStateMap(
             appliedFlowMap = dataStoreRepository.fileTypeStatus,
             makeMutableMap = { it.getSynchronousMap().getMutableStateMap() }
         )
     }
 
-    val fileSourceEnabled by lazy {
+    val unconfirmedFileSourceEnablement by lazy {
         makeUnconfirmedStateMap(
             appliedFlowMap = dataStoreRepository.mediaFileSourceEnabled,
             makeMutableMap = { it.getSynchronousMap().getMutableStateMap() }
@@ -134,8 +136,17 @@ class MainScreenViewModel @Inject constructor(
     }
 
     val unconfirmedNavigatorConfiguration by lazy {
-        makeUnconfirmedStatesComposition(listOf(fileTypeStatus, fileSourceEnabled))
+        makeUnconfirmedStatesComposition(listOf(unconfirmedFileTypeStatus, unconfirmedFileSourceEnablement))
     }
+
+    val unconfirmedFileSourceDefaultDestinationLocked by lazy {
+        makeUnconfirmedStateMap(
+            appliedFlowMap = dataStoreRepository.fileSourceDefaultDestinationLocked,
+            makeMutableMap = { it.getSynchronousMap().getMutableStateMap() }
+        )
+    }
+
+    val defaultDestinationPickerFileSource: MutableStateFlow<FileType.Source?> = MutableStateFlow(null)
 
     // ==============
     // BackPress Handling
