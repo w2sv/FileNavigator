@@ -190,7 +190,7 @@ private fun DefaultMoveDestinationDialog(
                         modifier = Modifier.weight(0.15f)
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_settings_24),
+                            painter = painterResource(id = R.drawable.ic_folder_open_24),
                             contentDescription = stringResource(
                                 R.string.change_default_move_destination
                             ),
