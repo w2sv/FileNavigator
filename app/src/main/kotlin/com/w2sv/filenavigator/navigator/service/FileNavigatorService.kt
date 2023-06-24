@@ -218,7 +218,7 @@ class FileNavigatorService : UnboundService() {
 
             val notificationParameters = MoveFile.NotificationParameters(
                 newFileDetectedNotificationIds.addNewId(),
-                newFileDetectedActionsPendingIntentRequestCodes.addMultipleNewIds(2)
+                newFileDetectedActionsPendingIntentRequestCodes.addMultipleNewIds(5)
             )
 
             showNotification(
@@ -283,6 +283,24 @@ class FileNavigatorService : UnboundService() {
                                     .setDataAndType(
                                         moveFile.uri,
                                         moveFile.type.simpleStorageType.mimeType
+                                    ),
+                                PendingIntent.FLAG_IMMUTABLE
+                            )
+                        )
+                    )
+                    // add delete-file action
+                    .addAction(
+                        NotificationCompat.Action(
+                            R.drawable.ic_delete_24,
+                            getString(R.string.delete),
+                            PendingIntent.getService(
+                                applicationContext,
+                                notificationParameters.requestCodes[2],
+                                Intent(applicationContext, FileDeletionService::class.java)
+                                    .putExtra(EXTRA_MOVE_FILE, moveFile)
+                                    .putExtra(
+                                        MoveFile.NotificationParameters.EXTRA,
+                                        notificationParameters
                                     ),
                                 PendingIntent.FLAG_IMMUTABLE
                             )

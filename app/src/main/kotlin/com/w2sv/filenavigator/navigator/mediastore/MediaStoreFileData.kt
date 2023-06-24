@@ -5,6 +5,7 @@ import android.database.CursorIndexOutOfBoundsException
 import android.net.Uri
 import android.os.Environment
 import android.os.Parcelable
+import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
 import com.w2sv.filenavigator.FileType
 import com.w2sv.kotlinutils.dateFromUnixTimestamp
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit
 @Parcelize
 data class MediaStoreFileData(
     val id: String,
+    val absPath: String,
     val relativePath: String,
     val name: String,
     val dateAdded: Date,
@@ -81,8 +83,10 @@ data class MediaStoreFileData(
             uri: Uri, contentResolver: ContentResolver
         ): MediaStoreFileData? = try {
             contentResolver.queryNonNullMediaStoreData(
-                uri, arrayOf(
+                uri,
+                arrayOf(
                     MediaColumns._ID,
+                    MediaColumns.DATA,
                     MediaColumns.RELATIVE_PATH,
                     MediaColumns.DISPLAY_NAME,
                     MediaColumns.DATE_ADDED,
@@ -93,12 +97,13 @@ data class MediaStoreFileData(
             )?.run {
                 MediaStoreFileData(
                     id = get(0),
-                    relativePath = get(1),
-                    name = get(2),
-                    dateAdded = dateFromUnixTimestamp(get(3)),
-                    size = get(4).toLong(),
-                    isDownload = parseBoolean(get(5)),
-                    isPendingFlag = parseBoolean(get(6))
+                    absPath = get(1),
+                    relativePath = get(2),
+                    name = get(3),
+                    dateAdded = dateFromUnixTimestamp(get(4)),
+                    size = get(5).toLong(),
+                    isDownload = parseBoolean(get(6)),
+                    isPendingFlag = parseBoolean(get(7))
                 )
                     .also {
                         i { it.toString() }

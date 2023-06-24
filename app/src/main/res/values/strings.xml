@@ -78,4 +78,5 @@
     <string name="lock_default_move_destination">Lock default move destination</string>
     <string name="default_move_destination_locked_info">Default destination will NOT be updated upon picking a new one whilst navigating a file.</string>
     <string name="default_move_destination_unlocked_info">Default destination will be updated upon picking a new one whilst navigating a file.</string>
+    <string name="delete">Delete</string>
 </resources>

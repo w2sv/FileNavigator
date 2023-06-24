@@ -132,7 +132,6 @@ class FileMoverActivity : ComponentActivity() {
                         targetDirectoryDocumentFile.uri
                     )
                         .invokeOnCompletion {
-                            i { "Saved ${targetDirectoryDocumentFile.uri} as ${moveFile.source.defaultDestination.preferencesKey} to preferences" }
                             finish()
                         }
                 }
