@@ -74,4 +74,8 @@
     <string name="close">Close</string>
     <string name="delete_set_default_move_destination">Delete set default move destination</string>
     <string name="not_set">Not set</string>
+    <string name="unlock_default_move_destination">Unlock default move destination</string>
+    <string name="lock_default_move_destination">Lock default move destination</string>
+    <string name="default_move_destination_locked_info">Default destination will NOT be updated upon picking a new one whilst navigating a file.</string>
+    <string name="default_move_destination_unlocked_info">Default destination will be updated upon picking a new one whilst navigating a file.</string>
 </resources>

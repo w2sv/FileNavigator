@@ -226,14 +226,14 @@ private fun DefaultMoveDestinationDialog(
                         AnimatedVisibility(visible = defaultMoveDestinationIsLocked) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_lock_closed_24),
-                                contentDescription = "",
+                                contentDescription = stringResource(R.string.unlock_default_move_destination),
                                 tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else disabledColor()
                             )
                         }
                         AnimatedVisibility(visible = !defaultMoveDestinationIsLocked) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_lock_open_24),
-                                contentDescription = "",
+                                contentDescription = stringResource(R.string.lock_default_move_destination),
                                 tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else disabledColor()
                             )
                         }
@@ -242,9 +242,9 @@ private fun DefaultMoveDestinationDialog(
                 AnimatedVisibility(visible = showLockInfo) {
                     AppFontText(
                         text = if (defaultMoveDestinationIsLocked)
-                            "Default destination will NOT be updated upon picking a new one whilst navigating a file."
+                            stringResource(R.string.default_move_destination_locked_info)
                         else
-                            "Default destination will be updated upon picking a new one whilst navigating a file.",
+                            stringResource(R.string.default_move_destination_unlocked_info),
                         color = disabledColor()
                     )
                     LaunchedEffect(key1 = Unit) {
