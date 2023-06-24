@@ -163,11 +163,22 @@ class MainScreenViewModel @Inject constructor(
         )
     }
 
-    fun unsetUnconfirmedDefaultMoveDestinationStates(){
+    fun unsetUnconfirmedDefaultMoveDestinationStates() {
         unconfirmedDefaultMoveDestination = null
         unconfirmedDefaultMoveDestinationIsLocked = null
         unconfirmedDefaultMoveDestinationConfiguration = null
     }
+
+    val defaultMoveDestinationIsSet = dataStoreRepository.getUriFlowMap(
+        FileType.all.map {
+            it.sources
+        }
+            .flatten()
+            .map { it.defaultDestination }
+    )
+        .getSynchronousMap()
+        .mapValues { it.value != null }
+        .getMutableStateMap()
 
     var unconfirmedDefaultMoveDestination: UnconfirmedStateFlow<Uri?>? = null
     var unconfirmedDefaultMoveDestinationIsLocked: UnconfirmedStateFlow<Boolean>? = null
@@ -200,3 +211,4 @@ class MainScreenViewModel @Inject constructor(
         2500L
     )
 }
+
