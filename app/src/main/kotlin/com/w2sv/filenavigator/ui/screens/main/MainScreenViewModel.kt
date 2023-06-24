@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.coroutines.getSynchronousMap
@@ -10,6 +11,8 @@ import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.androidutils.ui.PreferencesDataStoreBackedUnconfirmedStatesViewModel
+import com.w2sv.androidutils.ui.UnconfirmedStateFlow
+import com.w2sv.androidutils.ui.UnconfirmedStatesComposition
 import com.w2sv.filenavigator.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
@@ -44,7 +47,7 @@ class MainScreenViewModel @Inject constructor(
         PreferencesKey.DISABLE_LISTENER_ON_LOW_BATTERY
     )
 
-    val inAppTheme = makeUnconfirmedEnumStateFlow(
+    val inAppTheme = makeUnconfirmedEnumValuedStateFlow(
         dataStoreRepository.inAppTheme,
         PreferencesKey.IN_APP_THEME
     )
@@ -134,10 +137,44 @@ class MainScreenViewModel @Inject constructor(
     }
 
     val unconfirmedNavigatorConfiguration by lazy {
-        makeUnconfirmedStatesComposition(listOf(unconfirmedFileTypeStatus, unconfirmedFileSourceEnablement))
+        makeUnconfirmedStatesComposition(
+            listOf(
+                unconfirmedFileTypeStatus,
+                unconfirmedFileSourceEnablement
+            )
+        )
     }
 
-    val launchDefaultMoveDestinationPickerFor: MutableStateFlow<FileType.Source?> = MutableStateFlow(null)
+    fun setUnconfirmedDefaultMoveDestinationStates(fileSource: FileType.Source) {
+        unconfirmedDefaultMoveDestination = makeUnconfirmedUriValuedStateFlow(
+            dataStoreRepository.getFileSourceDefaultDestinationFlow(fileSource),
+            fileSource.defaultDestination.preferencesKey
+        )
+        unconfirmedDefaultMoveDestinationIsLocked = makeUnconfirmedStateFlow(
+            dataStoreRepository.getFileSourceDefaultDestinationIsLockedFlow(fileSource),
+            fileSource.defaultDestinationIsLocked.preferencesKey
+        )
+
+        unconfirmedDefaultMoveDestinationConfiguration = makeUnconfirmedStatesComposition(
+            listOf(
+                unconfirmedDefaultMoveDestination!!,
+                unconfirmedDefaultMoveDestinationIsLocked!!
+            )
+        )
+    }
+
+    fun unsetUnconfirmedDefaultMoveDestinationStates(){
+        unconfirmedDefaultMoveDestination = null
+        unconfirmedDefaultMoveDestinationIsLocked = null
+        unconfirmedDefaultMoveDestinationConfiguration = null
+    }
+
+    var unconfirmedDefaultMoveDestination: UnconfirmedStateFlow<Uri?>? = null
+    var unconfirmedDefaultMoveDestinationIsLocked: UnconfirmedStateFlow<Boolean>? = null
+    var unconfirmedDefaultMoveDestinationConfiguration: UnconfirmedStatesComposition? = null
+
+    val launchDefaultMoveDestinationPickerFor: MutableStateFlow<FileType.Source?> =
+        MutableStateFlow(null)
 
     // ==============
     // BackPress Handling

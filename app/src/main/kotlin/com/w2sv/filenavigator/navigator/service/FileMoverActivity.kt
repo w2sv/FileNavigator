@@ -120,7 +120,7 @@ class FileMoverActivity : ComponentActivity() {
                 )
             }
 
-            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri && !viewModel.dataStoreRepository.getFileSourceDefaultDestinationIsLocked(
+            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri && !viewModel.dataStoreRepository.getFileSourceDefaultDestinationIsLockedFlow(
                     viewModel.moveFile.source
                 )
                     .getValueSynchronously()

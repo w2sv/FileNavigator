@@ -66,21 +66,7 @@ class MainActivity : ComponentActivity() {
 
             if (treeUri != null) {
                 DocumentFile.fromTreeUri(this, treeUri)?.let { documentFile ->
-                    val fileSource = viewModel.launchDefaultMoveDestinationPickerFor.value!!
-
-                    with(viewModel) {
-                        saveToDataStore(
-                            fileSource.defaultDestination.preferencesKey,
-                            documentFile.uri
-                        )
-                            .invokeOnCompletion {
-                                i { "Saved ${documentFile.uri} as ${fileSource.defaultDestination.preferencesKey} to preferences" }
-                            }
-                        saveToDataStore(
-                            fileSource.defaultDestinationIsLocked.preferencesKey,
-                            true
-                        )
-                    }
+                    viewModel.unconfirmedDefaultMoveDestination!!.value = documentFile.uri
                 }
             }
 
