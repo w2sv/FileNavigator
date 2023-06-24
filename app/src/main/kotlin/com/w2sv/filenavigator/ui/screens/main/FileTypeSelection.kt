@@ -275,7 +275,7 @@ private fun FileSourceRow(
                 )
             }
             // Checkbox
-            Box(modifier = Modifier.weight(0.12f), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.weight(0.1f), contentAlignment = Alignment.Center) {
                 if (fileType.isMediaType) {
                     AppCheckbox(
                         checked = isEnabled,
@@ -304,7 +304,7 @@ private fun FileSourceRow(
                 }
             }
             // Dialog Button
-            Box(modifier = Modifier.weight(0.12f), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.weight(0.1f), contentAlignment = Alignment.Center) {
                 OpenFileSourceDefaultDestinationDialogButton(
                     source = source,
                     enabled = isEnabled,
