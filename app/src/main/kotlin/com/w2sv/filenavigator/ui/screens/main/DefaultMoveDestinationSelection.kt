@@ -19,6 +19,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,6 +45,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.DialogButton
 import com.w2sv.filenavigator.ui.theme.disabledColor
+import kotlinx.coroutines.Job
 
 @Composable
 fun OpenFileSourceDefaultDestinationDialogButton(
@@ -109,6 +111,8 @@ private fun DefaultMoveDestinationDialog(
     }
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var closeLogInfoJob: Job? = null
 
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -244,7 +248,8 @@ private fun DefaultMoveDestinationDialog(
                         color = disabledColor()
                     )
                     LaunchedEffect(key1 = Unit) {
-                        launchDelayed(5000L) {
+                        closeLogInfoJob?.cancel()
+                        closeLogInfoJob = scope.launchDelayed(5000L) {
                             showLockInfo = false
                         }
                     }
