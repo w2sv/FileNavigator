@@ -50,7 +50,6 @@ import kotlinx.coroutines.Job
 @Composable
 fun OpenFileSourceDefaultDestinationDialogButton(
     source: FileType.Source,
-    enabled: Boolean,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
@@ -73,8 +72,7 @@ fun OpenFileSourceDefaultDestinationDialogButton(
         }
 
     IconButton(
-        onClick = { defaultDestinationDialogFileSource = source },
-        enabled = enabled
+        onClick = { defaultDestinationDialogFileSource = source }
     ) {
         Icon(
             painter = painterResource(
@@ -86,7 +84,7 @@ fun OpenFileSourceDefaultDestinationDialogButton(
                 else
                     R.drawable.ic_add_new_folder_24
             ),
-            tint = if (enabled) MaterialTheme.colorScheme.secondary else disabledColor(),
+            tint = MaterialTheme.colorScheme.secondary,
             contentDescription = stringResource(
                 R.string.open_target_directory_settings
             ),

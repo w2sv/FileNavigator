@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +51,7 @@ import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
+import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
 import kotlinx.coroutines.CoroutineScope
@@ -93,9 +94,9 @@ fun FileTypeSelectionColumn(
                     modifier = Modifier
                         .padding(vertical = 4.dp)
                 )
-                if (animatedFileTypes.add(fileType)){
+                if (animatedFileTypes.add(fileType)) {
                     nRunningAnimations += 1
-                    scope.launchDelayed(250L){
+                    scope.launchDelayed(250L) {
                         nRunningAnimations -= 1
                     }
                 }
@@ -325,6 +326,13 @@ private fun FileSourceRow(
                     color = if (isEnabled) MaterialTheme.colorScheme.onSurface.copy(0.7f) else disabledColor()
                 )
             }
+
+            val progress by animateFloatAsState(
+                targetValue = if (isEnabled) 0.1f else Epsilon,
+                label = ""
+            )
+
+            Spacer(modifier = Modifier.weight(0.1f - progress + Epsilon))
             // Checkbox
             Box(modifier = Modifier.weight(0.1f), contentAlignment = Alignment.Center) {
                 if (fileType.isMediaType) {
@@ -354,15 +362,16 @@ private fun FileSourceRow(
                     )
                 }
             }
+
             // Dialog Button
-            Box(modifier = Modifier.weight(0.1f), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier
+                .weight(progress)
+                .alpha(progress * 10), contentAlignment = Alignment.Center) {
                 OpenFileSourceDefaultDestinationDialogButton(
                     source = source,
-                    enabled = isEnabled,
                     modifier = Modifier.size(28.dp)
                 )
             }
-            Spacer(modifier = Modifier.weight(0.02f))
         }
     }
 }
