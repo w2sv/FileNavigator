@@ -1,6 +1,13 @@
 package com.w2sv.filenavigator.ui
 
+import android.view.animation.OvershootInterpolator
 import androidx.annotation.StringRes
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.EaseInOutBounce
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -29,6 +37,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
+import com.w2sv.filenavigator.utils.toEasing
 
 enum class Theme {
     Light,
@@ -170,6 +180,32 @@ fun ThemeButton(
 ) {
     val radius = with(LocalDensity.current) { (size / 2).toPx() }
 
+    val transition = updateTransition(targetState = isSelected(), label = "")
+
+    val borderWidth by transition.animateFloat(
+        transitionSpec = {
+            if (targetState) {
+                tween(durationMillis = DefaultAnimationDuration, easing = OvershootInterpolator().toEasing())
+            } else {
+                tween(durationMillis = 300)
+            }
+        }, label = ""
+    ) { state ->
+        if (state) 3f else 0f
+    }
+
+    val borderColor by transition.animateColor(
+        transitionSpec = {
+            if (targetState) {
+                tween(durationMillis = DefaultAnimationDuration, easing = OvershootInterpolator().toEasing())
+            } else {
+                tween(durationMillis = 300)
+            }
+        }, label = ""
+    ) { state ->
+        if (state) MaterialTheme.colorScheme.primary else Color.Transparent
+    }
+
     Button(
         modifier = modifier
             .semantics {
@@ -187,9 +223,6 @@ fun ThemeButton(
         colors = ButtonDefaults.buttonColors(containerColor = buttonColoring.containerColor),
         onClick = onClick,
         shape = CircleShape,
-        border = when (isSelected()) {
-            true -> BorderStroke(3.dp, MaterialTheme.colorScheme.primary)
-            false -> null
-        }
+        border = BorderStroke(borderWidth.dp, borderColor)
     ) {}
 }
