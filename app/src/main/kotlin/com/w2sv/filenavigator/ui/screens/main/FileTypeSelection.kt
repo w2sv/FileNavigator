@@ -3,8 +3,14 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.content.Context
 import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -141,7 +147,11 @@ private fun FileTypeAccordion(
             fileType = fileType,
             isEnabled = fileTypeEnabled
         )
-        AnimatedVisibility(visible = fileTypeEnabled) {
+        AnimatedVisibility(
+            visible = fileTypeEnabled,
+            enter = expandVertically(animationSpec = spring(Spring.DampingRatioMediumBouncy)) + fadeIn(),
+            exit = shrinkVertically(animationSpec = spring(Spring.DampingRatioMediumBouncy)) + fadeOut()
+        ) {
             FileSourcesSurface(fileType = fileType)
         }
     }
@@ -364,9 +374,11 @@ private fun FileSourceRow(
             }
 
             // Dialog Button
-            Box(modifier = Modifier
-                .weight(progress)
-                .alpha(progress * 10), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .weight(progress)
+                    .alpha(progress * 10), contentAlignment = Alignment.Center
+            ) {
                 OpenFileSourceDefaultDestinationDialogButton(
                     source = source,
                     modifier = Modifier.size(28.dp)
