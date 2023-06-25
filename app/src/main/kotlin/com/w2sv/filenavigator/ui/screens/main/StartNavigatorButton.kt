@@ -2,26 +2,27 @@ package com.w2sv.filenavigator.ui.screens.main
 
 import android.Manifest
 import android.os.Build
+import android.view.animation.AnticipateOvershootInterpolator
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +56,7 @@ import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
 import com.w2sv.filenavigator.utils.powerSaveModeActivated
+import com.w2sv.filenavigator.utils.toEasing
 import kotlinx.coroutines.launch
 
 private data class NavigatorButtonProperties(
@@ -64,7 +66,10 @@ private data class NavigatorButtonProperties(
     val onClick: () -> Unit
 )
 
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalFoundationApi::class)
+@OptIn(
+    ExperimentalPermissionsApi::class, ExperimentalFoundationApi::class,
+    ExperimentalAnimationApi::class
+)
 @Composable
 internal fun StartNavigatorButton(
     modifier: Modifier = Modifier,
@@ -72,8 +77,6 @@ internal fun StartNavigatorButton(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-
-    val isNavigatorRunning by mainScreenViewModel.isNavigatorRunning.collectAsState()
 
     var showConfirmationDialog by rememberSaveable {
         mutableStateOf(false)
@@ -122,74 +125,77 @@ internal fun StartNavigatorButton(
             }
         }
 
-    val stopConfigProperties = NavigatorButtonProperties(
-        md_negative,
-        R.drawable.ic_stop_24,
-        R.string.stop_navigator
-    ) { FileNavigatorService.stop(context) }
-    val startConfigProperties = NavigatorButtonProperties(
-        md_positive,
-        R.drawable.ic_start_24,
-        R.string.start_navigator
-    ) {
-        when {
-            !permissionState.allPermissionsGranted -> {
-                when {
-                    !mainScreenViewModel.dataStoreRepository.showedPostNotificationsPermissionsRational.getValueSynchronously() -> {
-                        showPermissionsRational = true
-                    }
+    val properties = if (mainScreenViewModel.isNavigatorRunning.collectAsState().value)
+        NavigatorButtonProperties(
+            md_negative,
+            R.drawable.ic_stop_24,
+            R.string.stop_navigator
+        ) { FileNavigatorService.stop(context) }
+    else
+        NavigatorButtonProperties(
+            md_positive,
+            R.drawable.ic_start_24,
+            R.string.start_navigator
+        ) {
+            when {
+                !permissionState.allPermissionsGranted -> {
+                    when {
+                        !mainScreenViewModel.dataStoreRepository.showedPostNotificationsPermissionsRational.getValueSynchronously() -> {
+                            showPermissionsRational = true
+                        }
 
-                    !permissionState.shouldShowRationale -> {
-                        scope.launch {
-                            mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-                                ExtendedSnackbarVisuals(
-                                    message = context.getString(R.string.go_to_the_app_settings_to_grant_the_required_permissions),
-                                    actionLabel = context.getString(R.string.go_to_settings),
-                                    action = { goToAppSettings(context) }
+                        !permissionState.shouldShowRationale -> {
+                            scope.launch {
+                                mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                    ExtendedSnackbarVisuals(
+                                        message = context.getString(R.string.go_to_the_app_settings_to_grant_the_required_permissions),
+                                        actionLabel = context.getString(R.string.go_to_settings),
+                                        action = { goToAppSettings(context) }
+                                    )
                                 )
-                            )
+                            }
+                        }
+
+                        else -> {
+                            permissionState.launchMultiplePermissionRequest()
                         }
                     }
+                }
 
-                    else -> {
-                        permissionState.launchMultiplePermissionRequest()
-                    }
+                else -> {
+                    startNavigatorOrShowConfirmationDialog()
                 }
             }
-
-            else -> {
-                startNavigatorOrShowConfirmationDialog()
-            }
         }
-    }
-
-    val properties = if (isNavigatorRunning) stopConfigProperties else startConfigProperties
 
     val anyStorageAccessGranted by mainScreenViewModel.anyStorageAccessGranted.collectAsState()
-
-    val pagerState = rememberPagerState()
-
-    LaunchedEffect(Unit) {
-        mainScreenViewModel.isNavigatorRunning.collect {
-            if (it) {
-                pagerState.animateScrollToPage(1)
-            } else {
-                pagerState.animateScrollToPage(0)
-            }
-        }
-    }
 
     ElevatedButton(
         onClick = properties.onClick,
         modifier = modifier.bounceClick(),
         enabled = anyStorageAccessGranted
     ) {
-        AnimatedVisibility(visible = isNavigatorRunning) {
-
-        }
-        HorizontalPager(pageCount = 2, userScrollEnabled = false, state = pagerState) {
+        AnimatedContent(
+            targetState = properties,
+            label = "",
+            transitionSpec = {
+                slideInVertically(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = AnticipateOvershootInterpolator().toEasing()
+                    ),
+                    initialOffsetY = { it }) with
+                        slideOutVertically(
+                            targetOffsetY = { -it },
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = AnticipateOvershootInterpolator().toEasing()
+                            )
+                        )
+            }
+        ) {
             ButtonContent(
-                properties = if (it == 0) startConfigProperties else stopConfigProperties,
+                properties = it,
                 anyStorageAccessGranted = anyStorageAccessGranted
             )
         }
