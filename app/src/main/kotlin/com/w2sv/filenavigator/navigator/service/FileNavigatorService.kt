@@ -293,16 +293,16 @@ class FileNavigatorService : UnboundService() {
                         NotificationCompat.Action(
                             R.drawable.ic_delete_24,
                             getString(R.string.delete),
-                            PendingIntent.getService(
+                            PendingIntent.getBroadcast(
                                 applicationContext,
                                 notificationParameters.requestCodes[2],
-                                Intent(applicationContext, FileDeletionService::class.java)
+                                Intent(applicationContext, FileDeletionBroadcastReceiver::class.java)
                                     .putExtra(EXTRA_MOVE_FILE, moveFile)
                                     .putExtra(
                                         MoveFile.NotificationParameters.EXTRA,
                                         notificationParameters
                                     ),
-                                PendingIntent.FLAG_IMMUTABLE
+                                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
                             )
                         )
                     )

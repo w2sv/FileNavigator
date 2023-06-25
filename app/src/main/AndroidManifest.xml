@@ -46,7 +46,6 @@
 
         <service android:name="com.w2sv.filenavigator.navigator.service.FileNavigatorService" />
         <service android:name="com.w2sv.filenavigator.PowerSaveModeChangedReceiver$HostService" />
-        <service android:name="com.w2sv.filenavigator.navigator.service.FileDeletionService" />
 
         <receiver android:name=".PowerSaveModeChangedReceiver"
             android:exported="true">
@@ -55,6 +54,8 @@
             </intent-filter>
         </receiver>
 
-</application>
+        <receiver android:name="com.w2sv.filenavigator.navigator.service.FileDeletionBroadcastReceiver" />
+
+    </application>
 
 </manifest>
