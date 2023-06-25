@@ -4,26 +4,37 @@ import android.Manifest
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,7 +64,7 @@ private data class NavigatorButtonProperties(
     val onClick: () -> Unit
 )
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalFoundationApi::class)
 @Composable
 internal fun StartNavigatorButton(
     modifier: Modifier = Modifier,
@@ -111,79 +122,129 @@ internal fun StartNavigatorButton(
             }
         }
 
-    Crossfade(
-        targetState = isNavigatorRunning,
-        animationSpec = tween(durationMillis = 1250, delayMillis = 250, easing = EaseOutCubic),
-        label = ""
+    val stopConfigProperties = NavigatorButtonProperties(
+        md_negative,
+        R.drawable.ic_stop_24,
+        R.string.stop_navigator
+    ) { FileNavigatorService.stop(context) }
+    val startConfigProperties = NavigatorButtonProperties(
+        md_positive,
+        R.drawable.ic_start_24,
+        R.string.start_navigator
     ) {
-        val properties = when (it) {
-            true -> NavigatorButtonProperties(
-                md_negative,
-                R.drawable.ic_stop_24,
-                R.string.stop_navigator
-            ) { FileNavigatorService.stop(context) }
-
-            false -> NavigatorButtonProperties(
-                md_positive,
-                R.drawable.ic_start_24,
-                R.string.start_navigator
-            ) {
+        when {
+            !permissionState.allPermissionsGranted -> {
                 when {
-                    !permissionState.allPermissionsGranted -> {
-                        when {
-                            !mainScreenViewModel.dataStoreRepository.showedPostNotificationsPermissionsRational.getValueSynchronously() -> {
-                                showPermissionsRational = true
-                            }
+                    !mainScreenViewModel.dataStoreRepository.showedPostNotificationsPermissionsRational.getValueSynchronously() -> {
+                        showPermissionsRational = true
+                    }
 
-                            !permissionState.shouldShowRationale -> {
-                                scope.launch {
-                                    mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-                                        ExtendedSnackbarVisuals(
-                                            message = context.getString(R.string.go_to_the_app_settings_to_grant_the_required_permissions),
-                                            actionLabel = context.getString(R.string.go_to_settings),
-                                            action = { goToAppSettings(context) }
-                                        )
-                                    )
-                                }
-                            }
-
-                            else -> {
-                                permissionState.launchMultiplePermissionRequest()
-                            }
+                    !permissionState.shouldShowRationale -> {
+                        scope.launch {
+                            mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                ExtendedSnackbarVisuals(
+                                    message = context.getString(R.string.go_to_the_app_settings_to_grant_the_required_permissions),
+                                    actionLabel = context.getString(R.string.go_to_settings),
+                                    action = { goToAppSettings(context) }
+                                )
+                            )
                         }
                     }
 
                     else -> {
-                        startNavigatorOrShowConfirmationDialog()
+                        permissionState.launchMultiplePermissionRequest()
                     }
                 }
             }
-        }
 
-        val anyStorageAccessGranted by mainScreenViewModel.anyStorageAccessGranted.collectAsState()
-
-        ElevatedButton(
-            onClick = properties.onClick,
-            modifier = modifier,
-            enabled = anyStorageAccessGranted
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Icon(
-                    painter = painterResource(id = properties.iconRes),
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp),
-                    tint = if (anyStorageAccessGranted) properties.color else disabledColor()
-                )
-                AppFontText(
-                    text = stringResource(id = properties.labelRes),
-                    fontSize = 18.sp,
-                    color = if (anyStorageAccessGranted) MaterialTheme.colorScheme.onBackground else disabledColor()
-                )
+            else -> {
+                startNavigatorOrShowConfirmationDialog()
             }
         }
     }
+
+    val properties = if (isNavigatorRunning) stopConfigProperties else startConfigProperties
+
+    val anyStorageAccessGranted by mainScreenViewModel.anyStorageAccessGranted.collectAsState()
+
+    val pagerState = rememberPagerState()
+
+    LaunchedEffect(Unit) {
+        mainScreenViewModel.isNavigatorRunning.collect {
+            if (it) {
+                pagerState.animateScrollToPage(1)
+            } else {
+                pagerState.animateScrollToPage(0)
+            }
+        }
+    }
+
+    ElevatedButton(
+        onClick = properties.onClick,
+        modifier = modifier.bounceClick(),
+        enabled = anyStorageAccessGranted
+    ) {
+        AnimatedVisibility(visible = isNavigatorRunning) {
+
+        }
+        HorizontalPager(pageCount = 2, userScrollEnabled = false, state = pagerState) {
+            ButtonContent(
+                properties = if (it == 0) startConfigProperties else stopConfigProperties,
+                anyStorageAccessGranted = anyStorageAccessGranted
+            )
+        }
+    }
+}
+
+@Composable
+private fun ButtonContent(properties: NavigatorButtonProperties, anyStorageAccessGranted: Boolean) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Icon(
+            painter = painterResource(id = properties.iconRes),
+            contentDescription = null,
+            modifier = Modifier.size(32.dp),
+            tint = if (anyStorageAccessGranted) properties.color else disabledColor()
+        )
+        AppFontText(
+            text = stringResource(id = properties.labelRes),
+            fontSize = 18.sp,
+            color = if (anyStorageAccessGranted) MaterialTheme.colorScheme.onBackground else disabledColor()
+        )
+    }
+}
+
+enum class ButtonState { Pressed, Idle }
+
+fun Modifier.bounceClick(minScale: Float = 0.8f) = composed {
+    var buttonState by remember { mutableStateOf(ButtonState.Idle) }
+    val scale by animateFloatAsState(
+        if (buttonState == ButtonState.Pressed) minScale else 1f,
+        label = ""
+    )
+
+    this
+        .graphicsLayer {
+            scaleX = scale
+            scaleY = scale
+        }
+//        .clickable(
+//            interactionSource = remember { MutableInteractionSource() },
+//            indication = null,
+//            onClick = { }
+//        )
+        .pointerInput(buttonState) {
+            awaitPointerEventScope {
+                buttonState = if (buttonState == ButtonState.Pressed) {
+                    waitForUpOrCancellation()
+                    ButtonState.Idle
+                } else {
+                    awaitFirstDown(false)
+                    ButtonState.Pressed
+                }
+            }
+        }
 }
