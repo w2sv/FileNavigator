@@ -52,6 +52,7 @@ import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
+import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
@@ -181,14 +182,14 @@ internal fun StartNavigatorButton(
             transitionSpec = {
                 slideInVertically(
                     animationSpec = tween(
-                        durationMillis = 500,
+                        durationMillis = DefaultAnimationDuration,
                         easing = AnticipateOvershootInterpolator().toEasing()
                     ),
                     initialOffsetY = { it }) with
                         slideOutVertically(
                             targetOffsetY = { -it },
                             animationSpec = tween(
-                                durationMillis = 500,
+                                durationMillis = DefaultAnimationDuration,
                                 easing = AnticipateOvershootInterpolator().toEasing()
                             )
                         )

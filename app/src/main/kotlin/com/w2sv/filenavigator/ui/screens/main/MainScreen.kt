@@ -1,14 +1,19 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import android.annotation.SuppressLint
+import android.view.animation.AnticipateOvershootInterpolator
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FloatSpringSpec
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.with
+import androidx.compose.foundation.DefaultMarqueeDelayMillis
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,7 +50,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.ui.AppSnackbar
+import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
+import com.w2sv.filenavigator.utils.toEasing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -100,6 +107,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun ScaffoldContent(
     drawerState: DrawerState,
@@ -134,26 +142,42 @@ internal fun ScaffoldContent(
             }
 
             Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
-                val unconfirmedConfigurationChangesPresent by mainScreenViewModel.unconfirmedNavigatorConfiguration.statesDissimilar.collectAsState()
-
-                this@Column.AnimatedVisibility(
-                    visible = !unconfirmedConfigurationChangesPresent,
-                    enter = fadeIn() + slideInHorizontally(),
-                    exit = fadeOut() + slideOutHorizontally()
+                AnimatedContent(
+                    contentAlignment = Alignment.Center,
+                    targetState = mainScreenViewModel.unconfirmedNavigatorConfiguration.statesDissimilar.collectAsState().value,
+                    transitionSpec = {
+                        slideInHorizontally(
+                            animationSpec = tween(
+                                durationMillis = DefaultAnimationDuration,
+                                easing = AnticipateOvershootInterpolator().toEasing()
+                            ),
+                            initialOffsetX = { -it }
+                        ) + scaleIn(
+                            animationSpec = tween(
+                                durationMillis = DefaultAnimationDuration
+                            )
+                        ) with slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(
+                                durationMillis = DefaultAnimationDuration,
+                                easing = AnticipateOvershootInterpolator().toEasing()
+                            )
+                        ) + scaleOut(
+                            animationSpec = tween(
+                                durationMillis = DefaultAnimationDuration
+                            )
+                        )
+                    },
+                    label = ""
                 ) {
-                    StartNavigatorButton(
-                        modifier = Modifier
-                            .width(220.dp)
-                            .height(70.dp)
-                    )
-                }
-
-                this@Column.AnimatedVisibility(
-                    visible = unconfirmedConfigurationChangesPresent,
-                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it / 2 }),
-                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it / 2 })
-                ) {
-                    NavigatorConfigurationButtons()
+                    if (it)
+                        NavigatorConfigurationButtons()
+                    else
+                        StartNavigatorButton(
+                            modifier = Modifier
+                                .width(220.dp)
+                                .height(70.dp)
+                        )
                 }
             }
         }
