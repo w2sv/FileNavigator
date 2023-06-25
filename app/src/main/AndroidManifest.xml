@@ -55,6 +55,7 @@
         </receiver>
 
         <receiver android:name="com.w2sv.filenavigator.navigator.service.FileDeletionBroadcastReceiver" />
+        <receiver android:name="com.w2sv.filenavigator.navigator.service.MoveToDefaultDestinationBroadcastReceiver" />
 
     </application>
 

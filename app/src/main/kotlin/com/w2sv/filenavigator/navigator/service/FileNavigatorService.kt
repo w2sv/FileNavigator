@@ -14,6 +14,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.anggrayudi.storage.media.MediaType
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.coroutines.getSynchronousMap
+import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.UniqueIds
 import com.w2sv.androidutils.notifying.showNotification
@@ -39,13 +40,13 @@ class FileNavigatorService : UnboundService() {
     @Inject
     lateinit var dataStoreRepository: PreferencesDataStoreRepository
 
-    private lateinit var fileObservers: List<FileObserver>
-
     private val newFileDetectedNotificationIds =
         UniqueIds(AppNotificationChannel.NewFileDetected.idGroupSeed)
     private val newFileDetectedActionsPendingIntentRequestCodes = UniqueIds(1)
 
-    private fun getAndRegisterFileObservers(): List<FileObserver> {
+    private lateinit var fileObservers: List<FileObserver>
+
+    private fun setAndRegisterFileObservers(): List<FileObserver> {
         val fileTypeStatus = dataStoreRepository.fileTypeStatus.getSynchronousMap()
         val accountForFileTypeOrigin =
             dataStoreRepository.mediaFileSourceEnabled.getSynchronousMap()
@@ -99,7 +100,7 @@ class FileNavigatorService : UnboundService() {
 
             ACTION_REREGISTER_MEDIA_OBSERVERS -> {
                 unregisterContentObservers()
-                fileObservers = getAndRegisterFileObservers()
+                fileObservers = setAndRegisterFileObservers()
             }
 
             ACTION_CLEANUP_IDS -> {
@@ -161,7 +162,7 @@ class FileNavigatorService : UnboundService() {
                 .build()
         )
 
-        fileObservers = getAndRegisterFileObservers()
+        fileObservers = setAndRegisterFileObservers()
 
         sendLocalBroadcast(ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED)
     }
@@ -247,6 +248,24 @@ class FileNavigatorService : UnboundService() {
                             .bigText(notificationContentText)
                     )
                     .setContentText(notificationContentText)
+                    // add open-file action
+                    .addAction(
+                        NotificationCompat.Action(
+                            R.drawable.ic_file_open_24,
+                            getString(R.string.view),
+                            PendingIntent.getActivity(
+                                applicationContext,
+                                notificationParameters.requestCodes[0],
+                                Intent()
+                                    .setAction(Intent.ACTION_VIEW)
+                                    .setDataAndType(
+                                        moveFile.uri,
+                                        moveFile.type.simpleStorageType.mimeType
+                                    ),
+                                PendingIntent.FLAG_IMMUTABLE
+                            )
+                        )
+                    )
                     // add move-file action
                     .addAction(
                         NotificationCompat.Action(
@@ -254,7 +273,7 @@ class FileNavigatorService : UnboundService() {
                             getString(R.string.move),
                             PendingIntent.getActivity(
                                 applicationContext,
-                                notificationParameters.requestCodes[0],
+                                notificationParameters.requestCodes[1],
                                 Intent.makeRestartActivityTask(
                                     ComponentName(
                                         applicationContext,
@@ -270,24 +289,37 @@ class FileNavigatorService : UnboundService() {
                             )
                         )
                     )
-                    // add open-file action
-                    .addAction(
-                        NotificationCompat.Action(
-                            R.drawable.ic_file_open_24,
-                            getString(R.string.view),
-                            PendingIntent.getActivity(
-                                applicationContext,
-                                notificationParameters.requestCodes[1],
-                                Intent()
-                                    .setAction(Intent.ACTION_VIEW)
-                                    .setDataAndType(
-                                        moveFile.uri,
-                                        moveFile.type.simpleStorageType.mimeType
-                                    ),
-                                PendingIntent.FLAG_IMMUTABLE
+                    // add move-to-default-destination action
+                    .apply {
+                        val defaultMoveDestination =
+                            dataStoreRepository
+                                .getFileSourceDefaultDestinationFlow(moveFile.source)
+                                .getValueSynchronously()
+
+                        if (defaultMoveDestination != null) {
+                            addAction(
+                                NotificationCompat.Action(
+                                    R.drawable.ic_add_new_folder_24,
+                                    getString(R.string.move_to_default_destination),
+                                    PendingIntent.getBroadcast(
+                                        applicationContext,
+                                        notificationParameters.requestCodes[2],
+                                        Intent(
+                                            applicationContext,
+                                            MoveToDefaultDestinationBroadcastReceiver::class.java
+                                        )
+                                            .putExtra(EXTRA_MOVE_FILE, moveFile)
+                                            .putExtra(
+                                                MoveFile.NotificationParameters.EXTRA,
+                                                notificationParameters
+                                            )
+                                            .putExtra(EXTRA_DEFAULT_MOVE_DESTINATION, defaultMoveDestination),
+                                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+                                    )
+                                )
                             )
-                        )
-                    )
+                        }
+                    }
                     // add delete-file action
                     .addAction(
                         NotificationCompat.Action(
@@ -295,8 +327,11 @@ class FileNavigatorService : UnboundService() {
                             getString(R.string.delete),
                             PendingIntent.getBroadcast(
                                 applicationContext,
-                                notificationParameters.requestCodes[2],
-                                Intent(applicationContext, FileDeletionBroadcastReceiver::class.java)
+                                notificationParameters.requestCodes[3],
+                                Intent(
+                                    applicationContext,
+                                    FileDeletionBroadcastReceiver::class.java
+                                )
                                     .putExtra(EXTRA_MOVE_FILE, moveFile)
                                     .putExtra(
                                         MoveFile.NotificationParameters.EXTRA,
@@ -448,15 +483,25 @@ class FileNavigatorService : UnboundService() {
             )
         }
 
-        fun getStopIntent(context: Context): Intent =
+        private fun getStopIntent(context: Context): Intent =
             getIntent(context)
                 .setAction(ACTION_STOP_SERVICE)
 
         private fun getIntent(context: Context): Intent =
             Intent(context, FileNavigatorService::class.java)
 
+        // ===========
+        // Extras
+        // ===========
+
         const val EXTRA_MOVE_FILE =
             "com.w2sv.filenavigator.extra.MOVE_FILE"
+        const val EXTRA_DEFAULT_MOVE_DESTINATION =
+            "com.w2sv.filenavigator.extra.DEFAULT_MOVE_DESTINATION"
+
+        // ===========
+        // Actions
+        // ===========
 
         const val ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED =
             "com.w2sv.filenavigator.NOTIFY_FILE_LISTENER_SERVICE_STARTED"
