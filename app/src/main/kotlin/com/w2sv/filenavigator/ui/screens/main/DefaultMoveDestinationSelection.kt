@@ -77,7 +77,15 @@ fun OpenFileSourceDefaultDestinationDialogButton(
         enabled = enabled
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_folder_open_24),
+            painter = painterResource(
+                id = if (mainScreenViewModel.defaultMoveDestinationIsSet.getValue(
+                        source.defaultDestination
+                    )
+                )
+                    R.drawable.ic_edit_folder_24
+                else
+                    R.drawable.ic_add_new_folder_24
+            ),
             tint = if (enabled) MaterialTheme.colorScheme.secondary else disabledColor(),
             contentDescription = stringResource(
                 R.string.open_target_directory_settings
@@ -127,6 +135,8 @@ private fun DefaultMoveDestinationDialog(
             DialogButton(
                 onClick = {
                     with(mainScreenViewModel) {
+                        defaultMoveDestinationIsSet[fileSource.defaultDestination] =
+                            isDestinationSet
                         unconfirmedDefaultMoveDestinationConfiguration!!.launchSync()
                     }
                     onDismissRequest()
