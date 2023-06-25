@@ -77,38 +77,32 @@ fun ThemeSelectionRow(
     onSelected: (Theme) -> Unit
 ) {
     Row(
-        modifier,
+        modifier = modifier,
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        buildList {
-            add(
-                ThemeIndicatorProperties(
-                    theme = Theme.Light,
-                    label = R.string.light,
-                    buttonColoring = ButtonColoring.Uniform(Color.White)
-                )
-            )
-            add(
-                ThemeIndicatorProperties(
-                    theme = Theme.DeviceDefault,
-                    label = R.string.device_default,
-                    buttonColoring = ButtonColoring.Gradient(
-                        Brush.linearGradient(
-                            0.5f to Color.White,
-                            0.5f to Color.Black,
-                        )
+        listOf(
+            ThemeIndicatorProperties(
+                theme = Theme.Light,
+                label = R.string.light,
+                buttonColoring = ButtonColoring.Uniform(Color.White)
+            ),
+            ThemeIndicatorProperties(
+                theme = Theme.DeviceDefault,
+                label = R.string.device_default,
+                buttonColoring = ButtonColoring.Gradient(
+                    Brush.linearGradient(
+                        0.5f to Color.White,
+                        0.5f to Color.Black
                     )
                 )
+            ),
+            ThemeIndicatorProperties(
+                theme = Theme.Dark,
+                label = R.string.dark,
+                buttonColoring = ButtonColoring.Uniform(Color.Black)
             )
-            add(
-                ThemeIndicatorProperties(
-                    theme = Theme.Dark,
-                    label = R.string.dark,
-                    buttonColoring = ButtonColoring.Uniform(Color.Black)
-                )
-            )
-        }
+        )
             .forEach { properties ->
                 ThemeColumn(
                     properties = properties,
