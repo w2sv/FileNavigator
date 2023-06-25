@@ -29,7 +29,6 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,7 +57,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import slimber.log.i
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier
@@ -76,6 +74,11 @@ fun FileTypeSelectionColumn(
         Spacer(modifier = Modifier.height(16.dp))
 
         val animatedFileTypes = mutableSetOf<FileType>()
+        var nRunningAnimations = remember {
+            0
+        }
+
+        val scope = rememberCoroutineScope()
 
         LazyColumn(
             state = rememberLazyListState()
@@ -86,10 +89,16 @@ fun FileTypeSelectionColumn(
                 FileTypeAccordion(
                     fileType = fileType,
                     animate = !animatedFileTypes.contains(fileType),
+                    nRunningAnimations = nRunningAnimations,
                     modifier = Modifier
                         .padding(vertical = 4.dp)
                 )
-                animatedFileTypes.add(fileType)
+                if (animatedFileTypes.add(fileType)){
+                    nRunningAnimations += 1
+                    scope.launchDelayed(250L){
+                        nRunningAnimations -= 1
+                    }
+                }
             }
         }
     }
@@ -99,6 +108,7 @@ fun FileTypeSelectionColumn(
 private fun FileTypeAccordion(
     fileType: FileType,
     animate: Boolean,
+    nRunningAnimations: Int,
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
@@ -115,11 +125,17 @@ private fun FileTypeAccordion(
 
     val animatedAlpha by animateFloatAsState(
         targetValue = animatedProgress,
-        animationSpec = tween(durationMillis = 500, delayMillis = 250),
+        animationSpec = tween(durationMillis = 500, delayMillis = 150 + nRunningAnimations * 100),
         label = ""
     )
 
-    Column(modifier = modifier.graphicsLayer(alpha = animatedAlpha, scaleX = animatedAlpha, scaleY = animatedAlpha)) {
+    Column(
+        modifier = modifier.graphicsLayer(
+            alpha = animatedAlpha,
+            scaleX = animatedAlpha,
+            scaleY = animatedAlpha
+        )
+    ) {
         FileTypeAccordionHeader(
             fileType = fileType,
             isEnabled = fileTypeEnabled
