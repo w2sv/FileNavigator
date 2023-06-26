@@ -40,10 +40,10 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.androidutils.coroutines.launchDelayed
-import com.w2sv.filenavigator.FileType
+import com.w2sv.filenavigator.ui.model.FileType
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.AppFontText
-import com.w2sv.filenavigator.ui.DialogButton
+import com.w2sv.filenavigator.ui.components.AppFontText
+import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import kotlinx.coroutines.Job

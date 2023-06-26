@@ -19,15 +19,17 @@ import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.UniqueIds
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.androidutils.services.UnboundService
-import com.w2sv.filenavigator.FileType
+import com.w2sv.filenavigator.ui.model.FileType
 import com.w2sv.filenavigator.MainActivity
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.navigator.MoveFile
-import com.w2sv.filenavigator.navigator.mediastore.MediaStoreFileData
-import com.w2sv.filenavigator.navigator.notifications.AppNotificationChannel
-import com.w2sv.filenavigator.navigator.notifications.PendingIntentRequestCode
+import com.w2sv.filenavigator.navigator.notifications.NotificationChannelProperties
+import com.w2sv.filenavigator.navigator.notifications.NotificationParameters
 import com.w2sv.filenavigator.navigator.notifications.createNotificationChannelAndGetNotificationBuilder
+import com.w2sv.filenavigator.navigator.service.actions.FileDeletionBroadcastReceiver
+import com.w2sv.filenavigator.navigator.service.actions.FileMoveActivity
+import com.w2sv.filenavigator.navigator.service.actions.MoveToDefaultDestinationBroadcastReceiver
 import com.w2sv.filenavigator.utils.sendLocalBroadcast
 import com.w2sv.kotlinutils.extensions.nonZeroOrdinal
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,7 +43,7 @@ class FileNavigatorService : UnboundService() {
     lateinit var dataStoreRepository: PreferencesDataStoreRepository
 
     private val newFileDetectedNotificationIds =
-        UniqueIds(AppNotificationChannel.NewFileDetected.idGroupSeed)
+        UniqueIds(NotificationChannelProperties.FileNavigator.NewFileDetected.idGroupSeed)
     private val newFileDetectedActionsPendingIntentRequestCodes = UniqueIds(1)
 
     private lateinit var fileObservers: List<FileObserver>
@@ -105,10 +107,10 @@ class FileNavigatorService : UnboundService() {
 
             ACTION_CLEANUP_IDS -> {
                 val notificationParameters =
-                    intent.getParcelableCompat<MoveFile.NotificationParameters>(MoveFile.NotificationParameters.EXTRA)!!
+                    intent.getParcelableCompat<NotificationParameters>(NotificationParameters.EXTRA)!!
 
                 newFileDetectedNotificationIds.remove(notificationParameters.notificationId)
-                newFileDetectedActionsPendingIntentRequestCodes.removeAll(notificationParameters.requestCodes.toSet())
+                newFileDetectedActionsPendingIntentRequestCodes.removeAll(notificationParameters.associatedRequestCodes.toSet())
             }
 
             else -> try {
@@ -124,12 +126,12 @@ class FileNavigatorService : UnboundService() {
 
     private fun start() {
         startForeground(
-            AppNotificationChannel.StartedForegroundService.nonZeroOrdinal,
+            NotificationChannelProperties.FileNavigator.StartedForegroundService.nonZeroOrdinal,
             createNotificationChannelAndGetNotificationBuilder(
-                AppNotificationChannel.StartedForegroundService
+                NotificationChannelProperties.FileNavigator.StartedForegroundService
             )
                 .setSmallIcon(R.drawable.ic_file_move_24)
-                .setContentTitle(getString(AppNotificationChannel.StartedForegroundService.titleRes))
+                .setContentTitle(getString(NotificationChannelProperties.FileNavigator.StartedForegroundService.titleRes))
                 .setContentText(getString(R.string.waiting_for_new_files_to_be_navigated))
                 // add configure action
                 .addAction(
@@ -138,7 +140,7 @@ class FileNavigatorService : UnboundService() {
                         getString(R.string.configure),
                         PendingIntent.getActivity(
                             applicationContext,
-                            PendingIntentRequestCode.ConfigureFileNavigator.ordinal,
+                            1,
                             Intent.makeRestartActivityTask(
                                 ComponentName(this, MainActivity::class.java)
                             ),
@@ -153,7 +155,7 @@ class FileNavigatorService : UnboundService() {
                         getString(R.string.stop),
                         PendingIntent.getService(
                             applicationContext,
-                            PendingIntentRequestCode.StopFileNavigator.ordinal,
+                            0,
                             getStopIntent(applicationContext),
                             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
                         ),
@@ -178,7 +180,7 @@ class FileNavigatorService : UnboundService() {
 
         override fun deliverSelfNotifications(): Boolean = false
 
-        private val mediaStoreFileDataBlacklistCache = EvictingQueue.create<MediaStoreFileData>(5)
+        private val mediaStoreFileDataBlacklistCache = EvictingQueue.create<MoveFile.MediaStoreData>(5)
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             super.onChange(selfChange, uri)
@@ -187,7 +189,7 @@ class FileNavigatorService : UnboundService() {
 
             uri ?: return
 
-            MediaStoreFileData.fetch(uri, contentResolver)?.let { mediaStoreFileData ->
+            MoveFile.MediaStoreData.fetch(uri, contentResolver)?.let { mediaStoreFileData ->
                 if (mediaStoreFileData.isPending) return@let
 
                 if (mediaStoreFileData.isNewlyAdded &&
@@ -206,7 +208,7 @@ class FileNavigatorService : UnboundService() {
 
         protected abstract fun showNotificationIfApplicable(
             uri: Uri,
-            mediaStoreFileData: MediaStoreFileData
+            mediaStoreFileData: MoveFile.MediaStoreData
         )
 
         protected fun showNotification(moveFile: MoveFile) {
@@ -217,7 +219,7 @@ class FileNavigatorService : UnboundService() {
                     moveFile.data.relativePath
                 )
 
-            val notificationParameters = MoveFile.NotificationParameters(
+            val notificationParameters = NotificationParameters(
                 newFileDetectedNotificationIds.addNewId(),
                 newFileDetectedActionsPendingIntentRequestCodes.addMultipleNewIds(5)
             )
@@ -225,11 +227,11 @@ class FileNavigatorService : UnboundService() {
             showNotification(
                 notificationParameters.notificationId,
                 createNotificationChannelAndGetNotificationBuilder(
-                    AppNotificationChannel.NewFileDetected
+                    NotificationChannelProperties.FileNavigator.NewFileDetected
                 )
                     .setContentTitle(
                         getString(
-                            AppNotificationChannel.NewFileDetected.titleRes,
+                            NotificationChannelProperties.FileNavigator.NewFileDetected.titleRes,
                             getNotificationTitleFormatArg(moveFile)
                         )
                     )
@@ -255,7 +257,7 @@ class FileNavigatorService : UnboundService() {
                             getString(R.string.view),
                             PendingIntent.getActivity(
                                 applicationContext,
-                                notificationParameters.requestCodes[0],
+                                notificationParameters.associatedRequestCodes[0],
                                 Intent()
                                     .setAction(Intent.ACTION_VIEW)
                                     .setDataAndType(
@@ -273,16 +275,16 @@ class FileNavigatorService : UnboundService() {
                             getString(R.string.move),
                             PendingIntent.getActivity(
                                 applicationContext,
-                                notificationParameters.requestCodes[1],
+                                notificationParameters.associatedRequestCodes[1],
                                 Intent.makeRestartActivityTask(
                                     ComponentName(
                                         applicationContext,
-                                        FileMoverActivity::class.java
+                                        FileMoveActivity::class.java
                                     )
                                 )
                                     .putExtra(EXTRA_MOVE_FILE, moveFile)
                                     .putExtra(
-                                        MoveFile.NotificationParameters.EXTRA,
+                                        NotificationParameters.EXTRA,
                                         notificationParameters
                                     ),
                                 PendingIntent.FLAG_IMMUTABLE
@@ -303,17 +305,20 @@ class FileNavigatorService : UnboundService() {
                                     getString(R.string.move_to_default_destination),
                                     PendingIntent.getBroadcast(
                                         applicationContext,
-                                        notificationParameters.requestCodes[2],
+                                        notificationParameters.associatedRequestCodes[2],
                                         Intent(
                                             applicationContext,
                                             MoveToDefaultDestinationBroadcastReceiver::class.java
                                         )
                                             .putExtra(EXTRA_MOVE_FILE, moveFile)
                                             .putExtra(
-                                                MoveFile.NotificationParameters.EXTRA,
+                                                NotificationParameters.EXTRA,
                                                 notificationParameters
                                             )
-                                            .putExtra(EXTRA_DEFAULT_MOVE_DESTINATION, defaultMoveDestination),
+                                            .putExtra(
+                                                EXTRA_DEFAULT_MOVE_DESTINATION,
+                                                defaultMoveDestination
+                                            ),
                                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
                                     )
                                 )
@@ -327,14 +332,14 @@ class FileNavigatorService : UnboundService() {
                             getString(R.string.delete),
                             PendingIntent.getBroadcast(
                                 applicationContext,
-                                notificationParameters.requestCodes[3],
+                                notificationParameters.associatedRequestCodes[3],
                                 Intent(
                                     applicationContext,
                                     FileDeletionBroadcastReceiver::class.java
                                 )
                                     .putExtra(EXTRA_MOVE_FILE, moveFile)
                                     .putExtra(
-                                        MoveFile.NotificationParameters.EXTRA,
+                                        NotificationParameters.EXTRA,
                                         notificationParameters
                                     ),
                                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
@@ -359,7 +364,7 @@ class FileNavigatorService : UnboundService() {
 
         override fun showNotificationIfApplicable(
             uri: Uri,
-            mediaStoreFileData: MediaStoreFileData
+            mediaStoreFileData: MoveFile.MediaStoreData
         ) {
             if (fileType.matchesFileExtension(mediaStoreFileData.fileExtension)) {
                 val sourceKind = mediaStoreFileData.getSourceKind()
@@ -416,7 +421,7 @@ class FileNavigatorService : UnboundService() {
 
         override fun showNotificationIfApplicable(
             uri: Uri,
-            mediaStoreFileData: MediaStoreFileData
+            mediaStoreFileData: MoveFile.MediaStoreData
         ) {
             fileTypes.firstOrNull { it.matchesFileExtension(mediaStoreFileData.fileExtension) }
                 ?.let { fileType ->
@@ -466,13 +471,13 @@ class FileNavigatorService : UnboundService() {
         }
 
         fun onNotificationCancelled(
-            notificationParameters: MoveFile.NotificationParameters,
+            notificationParameters: NotificationParameters,
             context: Context
         ) {
             context.startService(
                 getIntent(context)
                     .setAction(ACTION_CLEANUP_IDS)
-                    .putExtra(MoveFile.NotificationParameters.EXTRA, notificationParameters)
+                    .putExtra(NotificationParameters.EXTRA, notificationParameters)
             )
         }
 

@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.navigator.service
+package com.w2sv.filenavigator.navigator.service.actions
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -12,6 +12,8 @@ import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.navigator.MoveFile
+import com.w2sv.filenavigator.navigator.notifications.NotificationParameters
+import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.utils.isExternalStorageManger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,7 +68,7 @@ class MoveToDefaultDestinationBroadcastReceiver : BroadcastReceiver() {
         }
 
         intent
-            .getParcelableCompat<MoveFile.NotificationParameters>(MoveFile.NotificationParameters.EXTRA)!!
+            .getParcelableCompat<NotificationParameters>(NotificationParameters.EXTRA)!!
             .cancelUnderlyingNotification(context)
     }
 }

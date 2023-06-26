@@ -42,20 +42,20 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.w2sv.filenavigator.navigator.service.FileMoverActivity" />
+        <activity android:name="com.w2sv.filenavigator.navigator.service.actions.FileMoveActivity" />
 
         <service android:name="com.w2sv.filenavigator.navigator.service.FileNavigatorService" />
-        <service android:name="com.w2sv.filenavigator.PowerSaveModeChangedReceiver$HostService" />
+        <service android:name="com.w2sv.filenavigator.receivers.PowerSaveModeChangedReceiver$HostService" />
 
-        <receiver android:name=".PowerSaveModeChangedReceiver"
+        <receiver android:name=".receivers.PowerSaveModeChangedReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.os.action.POWER_SAVE_MODE_CHANGED"/>
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.w2sv.filenavigator.navigator.service.FileDeletionBroadcastReceiver" />
-        <receiver android:name="com.w2sv.filenavigator.navigator.service.MoveToDefaultDestinationBroadcastReceiver" />
+        <receiver android:name="com.w2sv.filenavigator.navigator.service.actions.FileDeletionBroadcastReceiver" />
+        <receiver android:name="com.w2sv.filenavigator.navigator.service.actions.MoveToDefaultDestinationBroadcastReceiver" />
 
     </application>
 

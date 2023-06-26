@@ -13,7 +13,7 @@ import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.androidutils.ui.PreferencesDataStoreBackedUnconfirmedStatesViewModel
 import com.w2sv.androidutils.ui.UnconfirmedStateFlow
 import com.w2sv.androidutils.ui.UnconfirmedStatesComposition
-import com.w2sv.filenavigator.FileType
+import com.w2sv.filenavigator.ui.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.datastore.PreferencesKey
@@ -211,4 +211,3 @@ class MainScreenViewModel @Inject constructor(
         2500L
     )
 }
-

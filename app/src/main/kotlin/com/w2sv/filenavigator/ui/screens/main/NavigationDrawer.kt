@@ -51,8 +51,8 @@ import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.AppFontText
-import com.w2sv.filenavigator.ui.ThemeSelectionDialog
+import com.w2sv.filenavigator.ui.components.AppFontText
+import com.w2sv.filenavigator.ui.components.ThemeSelectionDialog
 import kotlinx.coroutines.launch
 
 @Composable

@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui
+package com.w2sv.filenavigator.ui.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

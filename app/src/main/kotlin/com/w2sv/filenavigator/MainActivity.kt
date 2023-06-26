@@ -22,7 +22,8 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.lifecycle.SelfManagingLocalBroadcastReceiver
 import com.w2sv.filenavigator.navigator.service.FileNavigatorService
-import com.w2sv.filenavigator.ui.Theme
+import com.w2sv.filenavigator.receivers.PowerSaveModeChangedReceiver
+import com.w2sv.filenavigator.ui.components.Theme
 import com.w2sv.filenavigator.ui.screens.main.MainScreen
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme

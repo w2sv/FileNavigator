@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui
+package com.w2sv.filenavigator.ui.components
 
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults

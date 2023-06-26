@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.navigator.service
+package com.w2sv.filenavigator.navigator.service.actions
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -6,7 +6,10 @@ import android.content.Intent
 import android.widget.Toast
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.navigator.MoveFile
+import com.w2sv.filenavigator.navigator.notifications.NotificationParameters
+import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.utils.isExternalStorageManger
 import slimber.log.e
 
@@ -17,7 +20,7 @@ class FileDeletionBroadcastReceiver : BroadcastReceiver() {
 
         if (!isExternalStorageManger()) {
             context.showToast(
-                "File deletion requires access to manage all files",
+                context.getString(R.string.file_deletion_requires_access_to_manage_all_files),
                 duration = Toast.LENGTH_LONG
             )
             return
@@ -42,12 +45,12 @@ class FileDeletionBroadcastReceiver : BroadcastReceiver() {
         val fileDeleted = mediaFile?.delete()
 
         context.showToast(
-            text = if (fileDeleted == true) "Successfully deleted file" else "Couldn't delete file",
+            text = context.getString(if (fileDeleted == true) R.string.successfully_deleted_file else R.string.couldn_t_delete_file),
             duration = Toast.LENGTH_LONG
         )
 
         intent
-            .getParcelableCompat<MoveFile.NotificationParameters>(MoveFile.NotificationParameters.EXTRA)!!
+            .getParcelableCompat<NotificationParameters>(NotificationParameters.EXTRA)!!
             .cancelUnderlyingNotification(context)
     }
 }

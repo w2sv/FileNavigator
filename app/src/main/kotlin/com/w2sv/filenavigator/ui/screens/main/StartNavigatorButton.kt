@@ -41,10 +41,10 @@ import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.navigator.service.FileNavigatorService
-import com.w2sv.filenavigator.ui.AppFontText
-import com.w2sv.filenavigator.ui.ExtendedSnackbarVisuals
-import com.w2sv.filenavigator.ui.bounceOnClickAnimation
-import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
+import com.w2sv.filenavigator.ui.components.AppFontText
+import com.w2sv.filenavigator.ui.components.ExtendedSnackbarVisuals
+import com.w2sv.filenavigator.ui.components.bounceOnClickAnimation
+import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.ui.theme.md_negative

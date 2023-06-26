@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator
+package com.w2sv.filenavigator.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context

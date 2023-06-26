@@ -80,4 +80,7 @@
     <string name="default_move_destination_unlocked_info">Default destination will be updated upon picking a new one whilst navigating a file.</string>
     <string name="delete">Delete</string>
     <string name="move_to_default_destination">Move to default destination</string>
+    <string name="successfully_deleted_file">Successfully deleted file</string>
+    <string name="couldn_t_delete_file">Couldn\'t delete file</string>
+    <string name="file_deletion_requires_access_to_manage_all_files">File deletion requires access to manage all files</string>
 </resources>

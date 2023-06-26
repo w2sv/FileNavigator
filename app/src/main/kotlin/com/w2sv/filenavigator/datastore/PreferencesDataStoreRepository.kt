@@ -4,8 +4,8 @@ import android.net.Uri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.w2sv.androidutils.datastorage.datastore.preferences.AbstractPreferencesDataStoreRepository
-import com.w2sv.filenavigator.FileType
-import com.w2sv.filenavigator.ui.Theme
+import com.w2sv.filenavigator.ui.model.FileType
+import com.w2sv.filenavigator.ui.components.Theme
 import com.w2sv.filenavigator.utils.StorageAccessStatus
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

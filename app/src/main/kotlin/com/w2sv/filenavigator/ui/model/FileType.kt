@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator
+package com.w2sv.filenavigator.ui.model
 
 import android.content.Context
 import android.os.Parcelable
@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
+import com.w2sv.filenavigator.R
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 

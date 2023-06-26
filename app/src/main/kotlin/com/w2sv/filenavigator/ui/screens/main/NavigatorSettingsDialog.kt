@@ -14,9 +14,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.AppCheckbox
-import com.w2sv.filenavigator.ui.AppFontText
-import com.w2sv.filenavigator.ui.DialogButton
+import com.w2sv.filenavigator.ui.components.AppCheckbox
+import com.w2sv.filenavigator.ui.components.AppFontText
+import com.w2sv.filenavigator.ui.components.DialogButton
 
 @Composable
 internal fun NavigatorSettingsDialog(

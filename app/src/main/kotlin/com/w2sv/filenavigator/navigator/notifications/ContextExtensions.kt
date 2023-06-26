@@ -7,7 +7,7 @@ import androidx.core.app.NotificationCompat
 import com.w2sv.androidutils.notifying.getNotificationManager
 
 fun Context.createNotificationChannelAndGetNotificationBuilder(
-    channel: AppNotificationChannel
+    channel: NotificationChannelProperties
 ): NotificationCompat.Builder {
     getNotificationManager().createNotificationChannel(
         NotificationChannel(

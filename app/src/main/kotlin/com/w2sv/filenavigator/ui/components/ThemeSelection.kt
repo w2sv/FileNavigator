@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui
+package com.w2sv.filenavigator.ui.components
 
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.StringRes

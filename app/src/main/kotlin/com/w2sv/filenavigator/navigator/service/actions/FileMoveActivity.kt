@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.navigator.service
+package com.w2sv.filenavigator.navigator.service.actions
 
 import android.content.Context
 import android.content.Intent
@@ -19,6 +19,8 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.navigator.MoveFile
+import com.w2sv.filenavigator.navigator.notifications.NotificationParameters
+import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,7 +30,7 @@ import slimber.log.i
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FileMoverActivity : ComponentActivity() {
+class FileMoveActivity : ComponentActivity() {
 
     @HiltViewModel
     class ViewModel @Inject constructor(
@@ -47,8 +49,8 @@ class FileMoverActivity : ComponentActivity() {
         val moveFile: MoveFile =
             savedStateHandle[FileNavigatorService.EXTRA_MOVE_FILE]!!
 
-        val notificationParameters: MoveFile.NotificationParameters =
-            savedStateHandle[MoveFile.NotificationParameters.EXTRA]!!
+        val notificationParameters: NotificationParameters =
+            savedStateHandle[NotificationParameters.EXTRA]!!
 
         // ===============
         // Extra Downstream
@@ -107,7 +109,7 @@ class FileMoverActivity : ComponentActivity() {
                             showToast(
                                 getString(
                                     R.string.moved_file_to,
-                                    targetDirectoryDocumentFile.getSimplePath(this@FileMoverActivity)
+                                    targetDirectoryDocumentFile.getSimplePath(this@FileMoveActivity)
                                 )
                             )
                         }

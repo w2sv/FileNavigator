@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.navigator.service.FileNavigatorService
-import com.w2sv.filenavigator.ui.AppFontText
-import com.w2sv.filenavigator.ui.DialogButton
+import com.w2sv.filenavigator.ui.components.AppFontText
+import com.w2sv.filenavigator.ui.components.DialogButton
 
 @Composable
 internal fun ManageExternalStoragePermissionDialog(
