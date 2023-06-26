@@ -1,17 +1,16 @@
 package com.w2sv.filenavigator.ui
 
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.annotation.StringRes
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.EaseInOutBounce
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -25,18 +24,23 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.utils.toEasing
 
@@ -95,12 +99,12 @@ fun ThemeSelectionRow(
             ThemeIndicatorProperties(
                 theme = Theme.Light,
                 label = R.string.light,
-                buttonColoring = ButtonColoring.Uniform(Color.White)
+                buttonColor = ButtonColor.Uniform(Color.White)
             ),
             ThemeIndicatorProperties(
                 theme = Theme.DeviceDefault,
                 label = R.string.device_default,
-                buttonColoring = ButtonColoring.Gradient(
+                buttonColor = ButtonColor.Gradient(
                     Brush.linearGradient(
                         0.5f to Color.White,
                         0.5f to Color.Black
@@ -110,7 +114,7 @@ fun ThemeSelectionRow(
             ThemeIndicatorProperties(
                 theme = Theme.Dark,
                 label = R.string.dark,
-                buttonColoring = ButtonColoring.Uniform(Color.Black)
+                buttonColor = ButtonColor.Uniform(Color.Black)
             )
         )
             .forEach { properties ->
@@ -131,12 +135,12 @@ fun ThemeSelectionRow(
 data class ThemeIndicatorProperties(
     val theme: Theme,
     @StringRes val label: Int,
-    val buttonColoring: ButtonColoring
+    val buttonColor: ButtonColor
 )
 
-sealed class ButtonColoring(val containerColor: Color) {
-    class Uniform(color: Color) : ButtonColoring(color)
-    class Gradient(val brush: Brush) : ButtonColoring(Color.Transparent)
+sealed class ButtonColor(val containerColor: Color) {
+    class Uniform(color: Color) : ButtonColor(color)
+    class Gradient(val brush: Brush) : ButtonColor(Color.Transparent)
 }
 
 @Composable
@@ -155,15 +159,14 @@ private fun ThemeColumn(
             text = stringResource(id = properties.label),
             fontSize = 12.sp,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(bottom = 8.dp)
         )
+        Spacer(modifier = Modifier.height(8.dp))
         ThemeButton(
-            buttonColoring = properties.buttonColoring,
+            buttonColor = properties.buttonColor,
             contentDescription = stringResource(id = R.string.theme_button_cd).format(
                 stringResource(id = properties.label)
             ),
             onClick = onClick,
-            size = 36.dp,
             isSelected = isSelected
         )
     }
@@ -171,40 +174,41 @@ private fun ThemeColumn(
 
 @Composable
 fun ThemeButton(
-    buttonColoring: ButtonColoring,
+    buttonColor: ButtonColor,
     contentDescription: String,
     onClick: () -> Unit,
-    size: Dp,
     isSelected: () -> Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    size: Dp = 40.dp
 ) {
     val radius = with(LocalDensity.current) { (size / 2).toPx() }
 
     val transition = updateTransition(targetState = isSelected(), label = "")
 
-    val borderWidth by transition.animateFloat(
+    val animationDuration = 1000
+
+    val rotation by transition.animateFloat(
         transitionSpec = {
-            if (targetState) {
-                tween(durationMillis = DefaultAnimationDuration, easing = OvershootInterpolator().toEasing())
-            } else {
-                tween(durationMillis = 300)
-            }
-        }, label = ""
+            if (targetState)
+                tween(
+                    animationDuration,
+                    easing = AccelerateDecelerateInterpolator().toEasing()
+                )
+            else
+                tween()
+        },
+        label = ""
     ) { state ->
-        if (state) 3f else 0f
+        if (state) 540f else 0f
     }
 
-    val borderColor by transition.animateColor(
-        transitionSpec = {
-            if (targetState) {
-                tween(durationMillis = DefaultAnimationDuration, easing = OvershootInterpolator().toEasing())
-            } else {
-                tween(durationMillis = 300)
-            }
-        }, label = ""
-    ) { state ->
-        if (state) MaterialTheme.colorScheme.primary else Color.Transparent
-    }
+    val borderGradientBrush = Brush.sweepGradient(
+        listOf(
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.tertiary,
+            MaterialTheme.colorScheme.primary
+        ),
+    )
 
     Button(
         modifier = modifier
@@ -213,16 +217,39 @@ fun ThemeButton(
             }
             .size(size)
             .drawBehind {
-                if (buttonColoring is ButtonColoring.Gradient) {
+                if (buttonColor is ButtonColor.Gradient) {
                     drawCircle(
-                        buttonColoring.brush,
+                        buttonColor.brush,
                         radius = radius
                     )
                 }
-            },
-        colors = ButtonDefaults.buttonColors(containerColor = buttonColoring.containerColor),
+                if (isSelected()) {
+                    rotate(rotation) {
+                        drawCircle(borderGradientBrush, style = Stroke(9f), radius = radius)
+                    }
+                }
+            }
+//            .clip(CircleShape)
+        ,
+        colors = ButtonDefaults.buttonColors(containerColor = buttonColor.containerColor),
         onClick = onClick,
         shape = CircleShape,
-        border = BorderStroke(borderWidth.dp, borderColor)
     ) {}
+}
+
+@Preview
+@Composable
+fun ThemeButtonPrev() {
+    AppTheme {
+        val properties = ThemeIndicatorProperties(
+            theme = Theme.Dark,
+            label = R.string.dark,
+            buttonColor = ButtonColor.Uniform(Color.Black)
+        )
+        ThemeButton(
+            buttonColor = properties.buttonColor,
+            contentDescription = "",
+            onClick = { /*TODO*/ },
+            isSelected = { true })
+    }
 }
