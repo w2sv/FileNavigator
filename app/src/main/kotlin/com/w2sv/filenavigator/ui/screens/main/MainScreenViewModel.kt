@@ -59,7 +59,7 @@ class MainScreenViewModel @Inject constructor(
     // StorageAccessStatus
     // ==============
 
-    val storageAccessStatus: StateFlow<StorageAccessStatus> get() = _storageAccessStatus
+    private val storageAccessStatus: StateFlow<StorageAccessStatus> get() = _storageAccessStatus
     private val _storageAccessStatus = MutableStateFlow(StorageAccessStatus.NoAccess)
 
     val anyStorageAccessGranted: StateFlow<Boolean> =

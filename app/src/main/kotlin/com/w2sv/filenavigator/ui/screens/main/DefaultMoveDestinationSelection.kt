@@ -44,6 +44,7 @@ import com.w2sv.filenavigator.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.AppFontText
 import com.w2sv.filenavigator.ui.DialogButton
+import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import kotlinx.coroutines.Job
 
@@ -72,7 +73,8 @@ fun OpenFileSourceDefaultDestinationDialogButton(
         }
 
     IconButton(
-        onClick = { defaultDestinationDialogFileSource = source }
+        onClick = { defaultDestinationDialogFileSource = source },
+        modifier = modifier
     ) {
         Icon(
             painter = painterResource(
@@ -88,7 +90,7 @@ fun OpenFileSourceDefaultDestinationDialogButton(
             contentDescription = stringResource(
                 R.string.open_target_directory_settings
             ),
-            modifier = modifier
+            modifier = Modifier.size(DefaultIconDp)
         )
     }
 }

@@ -59,6 +59,7 @@ import com.w2sv.filenavigator.ui.SnackbarKind
 import com.w2sv.filenavigator.ui.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.theme.disabledColor
+import com.w2sv.filenavigator.utils.allFalseAfterEnteringValue
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -201,8 +202,8 @@ private fun FileTypeAccordionHeader(
                         when (val status =
                             mainScreenViewModel.unconfirmedFileTypeStatus.getValue(fileType.status)) {
                             FileType.Status.Enabled, FileType.Status.Disabled -> {
-                                if (mainScreenViewModel.unconfirmedFileTypeStatus.values.map { it.isEnabled }
-                                        .atLeastOneTrueAfterValueChange(
+                                if (!mainScreenViewModel.unconfirmedFileTypeStatus.values.map { it.isEnabled }
+                                        .allFalseAfterEnteringValue(
                                             checkedNew
                                         )
                                 ) {
@@ -337,24 +338,26 @@ private fun FileSourceRow(
                 )
             }
 
-            val progress by animateFloatAsState(
-                targetValue = if (isEnabled) 0.1f else Epsilon,
+            val buttonBoxWeight = 0.1f
+            val destinationButtonBoxWeight by animateFloatAsState(
+                targetValue = if (isEnabled) buttonBoxWeight else Epsilon,
                 label = ""
             )
 
-            Spacer(modifier = Modifier.weight(0.1f - progress + Epsilon))
+            // Empty box, pushing the checkbox into the position of the destinationButtonBox upon vanishing of the latter
+            Spacer(modifier = Modifier.weight(buttonBoxWeight - destinationButtonBoxWeight + Epsilon))
             // Checkbox
-            Box(modifier = Modifier.weight(0.1f), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.weight(buttonBoxWeight), contentAlignment = Alignment.Center) {
                 if (fileType.isMediaType) {
                     AppCheckbox(
                         checked = isEnabled,
                         onCheckedChange = { checkedNew ->
-                            if (fileType.sources.map {
+                            if (!fileType.sources.map {
                                     mainScreenViewModel.unconfirmedFileSourceEnablement.getValue(
                                         it.isEnabled
                                     )
                                 }
-                                    .atLeastOneTrueAfterValueChange(checkedNew)
+                                    .allFalseAfterEnteringValue(checkedNew)
                             ) {
                                 mainScreenViewModel.unconfirmedFileSourceEnablement[source.isEnabled] =
                                     checkedNew
@@ -373,23 +376,20 @@ private fun FileSourceRow(
                 }
             }
 
-            // Dialog Button
+            // Destination Button
             Box(
                 modifier = Modifier
-                    .weight(progress)
-                    .alpha(progress * 10), contentAlignment = Alignment.Center
+                    .weight(destinationButtonBoxWeight)
+                    .alpha(destinationButtonBoxWeight * 10),
+                contentAlignment = Alignment.Center
             ) {
                 OpenFileSourceDefaultDestinationDialogButton(
-                    source = source,
-                    modifier = Modifier.size(28.dp)
+                    source = source
                 )
             }
         }
     }
 }
-
-fun Iterable<Boolean>.atLeastOneTrueAfterValueChange(newValue: Boolean): Boolean =
-    newValue || count { it } > 1
 
 /**
  * Assumes value corresponding to [key] to be one of [FileType.Status.Enabled] or [FileType.Status.Disabled].

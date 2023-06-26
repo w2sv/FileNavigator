@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.theme.DefaultIconSize
+import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.utils.toEasing
 
 enum class Theme {
@@ -64,7 +64,7 @@ fun ThemeSelectionDialog(
                 painter = painterResource(id = R.drawable.ic_nightlight_24),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.size(DefaultIconSize)
+                modifier = Modifier.size(DefaultIconDp)
             )
         },
         confirmButton = {
