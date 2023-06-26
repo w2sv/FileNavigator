@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui
 
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.OvershootInterpolator
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -24,7 +23,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -41,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
+import com.w2sv.filenavigator.ui.theme.DefaultIconSize
 import com.w2sv.filenavigator.utils.toEasing
 
 enum class Theme {
@@ -65,7 +63,8 @@ fun ThemeSelectionDialog(
             Icon(
                 painter = painterResource(id = R.drawable.ic_nightlight_24),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.size(DefaultIconSize)
             )
         },
         confirmButton = {
@@ -179,19 +178,17 @@ fun ThemeButton(
     onClick: () -> Unit,
     isSelected: () -> Boolean,
     modifier: Modifier = Modifier,
-    size: Dp = 40.dp
+    size: Dp = 38.dp
 ) {
     val radius = with(LocalDensity.current) { (size / 2).toPx() }
 
     val transition = updateTransition(targetState = isSelected(), label = "")
 
-    val animationDuration = 1000
-
     val rotation by transition.animateFloat(
         transitionSpec = {
             if (targetState)
                 tween(
-                    animationDuration,
+                    1000,
                     easing = AccelerateDecelerateInterpolator().toEasing()
                 )
             else
@@ -207,7 +204,7 @@ fun ThemeButton(
             MaterialTheme.colorScheme.primary,
             MaterialTheme.colorScheme.tertiary,
             MaterialTheme.colorScheme.primary
-        ),
+        )
     )
 
     Button(
@@ -228,9 +225,7 @@ fun ThemeButton(
                         drawCircle(borderGradientBrush, style = Stroke(9f), radius = radius)
                     }
                 }
-            }
-//            .clip(CircleShape)
-        ,
+            },
         colors = ButtonDefaults.buttonColors(containerColor = buttonColor.containerColor),
         onClick = onClick,
         shape = CircleShape,
