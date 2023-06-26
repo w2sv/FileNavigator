@@ -1,6 +1,16 @@
 package com.w2sv.filenavigator.ui.screens.main
 
+import android.view.animation.AnticipateOvershootInterpolator
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,12 +50,15 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.androidutils.coroutines.launchDelayed
-import com.w2sv.filenavigator.ui.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
+import com.w2sv.filenavigator.ui.model.FileType
+import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.DefaultIconDp
+import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.theme.disabledColor
+import com.w2sv.filenavigator.utils.toEasing
 import kotlinx.coroutines.Job
 
 @Composable
@@ -56,45 +69,36 @@ fun OpenFileSourceDefaultDestinationDialogButton(
 ) {
     var defaultDestinationDialogFileSource by rememberSaveable {
         mutableStateOf<FileType.Source?>(null)
-    }
-        .apply {
-            value?.let {
-                if (mainScreenViewModel.unconfirmedDefaultMoveDestinationConfiguration == null) {
-                    mainScreenViewModel.setUnconfirmedDefaultMoveDestinationStates(source)
-                }
-
-                DefaultMoveDestinationDialog(
-                    fileSource = it,
-                    closeDialog = {
-                        value = null
-                    }
-                )
+    }.apply {
+        value?.let {
+            if (mainScreenViewModel.unconfirmedDefaultMoveDestinationConfiguration == null) {
+                mainScreenViewModel.setUnconfirmedDefaultMoveDestinationStates(source)
             }
+
+            DefaultMoveDestinationDialog(fileSource = it, closeDialog = {
+                value = null
+            })
         }
+    }
 
     IconButton(
-        onClick = { defaultDestinationDialogFileSource = source },
-        modifier = modifier
+        onClick = { defaultDestinationDialogFileSource = source }, modifier = modifier
     ) {
         Icon(
             painter = painterResource(
                 id = if (mainScreenViewModel.defaultMoveDestinationIsSet.getValue(
                         source.defaultDestination
                     )
-                )
-                    R.drawable.ic_edit_folder_24
-                else
-                    R.drawable.ic_add_new_folder_24
-            ),
-            tint = MaterialTheme.colorScheme.secondary,
-            contentDescription = stringResource(
+                ) R.drawable.ic_edit_folder_24
+                else R.drawable.ic_add_new_folder_24
+            ), tint = MaterialTheme.colorScheme.secondary, contentDescription = stringResource(
                 R.string.open_target_directory_settings
-            ),
-            modifier = Modifier.size(DefaultIconDp)
+            ), modifier = Modifier.size(DefaultIconDp)
         )
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun DefaultMoveDestinationDialog(
     fileSource: FileType.Source,
@@ -122,8 +126,7 @@ private fun DefaultMoveDestinationDialog(
     val scope = rememberCoroutineScope()
     var closeLogInfoJob: Job? = null
 
-    AlertDialog(
-        properties = DialogProperties(usePlatformDefaultWidth = false),
+    AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = modifier.padding(horizontal = 32.dp),
         onDismissRequest = { onDismissRequest() },
         dismissButton = {
@@ -140,8 +143,7 @@ private fun DefaultMoveDestinationDialog(
                         unconfirmedDefaultMoveDestinationConfiguration!!.launchSync()
                     }
                     onDismissRequest()
-                },
-                enabled = configurationHasChanged
+                }, enabled = configurationHasChanged
             ) {
                 AppFontText(text = stringResource(id = R.string.apply))
             }
@@ -171,9 +173,7 @@ private fun DefaultMoveDestinationDialog(
                         append(fileSource.getTitle(context))
                     }
                     append(" Move Destination")
-                },
-                textAlign = TextAlign.Center,
-                fontSize = 18.sp
+                }, textAlign = TextAlign.Center, fontSize = 18.sp
             )
         },
         text = {
@@ -182,14 +182,31 @@ private fun DefaultMoveDestinationDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    AppFontText(
-                        text = defaultMoveDestination?.let {
-                            DocumentFile.fromSingleUri(context, it)?.getSimplePath(context)
-                        } ?: stringResource(R.string.not_set),
+                    AppFontText(text = defaultMoveDestination?.let {
+                        DocumentFile.fromSingleUri(context, it)?.getSimplePath(context)
+                    } ?: stringResource(R.string.not_set),
                         fontStyle = FontStyle.Italic,
                         fontSize = 16.sp,
                         modifier = Modifier.weight(0.8f),
-                        color = if (isDestinationSet) Color.Unspecified else disabledColor()
+                        color = if (isDestinationSet) Color.Unspecified else disabledColor())
+
+                    val buttonBoxWeight = 0.15f
+                    val isDestinationSetDependentBoxWeight by animateFloatAsState(
+                        targetValue = if (isDestinationSet) buttonBoxWeight - Epsilon else Epsilon,
+                        animationSpec = tween(
+                            durationMillis = DefaultAnimationDuration,
+                            delayMillis = if (isDestinationSet) 150 else 0,
+                            easing = AnticipateOvershootInterpolator().toEasing()
+                        ),
+                        label = ""
+                    )
+                    Spacer(
+                        modifier = Modifier.weight(
+                            maxOf(
+                                (buttonBoxWeight - isDestinationSetDependentBoxWeight) * 2,
+                                Epsilon
+                            )
+                        )
                     )
                     // Pick button
                     IconButton(
@@ -197,7 +214,7 @@ private fun DefaultMoveDestinationDialog(
                             mainScreenViewModel.launchDefaultMoveDestinationPickerFor.value =
                                 fileSource
                         },
-                        modifier = Modifier.weight(0.15f)
+                        modifier = Modifier.weight(buttonBoxWeight)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_folder_open_24),
@@ -207,6 +224,32 @@ private fun DefaultMoveDestinationDialog(
                             tint = MaterialTheme.colorScheme.secondary
                         )
                     }
+                    // Lock button
+                    IconButton(
+                        onClick = {
+                            mainScreenViewModel.unconfirmedDefaultMoveDestinationIsLocked!!.value =
+                                !mainScreenViewModel.unconfirmedDefaultMoveDestinationIsLocked!!.value
+                            showLockInfo = true
+                        },
+                        modifier = Modifier.weight(
+                            maxOf(
+                                isDestinationSetDependentBoxWeight,
+                                Epsilon
+                            )
+                        ),
+                    ) {
+                        AnimatedContent(
+                            targetState = defaultMoveDestinationIsLocked,
+                            label = "",
+                            transitionSpec = { slideInHorizontally() + fadeIn() with slideOutHorizontally()+ fadeOut() }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = if (it) R.drawable.ic_lock_closed_24 else R.drawable.ic_lock_open_24),
+                                contentDescription = stringResource(if (it) R.string.unlock_default_move_destination else R.string.unlock_default_move_destination),
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
                     // Delete button
                     IconButton(
                         onClick = {
@@ -214,7 +257,12 @@ private fun DefaultMoveDestinationDialog(
                             mainScreenViewModel.unconfirmedDefaultMoveDestinationIsLocked!!.value =
                                 false
                         },
-                        modifier = Modifier.weight(0.15f),
+                        modifier = Modifier.weight(
+                            maxOf(
+                                isDestinationSetDependentBoxWeight,
+                                Epsilon
+                            )
+                        ),
                         enabled = isDestinationSet
                     ) {
                         Icon(
@@ -223,38 +271,11 @@ private fun DefaultMoveDestinationDialog(
                             tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else disabledColor()
                         )
                     }
-                    // Lock button
-                    IconButton(
-                        onClick = {
-                            mainScreenViewModel.unconfirmedDefaultMoveDestinationIsLocked!!.value =
-                                !mainScreenViewModel.unconfirmedDefaultMoveDestinationIsLocked!!.value
-                            showLockInfo = true
-                        },
-                        modifier = Modifier.weight(0.15f),
-                        enabled = isDestinationSet
-                    ) {
-                        AnimatedVisibility(visible = defaultMoveDestinationIsLocked) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_lock_closed_24),
-                                contentDescription = stringResource(R.string.unlock_default_move_destination),
-                                tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else disabledColor()
-                            )
-                        }
-                        AnimatedVisibility(visible = !defaultMoveDestinationIsLocked) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_lock_open_24),
-                                contentDescription = stringResource(R.string.lock_default_move_destination),
-                                tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else disabledColor()
-                            )
-                        }
-                    }
                 }
                 AnimatedVisibility(visible = showLockInfo) {
                     AppFontText(
-                        text = if (defaultMoveDestinationIsLocked)
-                            stringResource(R.string.default_move_destination_locked_info)
-                        else
-                            stringResource(R.string.default_move_destination_unlocked_info),
+                        text = if (defaultMoveDestinationIsLocked) stringResource(R.string.default_move_destination_locked_info)
+                        else stringResource(R.string.default_move_destination_unlocked_info),
                         color = disabledColor()
                     )
                     LaunchedEffect(key1 = Unit) {
@@ -265,8 +286,7 @@ private fun DefaultMoveDestinationDialog(
                     }
                 }
             }
-        }
-    )
+        })
 }
 
 //@Preview
