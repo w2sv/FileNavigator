@@ -241,7 +241,7 @@ private fun DefaultMoveDestinationDialog(
                         AnimatedContent(
                             targetState = defaultMoveDestinationIsLocked,
                             label = "",
-                            transitionSpec = { slideInHorizontally() + fadeIn() with slideOutHorizontally()+ fadeOut() }
+                            transitionSpec = { slideInHorizontally() + fadeIn() with slideOutHorizontally() + fadeOut() }
                         ) {
                             Icon(
                                 painter = painterResource(id = if (it) R.drawable.ic_lock_closed_24 else R.drawable.ic_lock_open_24),
@@ -267,15 +267,14 @@ private fun DefaultMoveDestinationDialog(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_delete_24),
-                            contentDescription = stringResource(R.string.delete_set_default_move_destination),
+                            contentDescription = stringResource(R.string.delete_default_move_destination),
                             tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else disabledColor()
                         )
                     }
                 }
                 AnimatedVisibility(visible = showLockInfo) {
                     AppFontText(
-                        text = if (defaultMoveDestinationIsLocked) stringResource(R.string.default_move_destination_locked_info)
-                        else stringResource(R.string.default_move_destination_unlocked_info),
+                        text = stringResource(if (defaultMoveDestinationIsLocked) R.string.default_move_destination_locked_info else R.string.default_move_destination_unlocked_info),
                         color = disabledColor()
                     )
                     LaunchedEffect(key1 = Unit) {
