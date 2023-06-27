@@ -1,10 +1,12 @@
 package com.w2sv.filenavigator.ui.components
 
-import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import androidx.annotation.StringRes
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,8 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.utils.toEasing
 
@@ -178,34 +179,41 @@ fun ThemeButton(
     onClick: () -> Unit,
     isSelected: () -> Boolean,
     modifier: Modifier = Modifier,
-    size: Dp = 38.dp
+    size: Dp = 40.dp
 ) {
     val radius = with(LocalDensity.current) { (size / 2).toPx() }
 
     val transition = updateTransition(targetState = isSelected(), label = "")
 
-    val rotation by transition.animateFloat(
+    val borderWidth by transition.animateFloat(
         transitionSpec = {
-            if (targetState)
+            if (targetState) {
                 tween(
-                    1000,
-                    easing = AccelerateDecelerateInterpolator().toEasing()
+                    durationMillis = DefaultAnimationDuration,
+                    easing = OvershootInterpolator().toEasing()
                 )
-            else
-                tween()
-        },
-        label = ""
+            } else {
+                tween(durationMillis = DefaultAnimationDuration)
+            }
+        }, label = ""
     ) { state ->
-        if (state) 540f else 0f
+        if (state) 3f else 0f
     }
 
-    val borderGradientBrush = Brush.sweepGradient(
-        listOf(
-            MaterialTheme.colorScheme.primary,
-            MaterialTheme.colorScheme.tertiary,
-            MaterialTheme.colorScheme.primary
-        )
-    )
+    val borderColor by transition.animateColor(
+        transitionSpec = {
+            if (targetState) {
+                tween(
+                    durationMillis = DefaultAnimationDuration,
+                    easing = OvershootInterpolator().toEasing()
+                )
+            } else {
+                tween(durationMillis = DefaultAnimationDuration)
+            }
+        }, label = ""
+    ) { state ->
+        if (state) MaterialTheme.colorScheme.primary else Color.Transparent
+    }
 
     Button(
         modifier = modifier
@@ -220,15 +228,11 @@ fun ThemeButton(
                         radius = radius
                     )
                 }
-                if (isSelected()) {
-                    rotate(rotation) {
-                        drawCircle(borderGradientBrush, style = Stroke(9f), radius = radius)
-                    }
-                }
             },
         colors = ButtonDefaults.buttonColors(containerColor = buttonColor.containerColor),
         onClick = onClick,
         shape = CircleShape,
+        border = BorderStroke(borderWidth.dp, borderColor)
     ) {}
 }
 
