@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import android.annotation.SuppressLint
-import android.view.animation.AnticipateOvershootInterpolator
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -51,7 +50,6 @@ import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
-import com.w2sv.filenavigator.utils.toEasing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -147,21 +145,20 @@ internal fun ScaffoldContent(
                     transitionSpec = {
                         slideInHorizontally(
                             animationSpec = tween(
-                                durationMillis = DefaultAnimationDuration,
-                                easing = AnticipateOvershootInterpolator().toEasing()
+                                durationMillis = DefaultAnimationDuration
                             ),
                             initialOffsetX = { -it }
                         ) + scaleIn(
                             animationSpec = tween(
                                 durationMillis = DefaultAnimationDuration
                             )
-                        ) with slideOutHorizontally(
-                            targetOffsetX = { it },
-                            animationSpec = tween(
-                                durationMillis = DefaultAnimationDuration,
-                                easing = AnticipateOvershootInterpolator().toEasing()
-                            )
-                        ) + scaleOut(
+                        ) with
+                                slideOutHorizontally(
+                                    targetOffsetX = { it },
+                                    animationSpec = tween(
+                                        durationMillis = DefaultAnimationDuration
+                                    )
+                                ) + scaleOut(
                             animationSpec = tween(
                                 durationMillis = DefaultAnimationDuration
                             )
