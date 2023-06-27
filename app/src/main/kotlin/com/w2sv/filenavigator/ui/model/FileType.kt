@@ -19,7 +19,8 @@ sealed class FileType(
     @DrawableRes val iconRes: Int,
     val color: Color,
     val simpleStorageType: MediaType,
-    sourceKinds: List<SourceKind>
+    sourceKinds: List<SourceKind>,
+    val index: Int
 ) : Parcelable {
 
     val identifier: String = this::class.java.simpleName
@@ -41,6 +42,7 @@ sealed class FileType(
         color: Color,
         simpleStorageType: MediaType,
         sourceKinds: List<SourceKind>,
+        index: Int,
         val fileExtensions: Set<String>? = null,
         val ignoreFileExtensionsOf: Media? = null
     ) : FileType(
@@ -49,6 +51,7 @@ sealed class FileType(
         color = color,
         simpleStorageType = simpleStorageType,
         sourceKinds = sourceKinds,
+        index = index
     ) {
 
         override fun matchesFileExtension(extension: String): Boolean =
@@ -75,6 +78,7 @@ sealed class FileType(
                 SourceKind.Download,
                 SourceKind.OtherApp
             ),
+            index = 0,
             ignoreFileExtensionsOf = GIF
         )
 
@@ -89,6 +93,7 @@ sealed class FileType(
                 SourceKind.Download,
                 SourceKind.OtherApp
             ),
+            index = 1,
             fileExtensions = setOf("gif", "GIF", "giff")
         )
 
@@ -99,6 +104,7 @@ sealed class FileType(
             iconRes = R.drawable.ic_video_file_24,
             color = Color(0xFFFFCB77),
             simpleStorageType = MediaType.VIDEO,
+            index = 2,
             sourceKinds = listOf(
                 SourceKind.Camera,
                 SourceKind.Download,
@@ -113,6 +119,7 @@ sealed class FileType(
             iconRes = R.drawable.ic_audio_file_24,
             color = Color(0xFFF26430),
             simpleStorageType = MediaType.AUDIO,
+            index = 3,
             sourceKinds = listOf(
                 SourceKind.Download,
                 SourceKind.OtherApp
@@ -128,12 +135,14 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
         color: Color,
+        index: Int,
         val fileExtensions: Set<String>
     ) : FileType(
         titleRes = labelRes,
         iconRes = iconRes,
         color = color,
         simpleStorageType = MediaType.DOWNLOADS,
+        index = index,
         sourceKinds = listOf(
             SourceKind.Download
         )
@@ -147,6 +156,7 @@ sealed class FileType(
             R.string.pdf,
             R.drawable.ic_pdf_24,
             Color(0xFFD6BA73),
+            index = 4,
             setOf("pdf")
         )
 
@@ -155,6 +165,7 @@ sealed class FileType(
             R.string.text,
             R.drawable.ic_text_file_24,
             Color(0xFFF00699),
+            index = 5,
             setOf(
                 "txt",
                 "text",
@@ -179,6 +190,7 @@ sealed class FileType(
             R.string.archive,
             R.drawable.ic_folder_zip_24,
             Color(0xFF826251),
+            index = 6,
             setOf(
                 "zip",
                 "rar",
@@ -209,6 +221,7 @@ sealed class FileType(
             R.string.apk,
             R.drawable.ic_apk_file_24,
             Color(0xFFFCB07E),
+            index = 7,
             setOf("apk")
         )
 

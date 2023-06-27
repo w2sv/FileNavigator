@@ -13,15 +13,17 @@ import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.androidutils.ui.PreferencesDataStoreBackedUnconfirmedStatesViewModel
 import com.w2sv.androidutils.ui.UnconfirmedStateFlow
 import com.w2sv.androidutils.ui.UnconfirmedStatesComposition
-import com.w2sv.filenavigator.ui.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
 import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.navigator.service.FileNavigatorService
+import com.w2sv.filenavigator.ui.model.FileType
 import com.w2sv.filenavigator.utils.StorageAccessStatus
+import com.w2sv.filenavigator.utils.getMutableStateList
 import com.w2sv.filenavigator.utils.getMutableStateMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,7 +52,7 @@ class MainScreenViewModel @Inject constructor(
     val inAppTheme = makeUnconfirmedEnumValuedStateFlow(
         dataStoreRepository.inAppTheme,
         PreferencesKey.IN_APP_THEME
-    )
+    ) {}
 
     val unconfirmedExtendedSettings =
         makeUnconfirmedStatesComposition(listOf(disableListenerOnLowBattery, inAppTheme))
@@ -108,26 +110,36 @@ class MainScreenViewModel @Inject constructor(
     }
 
     private fun setFileTypeStatuses(fileTypes: Iterable<FileType>, newStatus: FileType.Status) {
-        coroutineScope.launch {
-            dataStoreRepository.saveEnumValuedMap(
-                fileTypes.map { it.status }.associateWith { newStatus }
-            )
-            fileTypes.forEach {
-                unconfirmedFileTypeStatus[it.status] = newStatus
-            }
+        fileTypes.forEach {
+            unconfirmedFileTypeStatus[it.status] = newStatus
         }
+        launchUnconfirmedFileTypeStatusSync()
     }
 
     // ==============
     // Navigator Configuration
     // ==============
 
-    val unconfirmedFileTypeStatus by lazy {
+    val sortedFileTypes = FileType.all
+        .getMutableStateList()
+
+    val unconfirmedFileTypeStatus =
         makeUnconfirmedEnumValuedStateMap(
             appliedFlowMap = dataStoreRepository.fileTypeStatus,
             makeMutableMap = { it.getSynchronousMap().getMutableStateMap() }
         )
-    }
+            .also {
+                sortedFileTypes.sortByIsEnabledAndOriginalOrder(it)
+            }
+
+    fun launchUnconfirmedFileTypeStatusSync(): Job =
+        coroutineScope.launch {
+            unconfirmedFileTypeStatus.launchSync()
+            sortedFileTypes.sortByIsEnabledAndOriginalOrder(unconfirmedFileTypeStatus)
+//            fileTypeStatusHasChanged.emit(true)
+        }
+
+//    val fileTypeStatusHasChanged = MutableStateFlow(false)
 
     val unconfirmedFileSourceEnablement by lazy {
         makeUnconfirmedStateMap(
@@ -209,5 +221,17 @@ class MainScreenViewModel @Inject constructor(
     private val backPressHandler = BackPressHandler(
         viewModelScope,
         2500L
+    )
+}
+
+private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(fileTypeStatuses: Map<FileType.Status.StoreEntry, FileType.Status>) {
+    sortWith(
+        compareByDescending<FileType> {
+            fileTypeStatuses.getValue(
+                it.status
+            )
+                .isEnabled
+        }
+            .thenBy { it.index }
     )
 }

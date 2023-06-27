@@ -166,14 +166,16 @@ internal fun ScaffoldContent(
                     },
                     label = ""
                 ) {
-                    if (it)
+                    if (it) {
                         NavigatorConfigurationButtons()
-                    else
+                    }
+                    else {
                         StartNavigatorButton(
                             modifier = Modifier
                                 .width(220.dp)
                                 .height(70.dp)
                         )
+                    }
                 }
             }
         }

@@ -13,6 +13,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +27,7 @@ import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun NavigatorConfigurationButtons(
@@ -54,8 +56,7 @@ internal fun NavigatorConfigurationButtons(
             R.string.confirm_changes,
             onClick = {
                 with(mainScreenViewModel) {
-                    unconfirmedNavigatorConfiguration
-                        .launchSync()
+                    launchUnconfirmedFileTypeStatusSync()
                         .invokeOnCompletion {
                             // If FileListenerService is already running, relaunch with new file observer configuration
                             if (isNavigatorRunning.value) {

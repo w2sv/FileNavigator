@@ -11,6 +11,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,13 +51,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.androidutils.coroutines.launchDelayed
-import com.w2sv.filenavigator.ui.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppCheckbox
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
+import com.w2sv.filenavigator.ui.model.FileType
+import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.utils.allFalseAfterEnteringValue
@@ -65,9 +67,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import slimber.log.i
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FileTypeSelectionColumn(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     Column(
         modifier = modifier
@@ -87,11 +91,21 @@ fun FileTypeSelectionColumn(
         }
 
         val scope = rememberCoroutineScope()
+        val listState = rememberLazyListState()
+
+//        LaunchedEffect(Unit) {
+//            mainScreenViewModel.fileTypeStatusHasChanged.collect {
+//                if (it) {
+//                    listState.animateScrollToItem(0)
+//                }
+//                mainScreenViewModel.fileTypeStatusHasChanged.emit(false)
+//            }
+//        }
 
         LazyColumn(
-            state = rememberLazyListState()
+            state = listState
         ) {
-            items(FileType.all) { fileType ->
+            items(mainScreenViewModel.sortedFileTypes, key = { it }) { fileType ->
                 i { "Laying out ${fileType.identifier}" }
 
                 FileTypeAccordion(
@@ -100,6 +114,9 @@ fun FileTypeSelectionColumn(
                     nRunningAnimations = nRunningAnimations,
                     modifier = Modifier
                         .padding(vertical = 4.dp)
+                        .animateItemPlacement(
+                            tween(durationMillis = DefaultAnimationDuration)
+                        )
                 )
                 if (animatedFileTypes.add(fileType)) {
                     nRunningAnimations += 1
