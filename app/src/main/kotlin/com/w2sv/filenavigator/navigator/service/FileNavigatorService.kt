@@ -19,7 +19,6 @@ import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.UniqueIds
 import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.androidutils.services.UnboundService
-import com.w2sv.filenavigator.ui.model.FileType
 import com.w2sv.filenavigator.MainActivity
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
@@ -30,8 +29,8 @@ import com.w2sv.filenavigator.navigator.notifications.createNotificationChannelA
 import com.w2sv.filenavigator.navigator.service.actions.FileDeletionBroadcastReceiver
 import com.w2sv.filenavigator.navigator.service.actions.FileMoveActivity
 import com.w2sv.filenavigator.navigator.service.actions.MoveToDefaultDestinationBroadcastReceiver
+import com.w2sv.filenavigator.ui.model.FileType
 import com.w2sv.filenavigator.utils.sendLocalBroadcast
-import com.w2sv.kotlinutils.extensions.nonZeroOrdinal
 import dagger.hilt.android.AndroidEntryPoint
 import slimber.log.i
 import javax.inject.Inject
@@ -42,11 +41,18 @@ class FileNavigatorService : UnboundService() {
     @Inject
     lateinit var dataStoreRepository: PreferencesDataStoreRepository
 
-    private val newFileDetectedNotificationIds =
-        UniqueIds(NotificationChannelProperties.FileNavigator.NewFileDetected.idGroupSeed)
+    private val newFileDetectedNotificationIds = UniqueIds(1)
     private val newFileDetectedActionsPendingIntentRequestCodes = UniqueIds(1)
 
     private lateinit var fileObservers: List<FileObserver>
+
+    private val notificationChannel by lazy {
+        object : NotificationChannelProperties {
+            override val id: String = "FileNavigator"
+            override val name: String = getString(R.string.file_navigator_is_running)
+            override val idGroupSeed: Int = -1
+        }
+    }
 
     private fun setAndRegisterFileObservers(): List<FileObserver> {
         val fileTypeStatus = dataStoreRepository.fileTypeStatus.getSynchronousMap()
@@ -126,12 +132,12 @@ class FileNavigatorService : UnboundService() {
 
     private fun start() {
         startForeground(
-            NotificationChannelProperties.FileNavigator.StartedForegroundService.nonZeroOrdinal,
+            1,
             createNotificationChannelAndGetNotificationBuilder(
-                NotificationChannelProperties.FileNavigator.StartedForegroundService
+                notificationChannel
             )
                 .setSmallIcon(R.drawable.ic_file_move_24)
-                .setContentTitle(getString(NotificationChannelProperties.FileNavigator.StartedForegroundService.titleRes))
+                .setContentTitle(getString(R.string.file_navigator_is_running))
                 .setContentText(getString(R.string.waiting_for_new_files_to_be_navigated))
                 // add configure action
                 .addAction(
@@ -180,7 +186,8 @@ class FileNavigatorService : UnboundService() {
 
         override fun deliverSelfNotifications(): Boolean = false
 
-        private val mediaStoreFileDataBlacklistCache = EvictingQueue.create<MoveFile.MediaStoreData>(5)
+        private val mediaStoreFileDataBlacklistCache =
+            EvictingQueue.create<MoveFile.MediaStoreData>(5)
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             super.onChange(selfChange, uri)
@@ -227,11 +234,11 @@ class FileNavigatorService : UnboundService() {
             showNotification(
                 notificationParameters.notificationId,
                 createNotificationChannelAndGetNotificationBuilder(
-                    NotificationChannelProperties.FileNavigator.NewFileDetected
+                    moveFile.type.notificationChannel
                 )
                     .setContentTitle(
                         getString(
-                            NotificationChannelProperties.FileNavigator.NewFileDetected.titleRes,
+                            R.string.new_file_detected_template,
                             getNotificationTitleFormatArg(moveFile)
                         )
                     )

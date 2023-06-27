@@ -11,12 +11,12 @@ fun Context.createNotificationChannelAndGetNotificationBuilder(
 ): NotificationCompat.Builder {
     getNotificationManager().createNotificationChannel(
         NotificationChannel(
+            channel.id,
             channel.name,
-            getString(channel.titleRes),
             NotificationManager.IMPORTANCE_DEFAULT
         )
     )
-    return notificationBuilder(channel.name)
+    return notificationBuilder(channel.id)
 }
 
 private fun Context.notificationBuilder(

@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.navigator.notifications.NotificationChannelProperties
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -24,6 +25,12 @@ sealed class FileType(
 ) : Parcelable {
 
     val identifier: String = this::class.java.simpleName
+
+    val notificationChannel = object : NotificationChannelProperties {
+        override val id: String by ::identifier
+        override val name: String by ::identifier
+        override val idGroupSeed: Int = -1
+    }
 
     val status by lazy {
         Status.StoreEntry(this)
@@ -51,7 +58,7 @@ sealed class FileType(
         color = color,
         simpleStorageType = simpleStorageType,
         sourceKinds = sourceKinds,
-        index = index
+        index = index,
     ) {
 
         override fun matchesFileExtension(extension: String): Boolean =
