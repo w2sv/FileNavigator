@@ -1,5 +1,4 @@
 [versions]
-kotlinReflect = "1.8.21"
 minSdk = '29'  # min for MediaStore.Downloads.EXTERNAL_CONTENT_URI
 compileSdk = '33'
 
