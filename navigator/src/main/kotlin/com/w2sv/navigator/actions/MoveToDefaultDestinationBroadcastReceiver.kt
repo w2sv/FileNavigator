@@ -1,4 +1,4 @@
-package com.w2sv.navigator.service.actions
+package com.w2sv.navigator.actions
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -13,7 +13,7 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.navigator.MoveFile
 import com.w2sv.navigator.R
-import com.w2sv.navigator.service.FileNavigator
+import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

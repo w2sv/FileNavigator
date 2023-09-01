@@ -1,4 +1,4 @@
-package com.w2sv.navigator.service
+package com.w2sv.navigator
 
 import android.app.PendingIntent
 import android.content.ComponentName
@@ -26,21 +26,28 @@ import com.w2sv.common.notifications.createNotificationChannelAndGetNotification
 import com.w2sv.common.utils.sendLocalBroadcast
 import com.w2sv.data.model.FileType
 import com.w2sv.data.storage.repositories.FileTypeRepository
-import com.w2sv.navigator.MoveFile
-import com.w2sv.navigator.R
-import com.w2sv.navigator.service.actions.FileDeletionBroadcastReceiver
-import com.w2sv.navigator.service.actions.FileMoveActivity
-import com.w2sv.navigator.service.actions.MoveToDefaultDestinationBroadcastReceiver
+import com.w2sv.navigator.actions.FileDeletionBroadcastReceiver
+import com.w2sv.navigator.actions.FileMoveActivity
+import com.w2sv.navigator.actions.MoveToDefaultDestinationBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @AndroidEntryPoint
 class FileNavigator : UnboundService() {
 
     @Inject
     lateinit var fileTypeRepository: FileTypeRepository
+
+    @Inject
+    lateinit var statusChanged: StatusChanged
 
     private val newFileDetectedNotificationIds = UniqueIds(1)
     private val newFileDetectedActionsPendingIntentRequestCodes = UniqueIds(1)
@@ -172,13 +179,17 @@ class FileNavigator : UnboundService() {
 
         fileObservers = setAndRegisterFileObservers()
 
-        sendLocalBroadcast(ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED)
+        CoroutineScope(Dispatchers.Default).launch {
+            statusChanged._isRunning.emit(true)
+        }
     }
 
     private fun stop() {
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        sendLocalBroadcast(ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED)
+        CoroutineScope(Dispatchers.Default).launch {
+            statusChanged._isRunning.emit(false)
+        }
     }
 
     private abstract inner class FileObserver(val contentObserverUri: Uri) :
@@ -464,6 +475,12 @@ class FileNavigator : UnboundService() {
         }
     }
 
+    @Singleton
+    class StatusChanged @Inject constructor() {
+        val isRunning get() = _isRunning.asSharedFlow()
+        internal val _isRunning: MutableSharedFlow<Boolean> = MutableSharedFlow()
+    }
+
     @Parcelize
     data class NotificationParameters(
         val notificationId: Int,
@@ -533,10 +550,6 @@ class FileNavigator : UnboundService() {
         // Actions
         // ===========
 
-        const val ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED =
-            "com.w2sv.filenavigator.NOTIFY_FILE_LISTENER_SERVICE_STARTED"
-        const val ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED =
-            "com.w2sv.filenavigator.NOTIFY_FILE_LISTENER_SERVICE_STOPPED"
         const val ACTION_REREGISTER_MEDIA_OBSERVERS =
             "com.w2sv.filenavigator.REREGISTER_MEDIA_OBSERVERS"
         const val ACTION_CLEANUP_IDS = "com.w2sv.filenavigator.CLEANUP_IDS"

@@ -1,4 +1,4 @@
-package com.w2sv.navigator.service.actions
+package com.w2sv.navigator.actions
 
 import android.content.Context
 import android.content.Intent
@@ -19,7 +19,7 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.MoveFile
 import com.w2sv.navigator.R
-import com.w2sv.navigator.service.FileNavigator
+import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -46,7 +46,7 @@ class FileMoveActivity : ComponentActivity() {
         // Intent Extras
         // ===============
 
-        val moveFile: MoveFile =
+        private val moveFile: MoveFile =
             savedStateHandle[FileNavigator.EXTRA_MOVE_FILE]!!
 
         val notificationParameters: FileNavigator.NotificationParameters =

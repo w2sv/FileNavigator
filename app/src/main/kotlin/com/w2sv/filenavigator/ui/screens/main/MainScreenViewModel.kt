@@ -21,9 +21,9 @@ import com.w2sv.data.model.StorageAccessStatus
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.data.storage.repositories.PreferencesRepository
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.utils.getMutableStateList
 import com.w2sv.filenavigator.ui.utils.getMutableStateMap
+import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
@@ -42,7 +42,7 @@ class MainScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     val isNavigatorRunning: MutableStateFlow<Boolean> =
-        MutableStateFlow(context.isServiceRunning<FileNavigatorService>())
+        MutableStateFlow(context.isServiceRunning<FileNavigator>())
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState()
 

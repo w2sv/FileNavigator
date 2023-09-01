@@ -1,9 +1,6 @@
 package com.w2sv.filenavigator
 
 import android.animation.ObjectAnimator
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnticipateInterpolator
@@ -20,46 +17,24 @@ import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
-import com.w2sv.androidutils.lifecycle.SelfManagingLocalBroadcastReceiver
 import com.w2sv.data.model.Theme
-import com.w2sv.navigator.PowerSaveModeChangedReceiver
 import com.w2sv.filenavigator.ui.screens.main.MainScreen
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.navigator.service.FileNavigator
+import com.w2sv.navigator.FileNavigator
+import com.w2sv.navigator.PowerSaveModeChangedReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import slimber.log.i
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    @Inject
+    lateinit var fileNavigatorStatusChanged: FileNavigator.StatusChanged
+
     private val viewModel by viewModels<MainScreenViewModel>()
-
-    private class FileListenerStatusChangedReceiver(
-        context: Context,
-        callback: (Context?, Intent?) -> Unit
-    ) : SelfManagingLocalBroadcastReceiver.Impl(
-        context,
-        IntentFilter()
-            .apply {
-                addAction(FileNavigator.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED)
-                addAction(FileNavigator.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED)
-            },
-        callback
-    )
-
-    private val fileListenerStatusChangedReceiver by lazy {
-        FileListenerStatusChangedReceiver(this) { _, intent ->
-            intent ?: return@FileListenerStatusChangedReceiver
-
-            viewModel.isNavigatorRunning.value = when (intent.action) {
-                FileNavigator.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED -> true
-                FileNavigator.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED -> false
-                else -> throw Error()
-            }
-        }
-    }
 
     private val defaultDestinationSelectionLauncher =
         registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { treeUri ->
@@ -79,8 +54,6 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        lifecycle.addObserver(fileListenerStatusChangedReceiver)
-
         lifecycleScope.collectFlows()
 
         setContent {
@@ -97,6 +70,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun LifecycleCoroutineScope.collectFlows() {
+        launch {
+            fileNavigatorStatusChanged.isRunning.collect {
+                viewModel.isNavigatorRunning.value = it
+            }
+        }
+
         launch {
             viewModel.exitApplication.collect {
                 finishAffinity()

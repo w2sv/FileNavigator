@@ -22,7 +22,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application>
-        <service android:name="com.w2sv.navigator.service.FileNavigator" />
+        <service android:name="com.w2sv.navigator.FileNavigator" />
 
         <receiver android:name="com.w2sv.navigator.PowerSaveModeChangedReceiver"
             android:exported="true">
@@ -31,10 +31,10 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.w2sv.navigator.service.actions.FileDeletionBroadcastReceiver" />
-        <receiver android:name="com.w2sv.navigator.service.actions.MoveToDefaultDestinationBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.actions.FileDeletionBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.actions.MoveToDefaultDestinationBroadcastReceiver" />
 
-        <activity android:name="com.w2sv.navigator.service.actions.FileMoveActivity" />
+        <activity android:name="com.w2sv.navigator.actions.FileMoveActivity" />
     </application>
 
 </manifest>

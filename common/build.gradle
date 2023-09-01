@@ -14,7 +14,5 @@ dependencies {
     implementation libs.androidutils
     implementation libs.slimber
 
-    implementation libs.androidx.localbroadcastmanager
-
     implementation libs.androidx.core
 }

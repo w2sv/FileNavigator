@@ -7,7 +7,7 @@ import android.content.IntentFilter
 import android.os.PowerManager
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.common.utils.powerSaveModeActivated
-import com.w2sv.navigator.service.FileNavigator
+import com.w2sv.navigator.FileNavigator
 import slimber.log.i
 
 class PowerSaveModeChangedReceiver : BroadcastReceiver() {
