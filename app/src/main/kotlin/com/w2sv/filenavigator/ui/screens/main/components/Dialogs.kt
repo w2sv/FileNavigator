@@ -1,10 +1,12 @@
-package com.w2sv.filenavigator.ui.screens.main
+package com.w2sv.filenavigator.ui.screens.main.components
 
+import android.content.Context
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -15,6 +17,9 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
+import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun ManageExternalStoragePermissionDialog(
@@ -70,9 +75,10 @@ internal fun PostNotificationsPermissionDialog(
 internal fun StartNavigatorOnLowBatteryConfirmationDialog(
     closeDialog: () -> Unit,
     modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope(),
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    val context = LocalContext.current
 
     AlertDialog(
         modifier = modifier,
@@ -82,8 +88,8 @@ internal fun StartNavigatorOnLowBatteryConfirmationDialog(
                 onClick = {
                     FileNavigatorService.start(context)
                     with(mainScreenViewModel) {
-                        disableListenerOnLowBattery.value = false
-                        disableListenerOnLowBattery.launchSync()
+                        unconfirmedDisableListenerOnLowBattery.value = false
+                        scope.launch { unconfirmedDisableListenerOnLowBattery.sync() }
                     }
                     closeDialog()
                 }

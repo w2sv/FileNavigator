@@ -21,7 +21,7 @@ import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.filenavigator.MainActivity
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
+import com.w2sv.filenavigator.data.FileTypeRepository
 import com.w2sv.filenavigator.navigator.MoveFile
 import com.w2sv.filenavigator.navigator.notifications.NotificationChannelProperties
 import com.w2sv.filenavigator.navigator.notifications.NotificationParameters
@@ -29,7 +29,7 @@ import com.w2sv.filenavigator.navigator.notifications.createNotificationChannelA
 import com.w2sv.filenavigator.navigator.service.actions.FileDeletionBroadcastReceiver
 import com.w2sv.filenavigator.navigator.service.actions.FileMoveActivity
 import com.w2sv.filenavigator.navigator.service.actions.MoveToDefaultDestinationBroadcastReceiver
-import com.w2sv.filenavigator.ui.model.FileType
+import com.w2sv.filenavigator.domain.model.FileType
 import com.w2sv.filenavigator.utils.sendLocalBroadcast
 import dagger.hilt.android.AndroidEntryPoint
 import slimber.log.i
@@ -39,7 +39,7 @@ import javax.inject.Inject
 class FileNavigatorService : UnboundService() {
 
     @Inject
-    lateinit var dataStoreRepository: PreferencesDataStoreRepository
+    lateinit var fileTypeRepository: FileTypeRepository
 
     private val newFileDetectedNotificationIds = UniqueIds(1)
     private val newFileDetectedActionsPendingIntentRequestCodes = UniqueIds(1)
@@ -55,9 +55,9 @@ class FileNavigatorService : UnboundService() {
     }
 
     private fun setAndRegisterFileObservers(): List<FileObserver> {
-        val fileTypeStatus = dataStoreRepository.fileTypeStatus.getSynchronousMap()
+        val fileTypeStatus = fileTypeRepository.fileTypeStatus.getSynchronousMap()
         val accountForFileTypeOrigin =
-            dataStoreRepository.mediaFileSourceEnabled.getSynchronousMap()
+            fileTypeRepository.mediaFileSourceEnabled.getSynchronousMap()
 
         val mediaFileObservers = FileType.Media.all
             .filter { fileTypeStatus.getValue(it.status) == FileType.Status.Enabled }
@@ -269,7 +269,7 @@ class FileNavigatorService : UnboundService() {
                                     .setAction(Intent.ACTION_VIEW)
                                     .setDataAndType(
                                         moveFile.uri,
-                                        moveFile.type.simpleStorageType.mimeType
+                                        moveFile.type.mediaType.mimeType
                                     ),
                                 PendingIntent.FLAG_IMMUTABLE
                             )
@@ -301,7 +301,7 @@ class FileNavigatorService : UnboundService() {
                     // add move-to-default-destination action
                     .apply {
                         val defaultMoveDestination =
-                            dataStoreRepository
+                            fileTypeRepository
                                 .getFileSourceDefaultDestinationFlow(moveFile.source)
                                 .getValueSynchronously()
 
@@ -363,7 +363,7 @@ class FileNavigatorService : UnboundService() {
         private val fileType: FileType.Media,
         private val sourceKinds: Set<FileType.SourceKind>
     ) :
-        FileObserver(fileType.simpleStorageType.readUri!!) {
+        FileObserver(fileType.mediaType.readUri!!) {
 
         init {
             i { "Initialized ${fileType::class.java.simpleName} MediaTypeObserver with originKinds: ${sourceKinds.map { it.name }}" }

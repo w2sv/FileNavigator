@@ -9,7 +9,7 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
-import com.w2sv.filenavigator.ui.model.FileType
+import com.w2sv.filenavigator.domain.model.FileType
 import com.w2sv.filenavigator.utils.parseBoolean
 import com.w2sv.filenavigator.utils.queryNonNullMediaStoreData
 import com.w2sv.kotlinutils.dateFromUnixTimestamp
@@ -40,7 +40,7 @@ data class MoveFile(
     fun getMediaFile(context: Context): MediaFile? =
         MediaStoreCompat.fromMediaId(
             context,
-            type.simpleStorageType,
+            type.mediaType,
             data.id
         )
 

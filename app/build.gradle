@@ -3,8 +3,8 @@ plugins {
     alias libs.plugins.play
     alias libs.plugins.kotlin
     alias libs.plugins.hilt
+    alias libs.plugins.ksp
     id 'kotlin-parcelize'
-    id 'kotlin-kapt'
 }
 
 android {
@@ -111,7 +111,7 @@ dependencies {
 
     // hilt
     implementation libs.google.hilt
-    kapt libs.google.hilt.kapt
+    ksp libs.google.hilt.compiler
 
     // other
     implementation libs.slimber

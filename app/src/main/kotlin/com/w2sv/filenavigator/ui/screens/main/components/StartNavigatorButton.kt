@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main
+package com.w2sv.filenavigator.ui.screens.main.components
 
 import android.Manifest
 import android.os.Build
@@ -6,11 +6,10 @@ import android.view.animation.AnticipateOvershootInterpolator
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +18,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,12 +39,12 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.bounceOnClickAnimation
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
+import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.ui.theme.md_negative
@@ -53,6 +53,7 @@ import com.w2sv.filenavigator.utils.powerSaveModeActivated
 import com.w2sv.filenavigator.utils.toEasing
 import kotlinx.coroutines.launch
 
+@Immutable
 private data class NavigatorButtonProperties(
     val color: Color,
     @DrawableRes val iconRes: Int,
@@ -60,10 +61,7 @@ private data class NavigatorButtonProperties(
     val onClick: () -> Unit
 )
 
-@OptIn(
-    ExperimentalPermissionsApi::class,
-    ExperimentalAnimationApi::class
-)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun StartNavigatorButton(
     modifier: Modifier = Modifier,
@@ -82,7 +80,7 @@ internal fun StartNavigatorButton(
         }
 
     val startNavigatorOrShowConfirmationDialog = {
-        if (mainScreenViewModel.disableListenerOnLowBattery.value && context.powerSaveModeActivated == true) {
+        if (mainScreenViewModel.unconfirmedDisableListenerOnLowBattery.value && context.powerSaveModeActivated == true) {
             showConfirmationDialog = true
         } else {
             FileNavigatorService.start(context)
@@ -107,12 +105,7 @@ internal fun StartNavigatorButton(
                 PostNotificationsPermissionDialog(
                     onDismissRequest = {
                         value = false
-                        scope.launch {
-                            mainScreenViewModel.dataStoreRepository.save(
-                                PreferencesKey.SHOWED_POST_NOTIFICATIONS_PERMISSION_RATIONAL,
-                                true
-                            )
-                        }
+                        mainScreenViewModel.saveShowedPostNotificationsPermissionsRational()
                         permissionState.launchMultiplePermissionRequest()
                     }
                 )
@@ -134,7 +127,7 @@ internal fun StartNavigatorButton(
             when {
                 !permissionState.allPermissionsGranted -> {
                     when {
-                        !mainScreenViewModel.dataStoreRepository.showedPostNotificationsPermissionsRational.getValueSynchronously() -> {
+                        !mainScreenViewModel.showedPostNotificationsPermissionsRational.getValueSynchronously() -> {
                             showPermissionsRational = true
                         }
 
@@ -178,7 +171,7 @@ internal fun StartNavigatorButton(
                         durationMillis = DefaultAnimationDuration,
                         easing = AnticipateOvershootInterpolator().toEasing()
                     ),
-                    initialOffsetY = { it }) with
+                    initialOffsetY = { it }) togetherWith
                         slideOutVertically(
                             targetOffsetY = { -it },
                             animationSpec = tween(

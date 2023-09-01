@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme(
-                useDarkTheme = when (viewModel.dataStoreRepository.inAppTheme.collectAsState(initial = Theme.DeviceDefault).value) {
+                useDarkTheme = when (viewModel.inAppTheme.collectAsState(initial = Theme.DeviceDefault).value) {
                     Theme.Dark -> true
                     Theme.Light -> false
                     Theme.DeviceDefault -> isSystemInDarkTheme()
@@ -112,16 +112,17 @@ class MainActivity : ComponentActivity() {
         }
 
         launch {
-            viewModel.dataStoreRepository.disableListenerOnLowBattery.collect {
+            viewModel.disableListenerOnLowBattery.collect {
                 i { "Collected disableListenerOnLowBattery=$it" }
 
+                val intent = PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity)
                 when (it) {
                     true -> {
-                        startService(PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity))
+                        startService(intent)
                     }
 
                     false -> {
-                        stopService(PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity))
+                        stopService(intent)
                     }
                 }
             }

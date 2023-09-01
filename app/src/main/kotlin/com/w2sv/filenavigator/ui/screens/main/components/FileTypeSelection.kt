@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main
+package com.w2sv.filenavigator.ui.screens.main.components
 
 import android.content.Context
 import android.os.Build
@@ -57,7 +57,8 @@ import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
-import com.w2sv.filenavigator.ui.model.FileType
+import com.w2sv.filenavigator.domain.model.FileType
+import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.theme.disabledColor

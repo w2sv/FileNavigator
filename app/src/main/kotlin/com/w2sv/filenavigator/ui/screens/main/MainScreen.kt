@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.main
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -11,7 +12,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,18 +47,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.w2sv.filenavigator.datastore.PreferencesKey
 import com.w2sv.filenavigator.ui.components.AppSnackbar
+import com.w2sv.filenavigator.ui.screens.main.components.AppTopBar
+import com.w2sv.filenavigator.ui.screens.main.components.FileTypeSelectionColumn
+import com.w2sv.filenavigator.ui.screens.main.components.ManageExternalStoragePermissionDialog
+import com.w2sv.filenavigator.ui.screens.main.components.NavigationDrawer
+import com.w2sv.filenavigator.ui.screens.main.components.NavigatorConfigurationButtons
+import com.w2sv.filenavigator.ui.screens.main.components.StartNavigatorButton
+import com.w2sv.filenavigator.ui.screens.main.components.offsetFraction
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainScreen(mainScreenViewModel: MainScreenViewModel = viewModel()) {
-    val context = LocalContext.current
-
-    val scope = rememberCoroutineScope()
+fun MainScreen(
+    context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    mainScreenViewModel: MainScreenViewModel = viewModel()
+) {
     val springSpec = FloatSpringSpec(Spring.DampingRatioMediumBouncy)
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -143,7 +152,7 @@ internal fun ScaffoldContent(
                     contentAlignment = Alignment.Center,
                     targetState = mainScreenViewModel.unconfirmedNavigatorConfiguration.statesDissimilar.collectAsState().value,
                     transitionSpec = {
-                        slideInHorizontally(
+                        (slideInHorizontally(
                             animationSpec = tween(
                                 durationMillis = DefaultAnimationDuration
                             ),
@@ -152,15 +161,16 @@ internal fun ScaffoldContent(
                             animationSpec = tween(
                                 durationMillis = DefaultAnimationDuration
                             )
-                        ) with
-                                slideOutHorizontally(
-                                    targetOffsetX = { it },
-                                    animationSpec = tween(
-                                        durationMillis = DefaultAnimationDuration
-                                    )
-                                ) + scaleOut(
-                            animationSpec = tween(
-                                durationMillis = DefaultAnimationDuration
+                        )).togetherWith(
+                            slideOutHorizontally(
+                                targetOffsetX = { it },
+                                animationSpec = tween(
+                                    durationMillis = DefaultAnimationDuration
+                                )
+                            ) + scaleOut(
+                                animationSpec = tween(
+                                    durationMillis = DefaultAnimationDuration
+                                )
                             )
                         )
                     },
@@ -168,8 +178,7 @@ internal fun ScaffoldContent(
                 ) {
                     if (it) {
                         NavigatorConfigurationButtons()
-                    }
-                    else {
+                    } else {
                         StartNavigatorButton(
                             modifier = Modifier
                                 .width(220.dp)
@@ -184,23 +193,18 @@ internal fun ScaffoldContent(
 
 @SuppressLint("NewApi")
 @Composable
-internal fun EventualManageExternalStoragePermissionRational(mainScreenViewModel: MainScreenViewModel = viewModel()) {
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-
+internal fun EventualManageExternalStoragePermissionRational(
+    context: Context = LocalContext.current,
+    mainScreenViewModel: MainScreenViewModel = viewModel()
+) {
     var showManageExternalStorageRational by rememberSaveable {
         mutableStateOf(false)
     }
         .apply {
             if (value) {
                 val onDismissRequest: () -> Unit = {
-                    coroutineScope.launch {
-                        mainScreenViewModel.saveToDataStore(
-                            PreferencesKey.SHOWED_MANAGE_EXTERNAL_STORAGE_RATIONAL,
-                            true
-                        )
-                        value = false
-                    }
+                    mainScreenViewModel.saveShowedManageExternalStorageRational()
+                    value = false
                 }
                 ManageExternalStoragePermissionDialog(
                     onConfirmation = {
@@ -214,7 +218,7 @@ internal fun EventualManageExternalStoragePermissionRational(mainScreenViewModel
             }
         }
 
-    if (!mainScreenViewModel.anyStorageAccessGranted.collectAsState().value && !mainScreenViewModel.dataStoreRepository.showedManageExternalStorageRational.collectAsState(
+    if (!mainScreenViewModel.anyStorageAccessGranted.collectAsState().value && !mainScreenViewModel.showedManageExternalStorageRational.collectAsState(
             initial = false
         ).value
     ) {

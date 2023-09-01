@@ -1,5 +1,6 @@
-package com.w2sv.filenavigator.ui.screens.main
+package com.w2sv.filenavigator.ui.screens.main.components
 
+import android.content.Context
 import android.view.animation.AnticipateOvershootInterpolator
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -10,7 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -51,15 +52,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.androidutils.coroutines.launchDelayed
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.domain.model.FileType
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
-import com.w2sv.filenavigator.ui.model.FileType
+import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.utils.toEasing
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @Composable
 fun OpenFileSourceDefaultDestinationDialogButton(
@@ -104,6 +108,8 @@ private fun DefaultMoveDestinationDialog(
     fileSource: FileType.Source,
     closeDialog: () -> Unit,
     modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope(),
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     val onDismissRequest: () -> Unit = {
@@ -122,8 +128,6 @@ private fun DefaultMoveDestinationDialog(
         mutableStateOf(false)
     }
 
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     var closeLogInfoJob: Job? = null
 
     AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -140,7 +144,9 @@ private fun DefaultMoveDestinationDialog(
                     with(mainScreenViewModel) {
                         defaultMoveDestinationIsSet[fileSource.defaultDestination] =
                             isDestinationSet
-                        unconfirmedDefaultMoveDestinationConfiguration!!.launchSync()
+                        scope.launch {
+                            unconfirmedDefaultMoveDestinationConfiguration!!.sync()
+                        }
                     }
                     onDismissRequest()
                 }, enabled = configurationHasChanged
@@ -241,7 +247,11 @@ private fun DefaultMoveDestinationDialog(
                         AnimatedContent(
                             targetState = defaultMoveDestinationIsLocked,
                             label = "",
-                            transitionSpec = { slideInHorizontally() + fadeIn() with slideOutHorizontally() + fadeOut() }
+                            transitionSpec = {
+                                (slideInHorizontally() + fadeIn()).togetherWith(
+                                    slideOutHorizontally() + fadeOut()
+                                )
+                            }
                         ) {
                             Icon(
                                 painter = painterResource(id = if (it) R.drawable.ic_lock_closed_24 else R.drawable.ic_lock_open_24),

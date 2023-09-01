@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main
+package com.w2sv.filenavigator.ui.screens.main.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,11 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppCheckbox
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
+import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun NavigatorSettingsDialog(
@@ -26,7 +29,7 @@ internal fun NavigatorSettingsDialog(
 ) {
     val onDismissRequest = {
         with(mainScreenViewModel) {
-            unconfirmedExtendedSettings.launchReset()
+            viewModelScope.launch { unconfirmedExtendedSettings.reset() }
         }
         closeDialog()
     }
@@ -45,7 +48,7 @@ internal fun NavigatorSettingsDialog(
         confirmButton = {
             DialogButton(
                 onClick = {
-                    with(mainScreenViewModel) { unconfirmedExtendedSettings.launchSync() }
+                    with(mainScreenViewModel) { viewModelScope.launch { unconfirmedExtendedSettings.sync() } }
                     closeDialog()
                 },
                 enabled = mainScreenViewModel.unconfirmedExtendedSettings.statesDissimilar.collectAsState().value
@@ -67,9 +70,9 @@ internal fun NavigatorSettingsDialog(
                     AppFontText(text = stringResource(id = R.string.disable_navigator_on_low_battery))
                     Spacer(modifier = Modifier.weight(1f))
                     AppCheckbox(
-                        checked = mainScreenViewModel.disableListenerOnLowBattery.collectAsState().value,
+                        checked = mainScreenViewModel.unconfirmedDisableListenerOnLowBattery.collectAsState().value,
                         onCheckedChange = {
-                            mainScreenViewModel.disableListenerOnLowBattery.value = it
+                            mainScreenViewModel.unconfirmedDisableListenerOnLowBattery.value = it
                         }
                     )
                 }

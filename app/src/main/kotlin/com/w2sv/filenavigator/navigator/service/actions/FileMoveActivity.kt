@@ -10,14 +10,14 @@ import androidx.activity.viewModels
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.file.getSimplePath
 import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.coroutines.getValueSynchronously
-import com.w2sv.androidutils.datastorage.datastore.preferences.AbstractPreferencesDataStoreRepository
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
+import com.w2sv.filenavigator.data.FileTypeRepository
 import com.w2sv.filenavigator.navigator.MoveFile
 import com.w2sv.filenavigator.navigator.notifications.NotificationParameters
 import com.w2sv.filenavigator.navigator.service.FileNavigatorService
@@ -25,6 +25,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import slimber.log.i
 import javax.inject.Inject
@@ -35,12 +38,10 @@ class FileMoveActivity : ComponentActivity() {
     @HiltViewModel
     class ViewModel @Inject constructor(
         savedStateHandle: SavedStateHandle,
-        dataStoreRepository: PreferencesDataStoreRepository,
+        private val fileTypeRepository: FileTypeRepository,
         @ApplicationContext context: Context
     ) :
-        AbstractPreferencesDataStoreRepository.ViewModel<PreferencesDataStoreRepository>(
-            dataStoreRepository
-        ) {
+        androidx.lifecycle.ViewModel() {
 
         // ===============
         // Intent Extras
@@ -63,11 +64,24 @@ class FileMoveActivity : ComponentActivity() {
         // ===============
 
         val defaultTargetDirDocumentUri: Uri? =
-            dataStoreRepository.getUriFlow(moveFile.source.defaultDestination)
+            fileTypeRepository.getUriFlow(moveFile.source.defaultDestination)
                 .getValueSynchronously()
                 .also {
                     i { "Retrieved ${moveFile.source.defaultDestination.preferencesKey} = $it" }
                 }
+
+        val defaultDestinationIsLocked =
+            fileTypeRepository
+                .getFileSourceDefaultDestinationIsLockedFlow(moveFile.source)
+                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+        fun saveFileSourceDefaultDestination(defaultDestination: Uri): Job =
+            viewModelScope.launch {
+                fileTypeRepository.saveFileSourceDefaultDestination(
+                    moveFile.source,
+                    defaultDestination
+                )
+            }
     }
 
     private val viewModel by viewModels<ViewModel>()
@@ -122,21 +136,13 @@ class FileMoveActivity : ComponentActivity() {
                 )
             }
 
-            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri && !viewModel.dataStoreRepository.getFileSourceDefaultDestinationIsLockedFlow(
-                    viewModel.moveFile.source
-                )
-                    .getValueSynchronously()
-            ) {
+            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri && !viewModel.defaultDestinationIsLocked.value) {
                 // Save targetDirectoryDocumentFile to DataStore and finish activity on saving completed
-                with(viewModel) {
-                    saveToDataStore(
-                        moveFile.source.defaultDestination.preferencesKey,
-                        targetDirectoryDocumentFile.uri
-                    )
-                        .invokeOnCompletion {
-                            finish()
-                        }
-                }
+                viewModel
+                    .saveFileSourceDefaultDestination(targetDirectoryDocumentFile.uri)
+                    .invokeOnCompletion {
+                        finish()
+                    }
             } else {
                 finish()
             }

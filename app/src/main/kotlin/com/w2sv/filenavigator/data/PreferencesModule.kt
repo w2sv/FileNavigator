@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.datastore
+package com.w2sv.filenavigator.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore

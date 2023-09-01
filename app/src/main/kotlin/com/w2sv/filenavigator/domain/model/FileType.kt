@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.model
+package com.w2sv.filenavigator.domain.model
 
 import android.content.Context
 import android.os.Parcelable
@@ -19,9 +19,8 @@ sealed class FileType(
     @StringRes val titleRes: Int,
     @DrawableRes val iconRes: Int,
     val color: Color,
-    val simpleStorageType: MediaType,
+    val mediaType: MediaType,
     sourceKinds: List<SourceKind>,
-    val index: Int
 ) : Parcelable {
 
     val identifier: String = this::class.java.simpleName
@@ -49,16 +48,14 @@ sealed class FileType(
         color: Color,
         simpleStorageType: MediaType,
         sourceKinds: List<SourceKind>,
-        index: Int,
         val fileExtensions: Set<String>? = null,
         val ignoreFileExtensionsOf: Media? = null
     ) : FileType(
         titleRes = labelRes,
         iconRes = iconRes,
         color = color,
-        simpleStorageType = simpleStorageType,
+        mediaType = simpleStorageType,
         sourceKinds = sourceKinds,
-        index = index,
     ) {
 
         override fun matchesFileExtension(extension: String): Boolean =
@@ -73,7 +70,7 @@ sealed class FileType(
             }
 
         @Parcelize
-        object Image : Media(
+        data object Image : Media(
             labelRes = R.string.image,
             fileDeclarationRes = R.string.image,
             iconRes = R.drawable.ic_image_24,
@@ -85,12 +82,11 @@ sealed class FileType(
                 SourceKind.Download,
                 SourceKind.OtherApp
             ),
-            index = 0,
             ignoreFileExtensionsOf = GIF
         )
 
         @Parcelize
-        object GIF : Media(
+        data object GIF : Media(
             labelRes = R.string.gif,
             fileDeclarationRes = R.string.gif,
             iconRes = R.drawable.ic_gif_box_24,
@@ -100,18 +96,16 @@ sealed class FileType(
                 SourceKind.Download,
                 SourceKind.OtherApp
             ),
-            index = 1,
             fileExtensions = setOf("gif", "GIF", "giff")
         )
 
         @Parcelize
-        object Video : Media(
+        data object Video : Media(
             labelRes = R.string.video,
             fileDeclarationRes = R.string.video,
             iconRes = R.drawable.ic_video_file_24,
             color = Color(0xFFFFCB77),
             simpleStorageType = MediaType.VIDEO,
-            index = 2,
             sourceKinds = listOf(
                 SourceKind.Camera,
                 SourceKind.Download,
@@ -120,13 +114,12 @@ sealed class FileType(
         )
 
         @Parcelize
-        object Audio : Media(
+        data object Audio : Media(
             labelRes = R.string.audio,
             fileDeclarationRes = R.string.audio_file,
             iconRes = R.drawable.ic_audio_file_24,
             color = Color(0xFFF26430),
             simpleStorageType = MediaType.AUDIO,
-            index = 3,
             sourceKinds = listOf(
                 SourceKind.Download,
                 SourceKind.OtherApp
@@ -142,14 +135,12 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
         color: Color,
-        index: Int,
         val fileExtensions: Set<String>
     ) : FileType(
         titleRes = labelRes,
         iconRes = iconRes,
         color = color,
-        simpleStorageType = MediaType.DOWNLOADS,
-        index = index,
+        mediaType = MediaType.DOWNLOADS,
         sourceKinds = listOf(
             SourceKind.Download
         )
@@ -159,20 +150,18 @@ sealed class FileType(
             fileExtensions.contains(extension)
 
         @Parcelize
-        object PDF : NonMedia(
+        data object PDF : NonMedia(
             R.string.pdf,
             R.drawable.ic_pdf_24,
             Color(0xFFD6BA73),
-            index = 4,
             setOf("pdf")
         )
 
         @Parcelize
-        object Text : NonMedia(
+        data object Text : NonMedia(
             R.string.text,
             R.drawable.ic_text_file_24,
             Color(0xFFF00699),
-            index = 5,
             setOf(
                 "txt",
                 "text",
@@ -193,11 +182,10 @@ sealed class FileType(
         )
 
         @Parcelize
-        object Archive : NonMedia(
+        data object Archive : NonMedia(
             R.string.archive,
             R.drawable.ic_folder_zip_24,
             Color(0xFF826251),
-            index = 6,
             setOf(
                 "zip",
                 "rar",
@@ -224,11 +212,10 @@ sealed class FileType(
         )
 
         @Parcelize
-        object APK : NonMedia(
+        data object APK : NonMedia(
             R.string.apk,
             R.drawable.ic_apk_file_24,
             Color(0xFFFCB07E),
-            index = 7,
             setOf("apk")
         )
 
@@ -252,7 +239,7 @@ sealed class FileType(
     }
 
     companion object {
-        val all: List<FileType> get() = Media.all + NonMedia.all
+        val values: List<FileType> = Media.all + NonMedia.all
     }
 
     enum class SourceKind(

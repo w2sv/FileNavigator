@@ -3,6 +3,7 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.content.Context
 import android.net.Uri
 import androidx.compose.material3.SnackbarHostState
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.coroutines.getSynchronousMap
 import com.w2sv.androidutils.coroutines.getValueSynchronously
@@ -10,14 +11,16 @@ import com.w2sv.androidutils.coroutines.mapState
 import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.androidutils.services.isServiceRunning
-import com.w2sv.androidutils.ui.PreferencesDataStoreBackedUnconfirmedStatesViewModel
-import com.w2sv.androidutils.ui.UnconfirmedStateFlow
-import com.w2sv.androidutils.ui.UnconfirmedStatesComposition
+import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlow
+import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
+import com.w2sv.androidutils.ui.unconfirmed_state.getUnconfirmedStateFlow
+import com.w2sv.androidutils.ui.unconfirmed_state.getUnconfirmedStateMap
+import com.w2sv.androidutils.ui.unconfirmed_state.getUnconfirmedStatesComposition
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.datastore.PreferencesDataStoreRepository
-import com.w2sv.filenavigator.datastore.PreferencesKey
+import com.w2sv.filenavigator.data.FileTypeRepository
+import com.w2sv.filenavigator.data.PreferencesRepository
+import com.w2sv.filenavigator.domain.model.FileType
 import com.w2sv.filenavigator.navigator.service.FileNavigatorService
-import com.w2sv.filenavigator.ui.model.FileType
 import com.w2sv.filenavigator.utils.StorageAccessStatus
 import com.w2sv.filenavigator.utils.getMutableStateList
 import com.w2sv.filenavigator.utils.getMutableStateMap
@@ -34,28 +37,50 @@ import javax.inject.Inject
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
     @ApplicationContext context: Context,
-    dataStoreRepository: PreferencesDataStoreRepository
-) : PreferencesDataStoreBackedUnconfirmedStatesViewModel<PreferencesDataStoreRepository>(
-    dataStoreRepository
-) {
+    private val fileTypeRepository: FileTypeRepository,
+    private val preferencesRepository: PreferencesRepository
+) : ViewModel() {
 
     val isNavigatorRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileNavigatorService>())
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState()
 
-    val disableListenerOnLowBattery = makeUnconfirmedStateFlow(
-        dataStoreRepository.disableListenerOnLowBattery,
-        PreferencesKey.DISABLE_LISTENER_ON_LOW_BATTERY
+    val disableListenerOnLowBattery by preferencesRepository::disableListenerOnLowBattery
+
+    val unconfirmedDisableListenerOnLowBattery = getUnconfirmedStateFlow(
+        preferencesRepository.disableListenerOnLowBattery,
+        preferencesRepository::saveDisableListenerOnLowBattery
     )
 
-    val inAppTheme = makeUnconfirmedEnumValuedStateFlow(
-        dataStoreRepository.inAppTheme,
-        PreferencesKey.IN_APP_THEME
-    ) {}
+    val inAppTheme by preferencesRepository::inAppTheme
+
+    val unconfirmedInAppTheme = getUnconfirmedStateFlow(
+        preferencesRepository.inAppTheme,
+        preferencesRepository::saveInAppTheme
+    )
 
     val unconfirmedExtendedSettings =
-        makeUnconfirmedStatesComposition(listOf(disableListenerOnLowBattery, inAppTheme))
+        getUnconfirmedStatesComposition(
+            listOf(
+                unconfirmedDisableListenerOnLowBattery,
+                unconfirmedInAppTheme
+            )
+        )
+
+    val showedManageExternalStorageRational by preferencesRepository::showedManageExternalStorageRational
+
+    fun saveShowedManageExternalStorageRational() {
+        viewModelScope.launch {
+            preferencesRepository.saveShowedManageExternalStorageRational()
+        }
+    }
+
+    val showedPostNotificationsPermissionsRational by preferencesRepository::showedPostNotificationsPermissionsRational
+
+    fun saveShowedPostNotificationsPermissionsRational() {
+        viewModelScope.launch { preferencesRepository.saveShowedPostNotificationsPermissionsRational() }
+    }
 
     // ==============
     // StorageAccessStatus
@@ -71,14 +96,14 @@ class MainScreenViewModel @Inject constructor(
         _storageAccessStatus.value = StorageAccessStatus.get(context)
             .also { status ->
                 val previousStatus =
-                    dataStoreRepository.previousStorageAccessStatus.getValueSynchronously()
+                    preferencesRepository.previousStorageAccessStatus.getValueSynchronously()
 
                 if (status != previousStatus) {
                     i { "New manageExternalStoragePermissionGranted = $status diverting from previous = $previousStatus" }
 
                     when (status) {
                         StorageAccessStatus.NoAccess -> setFileTypeStatuses(
-                            FileType.all,
+                            FileType.values,
                             FileType.Status.DisabledForNoFileAccess
                         )
 
@@ -94,16 +119,13 @@ class MainScreenViewModel @Inject constructor(
                         }
 
                         StorageAccessStatus.AllFiles -> setFileTypeStatuses(
-                            FileType.all,
+                            FileType.values,
                             FileType.Status.Enabled
                         )
                     }
 
-                    coroutineScope.launch {
-                        dataStoreRepository.save(
-                            PreferencesKey.PREVIOUS_STORAGE_ACCESS_STATUS,
-                            status
-                        )
+                    viewModelScope.launch {
+                        preferencesRepository.savePreviousStorageAccessStatus(status)
                     }
                 }
             }
@@ -120,21 +142,22 @@ class MainScreenViewModel @Inject constructor(
     // Navigator Configuration
     // ==============
 
-    val sortedFileTypes = FileType.all
+    val sortedFileTypes = FileType.values
         .getMutableStateList()
 
     val unconfirmedFileTypeStatus =
-        makeUnconfirmedEnumValuedStateMap(
-            appliedFlowMap = dataStoreRepository.fileTypeStatus,
-            makeMutableMap = { it.getSynchronousMap().getMutableStateMap() }
+        getUnconfirmedStateMap(
+            appliedFlowMap = fileTypeRepository.fileTypeStatus,
+            makeSynchronousMutableMap = { it.getSynchronousMap().getMutableStateMap() },
+            syncState = { fileTypeRepository.saveEnumValuedMap(it) }
         )
             .also {
                 sortedFileTypes.sortByIsEnabledAndOriginalOrder(it)
             }
 
     fun launchUnconfirmedFileTypeStatusSync(): Job =
-        coroutineScope.launch {
-            unconfirmedFileTypeStatus.launchSync()
+        viewModelScope.launch {
+            unconfirmedFileTypeStatus.sync()
             sortedFileTypes.sortByIsEnabledAndOriginalOrder(unconfirmedFileTypeStatus)
 //            fileTypeStatusHasChanged.emit(true)
         }
@@ -142,14 +165,15 @@ class MainScreenViewModel @Inject constructor(
 //    val fileTypeStatusHasChanged = MutableStateFlow(false)
 
     val unconfirmedFileSourceEnablement by lazy {
-        makeUnconfirmedStateMap(
-            appliedFlowMap = dataStoreRepository.mediaFileSourceEnabled,
-            makeMutableMap = { it.getSynchronousMap().getMutableStateMap() }
+        getUnconfirmedStateMap(
+            appliedFlowMap = fileTypeRepository.mediaFileSourceEnabled,
+            makeSynchronousMutableMap = { it.getSynchronousMap().getMutableStateMap() },
+            syncState = { fileTypeRepository.saveMap(it) }
         )
     }
 
     val unconfirmedNavigatorConfiguration by lazy {
-        makeUnconfirmedStatesComposition(
+        getUnconfirmedStatesComposition(
             listOf(
                 unconfirmedFileTypeStatus,
                 unconfirmedFileSourceEnablement
@@ -158,16 +182,21 @@ class MainScreenViewModel @Inject constructor(
     }
 
     fun setUnconfirmedDefaultMoveDestinationStates(fileSource: FileType.Source) {
-        unconfirmedDefaultMoveDestination = makeUnconfirmedUriValuedStateFlow(
-            dataStoreRepository.getFileSourceDefaultDestinationFlow(fileSource),
-            fileSource.defaultDestination.preferencesKey
+        unconfirmedDefaultMoveDestination = getUnconfirmedStateFlow(
+            appliedFlow = fileTypeRepository.getFileSourceDefaultDestinationFlow(fileSource),
+            syncState = { fileTypeRepository.saveFileSourceDefaultDestination(fileSource, it) }
         )
-        unconfirmedDefaultMoveDestinationIsLocked = makeUnconfirmedStateFlow(
-            dataStoreRepository.getFileSourceDefaultDestinationIsLockedFlow(fileSource),
-            fileSource.defaultDestinationIsLocked.preferencesKey
+        unconfirmedDefaultMoveDestinationIsLocked = getUnconfirmedStateFlow(
+            appliedFlow = fileTypeRepository.getFileSourceDefaultDestinationIsLockedFlow(fileSource),
+            syncState = {
+                fileTypeRepository.saveFileSourceDefaultDestinationIsLocked(
+                    fileSource,
+                    it
+                )
+            }
         )
 
-        unconfirmedDefaultMoveDestinationConfiguration = makeUnconfirmedStatesComposition(
+        unconfirmedDefaultMoveDestinationConfiguration = getUnconfirmedStatesComposition(
             listOf(
                 unconfirmedDefaultMoveDestination!!,
                 unconfirmedDefaultMoveDestinationIsLocked!!
@@ -181,8 +210,8 @@ class MainScreenViewModel @Inject constructor(
         unconfirmedDefaultMoveDestinationConfiguration = null
     }
 
-    val defaultMoveDestinationIsSet = dataStoreRepository.getUriFlowMap(
-        FileType.all.map {
+    val defaultMoveDestinationIsSet = fileTypeRepository.getUriFlowMap(
+        FileType.values.map {
             it.sources
         }
             .flatten()
@@ -232,6 +261,6 @@ private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(fileTypeStatus
             )
                 .isEnabled
         }
-            .thenBy { it.index }
+            .thenBy(FileType.values::indexOf)
     )
 }

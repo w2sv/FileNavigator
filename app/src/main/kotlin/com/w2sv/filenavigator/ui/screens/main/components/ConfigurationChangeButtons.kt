@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main
+package com.w2sv.filenavigator.ui.screens.main.components
 
 import android.content.Context
 import androidx.annotation.DrawableRes
@@ -21,29 +21,33 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.components.AppFontText
+import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun NavigatorConfigurationButtons(
     modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope(),
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    val context: Context = LocalContext.current
 
     Row(modifier = modifier) {
         ConfigurationChangeButton(
             iconRes = R.drawable.ic_cancel_24,
-            md_negative,
-            R.string.discard_changes,
+            color = md_negative,
+            textRes = R.string.discard_changes,
             onClick = {
-                with(mainScreenViewModel) {
-                    unconfirmedNavigatorConfiguration.launchReset()
+                scope.launch {
+                    mainScreenViewModel.unconfirmedNavigatorConfiguration.reset()
                 }
             }
         )

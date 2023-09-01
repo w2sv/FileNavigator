@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main
+package com.w2sv.filenavigator.ui.screens.main.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons

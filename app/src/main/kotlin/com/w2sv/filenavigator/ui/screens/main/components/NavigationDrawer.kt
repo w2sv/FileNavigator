@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main
+package com.w2sv.filenavigator.ui.screens.main.components
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -53,6 +53,8 @@ import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.ThemeSelectionDialog
+import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -61,12 +63,11 @@ fun NavigationDrawer(
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
     homeScreenViewModel: MainScreenViewModel = viewModel(),
+    scope: CoroutineScope = rememberCoroutineScope(),
     content: @Composable () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-
-    val theme by homeScreenViewModel.inAppTheme.collectAsState()
-    val themeRequiringUpdate by homeScreenViewModel.inAppTheme.statesDissimilar.collectAsState()
+    val theme by homeScreenViewModel.unconfirmedInAppTheme.collectAsState()
+    val themeRequiringUpdate by homeScreenViewModel.unconfirmedInAppTheme.statesDissimilar.collectAsState()
 
     var showThemeDialog by rememberSaveable {
         mutableStateOf(false)
@@ -76,16 +77,16 @@ fun NavigationDrawer(
                 ThemeSelectionDialog(
                     onDismissRequest = {
                         scope.launch {
-                            homeScreenViewModel.inAppTheme.reset()
+                            homeScreenViewModel.unconfirmedInAppTheme.reset()
                         }
                         value = false
                     },
                     selectedTheme = { theme },
-                    onThemeSelected = { homeScreenViewModel.inAppTheme.value = it },
+                    onThemeSelected = { homeScreenViewModel.unconfirmedInAppTheme.value = it },
                     applyButtonEnabled = { themeRequiringUpdate },
                     onApplyButtonClick = {
                         scope.launch {
-                            homeScreenViewModel.inAppTheme.sync()
+                            homeScreenViewModel.unconfirmedInAppTheme.sync()
                         }
                         value = false
                     }
@@ -133,10 +134,9 @@ private fun NavigationDrawerSheet(
     closeDrawer: () -> Unit,
     onItemSettingsPressed: () -> Unit,
     onItemThemePressed: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current
 ) {
-    val context = LocalContext.current
-
     ModalDrawerSheet(modifier = modifier) {
         Column(
             modifier = Modifier
@@ -231,10 +231,9 @@ private data class NavigationDrawerItem(
 @Composable
 private fun NavigationDrawerItem(
     properties: NavigationDrawerItem,
-    closeDrawer: () -> Unit
+    closeDrawer: () -> Unit,
+    context: Context = LocalContext.current
 ) {
-    val context = LocalContext.current
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
