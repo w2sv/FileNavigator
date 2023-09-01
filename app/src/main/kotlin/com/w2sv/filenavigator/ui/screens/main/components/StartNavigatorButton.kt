@@ -49,8 +49,8 @@ import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
-import com.w2sv.filenavigator.utils.powerSaveModeActivated
-import com.w2sv.filenavigator.utils.toEasing
+import com.w2sv.common.utils.powerSaveModeActivated
+import com.w2sv.filenavigator.ui.utils.toEasing
 import kotlinx.coroutines.launch
 
 @Immutable

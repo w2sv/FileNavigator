@@ -32,7 +32,9 @@ androidx-compose-ui = { module = 'androidx.compose.ui:ui', version.ref = 'compos
 androidx-compose-ui-tooling-preview = { module = 'androidx.compose.ui:ui-tooling-preview', version.ref = 'compose-tooling' }
 androidx-compose-ui-tooling = { module = 'androidx.compose.ui:ui-tooling', version.ref = 'compose-tooling' }
 androidx-compose-activity = 'androidx.activity:activity-compose:1.7.2'
+androidx-activity = 'androidx.activity:activity-ktx:1.7.2'
 androidx-compose-viewmodel = { module = 'androidx.lifecycle:lifecycle-viewmodel-compose', version.ref = 'lifecycle' }
+androidx-viewmodel = { module = 'androidx.lifecycle:lifecycle-viewmodel-ktx', version.ref = 'lifecycle' }
 androidx-datastore-preferences = 'androidx.datastore:datastore-preferences:1.0.0'
 
 # google
@@ -48,6 +50,7 @@ simplestorage = "com.anggrayudi:storage:1.5.4"
 
 [plugins]
 application = { id = 'com.android.application', version.ref = 'agp' }
+library = { id = 'com.android.library', version.ref = 'agp' }
 kotlin = { id = 'org.jetbrains.kotlin.android', version.ref = 'kotlin' }
 hilt = { id = 'com.google.dagger.hilt.android', version.ref = 'hilt' }
 play = { id = 'com.github.triplet.play', version.ref = 'triplet-play' }

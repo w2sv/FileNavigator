@@ -1,0 +1,20 @@
+plugins {
+    alias libs.plugins.library
+    alias libs.plugins.kotlin
+    id 'kotlin-parcelize'
+}
+
+apply from: '../modulebase.gradle'
+
+android {
+    namespace 'com.w2sv.common'
+}
+
+dependencies {
+    implementation libs.androidutils
+    implementation libs.slimber
+
+    implementation libs.androidx.localbroadcastmanager
+
+    implementation libs.androidx.core
+}

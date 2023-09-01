@@ -21,12 +21,12 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.lifecycle.SelfManagingLocalBroadcastReceiver
-import com.w2sv.filenavigator.navigator.service.FileNavigatorService
-import com.w2sv.filenavigator.receivers.PowerSaveModeChangedReceiver
-import com.w2sv.filenavigator.ui.components.Theme
+import com.w2sv.data.model.Theme
+import com.w2sv.navigator.PowerSaveModeChangedReceiver
 import com.w2sv.filenavigator.ui.screens.main.MainScreen
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.navigator.service.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import slimber.log.i
@@ -43,8 +43,8 @@ class MainActivity : ComponentActivity() {
         context,
         IntentFilter()
             .apply {
-                addAction(FileNavigatorService.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED)
-                addAction(FileNavigatorService.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED)
+                addAction(FileNavigator.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED)
+                addAction(FileNavigator.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED)
             },
         callback
     )
@@ -54,8 +54,8 @@ class MainActivity : ComponentActivity() {
             intent ?: return@FileListenerStatusChangedReceiver
 
             viewModel.isNavigatorRunning.value = when (intent.action) {
-                FileNavigatorService.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED -> true
-                FileNavigatorService.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED -> false
+                FileNavigator.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STARTED -> true
+                FileNavigator.ACTION_NOTIFY_FILE_LISTENER_SERVICE_STOPPED -> false
                 else -> throw Error()
             }
         }

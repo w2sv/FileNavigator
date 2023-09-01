@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
+    <!-- System Permission -> granted automatically -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- SDK <= 32 -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <!-- SDK >= 33 -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application>
+        <service android:name="com.w2sv.navigator.service.FileNavigator" />
+
+        <receiver android:name="com.w2sv.navigator.PowerSaveModeChangedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.os.action.POWER_SAVE_MODE_CHANGED"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="com.w2sv.navigator.service.actions.FileDeletionBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.service.actions.MoveToDefaultDestinationBroadcastReceiver" />
+
+        <activity android:name="com.w2sv.navigator.service.actions.FileMoveActivity" />
+    </application>
+
+</manifest>

@@ -88,6 +88,10 @@ play {
 }
 
 dependencies {
+    implementation project(path: ':data')
+    implementation project(path: ':common')
+    implementation project(path: ':navigator')
+
     implementation libs.androidutils
     implementation libs.kotlinutils
 

@@ -37,17 +37,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.w2sv.data.model.Theme
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.DefaultIconDp
-import com.w2sv.filenavigator.utils.toEasing
-
-enum class Theme {
-    Light,
-    DeviceDefault,
-    Dark
-}
+import com.w2sv.filenavigator.ui.utils.toEasing
 
 @Composable
 fun ThemeSelectionDialog(

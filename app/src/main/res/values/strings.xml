@@ -32,7 +32,6 @@
     <string name="newly_downloaded_template">Newly downloaded %1$s</string>
     <string name="new_third_party_file_template">New %1$s %2$s</string>
 
-    <string name="configure">Configure</string>
     <string name="tap_again_to_exit">Tap again to exit</string>
     <string name="alright">Alright</string>
     <string name="maybe_later">Maybe later</string>
@@ -68,7 +67,6 @@
     <string name="version">Version: %s</string>
     <string name="navigator_settings">Navigator Settings</string>
     <string name="non_media_files_require_all_files_access">Navigation of non-media files requires permission to manage all files.</string>
-    <string name="gif">GIF</string>
     <string name="open_target_directory_settings">Open the target directory settings dialog.</string>
     <string name="change_default_move_destination">Change default move destination.</string>
     <string name="close">Close</string>
@@ -78,9 +76,4 @@
     <string name="lock_default_move_destination">Lock default move destination</string>
     <string name="default_move_destination_locked_info">Locked: Default destination will NOT be updated upon picking a new one whilst navigating a file.</string>
     <string name="default_move_destination_unlocked_info">Unlocked: Default destination will be updated upon picking a new one whilst navigating a file.</string>
-    <string name="delete">Delete</string>
-    <string name="move_to_default_destination">Move to default destination</string>
-    <string name="successfully_deleted_file">Successfully deleted file</string>
-    <string name="couldn_t_delete_file">Couldn\'t delete file</string>
-    <string name="file_deletion_requires_access_to_manage_all_files">File deletion requires access to manage all files</string>
 </resources>

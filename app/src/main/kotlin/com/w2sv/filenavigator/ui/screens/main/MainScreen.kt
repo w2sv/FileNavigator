@@ -56,7 +56,7 @@ import com.w2sv.filenavigator.ui.screens.main.components.NavigatorConfigurationB
 import com.w2sv.filenavigator.ui.screens.main.components.StartNavigatorButton
 import com.w2sv.filenavigator.ui.screens.main.components.offsetFraction
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
-import com.w2sv.filenavigator.utils.goToManageExternalStorageSettings
+import com.w2sv.common.utils.goToManageExternalStorageSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

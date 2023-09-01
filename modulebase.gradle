@@ -1,0 +1,13 @@
+android {
+    kotlin {
+        jvmToolchain(17)
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    compileSdk libs.versions.compileSdk.get().toInteger()
+    defaultConfig {
+        minSdk libs.versions.minSdk.get().toInteger()
+    }
+}
