@@ -4,7 +4,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-val md_theme_light_primary = Color(0xFF00696E)
+val md_primary = Color(0xFF00696E)
+
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
 val md_theme_light_primaryContainer = Color(0xFF6FF6FE)
 val md_theme_light_onPrimaryContainer = Color(0xFF002021)
@@ -37,7 +38,6 @@ val md_theme_light_scrim = Color(0xFF000000)
 val md_theme_dark_onPrimary = Color(0xFF003739)
 val md_theme_dark_primaryContainer = Color(0xFF004F53)
 val md_theme_dark_onPrimaryContainer = Color(0xFF6FF6FE)
-val md_theme_dark_primary = md_theme_light_primary
 val md_theme_dark_secondary = Color(0xFF00DFC2)
 val md_theme_dark_onSecondary = Color(0xFF00382F)
 val md_theme_dark_secondaryContainer = Color(0xFF005045)
