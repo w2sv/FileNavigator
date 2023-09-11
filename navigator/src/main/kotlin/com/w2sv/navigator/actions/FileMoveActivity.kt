@@ -17,9 +17,9 @@ import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.data.storage.repositories.FileTypeRepository
+import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.MoveFile
 import com.w2sv.navigator.R
-import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

@@ -23,7 +23,6 @@ import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.common.notifications.NotificationChannelProperties
 import com.w2sv.common.notifications.createNotificationChannelAndGetNotificationBuilder
-import com.w2sv.common.utils.sendLocalBroadcast
 import com.w2sv.data.model.FileType
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.actions.FileDeletionBroadcastReceiver

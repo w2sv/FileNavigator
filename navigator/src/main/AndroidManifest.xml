@@ -24,10 +24,11 @@
     <application>
         <service android:name="com.w2sv.navigator.FileNavigator" />
 
-        <receiver android:name="com.w2sv.navigator.PowerSaveModeChangedReceiver"
+        <receiver
+            android:name="com.w2sv.navigator.PowerSaveModeChangedReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.os.action.POWER_SAVE_MODE_CHANGED"/>
+                <action android:name="android.os.action.POWER_SAVE_MODE_CHANGED" />
             </intent-filter>
         </receiver>
 

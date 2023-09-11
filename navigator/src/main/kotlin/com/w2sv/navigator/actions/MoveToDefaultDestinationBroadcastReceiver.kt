@@ -11,9 +11,9 @@ import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.isExternalStorageManger
+import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.MoveFile
 import com.w2sv.navigator.R
-import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

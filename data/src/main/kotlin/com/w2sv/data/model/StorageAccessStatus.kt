@@ -12,7 +12,7 @@ enum class StorageAccessStatus {
 
     companion object {
         fun get(context: Context): StorageAccessStatus =
-            when{
+            when {
                 isExternalStorageManger() -> AllFiles
                 context.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) -> MediaFilesOnly
                 else -> NoAccess

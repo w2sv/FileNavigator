@@ -7,9 +7,9 @@ import android.widget.Toast
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.isExternalStorageManger
+import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.MoveFile
 import com.w2sv.navigator.R
-import com.w2sv.navigator.FileNavigator
 import slimber.log.e
 
 class FileDeletionBroadcastReceiver : BroadcastReceiver() {

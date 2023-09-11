@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.screens.main.components.AppTopBar
 import com.w2sv.filenavigator.ui.screens.main.components.FileTypeSelectionColumn
@@ -56,7 +57,6 @@ import com.w2sv.filenavigator.ui.screens.main.components.NavigatorConfigurationB
 import com.w2sv.filenavigator.ui.screens.main.components.StartNavigatorButton
 import com.w2sv.filenavigator.ui.screens.main.components.offsetFraction
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
-import com.w2sv.common.utils.goToManageExternalStorageSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

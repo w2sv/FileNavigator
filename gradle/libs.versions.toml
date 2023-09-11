@@ -5,14 +5,14 @@ compileSdk = '34'
 agp = "8.1.1"
 kotlin = '1.9.0'
 java = '17'
-ksp = "1.9.0-1.0.12"
+ksp = "1.9.0-1.0.13"
 triplet-play = '3.8.4'
 
 compose-compiler = '1.5.1'
-compose-tooling = '1.5.0'
+compose-tooling = "1.5.1"
 hilt = '2.48'
 junit = '5.9.2'
-lifecycle = "2.6.1"
+lifecycle = "2.6.2"
 
 [libraries]
 
@@ -22,10 +22,10 @@ kotlinutils = 'com.github.w2sv:KotlinUtils:0.0.7-rc2'
 
 # androidx
 androidx-appcompat = 'androidx.appcompat:appcompat:1.6.1'
-androidx-core = 'androidx.core:core-ktx:1.10.1'
+androidx-core = "androidx.core:core-ktx:1.12.0"
 androidx-splashscreen = 'androidx.core:core-splashscreen:1.0.1'
 androidx-lifecycle-runtime = { module = 'androidx.lifecycle:lifecycle-runtime-ktx', version.ref = 'lifecycle' }
-androidx-compose-bom = "androidx.compose:compose-bom:2023.08.00"
+androidx-compose-bom = "androidx.compose:compose-bom:2023.09.00"
 androidx-compose-material3 = 'androidx.compose.material3:material3:1.1.1'
 androidx-compose-ui = { module = 'androidx.compose.ui:ui', version.ref = 'compose-tooling' }
 androidx-compose-ui-tooling-preview = { module = 'androidx.compose.ui:ui-tooling-preview', version.ref = 'compose-tooling' }
@@ -45,7 +45,7 @@ accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.32.0
 
 # other
 slimber = 'com.github.PaulWoitaschek:Slimber:2.0.0'
-simplestorage = "com.anggrayudi:storage:1.5.4"
+simplestorage = "com.anggrayudi:storage:1.5.5"
 
 [plugins]
 application = { id = 'com.android.application', version.ref = 'agp' }
@@ -53,4 +53,4 @@ library = { id = 'com.android.library', version.ref = 'agp' }
 kotlin = { id = 'org.jetbrains.kotlin.android', version.ref = 'kotlin' }
 hilt = { id = 'com.google.dagger.hilt.android', version.ref = 'hilt' }
 play = { id = 'com.github.triplet.play', version.ref = 'triplet-play' }
-ksp = { id = "com.google.devtools.ksp", version.ref = 'ksp'}
+ksp = { id = "com.google.devtools.ksp", version.ref = 'ksp' }
