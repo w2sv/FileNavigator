@@ -54,11 +54,6 @@ fun Modifier.bounceOnClickAnimation(minScale: Float = 0.8f) = composed {
 
     this
         .scale(scale)
-//        .clickable(
-//            interactionSource = remember { MutableInteractionSource() },
-//            indication = null,
-//            onClick = { }
-//        )
         .pointerInput(buttonState) {
             awaitPointerEventScope {
                 buttonState = if (buttonState == ButtonState.Pressed) {

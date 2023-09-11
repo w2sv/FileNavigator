@@ -4,9 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.FloatSpringSpec
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
@@ -49,6 +46,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.ui.components.AppSnackbar
+import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
+import com.w2sv.filenavigator.ui.components.closeAnimated
+import com.w2sv.filenavigator.ui.components.openAnimated
 import com.w2sv.filenavigator.ui.screens.main.components.AppTopBar
 import com.w2sv.filenavigator.ui.screens.main.components.FileTypeSelectionColumn
 import com.w2sv.filenavigator.ui.screens.main.components.ManageExternalStoragePermissionDialog
@@ -67,20 +67,10 @@ fun MainScreen(
     scope: CoroutineScope = rememberCoroutineScope(),
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    val springSpec = FloatSpringSpec(Spring.DampingRatioMediumBouncy)
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val openDrawer: () -> Unit = {
-        scope.launch {
-            drawerState.animateTo(DrawerValue.Open, springSpec)
-        }
-    }
     val closeDrawer: () -> Unit = {
         scope.launch {
-            drawerState.animateTo(
-                DrawerValue.Closed,
-                springSpec
-            )
+            drawerState.closeAnimated()
         }
     }
 
@@ -88,11 +78,17 @@ fun MainScreen(
         Scaffold(
             snackbarHost = {
                 SnackbarHost(mainScreenViewModel.snackbarHostState) { snackbarData ->
-                    AppSnackbar(snackbarData = snackbarData)
+                    AppSnackbar(visuals = snackbarData.visuals as AppSnackbarVisuals)
                 }
             },
             topBar = {
-                AppTopBar(onNavigationIconClick = openDrawer)
+                AppTopBar(
+                    onNavigationIconClick = {
+                        scope.launch {
+                            drawerState.openAnimated()
+                        }
+                    }
+                )
             }
         ) { paddingValues ->
             ScaffoldContent(
@@ -113,7 +109,6 @@ fun MainScreen(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun ScaffoldContent(
     drawerState: DrawerState,

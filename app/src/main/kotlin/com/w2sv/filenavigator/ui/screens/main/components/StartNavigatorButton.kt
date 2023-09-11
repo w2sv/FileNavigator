@@ -42,7 +42,8 @@ import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.common.utils.powerSaveModeActivated
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.components.ExtendedSnackbarVisuals
+import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
+import com.w2sv.filenavigator.ui.components.SnackbarAction
 import com.w2sv.filenavigator.ui.components.bounceOnClickAnimation
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
@@ -135,10 +136,11 @@ internal fun StartNavigatorButton(
                         !permissionState.shouldShowRationale -> {
                             scope.launch {
                                 mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-                                    ExtendedSnackbarVisuals(
+                                    AppSnackbarVisuals(
                                         message = context.getString(R.string.go_to_the_app_settings_to_grant_the_required_permissions),
-                                        actionLabel = context.getString(R.string.go_to_settings),
-                                        action = { goToAppSettings(context) }
+                                        action = SnackbarAction(
+                                            label = context.getString(R.string.go_to_settings),
+                                            callback = { goToAppSettings(context) })
                                     )
                                 )
                             }
@@ -201,12 +203,12 @@ private fun ButtonContent(properties: NavigatorButtonProperties, anyStorageAcces
             painter = painterResource(id = properties.iconRes),
             contentDescription = null,
             modifier = Modifier.size(32.dp),
-            tint = if (anyStorageAccessGranted) properties.color else disabledColor()
+            tint = if (anyStorageAccessGranted) properties.color else disabledColor
         )
         AppFontText(
             text = stringResource(id = properties.labelRes),
             fontSize = 18.sp,
-            color = if (anyStorageAccessGranted) MaterialTheme.colorScheme.onBackground else disabledColor()
+            color = if (anyStorageAccessGranted) MaterialTheme.colorScheme.onBackground else disabledColor
         )
     }
 }

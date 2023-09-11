@@ -98,7 +98,7 @@ fun AppFontText(
     )
 }
 
-val Railway = FontFamily(
+private val Railway = FontFamily(
     Font(R.font.raleway_blackitalic, FontWeight.Black, FontStyle.Italic),
     Font(R.font.raleway_lightitalic, FontWeight.Light, FontStyle.Italic),
     Font(R.font.raleway_black, FontWeight.Black, FontStyle.Normal),

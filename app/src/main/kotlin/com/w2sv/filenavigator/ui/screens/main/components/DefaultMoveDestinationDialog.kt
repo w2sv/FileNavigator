@@ -195,7 +195,7 @@ private fun DefaultMoveDestinationDialog(
                         fontStyle = FontStyle.Italic,
                         fontSize = 16.sp,
                         modifier = Modifier.weight(0.8f),
-                        color = if (isDestinationSet) Color.Unspecified else disabledColor())
+                        color = if (isDestinationSet) Color.Unspecified else disabledColor)
 
                     val buttonBoxWeight = 0.15f
                     val isDestinationSetDependentBoxWeight by animateFloatAsState(
@@ -218,8 +218,7 @@ private fun DefaultMoveDestinationDialog(
                     // Pick button
                     IconButton(
                         onClick = {
-                            mainScreenViewModel._launchDefaultMoveDestinationPickerFor.value =
-                                fileSource
+                            mainScreenViewModel.launchDefaultMoveDestinationPicker(fileSource)
                         },
                         modifier = Modifier.weight(buttonBoxWeight)
                     ) {
@@ -279,14 +278,14 @@ private fun DefaultMoveDestinationDialog(
                         Icon(
                             painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_delete_24),
                             contentDescription = stringResource(R.string.delete_default_move_destination),
-                            tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else disabledColor()
+                            tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else disabledColor
                         )
                     }
                 }
                 AnimatedVisibility(visible = showLockInfo) {
                     AppFontText(
                         text = stringResource(if (defaultMoveDestinationIsLocked) R.string.default_move_destination_locked_info else R.string.default_move_destination_unlocked_info),
-                        color = disabledColor()
+                        color = disabledColor
                     )
                     LaunchedEffect(key1 = Unit) {
                         closeLogInfoJob?.cancel()

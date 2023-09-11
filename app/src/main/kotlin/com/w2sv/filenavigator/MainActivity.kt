@@ -14,8 +14,8 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
+import com.w2sv.common.utils.collectFromFlow
 import com.w2sv.data.model.Theme
 import com.w2sv.filenavigator.ui.screens.main.MainScreen
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
@@ -23,7 +23,7 @@ import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.PowerSaveModeChangedReceiver
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
 import slimber.log.i
 import javax.inject.Inject
 
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        lifecycleScope.collectFlows()
+        lifecycleScope.collectFromFlows()
 
         setContent {
             AppTheme(
@@ -62,41 +62,33 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun LifecycleCoroutineScope.collectFlows() {
-        launch {
-            fileNavigatorStatusChanged.isRunning.collect {
-                viewModel.isNavigatorRunning.value = it
+    private fun CoroutineScope.collectFromFlows() {
+        collectFromFlow(fileNavigatorStatusChanged.isRunning) {
+            viewModel.isNavigatorRunning.value = it
+        }
+
+        collectFromFlow(viewModel.exitApplication) {
+            finishAffinity()
+        }
+
+        collectFromFlow(viewModel.launchDefaultMoveDestinationPickerFor) {
+            if (it != null) {
+                defaultDestinationSelectionLauncher.launch(null)  // TODO
             }
         }
 
-        launch {
-            viewModel.exitApplication.collect {
-                finishAffinity()
-            }
-        }
-
-        launch {
-            viewModel.launchDefaultMoveDestinationPickerFor.collect {
-                if (it != null) {
-                    defaultDestinationSelectionLauncher.launch(null)  // TODO
-                }
-            }
-        }
-
-        launch {
+        collectFromFlow(viewModel.disableListenerOnLowBattery) {
             val intent = PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity)
 
-            viewModel.disableListenerOnLowBattery.collect {
-                i { "Collected disableListenerOnLowBattery=$it" }
+            i { "Collected disableListenerOnLowBattery=$it" }
 
-                when (it) {
-                    true -> {
-                        startService(intent)
-                    }
+            when (it) {
+                true -> {
+                    startService(intent)
+                }
 
-                    false -> {
-                        stopService(intent)
-                    }
+                false -> {
+                    stopService(intent)
                 }
             }
         }

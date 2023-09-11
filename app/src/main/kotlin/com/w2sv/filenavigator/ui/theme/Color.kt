@@ -67,5 +67,5 @@ val md_theme_dark_scrim = Color(0xFF000000)
 val md_positive = Color(12, 173, 34, 200)
 val md_negative = Color(201, 14, 52, 200)
 
-@Composable
-fun disabledColor(): Color = MaterialTheme.colorScheme.onSurface.copy(0.38f)
+val disabledColor: Color
+    @Composable get() = MaterialTheme.colorScheme.onSurface.copy(0.38f)

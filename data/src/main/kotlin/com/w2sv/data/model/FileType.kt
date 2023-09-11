@@ -228,8 +228,8 @@ sealed class FileType(
         val isEnabled: Boolean get() = this == Enabled
 
         class StoreEntry(fileType: FileType) : DataStoreEntry.EnumValued.Impl<Status>(
-            intPreferencesKey(fileType.identifier),
-            DisabledForNoFileAccess
+            preferencesKey = intPreferencesKey(name = fileType.identifier),
+            defaultValue = DisabledForNoFileAccess
         )
     }
 
@@ -262,37 +262,31 @@ sealed class FileType(
     @Parcelize
     class Source(val fileType: FileType, val kind: SourceKind) : Parcelable {
 
-        private fun getPreferencesKeyTitle(keySuffix: String): String =
+        private fun getPreferencesKeyContent(keySuffix: String): String =
             "${fileType.identifier}.$kind.$keySuffix"
-
-        inner class IsEnabled : DataStoreEntry.UniType.Impl<Boolean>(
-            booleanPreferencesKey(getPreferencesKeyTitle("IS_ENABLED")),
-            true
-        )
-
-        inner class DefaultDestination : DataStoreEntry.UriValued.Impl(
-            stringPreferencesKey(getPreferencesKeyTitle("DEFAULT_DESTINATION")),
-            null
-        )
-
-        inner class DefaultDestinationIsLocked : DataStoreEntry.UniType.Impl<Boolean>(
-            booleanPreferencesKey(getPreferencesKeyTitle("DEFAULT_DESTINATION_IS_LOCKED")),
-            false
-        )
 
         @IgnoredOnParcel
         val isEnabled by lazy {
-            IsEnabled()
+            object : DataStoreEntry.UniType.Impl<Boolean>(
+                booleanPreferencesKey(getPreferencesKeyContent("IS_ENABLED")),
+                true
+            ) {}
         }
 
         @IgnoredOnParcel
         val defaultDestination by lazy {
-            DefaultDestination()
+            object : DataStoreEntry.UriValued.Impl(
+                stringPreferencesKey(getPreferencesKeyContent("DEFAULT_DESTINATION")),
+                null
+            ) {}
         }
 
         @IgnoredOnParcel
         val defaultDestinationIsLocked by lazy {
-            DefaultDestinationIsLocked()
+            object : DataStoreEntry.UniType.Impl<Boolean>(
+                booleanPreferencesKey(getPreferencesKeyContent("DEFAULT_DESTINATION_IS_LOCKED")),
+                false
+            ) {}
         }
 
         fun getTitle(context: Context): String =

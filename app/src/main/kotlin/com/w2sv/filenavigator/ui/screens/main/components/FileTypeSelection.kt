@@ -56,7 +56,8 @@ import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppCheckbox
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.components.ExtendedSnackbarVisuals
+import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
+import com.w2sv.filenavigator.ui.components.SnackbarAction
 import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.model.color
@@ -198,14 +199,14 @@ private fun FileTypeAccordionHeader(
                     painter = painterResource(id = fileType.iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(34.dp),
-                    tint = if (isEnabled) fileType.color else disabledColor()
+                    tint = if (isEnabled) fileType.color else disabledColor
                 )
             }
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
                 AppFontText(
                     text = stringResource(id = fileType.titleRes),
                     fontSize = 18.sp,
-                    color = if (isEnabled) Color.Unspecified else disabledColor()
+                    color = if (isEnabled) Color.Unspecified else disabledColor
                 )
             }
             Box(
@@ -258,7 +259,7 @@ private fun CoroutineScope.showManageExternalStorageSnackbar(
 ) {
     launch {
         snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-            ExtendedSnackbarVisuals(
+            AppSnackbarVisuals(
                 message = context.getString(
                     if (fileTypeStatus == FileType.Status.DisabledForNoFileAccess)
                         R.string.manage_external_storage_permission_rational
@@ -266,12 +267,14 @@ private fun CoroutineScope.showManageExternalStorageSnackbar(
                         R.string.non_media_files_require_all_files_access
                 ),
                 kind = SnackbarKind.Error,
-                actionLabel = context.getString(R.string.grant),
-                action = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        goToManageExternalStorageSettings(context)
+                action = SnackbarAction(
+                    label = context.getString(R.string.grant),
+                    callback = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            goToManageExternalStorageSettings(context)
+                        }
                     }
-                }
+                )
             )
         )
     }
@@ -283,7 +286,7 @@ private fun CoroutineScope.showLeaveAtLeastOneFileTypeEnabledSnackbar(
 ) {
     launch {
         snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-            ExtendedSnackbarVisuals(
+            AppSnackbarVisuals(
                 message = context.getString(
                     R.string.leave_at_least_one_file_type_enabled
                 ),
@@ -346,14 +349,14 @@ private fun FileSourceRow(
                 Icon(
                     painter = painterResource(id = source.kind.iconRes),
                     contentDescription = null,
-                    tint = if (isEnabled) fileType.color.copy(alpha = 0.75f) else disabledColor()
+                    tint = if (isEnabled) fileType.color.copy(alpha = 0.75f) else disabledColor
                 )
             }
             // Source label
             Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
                 AppFontText(
                     text = stringResource(id = source.kind.labelRes),
-                    color = if (isEnabled) MaterialTheme.colorScheme.onSurface.copy(0.7f) else disabledColor()
+                    color = if (isEnabled) MaterialTheme.colorScheme.onSurface.copy(0.7f) else disabledColor
                 )
             }
 
@@ -383,7 +386,7 @@ private fun FileSourceRow(
                             } else {
                                 scope.launch {
                                     mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-                                        ExtendedSnackbarVisuals(
+                                        AppSnackbarVisuals(
                                             message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
                                             kind = SnackbarKind.Error
                                         )

@@ -3,34 +3,45 @@ package com.w2sv.filenavigator.ui.components
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
 
-class ExtendedSnackbarVisuals(
-    override val message: String,
-    val kind: SnackbarKind? = null,
-    override val duration: SnackbarDuration = SnackbarDuration.Short,
-    override val actionLabel: String? = null,
-    val action: (() -> Unit)? = null,
-    override val withDismissAction: Boolean = false
-) : SnackbarVisuals
+@Immutable
+data class SnackbarAction(val label: String, val callback: () -> Unit)
 
-enum class SnackbarKind {
-    Error,
-    Success
+data class AppSnackbarVisuals(
+    override val message: String,
+    override val duration: SnackbarDuration = SnackbarDuration.Short,
+    val action: SnackbarAction? = null,
+    val kind: SnackbarKind? = null,
+    override val withDismissAction: Boolean = false,
+) : SnackbarVisuals {
+
+    override val actionLabel: String?
+        get() = action?.label
+}
+
+@Immutable
+sealed class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
+    data object Error : SnackbarKind(Icons.Outlined.Warning, md_negative)
+    data object Success : SnackbarKind(Icons.Outlined.Check, md_positive)
 }
 
 suspend fun SnackbarHostState.showSnackbarAndDismissCurrentIfApplicable(snackbarVisuals: SnackbarVisuals) {
@@ -39,40 +50,24 @@ suspend fun SnackbarHostState.showSnackbarAndDismissCurrentIfApplicable(snackbar
 }
 
 @Composable
-fun AppSnackbar(snackbarData: SnackbarData) {
-    val visuals = snackbarData.visuals as ExtendedSnackbarVisuals
-
+fun AppSnackbar(visuals: AppSnackbarVisuals) {
     Snackbar(
         action = {
             visuals.action?.let { action ->
-                TextButton(onClick = {
-                    action.invoke()
-                }) {
-                    AppFontText(text = visuals.actionLabel!!)
+                TextButton(
+                    onClick = action.callback,
+                ) {
+                    AppFontText(text = action.label, color = MaterialTheme.colorScheme.primary)
                 }
             }
-        }
+        },
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            (snackbarData.visuals as? ExtendedSnackbarVisuals)?.run {
-                when (kind) {
-                    SnackbarKind.Error -> Icon(
-                        painter = painterResource(id = R.drawable.ic_error_24),
-                        contentDescription = null,
-                        tint = md_negative
-                    )
-
-                    SnackbarKind.Success -> Icon(
-                        painter = painterResource(id = R.drawable.ic_success_24),
-                        contentDescription = null,
-                        tint = md_positive
-                    )
-
-                    null -> Unit
-                }
+            visuals.kind?.let { kind ->
+                Icon(imageVector = kind.icon, contentDescription = null, tint = kind.iconTint)
                 Spacer(modifier = Modifier.width(10.dp))
             }
-            AppFontText(text = snackbarData.visuals.message)
+            AppFontText(text = visuals.message)
         }
     }
 }

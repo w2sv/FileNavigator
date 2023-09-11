@@ -6,19 +6,18 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.navigator.FileNavigator
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -29,10 +28,12 @@ internal fun ManageExternalStoragePermissionDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
-            DialogButton(onClick = {
-                onDismissRequest()
-                onConfirmation()
-            }) {
+            DialogButton(
+                onClick = {
+                    onDismissRequest()
+                    onConfirmation()
+                }
+            ) {
                 AppFontText(text = stringResource(id = R.string.grant))
             }
         },
@@ -76,10 +77,8 @@ internal fun StartNavigatorOnLowBatteryConfirmationDialog(
     closeDialog: () -> Unit,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
-    scope: CoroutineScope = rememberCoroutineScope(),
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-
     AlertDialog(
         modifier = modifier,
         onDismissRequest = closeDialog,
@@ -89,7 +88,7 @@ internal fun StartNavigatorOnLowBatteryConfirmationDialog(
                     FileNavigator.start(context)
                     with(mainScreenViewModel) {
                         unconfirmedDisableListenerOnLowBattery.value = false
-                        scope.launch { unconfirmedDisableListenerOnLowBattery.sync() }
+                        viewModelScope.launch { unconfirmedDisableListenerOnLowBattery.sync() }
                     }
                     closeDialog()
                 }
