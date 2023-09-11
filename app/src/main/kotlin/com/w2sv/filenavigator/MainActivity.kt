@@ -91,10 +91,11 @@ class MainActivity : ComponentActivity() {
         }
 
         launch {
+            val intent = PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity)
+
             viewModel.disableListenerOnLowBattery.collect {
                 i { "Collected disableListenerOnLowBattery=$it" }
 
-                val intent = PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity)
                 when (it) {
                     true -> {
                         startService(intent)

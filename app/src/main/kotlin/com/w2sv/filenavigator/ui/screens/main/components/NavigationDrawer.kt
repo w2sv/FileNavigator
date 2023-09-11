@@ -162,7 +162,7 @@ private fun NavigationDrawerSheet(
             remember {
                 listOf(
                     NavigationDrawerItem(
-                        R.drawable.ic_settings_24,
+                        com.w2sv.navigator.R.drawable.ic_settings_24,
                         R.string.navigator_settings
                     ) {
                         onItemSettingsPressed()

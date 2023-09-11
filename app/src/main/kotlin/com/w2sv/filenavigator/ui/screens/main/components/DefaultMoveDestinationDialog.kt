@@ -95,7 +95,7 @@ fun OpenFileSourceDefaultDestinationDialogButton(
                         source.defaultDestination
                     )
                 ) R.drawable.ic_edit_folder_24
-                else R.drawable.ic_add_new_folder_24
+                else com.w2sv.navigator.R.drawable.ic_add_new_folder_24
             ), tint = MaterialTheme.colorScheme.secondary, contentDescription = stringResource(
                 R.string.open_target_directory_settings
             ), modifier = Modifier.size(DefaultIconDp)
@@ -277,7 +277,7 @@ private fun DefaultMoveDestinationDialog(
                         enabled = isDestinationSet
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_delete_24),
+                            painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_delete_24),
                             contentDescription = stringResource(R.string.delete_default_move_destination),
                             tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else disabledColor()
                         )

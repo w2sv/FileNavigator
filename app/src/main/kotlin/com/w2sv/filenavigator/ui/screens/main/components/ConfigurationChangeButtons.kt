@@ -23,11 +23,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
+import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -41,7 +41,7 @@ internal fun NavigatorConfigurationButtons(
 
     Row(modifier = modifier) {
         ConfigurationChangeButton(
-            iconRes = R.drawable.ic_cancel_24,
+            iconRes = com.w2sv.navigator.R.drawable.ic_cancel_24,
             color = md_negative,
             textRes = R.string.discard_changes,
             onClick = {
@@ -63,7 +63,7 @@ internal fun NavigatorConfigurationButtons(
                         .invokeOnCompletion {
                             // If FileListenerService is already running, relaunch with new file observer configuration
                             if (isNavigatorRunning.value) {
-                                FileNavigatorService.reregisterFileObservers(
+                                FileNavigator.reregisterFileObservers(
                                     context
                                 )
                             }

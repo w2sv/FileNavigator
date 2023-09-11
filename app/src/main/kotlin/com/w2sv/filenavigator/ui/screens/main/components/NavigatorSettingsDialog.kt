@@ -37,7 +37,7 @@ internal fun NavigatorSettingsDialog(
     AlertDialog(
         icon = {
             Icon(
-                painter = painterResource(id = R.drawable.ic_settings_24),
+                painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_settings_24),
                 contentDescription = null
             )
         },

@@ -3,12 +3,12 @@ minSdk = '29'  # min for MediaStore.Downloads.EXTERNAL_CONTENT_URI
 compileSdk = '34'
 
 agp = "8.1.1"
-kotlin = '1.9.0'
+kotlin = '1.9.10'
 java = '17'
 ksp = "1.9.0-1.0.13"
 triplet-play = '3.8.4'
 
-compose-compiler = '1.5.1'
+compose-compiler = '1.5.3'
 compose-tooling = "1.5.1"
 hilt = '2.48'
 junit = '5.9.2'

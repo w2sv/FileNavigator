@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.main.components
 
 import android.Manifest
+import android.content.Context
 import android.os.Build
 import android.view.animation.AnticipateOvershootInterpolator
 import androidx.annotation.DrawableRes
@@ -40,7 +41,6 @@ import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.common.utils.powerSaveModeActivated
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.ExtendedSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.bounceOnClickAnimation
@@ -51,6 +51,8 @@ import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.ui.theme.md_negative
 import com.w2sv.filenavigator.ui.theme.md_positive
 import com.w2sv.filenavigator.ui.utils.toEasing
+import com.w2sv.navigator.FileNavigator
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Immutable
@@ -65,11 +67,10 @@ private data class NavigatorButtonProperties(
 @Composable
 internal fun StartNavigatorButton(
     modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope(),
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-
     var showConfirmationDialog by rememberSaveable {
         mutableStateOf(false)
     }
@@ -83,7 +84,7 @@ internal fun StartNavigatorButton(
         if (mainScreenViewModel.unconfirmedDisableListenerOnLowBattery.value && context.powerSaveModeActivated == true) {
             showConfirmationDialog = true
         } else {
-            FileNavigatorService.start(context)
+            FileNavigator.start(context)
         }
     }
     val permissionState =
@@ -117,7 +118,7 @@ internal fun StartNavigatorButton(
             md_negative,
             R.drawable.ic_stop_24,
             R.string.stop_navigator
-        ) { FileNavigatorService.stop(context) }
+        ) { FileNavigator.stop(context) }
     else
         NavigatorButtonProperties(
             md_positive,

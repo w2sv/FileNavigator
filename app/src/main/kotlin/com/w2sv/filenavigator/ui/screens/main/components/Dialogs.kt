@@ -14,10 +14,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.navigator.service.FileNavigatorService
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -86,7 +86,7 @@ internal fun StartNavigatorOnLowBatteryConfirmationDialog(
         confirmButton = {
             DialogButton(
                 onClick = {
-                    FileNavigatorService.start(context)
+                    FileNavigator.start(context)
                     with(mainScreenViewModel) {
                         unconfirmedDisableListenerOnLowBattery.value = false
                         scope.launch { unconfirmedDisableListenerOnLowBattery.sync() }
