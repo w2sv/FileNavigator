@@ -218,7 +218,7 @@ private fun DefaultMoveDestinationDialog(
                     // Pick button
                     IconButton(
                         onClick = {
-                            mainScreenViewModel.launchDefaultMoveDestinationPickerFor.value =
+                            mainScreenViewModel._launchDefaultMoveDestinationPickerFor.value =
                                 fileSource
                         },
                         modifier = Modifier.weight(buttonBoxWeight)

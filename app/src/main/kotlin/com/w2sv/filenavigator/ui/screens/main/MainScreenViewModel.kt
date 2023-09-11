@@ -3,6 +3,7 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.content.Context
 import android.net.Uri
 import androidx.compose.material3.SnackbarHostState
+import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.coroutines.getSynchronousMap
@@ -30,6 +31,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import slimber.log.i
 import javax.inject.Inject
@@ -225,14 +227,30 @@ class MainScreenViewModel @Inject constructor(
     var unconfirmedDefaultMoveDestinationIsLocked: UnconfirmedStateFlow<Boolean>? = null
     var unconfirmedDefaultMoveDestinationConfiguration: UnconfirmedStatesComposition? = null
 
-    val launchDefaultMoveDestinationPickerFor: MutableStateFlow<FileType.Source?> =
+    val launchDefaultMoveDestinationPickerFor get() = _launchDefaultMoveDestinationPickerFor.asSharedFlow()
+    private val _launchDefaultMoveDestinationPickerFor: MutableStateFlow<FileType.Source?> =
         MutableStateFlow(null)
+
+    fun launchDefaultMoveDestinationPicker(fileTypeSource: FileType.Source) {
+        _launchDefaultMoveDestinationPickerFor.value = fileTypeSource
+    }
+
+    fun onDefaultMoveDestinationSelected(treeUri: Uri?, context: Context) {
+        if (treeUri != null) {
+            DocumentFile.fromTreeUri(context, treeUri)?.let { documentFile ->
+                unconfirmedDefaultMoveDestination!!.value = documentFile.uri
+            }
+        }
+
+        _launchDefaultMoveDestinationPickerFor.value = null
+    }
 
     // ==============
     // BackPress Handling
     // ==============
 
-    val exitApplication = MutableSharedFlow<Unit>()
+    val exitApplication get() = _exitApplication.asSharedFlow()
+    private val _exitApplication = MutableSharedFlow<Unit>()
 
     fun onBackPress(context: Context) {
         backPressHandler.invoke(
@@ -241,7 +259,7 @@ class MainScreenViewModel @Inject constructor(
             },
             onSecondPress = {
                 viewModelScope.launch {
-                    exitApplication.emit(Unit)
+                    _exitApplication.emit(Unit)
                 }
             }
         )

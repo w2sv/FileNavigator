@@ -14,7 +14,6 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.data.model.Theme
@@ -40,13 +39,7 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { treeUri ->
             i { "DocumentTree Uri: $treeUri" }
 
-            if (treeUri != null) {
-                DocumentFile.fromTreeUri(this, treeUri)?.let { documentFile ->
-                    viewModel.unconfirmedDefaultMoveDestination!!.value = documentFile.uri
-                }
-            }
-
-            viewModel.launchDefaultMoveDestinationPickerFor.value = null
+            viewModel.onDefaultMoveDestinationSelected(treeUri, this)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,8 +78,8 @@ class MainActivity : ComponentActivity() {
         launch {
             viewModel.launchDefaultMoveDestinationPickerFor.collect {
                 if (it != null) {
-                    defaultDestinationSelectionLauncher.launch(null)
-                }  // TODO
+                    defaultDestinationSelectionLauncher.launch(null)  // TODO
+                }
             }
         }
 
