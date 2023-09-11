@@ -103,7 +103,6 @@ fun OpenFileSourceDefaultDestinationDialogButton(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun DefaultMoveDestinationDialog(
     fileSource: FileType.Source,
