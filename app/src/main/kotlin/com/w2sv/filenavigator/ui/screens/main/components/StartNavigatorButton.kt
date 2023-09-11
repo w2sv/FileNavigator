@@ -47,10 +47,8 @@ import com.w2sv.filenavigator.ui.components.SnackbarAction
 import com.w2sv.filenavigator.ui.components.bounceOnClickAnimation
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
-import com.w2sv.filenavigator.ui.theme.disabledColor
-import com.w2sv.filenavigator.ui.theme.md_negative
-import com.w2sv.filenavigator.ui.theme.md_positive
 import com.w2sv.filenavigator.ui.utils.toEasing
 import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
@@ -116,13 +114,13 @@ internal fun StartNavigatorButton(
 
     val properties = if (mainScreenViewModel.isNavigatorRunning.collectAsState().value)
         NavigatorButtonProperties(
-            md_negative,
+            AppColor.error,
             R.drawable.ic_stop_24,
             R.string.stop_navigator
         ) { FileNavigator.stop(context) }
     else
         NavigatorButtonProperties(
-            md_positive,
+            AppColor.success,
             R.drawable.ic_start_24,
             R.string.start_navigator
         ) {
@@ -203,12 +201,12 @@ private fun ButtonContent(properties: NavigatorButtonProperties, anyStorageAcces
             painter = painterResource(id = properties.iconRes),
             contentDescription = null,
             modifier = Modifier.size(32.dp),
-            tint = if (anyStorageAccessGranted) properties.color else disabledColor
+            tint = if (anyStorageAccessGranted) properties.color else AppColor.disabled
         )
         AppFontText(
             text = stringResource(id = properties.labelRes),
             fontSize = 18.sp,
-            color = if (anyStorageAccessGranted) MaterialTheme.colorScheme.onBackground else disabledColor
+            color = if (anyStorageAccessGranted) MaterialTheme.colorScheme.onBackground else AppColor.disabled
         )
     }
 }

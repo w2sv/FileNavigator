@@ -20,8 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.w2sv.filenavigator.ui.theme.md_negative
-import com.w2sv.filenavigator.ui.theme.md_positive
+import com.w2sv.filenavigator.ui.theme.AppColor
 
 @Immutable
 data class SnackbarAction(val label: String, val callback: () -> Unit)
@@ -40,8 +39,8 @@ data class AppSnackbarVisuals(
 
 @Immutable
 sealed class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
-    data object Error : SnackbarKind(Icons.Outlined.Warning, md_negative)
-    data object Success : SnackbarKind(Icons.Outlined.Check, md_positive)
+    data object Success : SnackbarKind(Icons.Outlined.Check, AppColor.success)
+    data object Error : SnackbarKind(Icons.Outlined.Warning, AppColor.error)
 }
 
 suspend fun SnackbarHostState.showSnackbarAndDismissCurrentIfApplicable(snackbarVisuals: SnackbarVisuals) {

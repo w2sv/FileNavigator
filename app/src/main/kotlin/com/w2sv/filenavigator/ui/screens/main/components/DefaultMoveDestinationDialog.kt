@@ -57,10 +57,10 @@ import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.ui.theme.Epsilon
-import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.ui.utils.toEasing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -195,7 +195,7 @@ private fun DefaultMoveDestinationDialog(
                         fontStyle = FontStyle.Italic,
                         fontSize = 16.sp,
                         modifier = Modifier.weight(0.8f),
-                        color = if (isDestinationSet) Color.Unspecified else disabledColor)
+                        color = if (isDestinationSet) Color.Unspecified else AppColor.disabled)
 
                     val buttonBoxWeight = 0.15f
                     val isDestinationSetDependentBoxWeight by animateFloatAsState(
@@ -278,14 +278,14 @@ private fun DefaultMoveDestinationDialog(
                         Icon(
                             painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_delete_24),
                             contentDescription = stringResource(R.string.delete_default_move_destination),
-                            tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else disabledColor
+                            tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else AppColor.disabled
                         )
                     }
                 }
                 AnimatedVisibility(visible = showLockInfo) {
                     AppFontText(
                         text = stringResource(if (defaultMoveDestinationIsLocked) R.string.default_move_destination_locked_info else R.string.default_move_destination_unlocked_info),
-                        color = disabledColor
+                        color = AppColor.disabled
                     )
                     LaunchedEffect(key1 = Unit) {
                         closeLogInfoJob?.cancel()

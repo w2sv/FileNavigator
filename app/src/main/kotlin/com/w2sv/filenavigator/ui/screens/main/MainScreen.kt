@@ -47,15 +47,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
-import com.w2sv.filenavigator.ui.components.closeAnimated
-import com.w2sv.filenavigator.ui.components.openAnimated
 import com.w2sv.filenavigator.ui.components.AppTopBar
+import com.w2sv.filenavigator.ui.components.NavigationDrawer
+import com.w2sv.filenavigator.ui.components.closeAnimated
+import com.w2sv.filenavigator.ui.components.offsetFraction
+import com.w2sv.filenavigator.ui.components.openAnimated
 import com.w2sv.filenavigator.ui.screens.main.components.FileTypeSelectionColumn
 import com.w2sv.filenavigator.ui.screens.main.components.ManageExternalStoragePermissionDialog
-import com.w2sv.filenavigator.ui.screens.main.components.NavigationDrawer
 import com.w2sv.filenavigator.ui.screens.main.components.NavigatorConfigurationButtons
 import com.w2sv.filenavigator.ui.screens.main.components.StartNavigatorButton
-import com.w2sv.filenavigator.ui.screens.main.components.offsetFraction
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -68,13 +68,8 @@ fun MainScreen(
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val closeDrawer: () -> Unit = {
-        scope.launch {
-            drawerState.closeAnimated()
-        }
-    }
 
-    NavigationDrawer(drawerState, closeDrawer) {
+    NavigationDrawer(drawerState) {
         Scaffold(
             snackbarHost = {
                 SnackbarHost(mainScreenViewModel.snackbarHostState) { snackbarData ->
@@ -104,7 +99,9 @@ fun MainScreen(
     BackHandler {
         when (drawerState.currentValue) {
             DrawerValue.Closed -> mainScreenViewModel.onBackPress(context)
-            DrawerValue.Open -> closeDrawer()
+            DrawerValue.Open -> scope.launch {
+                drawerState.closeAnimated()
+            }
         }
     }
 }

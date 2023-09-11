@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main.components
+package com.w2sv.filenavigator.ui.components
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -6,6 +6,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.FloatSpringSpec
+import androidx.compose.animation.core.Spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,12 +22,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -51,16 +55,24 @@ import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.components.ThemeSelectionDialog
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.filenavigator.ui.screens.main.components.NavigatorSettingsDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+private val drawerAnim = FloatSpringSpec(Spring.DampingRatioMediumBouncy)
+
+suspend fun DrawerState.closeAnimated(anim: AnimationSpec<Float> = drawerAnim) {
+    animateTo(DrawerValue.Closed, anim)
+}
+
+suspend fun DrawerState.openAnimated(anim: AnimationSpec<Float> = drawerAnim) {
+    animateTo(DrawerValue.Open, anim)
+}
+
 @Composable
 fun NavigationDrawer(
-    drawerState: DrawerState,
-    closeDrawer: () -> Unit,
+    state: DrawerState,
     modifier: Modifier = Modifier,
     homeScreenViewModel: MainScreenViewModel = viewModel(),
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -106,7 +118,7 @@ fun NavigationDrawer(
         modifier = modifier,
         drawerContent = {
             NavigationDrawerSheet(
-                closeDrawer = closeDrawer,
+                closeDrawer = { scope.launch { state.closeAnimated() } },
                 onItemSettingsPressed = {
                     scope.launchDelayed(250L) {
                         showSettingsDialog = true
@@ -120,7 +132,7 @@ fun NavigationDrawer(
                 }
             )
         },
-        drawerState = drawerState
+        drawerState = state
     ) {
         content()
     }
@@ -221,7 +233,7 @@ fun VersionText(modifier: Modifier = Modifier) {
     )
 }
 
-@Stable
+@Immutable
 private data class NavigationDrawerItem(
     @DrawableRes val icon: Int,
     @StringRes val label: Int,

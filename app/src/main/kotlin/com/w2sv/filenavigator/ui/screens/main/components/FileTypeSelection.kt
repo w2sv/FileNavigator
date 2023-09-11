@@ -35,6 +35,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,9 +63,9 @@ import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.Epsilon
-import com.w2sv.filenavigator.ui.theme.disabledColor
 import com.w2sv.filenavigator.ui.utils.allFalseAfterEnteringValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -143,7 +144,7 @@ private fun FileTypeAccordion(
     val fileTypeEnabled =
         mainScreenViewModel.unconfirmedFileTypeStatus.getValue(fileType.status).isEnabled
 
-    var animatedProgress by remember { mutableStateOf(if (animate) 0f else 1f) }
+    var animatedProgress by remember { mutableFloatStateOf(if (animate) 0f else 1f) }
 
     if (animate) {
         LaunchedEffect(key1 = fileType) {
@@ -199,14 +200,14 @@ private fun FileTypeAccordionHeader(
                     painter = painterResource(id = fileType.iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(34.dp),
-                    tint = if (isEnabled) fileType.color else disabledColor
+                    tint = if (isEnabled) fileType.color else AppColor.disabled
                 )
             }
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
                 AppFontText(
                     text = stringResource(id = fileType.titleRes),
                     fontSize = 18.sp,
-                    color = if (isEnabled) Color.Unspecified else disabledColor
+                    color = if (isEnabled) Color.Unspecified else AppColor.disabled
                 )
             }
             Box(
@@ -349,14 +350,14 @@ private fun FileSourceRow(
                 Icon(
                     painter = painterResource(id = source.kind.iconRes),
                     contentDescription = null,
-                    tint = if (isEnabled) fileType.color.copy(alpha = 0.75f) else disabledColor
+                    tint = if (isEnabled) fileType.color.copy(alpha = 0.75f) else AppColor.disabled
                 )
             }
             // Source label
             Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
                 AppFontText(
                     text = stringResource(id = source.kind.labelRes),
-                    color = if (isEnabled) MaterialTheme.colorScheme.onSurface.copy(0.7f) else disabledColor
+                    color = if (isEnabled) MaterialTheme.colorScheme.onSurface.copy(0.7f) else AppColor.disabled
                 )
             }
 

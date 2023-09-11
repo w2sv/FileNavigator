@@ -25,8 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
-import com.w2sv.filenavigator.ui.theme.md_negative
-import com.w2sv.filenavigator.ui.theme.md_positive
+import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -42,7 +41,7 @@ internal fun NavigatorConfigurationButtons(
     Row(modifier = modifier) {
         ConfigurationChangeButton(
             iconRes = com.w2sv.navigator.R.drawable.ic_cancel_24,
-            color = md_negative,
+            color = AppColor.error,
             textRes = R.string.discard_changes,
             onClick = {
                 scope.launch {
@@ -55,7 +54,7 @@ internal fun NavigatorConfigurationButtons(
 
         ConfigurationChangeButton(
             iconRes = R.drawable.ic_check_24,
-            md_positive,
+            AppColor.success,
             R.string.confirm_changes,
             onClick = {
                 with(mainScreenViewModel) {
