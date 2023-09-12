@@ -47,7 +47,7 @@
     <string name="navigated_file_types">Navigated File Types</string>
     <string name="discard_changes">Discard Changes</string>
     <string name="confirm_changes">Confirm Changes</string>
-    <string name="device_default">Device Default</string>
+    <string name="_default">Default</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
     <string name="theme_button_cd">Enable the %s theme.</string>
@@ -76,4 +76,8 @@
     <string name="lock_default_move_destination">Lock default move destination</string>
     <string name="default_move_destination_locked_info">Locked: Default destination will NOT be updated upon picking a new one whilst navigating a file.</string>
     <string name="default_move_destination_unlocked_info">Unlocked: Default destination will be updated upon picking a new one whilst navigating a file.</string>
+    <string name="navigator">Navigator</string>
+    <string name="appearance">Appearance</string>
+    <string name="legal">Legal</string>
+    <string name="contribute">Contribute</string>
 </resources>

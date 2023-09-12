@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme(
-                useDarkTheme = when (viewModel.inAppTheme.collectAsState(initial = Theme.DeviceDefault).value) {
+                useDarkTheme = when (viewModel.theme.collectAsState(initial = Theme.DeviceDefault).value) {
                     Theme.Dark -> true
                     Theme.Light -> false
                     Theme.DeviceDefault -> isSystemInDarkTheme()

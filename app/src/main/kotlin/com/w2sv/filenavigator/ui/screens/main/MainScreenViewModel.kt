@@ -19,6 +19,7 @@ import com.w2sv.androidutils.ui.unconfirmed_state.getUnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.getUnconfirmedStatesComposition
 import com.w2sv.data.model.FileType
 import com.w2sv.data.model.StorageAccessStatus
+import com.w2sv.data.model.Theme
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.data.storage.repositories.PreferencesRepository
 import com.w2sv.filenavigator.R
@@ -30,8 +31,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import slimber.log.i
 import javax.inject.Inject
@@ -48,27 +51,29 @@ class MainScreenViewModel @Inject constructor(
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState()
 
-    val disableListenerOnLowBattery by preferencesRepository::disableListenerOnLowBattery
-
-    val unconfirmedDisableListenerOnLowBattery = getUnconfirmedStateFlow(
-        preferencesRepository.disableListenerOnLowBattery,
-        preferencesRepository::saveDisableListenerOnLowBattery
+    val disableListenerOnLowBattery = preferencesRepository.disableListenerOnLowBattery.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        true
     )
 
-    val inAppTheme by preferencesRepository::inAppTheme
+    fun saveDisableListenerOnLowBattery(value: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.saveDisableListenerOnLowBattery(value)
+        }
+    }
 
-    val unconfirmedInAppTheme = getUnconfirmedStateFlow(
-        preferencesRepository.inAppTheme,
-        preferencesRepository::saveInAppTheme
+    val theme = preferencesRepository.theme.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        Theme.DeviceDefault
     )
 
-    val unconfirmedExtendedSettings =
-        getUnconfirmedStatesComposition(
-            listOf(
-                unconfirmedDisableListenerOnLowBattery,
-                unconfirmedInAppTheme
-            )
-        )
+    fun saveTheme(theme: Theme) {
+        viewModelScope.launch {
+            preferencesRepository.saveTheme(theme)
+        }
+    }
 
     val showedManageExternalStorageRational by preferencesRepository::showedManageExternalStorageRational
 

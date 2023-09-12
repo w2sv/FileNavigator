@@ -30,6 +30,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,15 +49,15 @@ import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.AppTopBar
-import com.w2sv.filenavigator.ui.components.NavigationDrawer
-import com.w2sv.filenavigator.ui.components.closeAnimated
-import com.w2sv.filenavigator.ui.components.offsetFraction
-import com.w2sv.filenavigator.ui.components.openAnimated
+import com.w2sv.filenavigator.ui.components.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.screens.main.components.FileTypeSelectionColumn
 import com.w2sv.filenavigator.ui.screens.main.components.ManageExternalStoragePermissionDialog
 import com.w2sv.filenavigator.ui.screens.main.components.NavigatorConfigurationButtons
 import com.w2sv.filenavigator.ui.screens.main.components.StartNavigatorButton
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
+import com.w2sv.filenavigator.ui.utils.closeAnimated
+import com.w2sv.filenavigator.ui.utils.getOffsetFractionState
+import com.w2sv.filenavigator.ui.utils.openAnimated
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -112,10 +113,14 @@ internal fun ScaffoldContent(
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    val minValue = with(LocalDensity.current) { 360.dp.toPx() }
+    val maxWidthPixels = with(LocalDensity.current) { 360.dp.toPx() }
 
     val drawerProgress by remember {
-        drawerState.offsetFraction(minValue.toInt())
+        drawerState.getOffsetFractionState(maxWidthPx = maxWidthPixels.toInt())
+    }
+
+    val drawerProgressInverse by remember {
+        derivedStateOf { 1 - drawerProgress }
     }
 
     Surface(
@@ -126,9 +131,9 @@ internal fun ScaffoldContent(
                 .padding(horizontal = 10.dp)
                 .verticalScroll(rememberScrollState())
                 .graphicsLayer(
-                    scaleX = 1 - drawerProgress,
+                    scaleX = drawerProgressInverse,
                     translationX = LocalConfiguration.current.screenWidthDp * drawerProgress,
-                    alpha = 1 - drawerProgress
+                    alpha = drawerProgressInverse
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround

@@ -86,10 +86,7 @@ internal fun StartNavigatorOnLowBatteryConfirmationDialog(
             DialogButton(
                 onClick = {
                     FileNavigator.start(context)
-                    with(mainScreenViewModel) {
-                        unconfirmedDisableListenerOnLowBattery.value = false
-                        viewModelScope.launch { unconfirmedDisableListenerOnLowBattery.sync() }
-                    }
+                    mainScreenViewModel.saveDisableListenerOnLowBattery(false)
                     closeDialog()
                 }
             ) {

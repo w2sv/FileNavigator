@@ -11,25 +11,23 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -41,84 +39,47 @@ import com.w2sv.data.model.Theme
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
-import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.ui.utils.toEasing
 
 @Composable
-fun ThemeSelectionDialog(
-    onDismissRequest: () -> Unit,
-    selectedTheme: () -> Theme,
-    onThemeSelected: (Theme) -> Unit,
-    applyButtonEnabled: () -> Boolean,
-    onApplyButtonClick: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = { AppFontText(text = stringResource(id = R.string.theme)) },
-        icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_nightlight_24),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.size(DefaultIconDp)
-            )
-        },
-        confirmButton = {
-            DialogButton(onClick = { onApplyButtonClick() }, enabled = applyButtonEnabled()) {
-                AppFontText(text = stringResource(id = R.string.apply))
-            }
-        },
-        dismissButton = {
-            DialogButton(onClick = onDismissRequest) {
-                AppFontText(text = stringResource(id = R.string.cancel))
-            }
-        },
-        text = {
-            ThemeSelectionRow(selected = selectedTheme, onSelected = onThemeSelected)
-        }
-    )
-}
-
-@Composable
 fun ThemeSelectionRow(
-    modifier: Modifier = Modifier,
-    selected: () -> Theme,
-    onSelected: (Theme) -> Unit
+    selected: Theme,
+    onSelected: (Theme) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Center,
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        listOf(
-            ThemeIndicatorProperties(
-                theme = Theme.Light,
-                label = R.string.light,
-                buttonColor = ButtonColor.Uniform(Color.White)
-            ),
-            ThemeIndicatorProperties(
-                theme = Theme.DeviceDefault,
-                label = R.string.device_default,
-                buttonColor = ButtonColor.Gradient(
-                    Brush.linearGradient(
-                        0.5f to Color.White,
-                        0.5f to Color.Black
+        remember {
+            listOf(
+                ThemeIndicatorProperties(
+                    theme = Theme.Light,
+                    label = R.string.light,
+                    buttonColor = ButtonColor.Uniform(Color.White)
+                ),
+                ThemeIndicatorProperties(
+                    theme = Theme.DeviceDefault,
+                    label = R.string._default,
+                    buttonColor = ButtonColor.Gradient(
+                        Brush.linearGradient(
+                            0.5f to Color.White,
+                            0.5f to Color.Black
+                        )
                     )
+                ),
+                ThemeIndicatorProperties(
+                    theme = Theme.Dark,
+                    label = R.string.dark,
+                    buttonColor = ButtonColor.Uniform(Color.Black)
                 )
-            ),
-            ThemeIndicatorProperties(
-                theme = Theme.Dark,
-                label = R.string.dark,
-                buttonColor = ButtonColor.Uniform(Color.Black)
             )
-        )
+        }
             .forEach { properties ->
                 ThemeColumn(
                     properties = properties,
-                    isSelected = { properties.theme == selected() },
-                    modifier = Modifier.padding(
-                        horizontal = 12.dp
-                    )
+                    isSelected = { properties.theme == selected },
                 ) {
                     onSelected(properties.theme)
                 }

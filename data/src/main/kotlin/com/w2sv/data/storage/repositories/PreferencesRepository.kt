@@ -44,13 +44,13 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
         save(Key.DISABLE_LISTENER_ON_LOW_BATTERY, value)
     }
 
-    val inAppTheme: Flow<Theme> = getEnumFlow(
-        Key.IN_APP_THEME,
+    val theme: Flow<Theme> = getEnumFlow(
+        Key.THEME,
         Theme.DeviceDefault
     )
 
-    suspend fun saveInAppTheme(value: Theme) {
-        save(Key.IN_APP_THEME, value)
+    suspend fun saveTheme(value: Theme) {
+        save(Key.THEME, value)
     }
 
     // =======================
@@ -80,7 +80,7 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
             "previousStorageAccessStatus"
         )
 
-        val IN_APP_THEME = intPreferencesKey(
+        val THEME = intPreferencesKey(
             "inAppTheme"
         )
     }

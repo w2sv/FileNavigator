@@ -1,0 +1,207 @@
+package com.w2sv.filenavigator.ui.components.drawer
+
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.app.ShareCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.w2sv.androidutils.generic.appPlayStoreUrl
+import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
+import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.components.AppCheckbox
+import com.w2sv.filenavigator.ui.components.AppFontText
+import com.w2sv.filenavigator.ui.components.ThemeSelectionRow
+import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.filenavigator.ui.utils.conditional
+
+private sealed interface SheetElement {
+    interface Item : SheetElement {
+        val iconRes: Int
+        val labelRes: Int
+
+        data class Clickable(
+            @DrawableRes override val iconRes: Int,
+            @StringRes override val labelRes: Int,
+            val onClick: () -> Unit
+        ) : Item
+
+        data class CustomContent(
+            @DrawableRes override val iconRes: Int,
+            @StringRes override val labelRes: Int,
+            val content: @Composable RowScope.() -> Unit
+        ) : Item
+    }
+
+    data class SubHeader(
+        @StringRes val titleRes: Int,
+    ) : SheetElement
+}
+
+@Composable
+internal fun ColumnScope.SheetContent(
+    closeDrawer: () -> Unit,
+    context: Context = LocalContext.current,
+    mainScreenVM: MainScreenViewModel = viewModel()
+) {
+    remember {
+        listOf(
+            SheetElement.SubHeader(
+                R.string.navigator
+            ),
+            SheetElement.Item.CustomContent(
+                iconRes = R.drawable.ic_battery_low_24,
+                labelRes = R.string.disable_navigator_on_low_battery,
+                content = {
+                    Spacer(modifier = Modifier.weight(1f))
+                    AppCheckbox(
+                        checked = mainScreenVM.disableListenerOnLowBattery.collectAsState().value,
+                        onCheckedChange = mainScreenVM::saveDisableListenerOnLowBattery,
+                    )
+                }
+            ),
+            SheetElement.SubHeader(
+                R.string.appearance
+            ),
+            SheetElement.Item.CustomContent(
+                R.drawable.ic_nightlight_24,
+                R.string.theme
+            ) {
+                Spacer(modifier = Modifier.width(16.dp))
+                ThemeSelectionRow(
+                    selected = mainScreenVM.theme.collectAsState().value,
+                    onSelected = mainScreenVM::saveTheme
+                )
+            },
+            SheetElement.SubHeader(
+                R.string.contribute
+            ),
+            SheetElement.Item.Clickable(
+                R.drawable.ic_share_24,
+                R.string.share
+            ) {
+                ShareCompat.IntentBuilder(context)
+                    .setType("text/plain")
+                    .setText(context.getString(R.string.share_action_text))
+                    .startChooser()
+            },
+            SheetElement.Item.Clickable(
+                R.drawable.ic_star_rate_24,
+                R.string.rate
+            ) {
+                try {
+                    context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse(appPlayStoreUrl(context))
+                        )
+                            .setPackage("com.android.vending")
+                    )
+                } catch (e: ActivityNotFoundException) {
+                    context.showToast(context.getString(R.string.you_re_not_signed_into_the_play_store))
+                }
+            },
+            SheetElement.SubHeader(R.string.legal),
+            SheetElement.Item.Clickable(
+                R.drawable.ic_policy_24,
+                R.string.privacy_policy
+            ) {
+                context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/PRIVACY-POLICY.md")
+            }
+        )
+    }
+        .forEach {
+            when (it) {
+                is SheetElement.Item -> {
+                    Item(item = it, closeDrawer = closeDrawer)
+                }
+
+                is SheetElement.SubHeader -> {
+                    SubHeader(titleRes = it.titleRes)
+                }
+            }
+        }
+}
+
+@Composable
+private fun ColumnScope.SubHeader(
+    @StringRes titleRes: Int,
+    modifier: Modifier = Modifier,
+) {
+    AppFontText(
+        text = stringResource(id = titleRes),
+        modifier = modifier
+            .padding(vertical = 4.dp)
+            .align(Alignment.CenterHorizontally),
+        fontSize = 16.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.secondary,
+    )
+}
+
+@Composable
+private fun Item(
+    item: SheetElement.Item,
+    closeDrawer: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .conditional(
+                item is SheetElement.Item.Clickable,
+                onTrue = {
+                    Modifier.clickable {
+                        (item as SheetElement.Item.Clickable).onClick()
+                        closeDrawer()
+                    }
+                }
+            )
+            .padding(vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(size = 28.dp),
+            painter = painterResource(id = item.iconRes),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+        )
+
+        AppFontText(
+            text = stringResource(id = item.labelRes),
+            modifier = Modifier.padding(start = 16.dp),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+        )
+
+        if (item is SheetElement.Item.CustomContent) {
+            item.content(this)
+        }
+    }
+}
