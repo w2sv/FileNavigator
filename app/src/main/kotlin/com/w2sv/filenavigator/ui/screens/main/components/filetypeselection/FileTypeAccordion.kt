@@ -22,6 +22,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -163,18 +164,26 @@ private fun FileTypeAccordionHeader(
                                 ) {
                                     mainScreenViewModel.unconfirmedFileTypeStatus.toggle(fileType.status)
                                 } else {
-                                    scope.showLeaveAtLeastOneFileTypeEnabledSnackbar(
-                                        mainScreenViewModel.snackbarHostState,
-                                        context
-                                    )
+                                    scope.launch {
+                                        mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                            AppSnackbarVisuals(
+                                                message = context.getString(
+                                                    R.string.leave_at_least_one_file_type_enabled
+                                                ),
+                                                kind = SnackbarKind.Error
+                                            )
+                                        )
+                                    }
                                 }
                             }
 
-                            FileType.Status.DisabledForNoFileAccess, FileType.Status.DisabledForMediaAccessOnly -> scope.showManageExternalStorageSnackbar(
-                                status,
-                                mainScreenViewModel.snackbarHostState,
-                                context
-                            )
+                            FileType.Status.DisabledDueToNoFileAccess, FileType.Status.DisabledDueToMediaAccessOnly -> {
+                                scope.launch {
+                                    mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                        getManageExternalStorageSnackbarVisuals(status, context)
+                                    )
+                                }
+                            }
                         }
                     }
                 )
@@ -184,51 +193,29 @@ private fun FileTypeAccordionHeader(
 }
 
 /**
- * Assumes [fileTypeStatus] to be one of [FileType.Status.DisabledForNoFileAccess], [FileType.Status.DisabledForMediaAccessOnly].
+ * Assumes [fileTypeStatus] to be one of [FileType.Status.DisabledDueToNoFileAccess], [FileType.Status.DisabledDueToMediaAccessOnly].
  */
-private fun CoroutineScope.showManageExternalStorageSnackbar(
+private fun getManageExternalStorageSnackbarVisuals(
     fileTypeStatus: FileType.Status,
-    snackbarHostState: SnackbarHostState,
     context: Context
-) {
-    launch {
-        snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-            AppSnackbarVisuals(
-                message = context.getString(
-                    if (fileTypeStatus == FileType.Status.DisabledForNoFileAccess)
-                        R.string.manage_external_storage_permission_rational
-                    else
-                        R.string.non_media_files_require_all_files_access
-                ),
-                kind = SnackbarKind.Error,
-                action = SnackbarAction(
-                    label = context.getString(R.string.grant),
-                    callback = {
-                        if (manageExternalStoragePermissionRequired()) {
-                            goToManageExternalStorageSettings(context)
-                        }
-                    }
-                )
-            )
+): SnackbarVisuals =
+    AppSnackbarVisuals(
+        message = context.getString(
+            if (fileTypeStatus == FileType.Status.DisabledDueToNoFileAccess)
+                R.string.manage_external_storage_permission_rational
+            else
+                R.string.non_media_files_require_all_files_access
+        ),
+        kind = SnackbarKind.Error,
+        action = SnackbarAction(
+            label = context.getString(R.string.grant),
+            callback = {
+                if (manageExternalStoragePermissionRequired()) {
+                    goToManageExternalStorageSettings(context)
+                }
+            }
         )
-    }
-}
-
-private fun CoroutineScope.showLeaveAtLeastOneFileTypeEnabledSnackbar(
-    snackbarHostState: SnackbarHostState,
-    context: Context
-) {
-    launch {
-        snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
-            AppSnackbarVisuals(
-                message = context.getString(
-                    R.string.leave_at_least_one_file_type_enabled
-                ),
-                kind = SnackbarKind.Error
-            )
-        )
-    }
-}
+    )
 
 @Composable
 private fun FileSourcesSurface(

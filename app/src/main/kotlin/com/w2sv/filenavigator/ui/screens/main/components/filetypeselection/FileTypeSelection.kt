@@ -41,7 +41,6 @@ class CascadeAnimationState<T> {
     val animationDelayMillis: Int get() = nRunningAnimations * 100
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier,

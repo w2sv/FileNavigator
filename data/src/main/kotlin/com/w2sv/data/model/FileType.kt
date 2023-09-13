@@ -222,14 +222,14 @@ sealed class FileType(
     enum class Status {
         Enabled,
         Disabled,
-        DisabledForMediaAccessOnly,
-        DisabledForNoFileAccess;
+        DisabledDueToMediaAccessOnly,
+        DisabledDueToNoFileAccess;
 
         val isEnabled: Boolean get() = this == Enabled
 
         class StoreEntry(fileType: FileType) : DataStoreEntry.EnumValued.Impl<Status>(
             preferencesKey = intPreferencesKey(name = fileType.identifier),
-            defaultValue = DisabledForNoFileAccess
+            defaultValue = DisabledDueToNoFileAccess
         )
     }
 

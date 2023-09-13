@@ -118,13 +118,13 @@ class MainScreenViewModel @Inject constructor(
                     when (status) {
                         StorageAccessStatus.NoAccess -> setFileTypeStatuses(
                             FileType.values,
-                            FileType.Status.DisabledForNoFileAccess
+                            FileType.Status.DisabledDueToNoFileAccess
                         )
 
                         StorageAccessStatus.MediaFilesOnly -> {
                             setFileTypeStatuses(
                                 FileType.NonMedia.all,
-                                FileType.Status.DisabledForMediaAccessOnly
+                                FileType.Status.DisabledDueToMediaAccessOnly
                             )
 
                             if (previousStatus == StorageAccessStatus.NoAccess) {
