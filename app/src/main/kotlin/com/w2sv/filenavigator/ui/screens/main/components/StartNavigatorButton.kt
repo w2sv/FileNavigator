@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +44,8 @@ import com.w2sv.common.utils.powerSaveModeActivated
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
+import com.w2sv.filenavigator.ui.components.DialogButton
+import com.w2sv.filenavigator.ui.components.InfoIcon
 import com.w2sv.filenavigator.ui.components.SnackbarAction
 import com.w2sv.filenavigator.ui.components.bounceOnClickAnimation
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
@@ -181,32 +184,80 @@ internal fun StartNavigatorButton(
                             )
                         )
             }
-        ) {
-            ButtonContent(
-                properties = it,
-                anyStorageAccessGranted = anyStorageAccessGranted
-            )
+        ) { properties ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    painter = painterResource(id = properties.iconRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = if (anyStorageAccessGranted) properties.color else AppColor.disabled
+                )
+                AppFontText(
+                    text = stringResource(id = properties.labelRes),
+                    fontSize = 18.sp,
+                    color = if (anyStorageAccessGranted) MaterialTheme.colorScheme.onBackground else AppColor.disabled
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun ButtonContent(properties: NavigatorButtonProperties, anyStorageAccessGranted: Boolean) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Icon(
-            painter = painterResource(id = properties.iconRes),
-            contentDescription = null,
-            modifier = Modifier.size(32.dp),
-            tint = if (anyStorageAccessGranted) properties.color else AppColor.disabled
-        )
-        AppFontText(
-            text = stringResource(id = properties.labelRes),
-            fontSize = 18.sp,
-            color = if (anyStorageAccessGranted) MaterialTheme.colorScheme.onBackground else AppColor.disabled
-        )
-    }
+internal fun PostNotificationsPermissionDialog(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            DialogButton(onClick = onDismissRequest) {
+                AppFontText(text = stringResource(id = R.string.understood))
+            }
+        },
+        icon = {
+            InfoIcon()
+        },
+        text = {
+            AppFontText(
+                text = stringResource(R.string.post_notifications_permission_rational)
+            )
+        }
+    )
+}
+
+@Composable
+internal fun StartNavigatorOnLowBatteryConfirmationDialog(
+    closeDialog: () -> Unit,
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    mainScreenViewModel: MainScreenViewModel = viewModel()
+) {
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = closeDialog,
+        confirmButton = {
+            DialogButton(
+                onClick = {
+                    FileNavigator.start(context)
+                    mainScreenViewModel.saveDisableListenerOnLowBattery(false)
+                    closeDialog()
+                }
+            ) {
+                AppFontText(text = stringResource(R.string.yes))
+            }
+        },
+        dismissButton = {
+            ElevatedButton(onClick = closeDialog) {
+                AppFontText(text = stringResource(R.string.no))
+            }
+        },
+        text = {
+            AppFontText(text = stringResource(R.string.start_navigator_confirmation_dialog_text))
+        }
+    )
 }
