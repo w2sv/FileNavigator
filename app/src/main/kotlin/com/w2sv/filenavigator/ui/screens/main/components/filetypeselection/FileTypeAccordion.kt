@@ -57,6 +57,7 @@ import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.screens.main.components.OpenFileSourceDefaultDestinationDialogButton
 import com.w2sv.filenavigator.ui.theme.AppColor
+import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.utils.allFalseAfterEnteringValue
 import kotlinx.coroutines.CoroutineScope
@@ -66,22 +67,29 @@ import kotlinx.coroutines.launch
 fun FileTypeAccordion(
     fileType: FileType,
     isEnabled: Boolean,
-    animate: Boolean,
-    nRunningAnimations: Int,
+    cascadeAnimationState: CascadeAnimationState<FileType>,
     modifier: Modifier = Modifier
 ) {
-    var animatedProgress by remember { mutableFloatStateOf(if (animate) 0f else 1f) }
+    val animationImpending = cascadeAnimationState.animationImpending(fileType)
+    var animatedProgress by remember { mutableFloatStateOf(if (animationImpending) 0f else 1f) }
 
-    if (animate) {
+    if (animationImpending) {
         LaunchedEffect(key1 = fileType) {
+            cascadeAnimationState.onAnimationStarted(fileType)
             animatedProgress = 1f
         }
     }
 
     val animatedAlpha by animateFloatAsState(
         targetValue = animatedProgress,
-        animationSpec = tween(durationMillis = 500, delayMillis = nRunningAnimations * 100),
-        label = ""
+        animationSpec = tween(
+            durationMillis = DefaultAnimationDuration,
+            delayMillis = cascadeAnimationState.animationDelayMillis
+        ),
+        label = "",
+        finishedListener = {
+            cascadeAnimationState.onAnimationFinished()
+        }
     )
 
     Column(
