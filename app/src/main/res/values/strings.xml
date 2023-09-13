@@ -79,5 +79,7 @@
     <string name="navigator">Navigator</string>
     <string name="appearance">Appearance</string>
     <string name="legal">Legal</string>
-    <string name="contribute">Contribute</string>
+    <string name="more">More</string>
+    <string name="license">License</string>
+    <string name="developer">Developer</string>
 </resources>

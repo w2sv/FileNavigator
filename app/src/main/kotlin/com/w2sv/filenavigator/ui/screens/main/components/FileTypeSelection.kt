@@ -368,7 +368,7 @@ private fun FileSourceRow(
 
             // Empty box, pushing the checkbox into the position of the destinationButtonBox upon vanishing of the latter
             Spacer(modifier = Modifier.weight(buttonBoxWeight - destinationButtonBoxWeight + Epsilon))
-            // Checkbox
+            // CheckboxContent
             Box(modifier = Modifier.weight(buttonBoxWeight), contentAlignment = Alignment.Center) {
                 if (fileType.isMediaType) {
                     AppCheckbox(

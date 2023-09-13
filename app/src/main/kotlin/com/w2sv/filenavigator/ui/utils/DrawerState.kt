@@ -18,5 +18,5 @@ suspend fun DrawerState.openAnimated(anim: AnimationSpec<Float> = drawerAnim) {
     animateTo(DrawerValue.Open, anim)
 }
 
-fun DrawerState.getOffsetFractionState(maxWidthPx: Int): State<Float> =
-    derivedStateOf { 1 + offset.value / maxWidthPx }
+fun DrawerState.visibilityPercentage(maxWidthPx: Float): State<Float> =
+    derivedStateOf { offset.value / maxWidthPx + 1 }  // offset.value = -MAX when completely hidden, 0 when completely visible

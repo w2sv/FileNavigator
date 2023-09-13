@@ -38,7 +38,6 @@ import com.w2sv.filenavigator.ui.components.AppCheckbox
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
-import com.w2sv.filenavigator.ui.utils.conditional
 
 private sealed interface SheetElement {
     interface Item : SheetElement {
@@ -78,10 +77,9 @@ internal fun ColumnScope.SheetContent(
                 iconRes = R.drawable.ic_battery_low_24,
                 labelRes = R.string.disable_navigator_on_low_battery,
                 content = {
-                    Spacer(modifier = Modifier.weight(1f))
-                    AppCheckbox(
+                    CheckboxContent(
                         checked = mainScreenVM.disableListenerOnLowBattery.collectAsState().value,
-                        onCheckedChange = mainScreenVM::saveDisableListenerOnLowBattery,
+                        onCheckedChange = mainScreenVM::saveDisableListenerOnLowBattery
                     )
                 }
             ),
@@ -98,18 +96,22 @@ internal fun ColumnScope.SheetContent(
                     onSelected = mainScreenVM::saveTheme
                 )
             },
-            SheetElement.SubHeader(
-                R.string.contribute
-            ),
+            SheetElement.SubHeader(R.string.legal),
             SheetElement.Item.Clickable(
-                R.drawable.ic_share_24,
-                R.string.share
+                R.drawable.ic_policy_24,
+                R.string.privacy_policy
             ) {
-                ShareCompat.IntentBuilder(context)
-                    .setType("text/plain")
-                    .setText(context.getString(R.string.share_action_text))
-                    .startChooser()
+                context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/PRIVACY-POLICY.md")
             },
+            SheetElement.Item.Clickable(
+                R.drawable.ic_copyright_24,
+                R.string.license
+            ) {
+                context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/LICENSE")
+            },
+            SheetElement.SubHeader(
+                R.string.more
+            ),
             SheetElement.Item.Clickable(
                 R.drawable.ic_star_rate_24,
                 R.string.rate
@@ -126,12 +128,20 @@ internal fun ColumnScope.SheetContent(
                     context.showToast(context.getString(R.string.you_re_not_signed_into_the_play_store))
                 }
             },
-            SheetElement.SubHeader(R.string.legal),
             SheetElement.Item.Clickable(
-                R.drawable.ic_policy_24,
-                R.string.privacy_policy
+                R.drawable.ic_share_24,
+                R.string.share
             ) {
-                context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/PRIVACY-POLICY.md")
+                ShareCompat.IntentBuilder(context)
+                    .setType("text/plain")
+                    .setText(context.getString(R.string.share_action_text))
+                    .startChooser()
+            },
+            SheetElement.Item.Clickable(
+                R.drawable.ic_developer_24,
+                R.string.developer
+            ) {
+                context.openUrlWithActivityNotFoundHandling("https://play.google.com/store/apps/dev?id=6884111703871536890")
             }
         )
     }
@@ -146,6 +156,15 @@ internal fun ColumnScope.SheetContent(
                 }
             }
         }
+}
+
+@Composable
+private fun RowScope.CheckboxContent(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Spacer(modifier = Modifier.weight(1f))
+    AppCheckbox(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+    )
 }
 
 @Composable
@@ -173,14 +192,14 @@ private fun Item(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .conditional(
-                item is SheetElement.Item.Clickable,
-                onTrue = {
+            .then(
+                if (item is SheetElement.Item.Clickable)
                     Modifier.clickable {
-                        (item as SheetElement.Item.Clickable).onClick()
+                        item.onClick()
                         closeDrawer()
                     }
-                }
+                else
+                    Modifier
             )
             .padding(vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,

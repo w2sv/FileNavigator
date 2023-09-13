@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
@@ -56,7 +57,7 @@ import com.w2sv.filenavigator.ui.screens.main.components.NavigatorConfigurationB
 import com.w2sv.filenavigator.ui.screens.main.components.StartNavigatorButton
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.closeAnimated
-import com.w2sv.filenavigator.ui.utils.getOffsetFractionState
+import com.w2sv.filenavigator.ui.utils.visibilityPercentage
 import com.w2sv.filenavigator.ui.utils.openAnimated
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -88,7 +89,8 @@ fun MainScreen(
             }
         ) { paddingValues ->
             ScaffoldContent(
-                drawerState = drawerState, modifier = Modifier
+                drawerState = drawerState,
+                modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             )
@@ -113,14 +115,21 @@ internal fun ScaffoldContent(
     modifier: Modifier = Modifier,
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    val maxWidthPixels = with(LocalDensity.current) { 360.dp.toPx() }
+    val maxDrawerWidthPx = with(LocalDensity.current) { DrawerDefaults.MaximumDrawerWidth.toPx() }
 
-    val drawerProgress by remember {
-        drawerState.getOffsetFractionState(maxWidthPx = maxWidthPixels.toInt())
+    val drawerVisibilityPercentage by remember {
+        drawerState.visibilityPercentage(maxWidthPx = maxDrawerWidthPx)
+    }
+    val drawerVisibilityPercentageInverse by remember {
+        derivedStateOf {
+            1 - drawerVisibilityPercentage
+        }
     }
 
-    val drawerProgressInverse by remember {
-        derivedStateOf { 1 - drawerProgress }
+    val drawerVisibilityPercentageAngle by remember {
+        derivedStateOf {
+            180 * drawerVisibilityPercentage
+        }
     }
 
     Surface(
@@ -131,9 +140,12 @@ internal fun ScaffoldContent(
                 .padding(horizontal = 10.dp)
                 .verticalScroll(rememberScrollState())
                 .graphicsLayer(
-                    scaleX = drawerProgressInverse,
-                    translationX = LocalConfiguration.current.screenWidthDp * drawerProgress,
-                    alpha = drawerProgressInverse
+                    scaleX = drawerVisibilityPercentageInverse,
+                    scaleY = drawerVisibilityPercentageInverse,
+                    translationX = LocalConfiguration.current.screenWidthDp * drawerVisibilityPercentage,
+                    translationY = LocalConfiguration.current.screenHeightDp * drawerVisibilityPercentage,
+                    rotationY = drawerVisibilityPercentageAngle,
+                    rotationZ = drawerVisibilityPercentageAngle
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround
