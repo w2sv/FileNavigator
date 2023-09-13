@@ -81,7 +81,7 @@ internal fun ColumnScope.SheetContent(
                 content = {
                     CheckboxContent(
                         checked = mainScreenVM.disableListenerOnLowBattery.collectAsState().value,
-                        onCheckedChange = mainScreenVM::saveDisableListenerOnLowBattery
+                        onCheckedChange = mainScreenVM::saveDisableNavigatorOnLowBattery
                     )
                 }
             ),

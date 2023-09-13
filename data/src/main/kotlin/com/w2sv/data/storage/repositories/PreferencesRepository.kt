@@ -40,7 +40,7 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
     val disableListenerOnLowBattery: Flow<Boolean> =
         getFlow(Key.DISABLE_LISTENER_ON_LOW_BATTERY, true)
 
-    suspend fun saveDisableListenerOnLowBattery(value: Boolean) {
+    suspend fun saveDisableNavigatorOnLowBattery(value: Boolean) {
         save(Key.DISABLE_LISTENER_ON_LOW_BATTERY, value)
     }
 
@@ -57,12 +57,12 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
     // Other
     // =======================
 
-    val previousStorageAccessStatus: Flow<StorageAccessStatus> = getEnumFlow(
+    val priorStorageAccessStatus: Flow<StorageAccessStatus> = getEnumFlow(
         Key.PREVIOUS_STORAGE_ACCESS_STATUS,
         StorageAccessStatus.NoAccess
     )
 
-    suspend fun savePreviousStorageAccessStatus(value: StorageAccessStatus) {
+    suspend fun savePriorStorageAccessStatus(value: StorageAccessStatus) {
         save(Key.PREVIOUS_STORAGE_ACCESS_STATUS, value)
     }
 

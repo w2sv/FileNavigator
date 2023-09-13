@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        mainScreenVM.updateStorageAccessStatus(this)
+        mainScreenVM.storageAccessState.updateStatus(this)
     }
 }
 

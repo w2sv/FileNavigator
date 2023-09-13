@@ -174,7 +174,7 @@ internal fun ScaffoldContent(
             Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
                 AnimatedContent(
                     contentAlignment = Alignment.Center,
-                    targetState = mainScreenViewModel.unconfirmedNavigatorConfiguration.statesDissimilar.collectAsState().value,
+                    targetState = mainScreenViewModel.navigatorUIState.configuration.statesDissimilar.collectAsState().value,
                     transitionSpec = {
                         (slideInHorizontally(
                             animationSpec = tween(

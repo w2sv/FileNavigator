@@ -162,7 +162,7 @@ internal fun StartNavigatorButton(
             }
         }
 
-    val anyStorageAccessGranted by mainScreenViewModel.anyStorageAccessGranted.collectAsState()
+    val anyStorageAccessGranted by mainScreenViewModel.storageAccessState.anyAccessGranted.collectAsState()
 
     ElevatedButton(
         onClick = properties.onClick,
@@ -247,7 +247,7 @@ internal fun StartNavigatorOnLowBatteryConfirmationDialog(
             DialogButton(
                 onClick = {
                     FileNavigator.start(context)
-                    mainScreenViewModel.saveDisableListenerOnLowBattery(false)
+                    mainScreenViewModel.saveDisableNavigatorOnLowBattery(false)
                     closeDialog()
                 }
             ) {

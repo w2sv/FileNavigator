@@ -44,13 +44,13 @@ fun FileTypeSelectionColumn(
         }
 
         LazyColumn(state = rememberLazyListState()) {
-            items(mainScreenViewModel.sortedFileTypes, key = { it }) { fileType ->
+            items(mainScreenViewModel.navigatorUIState.sortedFileTypes, key = { it }) { fileType ->
                 i { "Laying out ${fileType.identifier}" }
 
                 FileTypeAccordion(
                     fileType = fileType,
-                    fileTypeStatusMap = mainScreenViewModel.unconfirmedFileTypeStatus,
-                    fileSourceEnabledMap = mainScreenViewModel.unconfirmedFileSourceEnablement,
+                    fileTypeStatusMap = mainScreenViewModel.navigatorUIState.fileTypeStatusMap,
+                    fileSourceEnabledMap = mainScreenViewModel.navigatorUIState.mediaFileSourceEnabledMap,
                     cascadeAnimationState = cascadeAnimationState,
                     modifier = Modifier
                         .padding(vertical = 4.dp)
