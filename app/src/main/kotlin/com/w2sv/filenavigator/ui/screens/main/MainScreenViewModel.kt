@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import slimber.log.i
@@ -75,13 +76,10 @@ class MainScreenViewModel @Inject constructor(
         }
     }
 
-    val showedManageExternalStorageRational by preferencesRepository::showedManageExternalStorageRational
-
-    fun saveShowedManageExternalStorageRational() {
+    fun saveShowedManageExternalStorageRational(): Job =
         viewModelScope.launch {
             preferencesRepository.saveShowedManageExternalStorageRational()
         }
-    }
 
     val showedPostNotificationsPermissionsRational by preferencesRepository::showedPostNotificationsPermissionsRational
 
@@ -98,6 +96,15 @@ class MainScreenViewModel @Inject constructor(
 
     val anyStorageAccessGranted: StateFlow<Boolean> =
         storageAccessStatus.mapState { it != StorageAccessStatus.NoAccess }
+
+    val showManageExternalStorageDialog = combine(
+        preferencesRepository.showedManageExternalStorageRational,
+        anyStorageAccessGranted,
+    ) { f1, f2 ->
+        println("showedManageExternalStorageRational: $f1 anyStorageAccessGranted: $f2")
+        !f1 && !f2
+    }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     fun updateStorageAccessStatus(context: Context) {
         _storageAccessStatus.value = StorageAccessStatus.get(context)

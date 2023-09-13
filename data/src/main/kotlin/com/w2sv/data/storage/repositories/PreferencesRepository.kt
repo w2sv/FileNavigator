@@ -38,7 +38,7 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
     // =======================
 
     val disableListenerOnLowBattery: Flow<Boolean> =
-        getFlow(Key.DISABLE_LISTENER_ON_LOW_BATTERY, false)
+        getFlow(Key.DISABLE_LISTENER_ON_LOW_BATTERY, true)
 
     suspend fun saveDisableListenerOnLowBattery(value: Boolean) {
         save(Key.DISABLE_LISTENER_ON_LOW_BATTERY, value)

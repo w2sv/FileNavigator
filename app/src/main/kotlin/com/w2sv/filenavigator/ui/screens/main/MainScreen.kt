@@ -29,15 +29,11 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -57,12 +53,12 @@ import com.w2sv.filenavigator.ui.screens.main.components.NavigatorConfigurationB
 import com.w2sv.filenavigator.ui.screens.main.components.StartNavigatorButton
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.closeAnimated
-import com.w2sv.filenavigator.ui.utils.visibilityPercentage
 import com.w2sv.filenavigator.ui.utils.openAnimated
+import com.w2sv.filenavigator.ui.utils.visibilityPercentage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("NewApi")
 @Composable
 fun MainScreen(
     context: Context = LocalContext.current,
@@ -97,7 +93,21 @@ fun MainScreen(
         }
     }
 
-    EventualManageExternalStoragePermissionRational()
+    mainScreenViewModel.showManageExternalStorageDialog.collectAsState()
+        .apply {
+            if (value) {
+                ManageExternalStoragePermissionDialog(
+                    onConfirmation = {
+                        goToManageExternalStorageSettings(
+                            context
+                        )
+                    },
+                    onDismissRequest = {
+                        mainScreenViewModel.saveShowedManageExternalStorageRational()
+                    }
+                )
+            }
+        }
 
     BackHandler {
         when (drawerState.currentValue) {
@@ -197,46 +207,5 @@ internal fun ScaffoldContent(
                 }
             }
         }
-    }
-}
-
-@SuppressLint("NewApi")
-@Composable
-internal fun EventualManageExternalStoragePermissionRational(
-    context: Context = LocalContext.current,
-    mainScreenViewModel: MainScreenViewModel = viewModel()
-) {
-    var showManageExternalStorageRational by rememberSaveable {
-        mutableStateOf(false)
-    }
-        .apply {
-            if (value) {
-                val onDismissRequest: () -> Unit = {
-                    mainScreenViewModel.saveShowedManageExternalStorageRational()
-                    value = false
-                }
-                ManageExternalStoragePermissionDialog(
-                    onConfirmation = {
-                        onDismissRequest()
-                        goToManageExternalStorageSettings(
-                            context
-                        )
-                    },
-                    onDismissRequest = onDismissRequest
-                )
-            }
-        }
-
-    if (!mainScreenViewModel.anyStorageAccessGranted.collectAsState().value && !mainScreenViewModel.showedManageExternalStorageRational.collectAsState(
-            initial = false
-        ).value
-    ) {
-        LaunchedEffect(
-            key1 = Unit,
-            block = {
-                delay(1000L)
-                showManageExternalStorageRational = true
-            }
-        )
     }
 }
