@@ -80,7 +80,7 @@ fun FileTypeAccordion(
 
     val animatedAlpha by animateFloatAsState(
         targetValue = animatedProgress,
-        animationSpec = tween(durationMillis = 500, delayMillis = 150 + nRunningAnimations * 100),
+        animationSpec = tween(durationMillis = 500, delayMillis = nRunningAnimations * 100),
         label = ""
     )
 
