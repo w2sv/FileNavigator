@@ -48,7 +48,7 @@ import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.components.InfoIcon
 import com.w2sv.filenavigator.ui.components.SnackbarAction
 import com.w2sv.filenavigator.ui.components.bounceOnClickAnimation
-import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
+import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
@@ -136,7 +136,7 @@ internal fun StartNavigatorButton(
 
                         !permissionState.shouldShowRationale -> {
                             scope.launch {
-                                mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrent(
                                     AppSnackbarVisuals(
                                         message = context.getString(R.string.go_to_the_app_settings_to_grant_the_required_permissions),
                                         action = SnackbarAction(

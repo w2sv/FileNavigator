@@ -15,12 +15,15 @@ import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.ui.theme.AppColor
+
+val LocalSnackbarHostState = compositionLocalOf { SnackbarHostState() }
 
 @Immutable
 data class SnackbarAction(val label: String, val callback: () -> Unit)
@@ -43,7 +46,7 @@ sealed class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
     data object Error : SnackbarKind(Icons.Outlined.Warning, AppColor.error)
 }
 
-suspend fun SnackbarHostState.showSnackbarAndDismissCurrentIfApplicable(snackbarVisuals: SnackbarVisuals) {
+suspend fun SnackbarHostState.showSnackbarAndDismissCurrent(snackbarVisuals: SnackbarVisuals) {
     currentSnackbarData?.dismiss()
     showSnackbar(snackbarVisuals)
 }

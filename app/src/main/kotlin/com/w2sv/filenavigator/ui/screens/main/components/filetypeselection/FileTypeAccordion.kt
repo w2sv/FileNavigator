@@ -28,6 +28,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.common.utils.manageExternalStoragePermissionRequired
 import com.w2sv.data.model.FileType
@@ -51,15 +52,16 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppCheckbox
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
+import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.SnackbarAction
 import com.w2sv.filenavigator.ui.components.SnackbarKind
-import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
+import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.screens.main.components.OpenFileSourceDefaultDestinationDialogButton
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.Epsilon
+import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import com.w2sv.filenavigator.ui.utils.allFalseAfterEnteringValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -67,7 +69,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun FileTypeAccordion(
     fileType: FileType,
-    isEnabled: Boolean,
+    fileTypeStatusMap: MutableMap<FileType.Status.StoreEntry, FileType.Status>,
+    fileSourceEnabledMap: MutableMap<DataStoreEntry.UniType<Boolean>, Boolean>,
     cascadeAnimationState: CascadeAnimationState<FileType>,
     modifier: Modifier = Modifier
 ) {
@@ -100,16 +103,20 @@ fun FileTypeAccordion(
             scaleY = animatedAlpha
         )
     ) {
+        val fileTypeEnabled by remember {
+            derivedStateOf { fileTypeStatusMap.getValue(fileType.status).isEnabled }
+        }
         FileTypeAccordionHeader(
             fileType = fileType,
-            isEnabled = isEnabled
+            isEnabled = fileTypeEnabled,
+            fileTypeStatusMap = fileTypeStatusMap
         )
         AnimatedVisibility(
-            visible = isEnabled,
+            visible = fileTypeEnabled,
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
-            FileSourcesSurface(fileType = fileType)
+            FileSourcesSurface(fileType = fileType, fileSourceEnabledMap = fileSourceEnabledMap)
         }
     }
 }
@@ -118,9 +125,10 @@ fun FileTypeAccordion(
 private fun FileTypeAccordionHeader(
     fileType: FileType,
     isEnabled: Boolean,
+    fileTypeStatusMap: MutableMap<FileType.Status.StoreEntry, FileType.Status>,
     modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel(),
     context: Context = LocalContext.current,
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     Surface(tonalElevation = 2.dp, shape = RoundedCornerShape(8.dp)) {
@@ -155,17 +163,17 @@ private fun FileTypeAccordionHeader(
                     checked = isEnabled,
                     onCheckedChange = { checkedNew ->
                         when (val status =
-                            mainScreenViewModel.unconfirmedFileTypeStatus.getValue(fileType.status)) {
+                            fileTypeStatusMap.getValue(fileType.status)) {
                             FileType.Status.Enabled, FileType.Status.Disabled -> {
-                                if (!mainScreenViewModel.unconfirmedFileTypeStatus.values.map { it.isEnabled }
+                                if (!fileTypeStatusMap.values.map { it.isEnabled }
                                         .allFalseAfterEnteringValue(
                                             checkedNew
                                         )
                                 ) {
-                                    mainScreenViewModel.unconfirmedFileTypeStatus.toggle(fileType.status)
+                                    fileTypeStatusMap.toggle(fileType.status)
                                 } else {
                                     scope.launch {
-                                        mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                        snackbarHostState.showSnackbarAndDismissCurrent(
                                             AppSnackbarVisuals(
                                                 message = context.getString(
                                                     R.string.leave_at_least_one_file_type_enabled
@@ -179,7 +187,7 @@ private fun FileTypeAccordionHeader(
 
                             FileType.Status.DisabledDueToNoFileAccess, FileType.Status.DisabledDueToMediaAccessOnly -> {
                                 scope.launch {
-                                    mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                    snackbarHostState.showSnackbarAndDismissCurrent(
                                         getManageExternalStorageSnackbarVisuals(status, context)
                                     )
                                 }
@@ -220,6 +228,7 @@ private fun getManageExternalStorageSnackbarVisuals(
 @Composable
 private fun FileSourcesSurface(
     fileType: FileType,
+    fileSourceEnabledMap: MutableMap<DataStoreEntry.UniType<Boolean>, Boolean>,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -229,7 +238,11 @@ private fun FileSourcesSurface(
     ) {
         Column {
             fileType.sources.forEachIndexed { i, origin ->
-                FileSourceRow(fileType = fileType, source = origin)
+                FileSourceRow(
+                    fileType = fileType,
+                    source = origin,
+                    fileSourceEnabledMap = fileSourceEnabledMap
+                )
                 if (i != fileType.sources.lastIndex) {
                     Divider()
                 }
@@ -242,13 +255,14 @@ private fun FileSourcesSurface(
 private fun FileSourceRow(
     fileType: FileType,
     source: FileType.Source,
+    fileSourceEnabledMap: MutableMap<DataStoreEntry.UniType<Boolean>, Boolean>,
     modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel(),
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     context: Context = LocalContext.current,
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     val isEnabled =
-        if (fileType.isMediaType) mainScreenViewModel.unconfirmedFileSourceEnablement.getValue(
+        if (fileType.isMediaType) fileSourceEnabledMap.getValue(
             source.isEnabled
         ) else true
 
@@ -295,17 +309,16 @@ private fun FileSourceRow(
                         checked = isEnabled,
                         onCheckedChange = { checkedNew ->
                             if (!fileType.sources.map {
-                                    mainScreenViewModel.unconfirmedFileSourceEnablement.getValue(
+                                    fileSourceEnabledMap.getValue(
                                         it.isEnabled
                                     )
                                 }
                                     .allFalseAfterEnteringValue(checkedNew)
                             ) {
-                                mainScreenViewModel.unconfirmedFileSourceEnablement[source.isEnabled] =
-                                    checkedNew
+                                fileSourceEnabledMap[source.isEnabled] = checkedNew
                             } else {
                                 scope.launch {
-                                    mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrentIfApplicable(
+                                    snackbarHostState.showSnackbarAndDismissCurrent(
                                         AppSnackbarVisuals(
                                             message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
                                             kind = SnackbarKind.Error

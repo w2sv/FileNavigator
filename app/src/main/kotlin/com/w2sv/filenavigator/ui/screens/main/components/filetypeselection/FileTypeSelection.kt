@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.screens.main.components.filetypeselection
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -20,26 +19,8 @@ import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import slimber.log.i
-
-class CascadeAnimationState<T> {
-    private val animatedElements: MutableSet<T> = mutableSetOf()
-    private var nRunningAnimations: Int = 0
-
-    fun animationImpending(element: T): Boolean =
-        !animatedElements.contains(element)
-
-    fun onAnimationStarted(element: T) {
-        animatedElements.add(element)
-        nRunningAnimations += 1
-    }
-
-    fun onAnimationFinished() {
-        nRunningAnimations -= 1
-    }
-
-    val animationDelayMillis: Int get() = nRunningAnimations * 100
-}
 
 @Composable
 fun FileTypeSelectionColumn(
@@ -68,7 +49,8 @@ fun FileTypeSelectionColumn(
 
                 FileTypeAccordion(
                     fileType = fileType,
-                    isEnabled = mainScreenViewModel.unconfirmedFileTypeStatus.getValue(fileType.status).isEnabled,
+                    fileTypeStatusMap = mainScreenViewModel.unconfirmedFileTypeStatus,
+                    fileSourceEnabledMap = mainScreenViewModel.unconfirmedFileSourceEnablement,
                     cascadeAnimationState = cascadeAnimationState,
                     modifier = Modifier
                         .padding(vertical = 4.dp)

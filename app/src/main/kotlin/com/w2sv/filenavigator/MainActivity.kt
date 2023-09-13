@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
@@ -17,6 +18,7 @@ import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.common.utils.collectFromFlow
 import com.w2sv.data.model.Theme
+import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.screens.main.MainScreen
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme
@@ -57,7 +59,9 @@ class MainActivity : ComponentActivity() {
                     Theme.DeviceDefault -> isSystemInDarkTheme()
                 }
             ) {
-                MainScreen()
+                CompositionLocalProvider(LocalSnackbarHostState provides viewModel.snackbarHostState) {
+                    MainScreen()
+                }
             }
         }
     }
