@@ -1,17 +1,13 @@
-package com.w2sv.filenavigator.ui.screens.main.components
+package com.w2sv.filenavigator.ui.screens.main.components.filetypeselection
 
 import android.content.Context
-import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -50,8 +43,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.w2sv.androidutils.coroutines.launchDelayed
 import com.w2sv.common.utils.goToManageExternalStorageSettings
+import com.w2sv.common.utils.manageExternalStoragePermissionRequired
 import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppCheckbox
@@ -62,87 +55,21 @@ import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrentIfApplicable
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.filenavigator.ui.screens.main.components.OpenFileSourceDefaultDestinationDialogButton
 import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.utils.allFalseAfterEnteringValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import slimber.log.i
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun FileTypeSelectionColumn(
-    modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel()
-) {
-    Column(
-        modifier = modifier
-            .padding(horizontal = 10.dp)
-    ) {
-        AppFontText(
-            text = stringResource(id = R.string.navigated_file_types),
-            fontSize = 20.sp,
-            color = MaterialTheme.colorScheme.secondary
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        val animatedFileTypes = mutableSetOf<FileType>()
-        var nRunningAnimations = remember {
-            0
-        }
-
-        val scope = rememberCoroutineScope()
-        val listState = rememberLazyListState()
-
-//        LaunchedEffect(Unit) {
-//            mainScreenViewModel.fileTypeStatusHasChanged.collect {
-//                if (it) {
-//                    listState.animateScrollToItem(0)
-//                }
-//                mainScreenViewModel.fileTypeStatusHasChanged.emit(false)
-//            }
-//        }
-
-        LazyColumn(
-            state = listState
-        ) {
-            items(mainScreenViewModel.sortedFileTypes, key = { it }) { fileType ->
-                i { "Laying out ${fileType.identifier}" }
-
-                FileTypeAccordion(
-                    fileType = fileType,
-                    animate = !animatedFileTypes.contains(fileType),
-                    nRunningAnimations = nRunningAnimations,
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                        .animateItemPlacement(
-                            tween(durationMillis = DefaultAnimationDuration)
-                        )
-                )
-                if (animatedFileTypes.add(fileType)) {
-                    nRunningAnimations += 1
-                    scope.launchDelayed(250L) {
-                        nRunningAnimations -= 1
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
-private fun FileTypeAccordion(
+fun FileTypeAccordion(
     fileType: FileType,
+    isEnabled: Boolean,
     animate: Boolean,
     nRunningAnimations: Int,
-    modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel()
+    modifier: Modifier = Modifier
 ) {
-    val fileTypeEnabled =
-        mainScreenViewModel.unconfirmedFileTypeStatus.getValue(fileType.status).isEnabled
-
     var animatedProgress by remember { mutableFloatStateOf(if (animate) 0f else 1f) }
 
     if (animate) {
@@ -166,12 +93,12 @@ private fun FileTypeAccordion(
     ) {
         FileTypeAccordionHeader(
             fileType = fileType,
-            isEnabled = fileTypeEnabled
+            isEnabled = isEnabled
         )
         AnimatedVisibility(
-            visible = fileTypeEnabled,
-            enter = expandVertically(animationSpec = spring(Spring.DampingRatioMediumBouncy)) + fadeIn(),
-            exit = shrinkVertically(animationSpec = spring(Spring.DampingRatioMediumBouncy)) + fadeOut()
+            visible = isEnabled,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
         ) {
             FileSourcesSurface(fileType = fileType)
         }
@@ -183,11 +110,10 @@ private fun FileTypeAccordionHeader(
     fileType: FileType,
     isEnabled: Boolean,
     modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel()
+    mainScreenViewModel: MainScreenViewModel = viewModel(),
+    context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-
     Surface(tonalElevation = 2.dp, shape = RoundedCornerShape(8.dp)) {
         Row(
             modifier = modifier
@@ -270,7 +196,7 @@ private fun CoroutineScope.showManageExternalStorageSnackbar(
                 action = SnackbarAction(
                     label = context.getString(R.string.grant),
                     callback = {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        if (manageExternalStoragePermissionRequired()) {
                             goToManageExternalStorageSettings(context)
                         }
                     }
@@ -322,11 +248,10 @@ private fun FileSourceRow(
     fileType: FileType,
     source: FileType.Source,
     modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel()
+    mainScreenViewModel: MainScreenViewModel = viewModel(),
+    context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-
     val isEnabled =
         if (fileType.isMediaType) mainScreenViewModel.unconfirmedFileSourceEnablement.getValue(
             source.isEnabled

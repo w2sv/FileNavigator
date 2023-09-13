@@ -47,7 +47,7 @@ import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.AppTopBar
 import com.w2sv.filenavigator.ui.components.drawer.NavigationDrawer
-import com.w2sv.filenavigator.ui.screens.main.components.FileTypeSelectionColumn
+import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.FileTypeSelectionColumn
 import com.w2sv.filenavigator.ui.screens.main.components.ManageExternalStoragePermissionDialog
 import com.w2sv.filenavigator.ui.screens.main.components.NavigatorConfigurationButtons
 import com.w2sv.filenavigator.ui.screens.main.components.StartNavigatorButton

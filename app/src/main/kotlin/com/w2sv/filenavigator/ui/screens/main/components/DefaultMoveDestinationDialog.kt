@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.animation.AnticipateOvershootInterpolator
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -80,25 +79,28 @@ fun OpenFileSourceDefaultDestinationDialogButton(
                 mainScreenViewModel.setUnconfirmedDefaultMoveDestinationStates(source)
             }
 
-            DefaultMoveDestinationDialog(fileSource = it, closeDialog = {
-                value = null
-            })
+            DefaultMoveDestinationDialog(
+                fileSource = it,
+                closeDialog = {
+                    value = null
+                }
+            )
         }
     }
 
     IconButton(
-        onClick = { defaultDestinationDialogFileSource = source }, modifier = modifier
+        onClick = { defaultDestinationDialogFileSource = source },
+        modifier = modifier
     ) {
         Icon(
             painter = painterResource(
-                id = if (mainScreenViewModel.defaultMoveDestinationIsSet.getValue(
-                        source.defaultDestination
-                    )
-                ) R.drawable.ic_edit_folder_24
-                else com.w2sv.navigator.R.drawable.ic_add_new_folder_24
-            ), tint = MaterialTheme.colorScheme.secondary, contentDescription = stringResource(
+                id = R.drawable.ic_folder_settings_24
+            ),
+            tint = MaterialTheme.colorScheme.secondary,
+            contentDescription = stringResource(
                 R.string.open_target_directory_settings
-            ), modifier = Modifier.size(DefaultIconDp)
+            ),
+            modifier = Modifier.size(DefaultIconDp)
         )
     }
 }
