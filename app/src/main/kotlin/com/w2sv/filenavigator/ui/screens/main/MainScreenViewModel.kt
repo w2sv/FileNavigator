@@ -2,15 +2,12 @@ package com.w2sv.filenavigator.ui.screens.main
 
 import android.content.Context
 import android.net.Uri
-import androidx.compose.material3.SnackbarHostState
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.coroutines.getSynchronousMap
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.coroutines.mapState
-import com.w2sv.androidutils.eventhandling.BackPressHandler
-import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlow
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
@@ -22,18 +19,16 @@ import com.w2sv.data.model.StorageAccessStatus
 import com.w2sv.data.model.Theme
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.data.storage.repositories.PreferencesRepository
-import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.model.sortByIsEnabledAndOriginalOrder
 import com.w2sv.filenavigator.ui.utils.getMutableStateList
 import com.w2sv.filenavigator.ui.utils.getMutableStateMap
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -50,8 +45,6 @@ class MainScreenViewModel @Inject constructor(
     val isNavigatorRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileNavigator>())
 
-    val snackbarHostState: SnackbarHostState = SnackbarHostState()
-
     val disableListenerOnLowBattery = preferencesRepository.disableListenerOnLowBattery.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(),
@@ -61,18 +54,6 @@ class MainScreenViewModel @Inject constructor(
     fun saveDisableListenerOnLowBattery(value: Boolean) {
         viewModelScope.launch {
             preferencesRepository.saveDisableListenerOnLowBattery(value)
-        }
-    }
-
-    val theme = preferencesRepository.theme.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        Theme.DeviceDefault
-    )
-
-    fun saveTheme(theme: Theme) {
-        viewModelScope.launch {
-            preferencesRepository.saveTheme(theme)
         }
     }
 
@@ -239,58 +220,11 @@ class MainScreenViewModel @Inject constructor(
     var unconfirmedDefaultMoveDestinationIsLocked: UnconfirmedStateFlow<Boolean>? = null
     var unconfirmedDefaultMoveDestinationConfiguration: UnconfirmedStatesComposition? = null
 
-    val launchDefaultMoveDestinationPickerFor get() = _launchDefaultMoveDestinationPickerFor.asSharedFlow()
-    private val _launchDefaultMoveDestinationPickerFor: MutableStateFlow<FileType.Source?> =
-        MutableStateFlow(null)
-
-    fun launchDefaultMoveDestinationPicker(fileTypeSource: FileType.Source) {
-        _launchDefaultMoveDestinationPickerFor.value = fileTypeSource
-    }
-
     fun onDefaultMoveDestinationSelected(treeUri: Uri?, context: Context) {
         if (treeUri != null) {
             DocumentFile.fromTreeUri(context, treeUri)?.let { documentFile ->
                 unconfirmedDefaultMoveDestination!!.value = documentFile.uri
             }
         }
-
-        _launchDefaultMoveDestinationPickerFor.value = null
     }
-
-    // ==============
-    // BackPress Handling
-    // ==============
-
-    val exitApplication get() = _exitApplication.asSharedFlow()
-    private val _exitApplication = MutableSharedFlow<Unit>()
-
-    fun onBackPress(context: Context) {
-        backPressHandler.invoke(
-            onFirstPress = {
-                context.showToast(context.getString(R.string.tap_again_to_exit))
-            },
-            onSecondPress = {
-                viewModelScope.launch {
-                    _exitApplication.emit(Unit)
-                }
-            }
-        )
-    }
-
-    private val backPressHandler = BackPressHandler(
-        viewModelScope,
-        2500L
-    )
-}
-
-private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(fileTypeStatuses: Map<FileType.Status.StoreEntry, FileType.Status>) {
-    sortWith(
-        compareByDescending<FileType> {
-            fileTypeStatuses.getValue(
-                it.status
-            )
-                .isEnabled
-        }
-            .thenBy(FileType.values::indexOf)
-    )
 }

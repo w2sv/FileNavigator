@@ -26,6 +26,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -46,7 +47,9 @@ import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.AppTopBar
+import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.drawer.NavigationDrawer
+import com.w2sv.filenavigator.ui.screens.AppViewModel
 import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.FileTypeSelectionColumn
 import com.w2sv.filenavigator.ui.screens.main.components.ManageExternalStoragePermissionDialog
 import com.w2sv.filenavigator.ui.screens.main.components.NavigatorConfigurationButtons
@@ -62,15 +65,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     context: Context = LocalContext.current,
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     scope: CoroutineScope = rememberCoroutineScope(),
-    mainScreenViewModel: MainScreenViewModel = viewModel()
+    mainScreenVM: MainScreenViewModel = viewModel(),
+    appVM: AppViewModel = viewModel()
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     NavigationDrawer(drawerState) {
         Scaffold(
             snackbarHost = {
-                SnackbarHost(mainScreenViewModel.snackbarHostState) { snackbarData ->
+                SnackbarHost(snackbarHostState) { snackbarData ->
                     AppSnackbar(visuals = snackbarData.visuals as AppSnackbarVisuals)
                 }
             },
@@ -93,7 +98,7 @@ fun MainScreen(
         }
     }
 
-    mainScreenViewModel.showManageExternalStorageDialog.collectAsState()
+    mainScreenVM.showManageExternalStorageDialog.collectAsState()
         .apply {
             if (value) {
                 ManageExternalStoragePermissionDialog(
@@ -103,7 +108,7 @@ fun MainScreen(
                         )
                     },
                     onDismissRequest = {
-                        mainScreenViewModel.saveShowedManageExternalStorageRational()
+                        mainScreenVM.saveShowedManageExternalStorageRational()
                     }
                 )
             }
@@ -111,7 +116,7 @@ fun MainScreen(
 
     BackHandler {
         when (drawerState.currentValue) {
-            DrawerValue.Closed -> mainScreenViewModel.onBackPress(context)
+            DrawerValue.Closed -> appVM.onBackPress(context)
             DrawerValue.Open -> scope.launch {
                 drawerState.closeAnimated()
             }

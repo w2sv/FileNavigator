@@ -6,10 +6,8 @@ import android.view.View
 import android.view.animation.AnticipateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
@@ -18,7 +16,7 @@ import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.common.utils.collectFromFlow
 import com.w2sv.data.model.Theme
-import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
+import com.w2sv.filenavigator.ui.screens.AppViewModel
 import com.w2sv.filenavigator.ui.screens.main.MainScreen
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme
@@ -35,14 +33,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var fileNavigatorStatusChanged: FileNavigator.StatusChanged
 
-    private val viewModel by viewModels<MainScreenViewModel>()
-
-    private val defaultDestinationSelectionLauncher =
-        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { treeUri ->
-            i { "DocumentTree Uri: $treeUri" }
-
-            viewModel.onDefaultMoveDestinationSelected(treeUri, this)
-        }
+    private val appVM by viewModels<AppViewModel>()
+    private val mainScreenVM by viewModels<MainScreenViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setOnExitAnimationListener(SwipeRightSplashScreenExitAnimation())
@@ -53,35 +45,27 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme(
-                useDarkTheme = when (viewModel.theme.collectAsState().value) {
+                useDarkTheme = when (appVM.theme.collectAsState().value) {
                     Theme.Dark -> true
                     Theme.Light -> false
                     Theme.DeviceDefault -> isSystemInDarkTheme()
                 }
             ) {
-                CompositionLocalProvider(LocalSnackbarHostState provides viewModel.snackbarHostState) {
-                    MainScreen()
-                }
+                MainScreen()
             }
         }
     }
 
     private fun CoroutineScope.collectFromFlows() {
         collectFromFlow(fileNavigatorStatusChanged.isRunning) {
-            viewModel.isNavigatorRunning.value = it
+            mainScreenVM.isNavigatorRunning.value = it
         }
 
-        collectFromFlow(viewModel.exitApplication) {
+        collectFromFlow(appVM.exitApplication) {
             finishAffinity()
         }
 
-        collectFromFlow(viewModel.launchDefaultMoveDestinationPickerFor) {
-            if (it != null) {
-                defaultDestinationSelectionLauncher.launch(null)  // TODO
-            }
-        }
-
-        collectFromFlow(viewModel.disableListenerOnLowBattery) {
+        collectFromFlow(mainScreenVM.disableListenerOnLowBattery) {
             val intent = PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity)
 
             i { "Collected disableListenerOnLowBattery=$it" }
@@ -101,7 +85,7 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        viewModel.updateStorageAccessStatus(this)
+        mainScreenVM.updateStorageAccessStatus(this)
     }
 }
 

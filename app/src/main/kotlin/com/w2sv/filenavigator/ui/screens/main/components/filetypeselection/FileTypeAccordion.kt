@@ -57,6 +57,7 @@ import com.w2sv.filenavigator.ui.components.SnackbarAction
 import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
+import com.w2sv.filenavigator.ui.model.toggle
 import com.w2sv.filenavigator.ui.screens.main.components.OpenFileSourceDefaultDestinationDialogButton
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
@@ -344,14 +345,4 @@ private fun FileSourceRow(
             }
         }
     }
-}
-
-/**
- * Assumes value corresponding to [key] to be one of [FileType.Status.Enabled] or [FileType.Status.Disabled].
- */
-fun <K> MutableMap<K, FileType.Status>.toggle(key: K) {
-    put(
-        key,
-        if (getValue(key) == FileType.Status.Disabled) FileType.Status.Enabled else FileType.Status.Disabled
-    )
 }

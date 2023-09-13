@@ -37,6 +37,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppCheckbox
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.ThemeSelectionRow
+import com.w2sv.filenavigator.ui.screens.AppViewModel
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 
 private sealed interface SheetElement {
@@ -66,7 +67,8 @@ private sealed interface SheetElement {
 internal fun ColumnScope.SheetContent(
     closeDrawer: () -> Unit,
     context: Context = LocalContext.current,
-    mainScreenVM: MainScreenViewModel = viewModel()
+    mainScreenVM: MainScreenViewModel = viewModel(),
+    appVM: AppViewModel = viewModel()
 ) {
     remember {
         listOf(
@@ -92,8 +94,8 @@ internal fun ColumnScope.SheetContent(
             ) {
                 Spacer(modifier = Modifier.width(16.dp))
                 ThemeSelectionRow(
-                    selected = mainScreenVM.theme.collectAsState().value,
-                    onSelected = mainScreenVM::saveTheme
+                    selected = appVM.theme.collectAsState().value,
+                    onSelected = appVM::saveTheme
                 )
             },
             SheetElement.SubHeader(R.string.legal),

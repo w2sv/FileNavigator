@@ -2,6 +2,8 @@ package com.w2sv.filenavigator.ui.screens.main.components
 
 import android.content.Context
 import android.view.animation.AnticipateOvershootInterpolator
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -64,6 +66,7 @@ import com.w2sv.filenavigator.ui.utils.toEasing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import slimber.log.i
 
 @Composable
 fun OpenFileSourceDefaultDestinationDialogButton(
@@ -117,6 +120,14 @@ private fun DefaultMoveDestinationDialog(
     val onDismissRequest: () -> Unit = {
         mainScreenViewModel.unsetUnconfirmedDefaultMoveDestinationStates()
         closeDialog()
+    }
+
+    val defaultDestinationSelectionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocumentTree()
+    ) { treeUri ->
+        i { "DocumentTree Uri: $treeUri" }
+
+        mainScreenViewModel.onDefaultMoveDestinationSelected(treeUri, context)
     }
 
     val defaultMoveDestination by mainScreenViewModel.unconfirmedDefaultMoveDestination!!.collectAsState()
@@ -219,7 +230,7 @@ private fun DefaultMoveDestinationDialog(
                     // Pick button
                     IconButton(
                         onClick = {
-                            mainScreenViewModel.launchDefaultMoveDestinationPicker(fileSource)
+                            defaultDestinationSelectionLauncher.launch(null)  // TODO: Pass start dir treeUri
                         },
                         modifier = Modifier.weight(buttonBoxWeight)
                     ) {

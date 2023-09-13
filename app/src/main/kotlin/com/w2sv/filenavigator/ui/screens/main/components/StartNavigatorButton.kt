@@ -19,6 +19,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
@@ -46,6 +47,7 @@ import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.components.InfoIcon
+import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.SnackbarAction
 import com.w2sv.filenavigator.ui.components.bounceOnClickAnimation
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
@@ -70,6 +72,7 @@ private data class NavigatorButtonProperties(
 internal fun StartNavigatorButton(
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     scope: CoroutineScope = rememberCoroutineScope(),
     mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
@@ -136,7 +139,7 @@ internal fun StartNavigatorButton(
 
                         !permissionState.shouldShowRationale -> {
                             scope.launch {
-                                mainScreenViewModel.snackbarHostState.showSnackbarAndDismissCurrent(
+                                snackbarHostState.showSnackbarAndDismissCurrent(
                                     AppSnackbarVisuals(
                                         message = context.getString(R.string.go_to_the_app_settings_to_grant_the_required_permissions),
                                         action = SnackbarAction(
