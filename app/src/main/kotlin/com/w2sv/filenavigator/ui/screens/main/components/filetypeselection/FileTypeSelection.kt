@@ -1,5 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.main.components.filetypeselection
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -24,9 +26,11 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.DefaultMoveDestinationDialog
+import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import slimber.log.i
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier,
@@ -54,7 +58,7 @@ fun FileTypeSelectionColumn(
             .padding(horizontal = 10.dp)
     ) {
         AppFontText(
-            text = stringResource(id = R.string.navigated_file_types),
+            text = stringResource(id = R.string.file_types),
             fontSize = 20.sp,
             fontWeight = FontWeight.Medium
         )
@@ -79,6 +83,7 @@ fun FileTypeSelectionColumn(
                     cascadeAnimationState = cascadeAnimationState,
                     modifier = Modifier
                         .padding(vertical = 4.dp)
+                        .animateItemPlacement(tween(DefaultAnimationDuration))  // Animation upon reordering
                 )
             }
         }
