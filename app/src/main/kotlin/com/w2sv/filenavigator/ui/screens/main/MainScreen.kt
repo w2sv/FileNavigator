@@ -52,7 +52,7 @@ import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.screens.AppViewModel
 import com.w2sv.filenavigator.ui.screens.main.components.ManageExternalStoragePermissionDialog
-import com.w2sv.filenavigator.ui.screens.main.components.NavigatorConfigurationButtons
+import com.w2sv.filenavigator.ui.screens.main.components.ConfigurationChangeConfirmationButtons
 import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButton
 import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButtonConfiguration
 import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButtonConfigurations
@@ -233,7 +233,7 @@ internal fun ScaffoldContent(
                     label = ""
                 ) {
                     if (it) {
-                        NavigatorConfigurationButtons()
+                        ConfigurationChangeConfirmationButtons()
                     } else {
                         ToggleNavigatorButton(
                             configuration = when (mainScreenVM.navigatorUIState.isRunning.collectAsState().value) {

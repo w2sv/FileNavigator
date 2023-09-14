@@ -30,7 +30,7 @@ import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun NavigatorConfigurationButtons(
+internal fun ConfigurationChangeConfirmationButtons(
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     mainScreenVM: MainScreenViewModel = viewModel()
