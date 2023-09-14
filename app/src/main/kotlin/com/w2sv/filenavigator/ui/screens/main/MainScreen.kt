@@ -44,20 +44,25 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.common.utils.goToManageExternalStorageSettings
+import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.AppTopBar
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.screens.AppViewModel
-import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.FileTypeSelectionColumn
 import com.w2sv.filenavigator.ui.screens.main.components.ManageExternalStoragePermissionDialog
 import com.w2sv.filenavigator.ui.screens.main.components.NavigatorConfigurationButtons
-import com.w2sv.filenavigator.ui.screens.main.components.StartNavigatorButton
+import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButton
+import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButtonConfiguration
+import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButtonConfigurations
+import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.FileTypeSelectionColumn
+import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.closeAnimated
 import com.w2sv.filenavigator.ui.utils.openAnimated
 import com.w2sv.filenavigator.ui.utils.visibilityPercentage
+import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -128,7 +133,8 @@ fun MainScreen(
 internal fun ScaffoldContent(
     drawerState: DrawerState,
     modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel()
+    context: Context = LocalContext.current,
+    mainScreenVM: MainScreenViewModel = viewModel()
 ) {
     val maxDrawerWidthPx = with(LocalDensity.current) { DrawerDefaults.MaximumDrawerWidth.toPx() }
 
@@ -145,6 +151,32 @@ internal fun ScaffoldContent(
         derivedStateOf {
             180 * drawerVisibilityPercentage
         }
+    }
+
+//    val permissionState =
+//        rememberMultiplePermissionsState(permissions = buildList {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                add(Manifest.permission.POST_NOTIFICATIONS)
+//            }
+//        }) { isGranted ->
+//            if (isGranted.values.all { it }) {
+////                startNavigator()
+//            }
+//        }
+
+    val toggleNavigatorButtonConfigurations = remember {
+        ToggleNavigatorButtonConfigurations(
+            startNavigator = ToggleNavigatorButtonConfiguration(
+                AppColor.success,
+                R.drawable.ic_start_24,
+                R.string.start_navigator
+            ) { FileNavigator.start(context) },
+            stopNavigator = ToggleNavigatorButtonConfiguration(
+                AppColor.error,
+                R.drawable.ic_stop_24,
+                R.string.stop_navigator
+            ) { FileNavigator.stop(context) }
+        )
     }
 
     Surface(
@@ -174,7 +206,7 @@ internal fun ScaffoldContent(
             Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
                 AnimatedContent(
                     contentAlignment = Alignment.Center,
-                    targetState = mainScreenViewModel.navigatorUIState.configuration.statesDissimilar.collectAsState().value,
+                    targetState = mainScreenVM.navigatorUIState.configuration.statesDissimilar.collectAsState().value,
                     transitionSpec = {
                         (slideInHorizontally(
                             animationSpec = tween(
@@ -203,7 +235,11 @@ internal fun ScaffoldContent(
                     if (it) {
                         NavigatorConfigurationButtons()
                     } else {
-                        StartNavigatorButton(
+                        ToggleNavigatorButton(
+                            configuration = when (mainScreenVM.navigatorUIState.isRunning.collectAsState().value) {
+                                true -> toggleNavigatorButtonConfigurations.stopNavigator
+                                false -> toggleNavigatorButtonConfigurations.startNavigator
+                            },
                             modifier = Modifier
                                 .width(220.dp)
                                 .height(70.dp)

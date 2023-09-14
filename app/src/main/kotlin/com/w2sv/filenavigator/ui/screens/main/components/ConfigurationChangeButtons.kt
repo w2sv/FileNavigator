@@ -59,7 +59,7 @@ internal fun NavigatorConfigurationButtons(
                 with(mainScreenVM) {
                     viewModelScope.launch {
                         navigatorUIState.configuration.sync()
-                        if (isNavigatorRunning.value) {
+                        if (navigatorUIState.isRunning.value) {
                             FileNavigator.reregisterFileObservers(
                                 context
                             )

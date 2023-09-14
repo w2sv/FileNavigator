@@ -1,22 +1,47 @@
 package com.w2sv.filenavigator.ui.screens.main.states
 
+import android.content.Context
+import androidx.lifecycle.viewModelScope
+import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlow
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
 import com.w2sv.data.model.FileType
 import com.w2sv.data.storage.repositories.FileTypeRepository
+import com.w2sv.data.storage.repositories.PreferencesRepository
 import com.w2sv.filenavigator.ui.model.sortByIsEnabledAndOriginalOrder
 import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.DefaultMoveDestinationConfiguration
 import com.w2sv.filenavigator.ui.utils.getMutableStateList
 import com.w2sv.filenavigator.ui.utils.getSynchronousMutableStateMap
+import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class NavigatorUIState(
     private val scope: CoroutineScope,
-    private val fileTypeRepository: FileTypeRepository
+    private val fileTypeRepository: FileTypeRepository,
+    private val preferencesRepository: PreferencesRepository,
+    context: Context
 ) {
+    val isRunning: MutableStateFlow<Boolean> =
+        MutableStateFlow(context.isServiceRunning<FileNavigator>())
+
+    val disableOnLowBattery = preferencesRepository.disableNavigatorOnLowBattery.stateIn(
+        scope,
+        SharingStarted.WhileSubscribed(),
+        true
+    )
+
+    fun saveDisableOnLowBattery(value: Boolean) {
+        scope.launch {
+            preferencesRepository.saveDisableNavigatorOnLowBattery(value)
+        }
+    }
+
     val sortedFileTypes = FileType.values
         .getMutableStateList()
 
