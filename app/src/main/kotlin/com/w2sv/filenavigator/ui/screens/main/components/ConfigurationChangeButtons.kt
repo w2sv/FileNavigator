@@ -53,19 +53,18 @@ internal fun NavigatorConfigurationButtons(
 
         ConfigurationChangeButton(
             iconRes = R.drawable.ic_check_24,
-            AppColor.success,
-            R.string.confirm_changes,
+            color = AppColor.success,
+            textRes = R.string.confirm_changes,
             onClick = {
                 with(mainScreenVM) {
-                    navigatorUIState.syncFileTypeStatuses()
-                        .invokeOnCompletion {
-                            // If FileListenerService is already running, relaunch with new file observer configuration
-                            if (isNavigatorRunning.value) {
-                                FileNavigator.reregisterFileObservers(
-                                    context
-                                )
-                            }
+                    viewModelScope.launch {
+                        navigatorUIState.configuration.sync()
+                        if (isNavigatorRunning.value) {
+                            FileNavigator.reregisterFileObservers(
+                                context
+                            )
                         }
+                    }
                 }
             }
         )
@@ -89,7 +88,11 @@ private fun ConfigurationChangeButton(
         )
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(painter = painterResource(id = iconRes), contentDescription = null, tint = color)
+            Icon(
+                painter = painterResource(id = iconRes),
+                contentDescription = null,
+                tint = color
+            )
             AppFontText(text = stringResource(id = textRes))
         }
     }

@@ -80,7 +80,7 @@ internal fun ColumnScope.SheetContent(
                 labelRes = R.string.disable_navigator_on_low_battery,
                 content = {
                     CheckboxContent(
-                        checked = mainScreenVM.disableListenerOnLowBattery.collectAsState().value,
+                        checked = mainScreenVM.disableNavigatorOnLowBattery.collectAsState().value,
                         onCheckedChange = mainScreenVM::saveDisableNavigatorOnLowBattery
                     )
                 }

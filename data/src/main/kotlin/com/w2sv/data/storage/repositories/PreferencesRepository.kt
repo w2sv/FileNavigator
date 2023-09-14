@@ -37,11 +37,11 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
     // User Preferences
     // =======================
 
-    val disableListenerOnLowBattery: Flow<Boolean> =
-        getFlow(Key.DISABLE_LISTENER_ON_LOW_BATTERY, true)
+    val disableNavigatorOnLowBattery: Flow<Boolean> =
+        getFlow(Key.DISABLE_NAVIGATOR_ON_LOW_BATTERY, true)
 
     suspend fun saveDisableNavigatorOnLowBattery(value: Boolean) {
-        save(Key.DISABLE_LISTENER_ON_LOW_BATTERY, value)
+        save(Key.DISABLE_NAVIGATOR_ON_LOW_BATTERY, value)
     }
 
     val theme: Flow<Theme> = getEnumFlow(
@@ -73,15 +73,15 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
         val SHOWED_POST_NOTIFICATIONS_PERMISSION_RATIONAL =
             booleanPreferencesKey("showedPostNotificationsPermissionRational")
 
-        val DISABLE_LISTENER_ON_LOW_BATTERY =
-            booleanPreferencesKey("disableListenerOnLowBattery")
+        val DISABLE_NAVIGATOR_ON_LOW_BATTERY =
+            booleanPreferencesKey("disableNavigatorOnLowBattery")
 
         val PREVIOUS_STORAGE_ACCESS_STATUS = intPreferencesKey(
             "previousStorageAccessStatus"
         )
 
         val THEME = intPreferencesKey(
-            "inAppTheme"
+            "theme"
         )
     }
 }

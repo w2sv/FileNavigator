@@ -30,7 +30,7 @@ class MainScreenViewModel @Inject constructor(
     val isNavigatorRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileNavigator>())
 
-    val disableListenerOnLowBattery = preferencesRepository.disableListenerOnLowBattery.stateIn(
+    val disableNavigatorOnLowBattery = preferencesRepository.disableNavigatorOnLowBattery.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(),
         true

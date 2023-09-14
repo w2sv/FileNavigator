@@ -10,20 +10,38 @@ import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defau
 import com.w2sv.filenavigator.ui.utils.getMutableStateList
 import com.w2sv.filenavigator.ui.utils.getSynchronousMutableStateMap
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
 class NavigatorUIState(
     private val scope: CoroutineScope,
     private val fileTypeRepository: FileTypeRepository
 ) {
+    val sortedFileTypes = FileType.values
+        .getMutableStateList()
+
+    private val sortFileTypes = MutableSharedFlow<Unit>()
+
     val fileTypeStatusMap =
         UnconfirmedStateMap(
             coroutineScope = scope,
             appliedFlowMap = fileTypeRepository.fileTypeStatus,
             makeSynchronousMutableMap = { it.getSynchronousMutableStateMap() },
-            syncState = { fileTypeRepository.saveEnumValuedMap(it) }
+            syncState = {
+                fileTypeRepository.saveEnumValuedMap(it)
+                sortFileTypes.emit(Unit)
+            }
         )
+
+    init {
+        sortedFileTypes.sortByIsEnabledAndOriginalOrder(fileTypeStatusMap)
+
+        scope.launch {
+            sortFileTypes.collect {
+                sortedFileTypes.sortByIsEnabledAndOriginalOrder(fileTypeStatusMap)
+            }
+        }
+    }
 
     val mediaFileSourceEnabledMap = UnconfirmedStateMap(
         coroutineScope = scope,
@@ -44,20 +62,10 @@ class NavigatorUIState(
         fileTypes.forEach {
             fileTypeStatusMap[it.status] = newStatus
         }
-        syncFileTypeStatuses()
-    }
-
-    val sortedFileTypes = FileType.values
-        .getMutableStateList()
-        .apply {
-            sortByIsEnabledAndOriginalOrder(fileTypeStatusMap)
-        }
-
-    fun syncFileTypeStatuses(): Job =
         scope.launch {
             fileTypeStatusMap.sync()
-            sortedFileTypes.sortByIsEnabledAndOriginalOrder(fileTypeStatusMap)
         }
+    }
 
     fun getDefaultMoveDestinationConfiguration(fileSource: FileType.Source): DefaultMoveDestinationConfiguration =
         DefaultMoveDestinationConfiguration(
@@ -68,7 +76,9 @@ class NavigatorUIState(
             ),
             isLocked = UnconfirmedStateFlow(
                 coroutineScope = scope,
-                appliedFlow = fileTypeRepository.getFileSourceDefaultDestinationIsLockedFlow(fileSource),
+                appliedFlow = fileTypeRepository.getFileSourceDefaultDestinationIsLockedFlow(
+                    fileSource
+                ),
                 syncState = {
                     fileTypeRepository.saveFileSourceDefaultDestinationIsLocked(
                         fileSource,

@@ -86,7 +86,7 @@ internal fun StartNavigatorButton(
         }
 
     val startNavigatorOrShowConfirmationDialog = {
-        if (mainScreenViewModel.disableListenerOnLowBattery.value && context.powerSaveModeActivated == true) {
+        if (mainScreenViewModel.disableNavigatorOnLowBattery.value && context.powerSaveModeActivated == true) {
             showConfirmationDialog = true
         } else {
             FileNavigator.start(context)
