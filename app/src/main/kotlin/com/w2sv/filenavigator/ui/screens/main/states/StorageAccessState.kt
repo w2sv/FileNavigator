@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main
+package com.w2sv.filenavigator.ui.screens.main.states
 
 import android.content.Context
 import com.w2sv.androidutils.coroutines.mapState

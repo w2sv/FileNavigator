@@ -58,7 +58,7 @@ import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.toggle
-import com.w2sv.filenavigator.ui.screens.main.components.OpenFileSourceDefaultDestinationDialogButton
+import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.OpenDefaultMoveDestinationDialogButton
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.Epsilon
@@ -72,6 +72,7 @@ fun FileTypeAccordion(
     fileType: FileType,
     fileTypeStatusMap: MutableMap<FileType.Status.StoreEntry, FileType.Status>,
     fileSourceEnabledMap: MutableMap<DataStoreEntry.UniType<Boolean>, Boolean>,
+    configureDefaultMoveDestination: (FileType.Source) -> Unit,
     cascadeAnimationState: CascadeAnimationState<FileType>,
     modifier: Modifier = Modifier
 ) {
@@ -117,7 +118,11 @@ fun FileTypeAccordion(
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
-            FileSourcesSurface(fileType = fileType, fileSourceEnabledMap = fileSourceEnabledMap)
+            FileSourcesSurface(
+                fileType = fileType,
+                fileSourceEnabledMap = fileSourceEnabledMap,
+                configureDefaultMoveDestination = configureDefaultMoveDestination
+            )
         }
     }
 }
@@ -230,6 +235,7 @@ private fun getManageExternalStorageSnackbarVisuals(
 private fun FileSourcesSurface(
     fileType: FileType,
     fileSourceEnabledMap: MutableMap<DataStoreEntry.UniType<Boolean>, Boolean>,
+    configureDefaultMoveDestination: (FileType.Source) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -238,11 +244,12 @@ private fun FileSourcesSurface(
         modifier = modifier.fillMaxWidth()
     ) {
         Column {
-            fileType.sources.forEachIndexed { i, origin ->
+            fileType.sources.forEachIndexed { i, source ->
                 FileSourceRow(
                     fileType = fileType,
-                    source = origin,
-                    fileSourceEnabledMap = fileSourceEnabledMap
+                    source = source,
+                    fileSourceEnabledMap = fileSourceEnabledMap,
+                    configureDefaultMoveDestination = { configureDefaultMoveDestination(source) }
                 )
                 if (i != fileType.sources.lastIndex) {
                     Divider()
@@ -257,6 +264,7 @@ private fun FileSourceRow(
     fileType: FileType,
     source: FileType.Source,
     fileSourceEnabledMap: MutableMap<DataStoreEntry.UniType<Boolean>, Boolean>,
+    configureDefaultMoveDestination: () -> Unit,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     context: Context = LocalContext.current,
@@ -339,8 +347,8 @@ private fun FileSourceRow(
                     .alpha(destinationButtonBoxWeight * 10),
                 contentAlignment = Alignment.Center
             ) {
-                OpenFileSourceDefaultDestinationDialogButton(
-                    source = source
+                OpenDefaultMoveDestinationDialogButton(
+                    onClick = configureDefaultMoveDestination
                 )
             }
         }

@@ -8,7 +8,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -19,14 +23,32 @@ import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.DefaultMoveDestinationDialog
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import slimber.log.i
 
 @Composable
 fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel(),
+    mainScreenVM: MainScreenViewModel = viewModel(),
 ) {
+    var defaultMoveDestinationDialogFileSource by rememberSaveable {
+        mutableStateOf<FileType.Source?>(null)
+    }
+        .apply {
+            value?.let {
+                DefaultMoveDestinationDialog(
+                    fileSource = it,
+                    configuration = mainScreenVM.navigatorUIState.getDefaultMoveDestinationConfiguration(
+                        it
+                    ),
+                    closeDialog = {
+                        value = null
+                    }
+                )
+            }
+        }
+
     Column(
         modifier = modifier
             .padding(horizontal = 10.dp)
@@ -44,13 +66,16 @@ fun FileTypeSelectionColumn(
         }
 
         LazyColumn(state = rememberLazyListState()) {
-            items(mainScreenViewModel.navigatorUIState.sortedFileTypes, key = { it }) { fileType ->
+            items(mainScreenVM.navigatorUIState.sortedFileTypes, key = { it }) { fileType ->
                 i { "Laying out ${fileType.identifier}" }
 
                 FileTypeAccordion(
                     fileType = fileType,
-                    fileTypeStatusMap = mainScreenViewModel.navigatorUIState.fileTypeStatusMap,
-                    fileSourceEnabledMap = mainScreenViewModel.navigatorUIState.mediaFileSourceEnabledMap,
+                    fileTypeStatusMap = mainScreenVM.navigatorUIState.fileTypeStatusMap,
+                    fileSourceEnabledMap = mainScreenVM.navigatorUIState.mediaFileSourceEnabledMap,
+                    configureDefaultMoveDestination = {
+                        defaultMoveDestinationDialogFileSource = it
+                    },
                     cascadeAnimationState = cascadeAnimationState,
                     modifier = Modifier
                         .padding(vertical = 4.dp)

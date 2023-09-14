@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main.components
+package com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination
 
 import android.content.Context
 import android.view.animation.AnticipateOvershootInterpolator
@@ -31,7 +31,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,50 +48,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.documentfile.provider.DocumentFile
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.androidutils.coroutines.launchDelayed
+import com.w2sv.androidutils.coroutines.toggle
 import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.utils.toEasing
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import slimber.log.i
 
 @Composable
-fun OpenFileSourceDefaultDestinationDialogButton(
-    source: FileType.Source,
-    modifier: Modifier = Modifier,
-    mainScreenViewModel: MainScreenViewModel = viewModel()
+fun OpenDefaultMoveDestinationDialogButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    var defaultDestinationDialogFileSource by rememberSaveable {
-        mutableStateOf<FileType.Source?>(null)
-    }.apply {
-        value?.let {
-            if (mainScreenViewModel.unconfirmedDefaultMoveDestinationConfiguration == null) {
-                mainScreenViewModel.setUnconfirmedDefaultMoveDestinationStates(source)
-            }
-
-            DefaultMoveDestinationDialog(
-                fileSource = it,
-                closeDialog = {
-                    value = null
-                }
-            )
-        }
-    }
-
     IconButton(
-        onClick = { defaultDestinationDialogFileSource = source },
+        onClick = onClick,
         modifier = modifier
     ) {
         Icon(
@@ -109,30 +86,24 @@ fun OpenFileSourceDefaultDestinationDialogButton(
 }
 
 @Composable
-private fun DefaultMoveDestinationDialog(
+fun DefaultMoveDestinationDialog(
     fileSource: FileType.Source,
+    configuration: DefaultMoveDestinationConfiguration,
     closeDialog: () -> Unit,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
-    scope: CoroutineScope = rememberCoroutineScope(),
-    mainScreenViewModel: MainScreenViewModel = viewModel()
 ) {
-    val onDismissRequest: () -> Unit = {
-        mainScreenViewModel.unsetUnconfirmedDefaultMoveDestinationStates()
-        closeDialog()
-    }
-
     val defaultDestinationSelectionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocumentTree()
     ) { treeUri ->
         i { "DocumentTree Uri: $treeUri" }
 
-        mainScreenViewModel.onDefaultMoveDestinationSelected(treeUri, context)
+        configuration.onMoveDestinationSelected(treeUri, context)
     }
 
-    val defaultMoveDestination by mainScreenViewModel.unconfirmedDefaultMoveDestination!!.collectAsState()
-    val defaultMoveDestinationIsLocked by mainScreenViewModel.unconfirmedDefaultMoveDestinationIsLocked!!.collectAsState()
-    val configurationHasChanged by mainScreenViewModel.unconfirmedDefaultMoveDestinationConfiguration!!.statesDissimilar.collectAsState()
+    val defaultMoveDestination by configuration.moveDestination.collectAsState()
+    val defaultMoveDestinationIsLocked by configuration.isLocked.collectAsState()
+    val configurationHasChanged by configuration.statesDissimilar.collectAsState()
 
     val isDestinationSet by remember {
         derivedStateOf { defaultMoveDestination != null }
@@ -141,27 +112,19 @@ private fun DefaultMoveDestinationDialog(
         mutableStateOf(false)
     }
 
-    var closeLogInfoJob: Job? = null
-
     AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = modifier.padding(horizontal = 32.dp),
-        onDismissRequest = { onDismissRequest() },
+        onDismissRequest = closeDialog,
         dismissButton = {
-            DialogButton(onClick = onDismissRequest) {
+            DialogButton(onClick = closeDialog) {
                 AppFontText(text = stringResource(id = R.string.cancel))
             }
         },
         confirmButton = {
             DialogButton(
                 onClick = {
-                    with(mainScreenViewModel) {
-                        defaultMoveDestinationIsSet[fileSource.defaultDestination] =
-                            isDestinationSet
-                        scope.launch {
-                            unconfirmedDefaultMoveDestinationConfiguration!!.sync()
-                        }
-                    }
-                    onDismissRequest()
+                    configuration.launchSync()
+                    closeDialog()
                 }, enabled = configurationHasChanged
             ) {
                 AppFontText(text = stringResource(id = R.string.apply))
@@ -245,8 +208,7 @@ private fun DefaultMoveDestinationDialog(
                     // Lock button
                     IconButton(
                         onClick = {
-                            mainScreenViewModel.unconfirmedDefaultMoveDestinationIsLocked!!.value =
-                                !mainScreenViewModel.unconfirmedDefaultMoveDestinationIsLocked!!.value
+                            configuration.isLocked.toggle()
                             showLockInfo = true
                         },
                         modifier = Modifier.weight(
@@ -275,9 +237,8 @@ private fun DefaultMoveDestinationDialog(
                     // Delete button
                     IconButton(
                         onClick = {
-                            mainScreenViewModel.unconfirmedDefaultMoveDestination!!.value = null
-                            mainScreenViewModel.unconfirmedDefaultMoveDestinationIsLocked!!.value =
-                                false
+                            configuration.moveDestination.value = null
+                            configuration.isLocked.value = false
                         },
                         modifier = Modifier.weight(
                             maxOf(
@@ -299,15 +260,15 @@ private fun DefaultMoveDestinationDialog(
                         text = stringResource(if (defaultMoveDestinationIsLocked) R.string.default_move_destination_locked_info else R.string.default_move_destination_unlocked_info),
                         color = AppColor.disabled
                     )
-                    LaunchedEffect(key1 = Unit) {
-                        closeLogInfoJob?.cancel()
-                        closeLogInfoJob = scope.launchDelayed(5000L) {
+                    LaunchedEffect(key1 = defaultMoveDestinationIsLocked) {
+                        launchDelayed(5000L) {
                             showLockInfo = false
                         }
                     }
                 }
             }
-        })
+        }
+    )
 }
 
 //@Preview
