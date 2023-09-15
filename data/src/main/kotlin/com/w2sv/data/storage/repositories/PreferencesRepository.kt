@@ -16,24 +16,6 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
     PreferencesDataStoreRepository(dataStore) {
 
     // =======================
-    // Internally set flags
-    // =======================
-
-    val showedManageExternalStorageRational: Flow<Boolean> =
-        getFlow(Key.SHOWED_MANAGE_EXTERNAL_STORAGE_RATIONAL, false)
-
-    suspend fun saveShowedManageExternalStorageRational() {
-        save(Key.SHOWED_MANAGE_EXTERNAL_STORAGE_RATIONAL, true)
-    }
-
-    val showedPostNotificationsPermissionsRational: Flow<Boolean> =
-        getFlow(Key.SHOWED_POST_NOTIFICATIONS_PERMISSION_RATIONAL, false)
-
-    suspend fun saveShowedPostNotificationsPermissionsRational() {
-        save(Key.SHOWED_POST_NOTIFICATIONS_PERMISSION_RATIONAL, true)
-    }
-
-    // =======================
     // User Preferences
     // =======================
 
@@ -57,6 +39,15 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
     // Other
     // =======================
 
+    val postNotificationsPermissionRequested: Flow<Boolean> = getFlow(
+        Key.POST_NOTIFICATIONS_PERMISSION_REQUESTED,
+        false
+    )
+
+    suspend fun savePostNotificationsPermissionRequested(value: Boolean) {
+        save(Key.POST_NOTIFICATIONS_PERMISSION_REQUESTED, value)
+    }
+
     val priorStorageAccessStatus: Flow<StorageAccessStatus> = getEnumFlow(
         Key.PREVIOUS_STORAGE_ACCESS_STATUS,
         StorageAccessStatus.NoAccess
@@ -67,12 +58,6 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
     }
 
     private object Key {
-        val SHOWED_MANAGE_EXTERNAL_STORAGE_RATIONAL =
-            booleanPreferencesKey("showedManageExternalStorageRational")
-
-        val SHOWED_POST_NOTIFICATIONS_PERMISSION_RATIONAL =
-            booleanPreferencesKey("showedPostNotificationsPermissionRational")
-
         val DISABLE_NAVIGATOR_ON_LOW_BATTERY =
             booleanPreferencesKey("disableNavigatorOnLowBattery")
 
@@ -83,5 +68,8 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
         val THEME = intPreferencesKey(
             "theme"
         )
+
+        val POST_NOTIFICATIONS_PERMISSION_REQUESTED =
+            booleanPreferencesKey("postNotificationsPermissionRequested")
     }
 }

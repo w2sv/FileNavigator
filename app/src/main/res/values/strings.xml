@@ -35,7 +35,7 @@
     <string name="tap_again_to_exit">Tap again to exit</string>
     <string name="alright">Alright</string>
     <string name="maybe_later">Maybe later</string>
-    <string name="manage_external_storage_permission_rational">File Navigator requires permission to manage all files to be able to move newly registered ones.</string>
+    <string name="manage_external_storage_permission_rational">File Navigator requires permission to manage all files to be able to move them.</string>
     <string name="grant">Grant</string>
     <string name="leave_at_least_one_file_type_enabled">Leave at least one file type enabled</string>
     <string name="open_extended_settings_dialog">Open the extended settings dialog.</string>
@@ -54,7 +54,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="start_navigator_confirmation_dialog_text">Do you want to start the navigator despite your device being low on battery?</string>
-    <string name="post_notifications_permission_rational">File Navigator requires permission to post notifications to notify you about having registered new, navigatable files.</string>
+    <string name="post_notifications_permission_rational">File Navigator requires post notification permission to notify you about new, navigatable files.</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="go_to_the_app_settings_to_grant_the_required_permissions">Go to the app settings to grant the required permissions</string>
     <string name="theme">Theme</string>
@@ -82,4 +82,5 @@
     <string name="more">More</string>
     <string name="license">License</string>
     <string name="developer">Developer</string>
+    <string name="permissions_missing">Missing Permissions</string>
 </resources>

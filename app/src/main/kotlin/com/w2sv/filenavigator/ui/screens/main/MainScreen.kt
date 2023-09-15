@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.main
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.activity.compose.BackHandler
@@ -37,21 +38,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.AppTopBar
+import com.w2sv.filenavigator.ui.components.InBetweenSpaced
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
+import com.w2sv.filenavigator.ui.components.PermissionCard
+import com.w2sv.filenavigator.ui.components.PermissionCardProperties
 import com.w2sv.filenavigator.ui.components.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.screens.AppViewModel
-import com.w2sv.filenavigator.ui.screens.main.components.ManageExternalStoragePermissionDialog
 import com.w2sv.filenavigator.ui.screens.main.components.ConfigurationChangeConfirmationButtons
 import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButton
 import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButtonConfiguration
@@ -60,12 +72,14 @@ import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.FileT
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.closeAnimated
+import com.w2sv.filenavigator.ui.utils.launchPermissionRequest
 import com.w2sv.filenavigator.ui.utils.openAnimated
 import com.w2sv.filenavigator.ui.utils.visibilityPercentage
 import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("NewApi")
 @Composable
 fun MainScreen(
@@ -76,6 +90,50 @@ fun MainScreen(
     appVM: AppViewModel = viewModel()
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    val postNotificationsPermissionState =
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS) {
+            mainScreenVM.savePostNotificationsPermissionRequested()
+        }
+
+    val anyStorageAccessGranted by mainScreenVM.storageAccessState.anyAccessGranted.collectAsState()
+
+    val permissionCardProperties = remember(
+        key1 = postNotificationsPermissionState.status.isGranted,
+        key2 = anyStorageAccessGranted
+    ) {
+        buildList {
+            if (!postNotificationsPermissionState.status.isGranted) {
+                add(
+                    PermissionCardProperties(
+                        iconRes = R.drawable.ic_notifications_24,
+                        textRes = R.string.post_notifications_permission_rational,
+                        onGrantButtonClick = {
+                            postNotificationsPermissionState.launchPermissionRequest(
+                                launchedBefore = mainScreenVM.postNotificationsPermissionRequested.value,
+                                onBlocked = {
+                                    goToAppSettings(
+                                        context
+                                    )
+                                }
+                            )
+                        }
+                    )
+                )
+            }
+            if (!anyStorageAccessGranted) {
+                add(
+                    PermissionCardProperties(
+                        iconRes = R.drawable.ic_storage_24,
+                        textRes = R.string.manage_external_storage_permission_rational,
+                        onGrantButtonClick = {
+                            goToManageExternalStorageSettings(context)
+                        }
+                    )
+                )
+            }
+        }
+    }
 
     NavigationDrawer(drawerState) {
         Scaffold(
@@ -94,31 +152,31 @@ fun MainScreen(
                 )
             }
         ) { paddingValues ->
-            ScaffoldContent(
-                drawerState = drawerState,
+            Surface(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-            )
-        }
-    }
+            ) {
+                val sharedModifier =
+                    Modifier
+                        .fillMaxSize()
+                        .animateDrawerProgressionBased(drawerState)
 
-    mainScreenVM.showManageExternalStorageDialog.collectAsState()
-        .apply {
-            if (value) {
-                ManageExternalStoragePermissionDialog(
-                    onConfirmation = {
-                        goToManageExternalStorageSettings(
-                            context
+                AnimatedContent(targetState = permissionCardProperties.isEmpty(), label = "") {
+                    if (it) {
+                        MainContent(
+                            modifier = sharedModifier.padding(horizontal = 14.dp)
                         )
-                    },
-                    onDismissRequest = {
-                        mainScreenVM.saveShowedManageExternalStorageRational()
+                    } else {
+                        PermissionCardColumn(
+                            properties = permissionCardProperties,
+                            modifier = sharedModifier.padding(horizontal = 32.dp)
+                        )
                     }
-                )
+                }
             }
         }
-
+    }
     BackHandler {
         when (drawerState.currentValue) {
             DrawerValue.Closed -> appVM.onBackPress(context)
@@ -129,14 +187,9 @@ fun MainScreen(
     }
 }
 
-@Composable
-internal fun ScaffoldContent(
-    drawerState: DrawerState,
-    modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
-    mainScreenVM: MainScreenViewModel = viewModel()
-) {
-    val maxDrawerWidthPx = with(LocalDensity.current) { DrawerDefaults.MaximumDrawerWidth.toPx() }
+fun Modifier.animateDrawerProgressionBased(drawerState: DrawerState): Modifier = composed {
+    val maxDrawerWidthPx =
+        with(LocalDensity.current) { DrawerDefaults.MaximumDrawerWidth.toPx() }
 
     val drawerVisibilityPercentage by remember {
         drawerState.visibilityPercentage(maxWidthPx = maxDrawerWidthPx)
@@ -146,24 +199,53 @@ internal fun ScaffoldContent(
             1 - drawerVisibilityPercentage
         }
     }
-
     val drawerVisibilityPercentageAngle by remember {
         derivedStateOf {
             180 * drawerVisibilityPercentage
         }
     }
 
-//    val permissionState =
-//        rememberMultiplePermissionsState(permissions = buildList {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                add(Manifest.permission.POST_NOTIFICATIONS)
-//            }
-//        }) { isGranted ->
-//            if (isGranted.values.all { it }) {
-////                startNavigator()
-//            }
-//        }
+    return@composed graphicsLayer(
+        scaleX = drawerVisibilityPercentageInverse,
+        scaleY = drawerVisibilityPercentageInverse,
+        translationX = LocalConfiguration.current.screenWidthDp * drawerVisibilityPercentage,
+        translationY = LocalConfiguration.current.screenHeightDp * drawerVisibilityPercentage,
+        rotationY = drawerVisibilityPercentageAngle,
+        rotationZ = drawerVisibilityPercentageAngle
+    )
+}
 
+@Composable
+fun PermissionCardColumn(
+    properties: List<PermissionCardProperties>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.fillMaxHeight(0.15f))
+        AppFontText(
+            text = stringResource(id = R.string.permissions_missing),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.align(Alignment.Start)
+        )
+        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+        InBetweenSpaced(
+            elements = properties,
+            makeElement = { PermissionCard(properties = it) },
+            spacer = { Spacer(modifier = Modifier.fillMaxHeight(0.075f)) }
+        )
+    }
+}
+
+@Composable
+internal fun MainContent(
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    mainScreenVM: MainScreenViewModel = viewModel()
+) {
     val toggleNavigatorButtonConfigurations = remember {
         ToggleNavigatorButtonConfigurations(
             startNavigator = ToggleNavigatorButtonConfiguration(
@@ -178,73 +260,59 @@ internal fun ScaffoldContent(
             ) { FileNavigator.stop(context) }
         )
     }
-
-    Surface(
+    Column(
         modifier = modifier
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceAround
     ) {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .verticalScroll(rememberScrollState())
-                .graphicsLayer(
-                    scaleX = drawerVisibilityPercentageInverse,
-                    scaleY = drawerVisibilityPercentageInverse,
-                    translationX = LocalConfiguration.current.screenWidthDp * drawerVisibilityPercentage,
-                    translationY = LocalConfiguration.current.screenHeightDp * drawerVisibilityPercentage,
-                    rotationY = drawerVisibilityPercentageAngle,
-                    rotationZ = drawerVisibilityPercentageAngle
-                ),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceAround
-        ) {
-            Spacer(modifier = Modifier.weight(0.075f))
+        Spacer(modifier = Modifier.weight(0.075f))
 
-            Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.Center) {
-                FileTypeSelectionColumn(Modifier.fillMaxHeight())
-            }
+        Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.Center) {
+            FileTypeSelectionColumn(Modifier.fillMaxHeight())
+        }
 
-            Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
-                AnimatedContent(
-                    contentAlignment = Alignment.Center,
-                    targetState = mainScreenVM.navigatorUIState.configuration.statesDissimilar.collectAsState().value,
-                    transitionSpec = {
-                        (slideInHorizontally(
-                            animationSpec = tween(
-                                durationMillis = DefaultAnimationDuration
-                            ),
-                            initialOffsetX = { -it }
-                        ) + scaleIn(
+        Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
+            AnimatedContent(
+                contentAlignment = Alignment.Center,
+                targetState = mainScreenVM.navigatorUIState.configuration.statesDissimilar.collectAsState().value,
+                transitionSpec = {
+                    (slideInHorizontally(
+                        animationSpec = tween(
+                            durationMillis = DefaultAnimationDuration
+                        ),
+                        initialOffsetX = { -it }
+                    ) + scaleIn(
+                        animationSpec = tween(
+                            durationMillis = DefaultAnimationDuration
+                        )
+                    )).togetherWith(
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
                             animationSpec = tween(
                                 durationMillis = DefaultAnimationDuration
                             )
-                        )).togetherWith(
-                            slideOutHorizontally(
-                                targetOffsetX = { it },
-                                animationSpec = tween(
-                                    durationMillis = DefaultAnimationDuration
-                                )
-                            ) + scaleOut(
-                                animationSpec = tween(
-                                    durationMillis = DefaultAnimationDuration
-                                )
+                        ) + scaleOut(
+                            animationSpec = tween(
+                                durationMillis = DefaultAnimationDuration
                             )
                         )
-                    },
-                    label = ""
-                ) {
-                    if (it) {
-                        ConfigurationChangeConfirmationButtons()
-                    } else {
-                        ToggleNavigatorButton(
-                            configuration = when (mainScreenVM.navigatorUIState.isRunning.collectAsState().value) {
-                                true -> toggleNavigatorButtonConfigurations.stopNavigator
-                                false -> toggleNavigatorButtonConfigurations.startNavigator
-                            },
-                            modifier = Modifier
-                                .width(220.dp)
-                                .height(70.dp)
-                        )
-                    }
+                    )
+                },
+                label = ""
+            ) {
+                if (it) {
+                    ConfigurationChangeConfirmationButtons()
+                } else {
+                    ToggleNavigatorButton(
+                        configuration = when (mainScreenVM.navigatorUIState.isRunning.collectAsState().value) {
+                            true -> toggleNavigatorButtonConfigurations.stopNavigator
+                            false -> toggleNavigatorButtonConfigurations.startNavigator
+                        },
+                        modifier = Modifier
+                            .width(220.dp)
+                            .height(70.dp)
+                    )
                 }
             }
         }

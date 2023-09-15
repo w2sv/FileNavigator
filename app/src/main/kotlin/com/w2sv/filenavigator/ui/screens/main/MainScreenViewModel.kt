@@ -10,9 +10,7 @@ import com.w2sv.filenavigator.ui.screens.main.states.NavigatorUIState
 import com.w2sv.filenavigator.ui.screens.main.states.StorageAccessState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -45,22 +43,16 @@ class MainScreenViewModel @Inject constructor(
         }
     )
 
-    val showManageExternalStorageDialog = combine(
-        preferencesRepository.showedManageExternalStorageRational,
-        storageAccessState.anyAccessGranted,
-    ) { f1, f2 ->
-        println("showedManageExternalStorageRational: $f1 anyStorageAccessGranted: $f2")
-        !f1 && !f2
-    }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    val postNotificationsPermissionRequested =
+        preferencesRepository.postNotificationsPermissionRequested.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            false
+        )
 
-    fun saveShowedManageExternalStorageRational(): Job =
+    fun savePostNotificationsPermissionRequested() {
         viewModelScope.launch {
-            preferencesRepository.saveShowedManageExternalStorageRational()
+            preferencesRepository.savePostNotificationsPermissionRequested(true)
         }
-
-    val showedPostNotificationsPermissionsRational by preferencesRepository::showedPostNotificationsPermissionsRational
-
-    fun saveShowedPostNotificationsPermissionsRational(): Job =
-        viewModelScope.launch { preferencesRepository.saveShowedPostNotificationsPermissionsRational() }
+    }
 }
