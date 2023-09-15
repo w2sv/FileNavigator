@@ -260,6 +260,7 @@ internal fun MainContent(
             ) { FileNavigator.stop(context) }
         )
     }
+
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState()),
