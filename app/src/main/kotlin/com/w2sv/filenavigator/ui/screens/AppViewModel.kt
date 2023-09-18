@@ -12,22 +12,21 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AppViewModel @Inject constructor(private val preferencesRepository: PreferencesRepository) : ViewModel() {
+class AppViewModel @Inject constructor(private val preferencesRepository: PreferencesRepository) :
+    ViewModel() {
 
     val theme = preferencesRepository.theme.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(),
-        Theme.DeviceDefault
     )
 
     fun saveTheme(theme: Theme) {
         viewModelScope.launch {
-            preferencesRepository.saveTheme(theme)
+            preferencesRepository.theme.save(theme)
         }
     }
 

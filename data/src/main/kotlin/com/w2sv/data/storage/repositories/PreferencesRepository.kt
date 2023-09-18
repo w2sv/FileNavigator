@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import com.w2sv.androidutils.datastorage.datastore.preferences.PreferencesDataStoreRepository
 import com.w2sv.data.model.StorageAccessStatus
 import com.w2sv.data.model.Theme
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,61 +14,27 @@ import javax.inject.Singleton
 class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences>) :
     PreferencesDataStoreRepository(dataStore) {
 
-    // =======================
-    // User Preferences
-    // =======================
-
-    val disableNavigatorOnLowBattery: Flow<Boolean> =
-        getFlow(Key.DISABLE_NAVIGATOR_ON_LOW_BATTERY, true)
-
-    suspend fun saveDisableNavigatorOnLowBattery(value: Boolean) {
-        save(Key.DISABLE_NAVIGATOR_ON_LOW_BATTERY, value)
-    }
-
-    val theme: Flow<Theme> = getEnumFlow(
-        Key.THEME,
-        Theme.DeviceDefault
+    val disableNavigatorOnLowBattery = getPersistedValue(
+        booleanPreferencesKey("disableNavigatorOnLowBattery"),
+        true
     )
 
-    suspend fun saveTheme(value: Theme) {
-        save(Key.THEME, value)
-    }
+    val theme = getPersistedValue(
+        intPreferencesKey("theme"),
+        Theme.DeviceDefault
+    )
 
     // =======================
     // Other
     // =======================
 
-    val postNotificationsPermissionRequested: Flow<Boolean> = getFlow(
-        Key.POST_NOTIFICATIONS_PERMISSION_REQUESTED,
+    val postNotificationsPermissionRequested = getPersistedValue(
+        booleanPreferencesKey("postNotificationsPermissionRequested"),
         false
     )
 
-    suspend fun savePostNotificationsPermissionRequested(value: Boolean) {
-        save(Key.POST_NOTIFICATIONS_PERMISSION_REQUESTED, value)
-    }
-
-    val priorStorageAccessStatus: Flow<StorageAccessStatus> = getEnumFlow(
-        Key.PREVIOUS_STORAGE_ACCESS_STATUS,
+    val priorStorageAccessStatus = getPersistedValue(
+        intPreferencesKey("priorStorageAccessStatus"),
         StorageAccessStatus.NoAccess
     )
-
-    suspend fun savePriorStorageAccessStatus(value: StorageAccessStatus) {
-        save(Key.PREVIOUS_STORAGE_ACCESS_STATUS, value)
-    }
-
-    private object Key {
-        val DISABLE_NAVIGATOR_ON_LOW_BATTERY =
-            booleanPreferencesKey("disableNavigatorOnLowBattery")
-
-        val PREVIOUS_STORAGE_ACCESS_STATUS = intPreferencesKey(
-            "previousStorageAccessStatus"
-        )
-
-        val THEME = intPreferencesKey(
-            "theme"
-        )
-
-        val POST_NOTIFICATIONS_PERMISSION_REQUESTED =
-            booleanPreferencesKey("postNotificationsPermissionRequested")
-    }
 }

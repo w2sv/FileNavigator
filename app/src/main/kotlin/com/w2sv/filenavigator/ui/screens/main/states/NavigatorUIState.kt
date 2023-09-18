@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.main.states
 
 import android.content.Context
-import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlow
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
@@ -18,7 +17,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class NavigatorUIState(
@@ -33,12 +31,11 @@ class NavigatorUIState(
     val disableOnLowBattery = preferencesRepository.disableNavigatorOnLowBattery.stateIn(
         scope,
         SharingStarted.WhileSubscribed(),
-        true
     )
 
     fun saveDisableOnLowBattery(value: Boolean) {
         scope.launch {
-            preferencesRepository.saveDisableNavigatorOnLowBattery(value)
+            preferencesRepository.disableNavigatorOnLowBattery.save(value)
         }
     }
 

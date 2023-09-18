@@ -38,7 +38,7 @@ class MainScreenViewModel @Inject constructor(
         setFileTypeStatuses = navigatorUIState::setFileTypeStatus,
         saveStorageAccessStatus = {
             viewModelScope.launch {
-                preferencesRepository.savePriorStorageAccessStatus(it)
+                preferencesRepository.priorStorageAccessStatus.save(it)
             }
         }
     )
@@ -47,12 +47,11 @@ class MainScreenViewModel @Inject constructor(
         preferencesRepository.postNotificationsPermissionRequested.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(),
-            false
         )
 
     fun savePostNotificationsPermissionRequested() {
         viewModelScope.launch {
-            preferencesRepository.savePostNotificationsPermissionRequested(true)
+            preferencesRepository.postNotificationsPermissionRequested.save(true)
         }
     }
 }
