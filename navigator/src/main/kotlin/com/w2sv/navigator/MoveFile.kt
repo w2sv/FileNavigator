@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit
 data class MoveFile(
     val uri: Uri,
     val type: FileType,
-    val sourceKind: FileType.SourceKind,
+    val sourceKind: FileType.Source.Kind,
     val data: MediaStoreData
 ) : Parcelable {
 
@@ -95,16 +95,16 @@ data class MoveFile(
                 .substringAfterLast(File.separator)
         }
 
-        fun getSourceKind(): FileType.SourceKind = when {
-            isDownload -> FileType.SourceKind.Download
+        fun getSourceKind(): FileType.Source.Kind = when {
+            isDownload -> FileType.Source.Kind.Download
             // NOTE: Don't change the order of the Screenshot and Camera branches, as the actual screenshot dir
             // may be a child dir of the camera directory
-            relativePath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileType.SourceKind.Screenshot
-            relativePath.contains(Environment.DIRECTORY_DCIM) -> FileType.SourceKind.Camera
-            else -> FileType.SourceKind.OtherApp
+            relativePath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileType.Source.Kind.Screenshot
+            relativePath.contains(Environment.DIRECTORY_DCIM) -> FileType.Source.Kind.Camera
+            else -> FileType.Source.Kind.OtherApp
         }
             .also {
-                i { "Determined SourceKind: ${it.name}" }
+                i { "Determined Source.Kind: ${it.name}" }
             }
 
         companion object {

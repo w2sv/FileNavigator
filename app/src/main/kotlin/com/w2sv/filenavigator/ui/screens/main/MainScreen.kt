@@ -187,7 +187,7 @@ fun MainScreen(
     }
 }
 
-fun Modifier.animateDrawerProgressionBased(drawerState: DrawerState): Modifier = composed {
+private fun Modifier.animateDrawerProgressionBased(drawerState: DrawerState): Modifier = composed {
     val maxDrawerWidthPx =
         with(LocalDensity.current) { DrawerDefaults.MaximumDrawerWidth.toPx() }
 

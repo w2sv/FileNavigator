@@ -2,7 +2,7 @@
     <string name="configure">Configure</string>
     <string name="file_deletion_requires_access_to_manage_all_files">File deletion requires access to manage all files</string>
     <string name="delete">Delete</string>
-    <string name="move_to_default_destination">Move to default destination</string>
+    <string name="move_to_default_destination">Move 2 default</string>
     <string name="successfully_deleted_file">Successfully deleted file</string>
     <string name="couldn_t_delete_file">Couldn\'t delete file</string>
     <string name="moved_file_to">Moved file to %1$s</string>

@@ -1,6 +1,5 @@
 package com.w2sv.data.model
 
-import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -19,7 +18,7 @@ sealed class FileType(
     @DrawableRes val iconRes: Int,
     val colorLong: Long,
     val mediaType: MediaType,
-    sourceKinds: List<SourceKind>,
+    sourceKinds: List<Source.Kind>,
 ) : Parcelable {
 
     val identifier: String = this::class.java.simpleName
@@ -42,7 +41,7 @@ sealed class FileType(
         @DrawableRes iconRes: Int,
         color: Long,
         simpleStorageType: MediaType,
-        sourceKinds: List<SourceKind>,
+        sourceKinds: List<Source.Kind>,
         val fileExtensions: Set<String>? = null,
         val ignoreFileExtensionsOf: Media? = null
     ) : FileType(
@@ -72,10 +71,10 @@ sealed class FileType(
             color = 0xFFBF1A2F,
             simpleStorageType = MediaType.IMAGE,
             sourceKinds = listOf(
-                SourceKind.Camera,
-                SourceKind.Screenshot,
-                SourceKind.Download,
-                SourceKind.OtherApp
+                Source.Kind.Camera,
+                Source.Kind.Screenshot,
+                Source.Kind.Download,
+                Source.Kind.OtherApp
             ),
             ignoreFileExtensionsOf = GIF
         )
@@ -88,8 +87,8 @@ sealed class FileType(
             color = 0xFF49C6E5,
             simpleStorageType = MediaType.IMAGE,
             sourceKinds = listOf(
-                SourceKind.Download,
-                SourceKind.OtherApp
+                Source.Kind.Download,
+                Source.Kind.OtherApp
             ),
             fileExtensions = setOf("gif", "GIF", "giff")
         )
@@ -102,9 +101,9 @@ sealed class FileType(
             color = 0xFFFFCB77,
             simpleStorageType = MediaType.VIDEO,
             sourceKinds = listOf(
-                SourceKind.Camera,
-                SourceKind.Download,
-                SourceKind.OtherApp
+                Source.Kind.Camera,
+                Source.Kind.Download,
+                Source.Kind.OtherApp
             )
         )
 
@@ -116,8 +115,8 @@ sealed class FileType(
             color = 0xFFF26430,
             simpleStorageType = MediaType.AUDIO,
             sourceKinds = listOf(
-                SourceKind.Download,
-                SourceKind.OtherApp
+                Source.Kind.Download,
+                Source.Kind.OtherApp
             )
         )
 
@@ -137,7 +136,7 @@ sealed class FileType(
         colorLong = color,
         mediaType = MediaType.DOWNLOADS,
         sourceKinds = listOf(
-            SourceKind.Download
+            Source.Kind.Download
         )
     ) {
 
@@ -237,30 +236,8 @@ sealed class FileType(
         val values: List<FileType> = Media.all + NonMedia.all
     }
 
-    enum class SourceKind(
-        @StringRes val labelRes: Int,
-        @DrawableRes val iconRes: Int
-    ) {
-        Camera(
-            R.string.camera,
-            R.drawable.ic_camera_24
-        ),
-        Screenshot(
-            R.string.screenshot,
-            R.drawable.ic_screenshot_24
-        ),
-        Download(
-            R.string.download,
-            R.drawable.ic_file_download_24
-        ),
-        OtherApp(
-            R.string.third_party_app,
-            R.drawable.ic_apps_24
-        )
-    }
-
     @Parcelize
-    class Source(val fileType: FileType, val kind: SourceKind) : Parcelable {
+    class Source(val fileType: FileType, val kind: Kind) : Parcelable {
 
         private fun getPreferencesKeyContent(keySuffix: String): String =
             "${fileType.identifier}.$kind.$keySuffix"
@@ -289,18 +266,29 @@ sealed class FileType(
             ) {}
         }
 
-        fun getTitle(context: Context): String =
-            when (kind) {
-                SourceKind.Screenshot -> "Screenshot"
-                SourceKind.Camera -> {
-                    if (fileType == Media.Image)
-                        "Photo"
-                    else
-                        "Video"
-                }
-
-                SourceKind.Download -> "${context.getString(fileType.titleRes)} Download"
-                SourceKind.OtherApp -> "External App ${context.getString(fileType.titleRes)}"
-            }
+        enum class Kind(
+            @StringRes val labelRes: Int,
+            @DrawableRes val iconRes: Int
+        ) {
+            Camera(
+                R.string.camera,
+                R.drawable.ic_camera_24
+            ),
+            Screenshot(
+                R.string.screenshot,
+                R.drawable.ic_screenshot_24
+            ),
+            Download(
+                R.string.download,
+                R.drawable.ic_file_download_24
+            ),
+            OtherApp(
+                R.string.third_party_app,
+                R.drawable.ic_apps_24
+            )
+        }
     }
 }
+
+fun <FT : FileType> Iterable<FT>.filterEnabled(statusMap: Map<FileType.Status.StoreEntry, FileType.Status>): List<FT> =
+    filter { statusMap.getValue(it.status).isEnabled }

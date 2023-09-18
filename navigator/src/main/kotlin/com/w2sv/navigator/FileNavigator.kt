@@ -4,30 +4,19 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.database.ContentObserver
-import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.os.Parcelable
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
-import androidx.core.graphics.drawable.toBitmap
-import com.anggrayudi.storage.media.MediaType
-import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.coroutines.getSynchronousMap
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.UniqueIds
 import com.w2sv.androidutils.notifying.getNotificationManager
-import com.w2sv.androidutils.notifying.showNotification
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.common.notifications.NotificationChannelProperties
 import com.w2sv.common.notifications.createNotificationChannelAndGetNotificationBuilder
-import com.w2sv.data.model.FileType
 import com.w2sv.data.storage.repositories.FileTypeRepository
-import com.w2sv.navigator.actions.FileDeletionBroadcastReceiver
-import com.w2sv.navigator.actions.FileMoveActivity
-import com.w2sv.navigator.actions.MoveToDefaultDestinationBroadcastReceiver
+import com.w2sv.navigator.fileobservers.FileObserver
+import com.w2sv.navigator.fileobservers.getFileObservers
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,40 +49,19 @@ class FileNavigator : UnboundService() {
         )
     }
 
-    private fun setAndRegisterFileObservers(): List<FileObserver> {
-        val fileTypeStatus = fileTypeRepository.fileTypeStatus.getSynchronousMap()
-        val accountForFileTypeOrigin =
-            fileTypeRepository.mediaFileSourceEnabled.getSynchronousMap()
-
-        val mediaFileObservers = FileType.Media.all
-            .filter { fileTypeStatus.getValue(it.status).isEnabled }
-            .map { mediaType ->
-                MediaFileObserver(
-                    mediaType,
-                    mediaType
-                        .sources
-                        .filter { origin -> accountForFileTypeOrigin.getValue(origin.isEnabled) }
-                        .map { origin -> origin.kind }
-                        .toSet()
+    private fun setAndRegisterFileObservers(): List<FileObserver> =
+        getFileObservers(
+            statusMap = fileTypeRepository.fileTypeStatus.getSynchronousMap(),
+            mediaFileSourceEnabled = fileTypeRepository.mediaFileSourceEnabled.getSynchronousMap(),
+            context = applicationContext,
+            getNotificationParameters = {
+                NotificationParameters(
+                    newFileDetectedNotificationIds.addNewId(),
+                    newFileDetectedActionsPendingIntentRequestCodes.addMultipleNewIds(it)
                 )
-            }
-
-        val nonMediaFileObserver =
-            FileType.NonMedia.all.filter { fileTypeStatus.getValue(it.status).isEnabled }
-                .run {
-                    if (isNotEmpty()) {
-                        NonMediaFileObserver(this)
-                    } else {
-                        null
-                    }
-                }
-
-        return buildList {
-            addAll(mediaFileObservers)
-            nonMediaFileObserver?.let {
-                add(it)
-            }
-        }
+            },
+            getDefaultMoveDestination = { fileTypeRepository.getFileSourceDefaultDestinationFlow(it).getValueSynchronously() }
+        )
             .onEach {
                 contentResolver.registerContentObserver(
                     it.contentObserverUri,
@@ -102,7 +70,6 @@ class FileNavigator : UnboundService() {
                 )
             }
             .also { i { "Registered ${it.size} FileObservers" } }
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         i { "onStartCommand | action: ${intent?.action}" }
@@ -144,7 +111,6 @@ class FileNavigator : UnboundService() {
             )
                 .setSmallIcon(R.drawable.ic_file_move_24)
                 .setContentTitle(getString(R.string.file_navigator_is_running))
-                .setContentText(getString(R.string.waiting_for_new_files_to_be_navigated))
                 // add configure action
                 .addAction(
                     NotificationCompat.Action(
@@ -177,284 +143,13 @@ class FileNavigator : UnboundService() {
         )
 
         fileObservers = setAndRegisterFileObservers()
-
-        CoroutineScope(Dispatchers.Default).launch {
-            statusChanged._isRunning.emit(true)
-        }
+        statusChanged.emitNewStatus(true)
     }
 
     private fun stop() {
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        CoroutineScope(Dispatchers.Default).launch {
-            statusChanged._isRunning.emit(false)
-        }
-    }
-
-    private abstract inner class FileObserver(val contentObserverUri: Uri) :
-        ContentObserver(Handler(Looper.getMainLooper())) {
-
-        override fun deliverSelfNotifications(): Boolean = false
-
-        private val mediaStoreFileDataBlacklistCache =
-            EvictingQueue.create<MoveFile.MediaStoreData>(5)
-
-        override fun onChange(selfChange: Boolean, uri: Uri?) {
-            super.onChange(selfChange, uri)
-
-            i { "onChange | Uri: $uri" }
-
-            uri ?: return
-
-            MoveFile.MediaStoreData.fetch(uri, contentResolver)?.let { mediaStoreFileData ->
-                if (mediaStoreFileData.isPending) return@let
-
-                if (mediaStoreFileData.isNewlyAdded &&
-                    mediaStoreFileDataBlacklistCache.none {
-                        it.pointsToSameContentAs(
-                            mediaStoreFileData
-                        )
-                    }
-                ) {
-                    showNotificationIfApplicable(uri, mediaStoreFileData)
-                }
-
-                mediaStoreFileDataBlacklistCache.add(mediaStoreFileData)
-            }
-        }
-
-        protected abstract fun showNotificationIfApplicable(
-            uri: Uri,
-            mediaStoreFileData: MoveFile.MediaStoreData
-        )
-
-        protected fun showNotification(moveFile: MoveFile) {
-            val notificationContentText =
-                getString(
-                    R.string.found_at,
-                    moveFile.data.name,
-                    moveFile.data.relativePath
-                )
-
-            val notificationParameters = NotificationParameters(
-                newFileDetectedNotificationIds.addNewId(),
-                newFileDetectedActionsPendingIntentRequestCodes.addMultipleNewIds(5)
-            )
-
-            showNotification(
-                notificationParameters.notificationId,
-                createNotificationChannelAndGetNotificationBuilder(
-                    moveFile.type.notificationChannel
-                )
-                    .setContentTitle(
-                        getString(
-                            R.string.new_file_detected_template,
-                            getNotificationTitleFormatArg(moveFile)
-                        )
-                    )
-                    // set icons
-                    .setSmallIcon(moveFile.type.iconRes)
-                    .setLargeIcon(
-                        AppCompatResources.getDrawable(
-                            applicationContext,
-                            moveFile.sourceKind.iconRes
-                        )
-                            ?.toBitmap()
-                    )
-                    // set content
-                    .setStyle(
-                        NotificationCompat.BigTextStyle()
-                            .bigText(notificationContentText)
-                    )
-                    .setContentText(notificationContentText)
-                    // add open-file action
-                    .addAction(
-                        NotificationCompat.Action(
-                            R.drawable.ic_file_open_24,
-                            getString(R.string.view),
-                            PendingIntent.getActivity(
-                                applicationContext,
-                                notificationParameters.associatedRequestCodes[0],
-                                Intent()
-                                    .setAction(Intent.ACTION_VIEW)
-                                    .setDataAndType(
-                                        moveFile.uri,
-                                        moveFile.type.mediaType.mimeType
-                                    ),
-                                PendingIntent.FLAG_IMMUTABLE
-                            )
-                        )
-                    )
-                    // add move-file action
-                    .addAction(
-                        NotificationCompat.Action(
-                            R.drawable.ic_file_move_24,
-                            getString(R.string.move),
-                            PendingIntent.getActivity(
-                                applicationContext,
-                                notificationParameters.associatedRequestCodes[1],
-                                Intent.makeRestartActivityTask(
-                                    ComponentName(
-                                        applicationContext,
-                                        FileMoveActivity::class.java
-                                    )
-                                )
-                                    .putExtra(EXTRA_MOVE_FILE, moveFile)
-                                    .putExtra(
-                                        NotificationParameters.EXTRA,
-                                        notificationParameters
-                                    ),
-                                PendingIntent.FLAG_IMMUTABLE
-                            )
-                        )
-                    )
-                    // add move-to-default-destination action
-                    .apply {
-                        val defaultMoveDestination =
-                            fileTypeRepository
-                                .getFileSourceDefaultDestinationFlow(moveFile.source)
-                                .getValueSynchronously()
-
-                        if (defaultMoveDestination != null) {
-                            addAction(
-                                NotificationCompat.Action(
-                                    R.drawable.ic_add_new_folder_24,
-                                    getString(R.string.move_to_default_destination),
-                                    PendingIntent.getBroadcast(
-                                        applicationContext,
-                                        notificationParameters.associatedRequestCodes[2],
-                                        Intent(
-                                            applicationContext,
-                                            MoveToDefaultDestinationBroadcastReceiver::class.java
-                                        )
-                                            .putExtra(EXTRA_MOVE_FILE, moveFile)
-                                            .putExtra(
-                                                NotificationParameters.EXTRA,
-                                                notificationParameters
-                                            )
-                                            .putExtra(
-                                                EXTRA_DEFAULT_MOVE_DESTINATION,
-                                                defaultMoveDestination
-                                            ),
-                                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-                                    )
-                                )
-                            )
-                        }
-                    }
-                    // add delete-file action
-                    .addAction(
-                        NotificationCompat.Action(
-                            R.drawable.ic_delete_24,
-                            getString(R.string.delete),
-                            PendingIntent.getBroadcast(
-                                applicationContext,
-                                notificationParameters.associatedRequestCodes[3],
-                                Intent(
-                                    applicationContext,
-                                    FileDeletionBroadcastReceiver::class.java
-                                )
-                                    .putExtra(EXTRA_MOVE_FILE, moveFile)
-                                    .putExtra(
-                                        NotificationParameters.EXTRA,
-                                        notificationParameters
-                                    ),
-                                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-                            )
-                        )
-                    )
-            )
-        }
-
-        protected abstract fun getNotificationTitleFormatArg(moveFile: MoveFile): String
-    }
-
-    private inner class MediaFileObserver(
-        private val fileType: FileType.Media,
-        private val sourceKinds: Set<FileType.SourceKind>
-    ) :
-        FileObserver(fileType.mediaType.readUri!!) {
-
-        init {
-            i { "Initialized ${fileType::class.java.simpleName} MediaTypeObserver with originKinds: ${sourceKinds.map { it.name }}" }
-        }
-
-        override fun showNotificationIfApplicable(
-            uri: Uri,
-            mediaStoreFileData: MoveFile.MediaStoreData
-        ) {
-            if (fileType.matchesFileExtension(mediaStoreFileData.fileExtension)) {
-                val sourceKind = mediaStoreFileData.getSourceKind()
-
-                if (sourceKinds.contains(sourceKind)) {
-                    showNotification(
-                        MoveFile(
-                            uri = uri,
-                            type = fileType,
-                            sourceKind = sourceKind,
-                            data = mediaStoreFileData
-                        )
-                    )
-                }
-            }
-        }
-
-        override fun getNotificationTitleFormatArg(moveFile: MoveFile): String {
-            moveFile.type as FileType.Media
-
-            return when (moveFile.data.getSourceKind()) {
-                FileType.SourceKind.Screenshot -> getString(
-                    R.string.new_screenshot
-                )
-
-                FileType.SourceKind.Camera -> getString(
-                    when (moveFile.type) {
-                        FileType.Media.Image -> R.string.new_photo
-                        FileType.Media.Video -> R.string.new_video
-                        else -> throw Error()
-                    }
-                )
-
-                FileType.SourceKind.Download -> getString(
-                    R.string.newly_downloaded_template,
-                    getString(moveFile.type.fileDeclarationRes)
-                )
-
-                FileType.SourceKind.OtherApp -> getString(
-                    R.string.new_third_party_file_template,
-                    moveFile.data.dirName,
-                    getString(moveFile.type.fileDeclarationRes)
-                )
-            }
-        }
-    }
-
-    private inner class NonMediaFileObserver(private val fileTypes: List<FileType.NonMedia>) :
-        FileObserver(MediaType.DOWNLOADS.readUri!!) {
-
-        init {
-            i { "Initialized NonMediaFileObserver with fileTypes: ${fileTypes.map { it::class.java.simpleName }}" }
-        }
-
-        override fun showNotificationIfApplicable(
-            uri: Uri,
-            mediaStoreFileData: MoveFile.MediaStoreData
-        ) {
-            fileTypes.firstOrNull { it.matchesFileExtension(mediaStoreFileData.fileExtension) }
-                ?.let { fileType ->
-                    showNotification(
-                        MoveFile(
-                            uri = uri,
-                            type = fileType,
-                            sourceKind = FileType.SourceKind.Download,
-                            data = mediaStoreFileData
-                        )
-                    )
-                }
-        }
-
-        override fun getNotificationTitleFormatArg(moveFile: MoveFile): String =
-            getString(R.string.new_file, getString(moveFile.type.titleRes))
+        statusChanged.emitNewStatus(false)
     }
 
     private fun unregisterContentObservers() {
@@ -477,7 +172,15 @@ class FileNavigator : UnboundService() {
     @Singleton
     class StatusChanged @Inject constructor() {
         val isRunning get() = _isRunning.asSharedFlow()
-        internal val _isRunning: MutableSharedFlow<Boolean> = MutableSharedFlow()
+        private val _isRunning: MutableSharedFlow<Boolean> = MutableSharedFlow()
+
+        private val scope = CoroutineScope(Dispatchers.Default)
+
+        internal fun emitNewStatus(isRunning: Boolean) {
+            scope.launch {
+                _isRunning.emit(isRunning)
+            }
+        }
     }
 
     @Parcelize

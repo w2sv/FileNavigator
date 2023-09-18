@@ -276,7 +276,7 @@ fun DefaultMoveDestinationDialog(
 //private fun DefaultMoveDestinationDialogPrev() {
 //    AppTheme {
 //        DefaultMoveDestinationDialog(
-//            fileSource = FileType.Source(FileType.Media.Image, FileType.SourceKind.Camera),
+//            fileSource = FileType.Source(FileType.Media.Image, FileType.Source.Kind.Camera),
 //            defaultMoveDestination = null,
 //            closeDialog = {},
 //            setDefaultDestination = {},
