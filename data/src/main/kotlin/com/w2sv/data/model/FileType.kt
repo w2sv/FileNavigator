@@ -1,5 +1,6 @@
 package com.w2sv.data.model
 
+import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -8,7 +9,6 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
-import com.w2sv.common.notifications.NotificationChannelProperties
 import com.w2sv.data.R
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -22,8 +22,6 @@ sealed class FileType(
 ) : Parcelable {
 
     val identifier: String = this::class.java.simpleName
-
-    val notificationChannel = NotificationChannelProperties(identifier, identifier)
 
     val status by lazy {
         Status.StoreEntry(this)
@@ -265,6 +263,20 @@ sealed class FileType(
                 false
             ) {}
         }
+
+        fun getTitle(context: Context): String =
+            when (kind) {
+                Kind.Screenshot -> "Screenshot"
+                Kind.Camera -> {
+                    if (fileType == Media.Image)
+                        "Photo"
+                    else
+                        "Video"
+                }
+
+                Kind.Download -> "${context.getString(fileType.titleRes)} Download"
+                Kind.OtherApp -> "External App ${context.getString(fileType.titleRes)}"
+            }
 
         enum class Kind(
             @StringRes val labelRes: Int,

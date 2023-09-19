@@ -18,8 +18,9 @@ import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.FileNavigator
-import com.w2sv.navigator.MoveFile
 import com.w2sv.navigator.R
+import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.notifications.NotificationResources
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -49,8 +50,8 @@ class FileMoveActivity : ComponentActivity() {
         private val moveFile: MoveFile =
             savedStateHandle[FileNavigator.EXTRA_MOVE_FILE]!!
 
-        val notificationParameters: FileNavigator.NotificationParameters =
-            savedStateHandle[FileNavigator.NotificationParameters.EXTRA]!!
+        val notificationResources: NotificationResources =
+            savedStateHandle[NotificationResources.EXTRA]!!
 
         // ===============
         // Extra Downstream
@@ -71,12 +72,12 @@ class FileMoveActivity : ComponentActivity() {
 
         val defaultDestinationIsLocked =
             fileTypeRepository
-                .getFileSourceDefaultDestinationIsLockedFlow(moveFile.source)
+                .getDefaultDestinationIsLockedFlow(moveFile.source)
                 .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
         fun saveFileSourceDefaultDestination(defaultDestination: Uri): Job =
             viewModelScope.launch {
-                fileTypeRepository.saveFileSourceDefaultDestination(
+                fileTypeRepository.saveDefaultDestination(
                     moveFile.source,
                     defaultDestination
                 )
@@ -111,7 +112,10 @@ class FileMoveActivity : ComponentActivity() {
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
 
-            viewModel.notificationParameters.cancelUnderlyingNotification(this)
+            FileNavigator.cancelNotification(
+                notificationResources = viewModel.notificationResources,
+                context = this
+            )
 
             // Move file
             lifecycleScope.launch(Dispatchers.IO) {

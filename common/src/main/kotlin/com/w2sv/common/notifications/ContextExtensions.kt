@@ -1,25 +1,18 @@
 package com.w2sv.common.notifications
 
 import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import com.w2sv.androidutils.notifying.getNotificationManager
 
 fun Context.createNotificationChannelAndGetNotificationBuilder(
-    channel: NotificationChannelProperties
+    channel: NotificationChannel
 ): NotificationCompat.Builder {
-    getNotificationManager().createNotificationChannel(
-        NotificationChannel(
-            channel.id,
-            channel.name,
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
-    )
-    return notificationBuilder(channel.id)
+    getNotificationManager().createNotificationChannel(channel)
+    return getNotificationBuilder(channel.id)
 }
 
-private fun Context.notificationBuilder(
+private fun Context.getNotificationBuilder(
     channelId: String
 ): NotificationCompat.Builder =
     NotificationCompat.Builder(this, channelId)

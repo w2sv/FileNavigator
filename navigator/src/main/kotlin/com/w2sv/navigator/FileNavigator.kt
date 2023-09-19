@@ -1,29 +1,29 @@
 package com.w2sv.navigator
 
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.os.Parcelable
 import androidx.core.app.NotificationCompat
 import com.w2sv.androidutils.coroutines.getSynchronousMap
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.generic.getParcelableCompat
-import com.w2sv.androidutils.notifying.UniqueIds
 import com.w2sv.androidutils.notifying.getNotificationManager
 import com.w2sv.androidutils.services.UnboundService
-import com.w2sv.common.notifications.NotificationChannelProperties
 import com.w2sv.common.notifications.createNotificationChannelAndGetNotificationBuilder
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
+import com.w2sv.navigator.notifications.NewMoveFileNotificationProducer
+import com.w2sv.navigator.notifications.NotificationResources
+import com.w2sv.navigator.notifications.getNotificationChannel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import slimber.log.i
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,30 +37,36 @@ class FileNavigator : UnboundService() {
     @Inject
     lateinit var statusChanged: StatusChanged
 
-    private val newFileDetectedNotificationIds = UniqueIds(1)
-    private val newFileDetectedActionsPendingIntentRequestCodes = UniqueIds(1)
+    @Inject
+    lateinit var notificationManager: NotificationManager
 
-    private lateinit var fileObservers: List<FileObserver>
-
-    private val notificationChannel by lazy {
-        NotificationChannelProperties(
-            "FileNavigator",
-            getString(R.string.file_navigator_is_running)
+    private val newMoveFileNotificationProducer by lazy {
+        NewMoveFileNotificationProducer(
+            context = this,
+            notificationChannel = getNotificationChannel(
+                "NEW_MOVE_FILE",
+                getString(R.string.new_file_detected)
+            ),
+            notificationManager = notificationManager
         )
     }
 
-    private fun setAndRegisterFileObservers(): List<FileObserver> =
+    private lateinit var fileObservers: List<FileObserver>
+
+    private fun getRegisteredFileObservers(): List<FileObserver> =
         getFileObservers(
             statusMap = fileTypeRepository.fileTypeStatus.getSynchronousMap(),
             mediaFileSourceEnabled = fileTypeRepository.mediaFileSourceEnabled.getSynchronousMap(),
-            context = applicationContext,
-            getNotificationParameters = {
-                NotificationParameters(
-                    newFileDetectedNotificationIds.addNewId(),
-                    newFileDetectedActionsPendingIntentRequestCodes.addMultipleNewIds(it)
+            contentResolver = contentResolver,
+            onNewMoveFile = { moveFile ->
+                newMoveFileNotificationProducer.buildAndEmit(
+                    moveFile = moveFile,
+                    getDefaultMoveDestination = { source ->
+                        fileTypeRepository.getDefaultDestinationFlow(source)
+                            .getValueSynchronously()
+                    }
                 )
-            },
-            getDefaultMoveDestination = { fileTypeRepository.getFileSourceDefaultDestinationFlow(it).getValueSynchronously() }
+            }
         )
             .onEach {
                 contentResolver.registerContentObserver(
@@ -81,15 +87,17 @@ class FileNavigator : UnboundService() {
 
             ACTION_REREGISTER_MEDIA_OBSERVERS -> {
                 unregisterContentObservers()
-                fileObservers = setAndRegisterFileObservers()
+                fileObservers = getRegisteredFileObservers()
             }
 
-            ACTION_CLEANUP_IDS -> {
-                val notificationParameters =
-                    intent.getParcelableCompat<NotificationParameters>(NotificationParameters.EXTRA)!!
-
-                newFileDetectedNotificationIds.remove(notificationParameters.notificationId)
-                newFileDetectedActionsPendingIntentRequestCodes.removeAll(notificationParameters.associatedRequestCodes.toSet())
+            ACTION_CANCEL_NOTIFICATION -> {
+                val notificationResources = intent.getParcelableCompat<NotificationResources>(
+                    NotificationResources.EXTRA
+                )!!
+                notificationManager.cancel(notificationResources.id)
+                newMoveFileNotificationProducer.removeIds(
+                    notificationResources = notificationResources
+                )
             }
 
             else -> try {
@@ -107,7 +115,10 @@ class FileNavigator : UnboundService() {
         startForeground(
             1,
             createNotificationChannelAndGetNotificationBuilder(
-                notificationChannel
+                getNotificationChannel(
+                    id = "FILE_NAVIGATOR",
+                    name = getString(R.string.file_navigator_is_running)
+                )
             )
                 .setSmallIcon(R.drawable.ic_file_move_24)
                 .setContentTitle(getString(R.string.file_navigator_is_running))
@@ -142,7 +153,7 @@ class FileNavigator : UnboundService() {
                 .build()
         )
 
-        fileObservers = setAndRegisterFileObservers()
+        fileObservers = getRegisteredFileObservers()
         statusChanged.emitNewStatus(true)
     }
 
@@ -183,24 +194,6 @@ class FileNavigator : UnboundService() {
         }
     }
 
-    @Parcelize
-    data class NotificationParameters(
-        val notificationId: Int,
-        val associatedRequestCodes: ArrayList<Int>
-    ) : Parcelable {
-
-        fun cancelUnderlyingNotification(
-            context: Context
-        ) {
-            context.getNotificationManager().cancel(notificationId)
-            onNotificationCancelled(this, context)
-        }
-
-        companion object {
-            const val EXTRA = "com.w2sv.filenavigator.extra.NOTIFICATION_PARAMETERS"
-        }
-    }
-
     companion object {
         fun start(context: Context) {
             context.startService(
@@ -214,14 +207,14 @@ class FileNavigator : UnboundService() {
             )
         }
 
-        fun onNotificationCancelled(
-            notificationParameters: NotificationParameters,
+        fun cancelNotification(
+            notificationResources: NotificationResources,
             context: Context
         ) {
             context.startService(
                 getIntent(context)
-                    .setAction(ACTION_CLEANUP_IDS)
-                    .putExtra(NotificationParameters.EXTRA, notificationParameters)
+                    .setAction(ACTION_CANCEL_NOTIFICATION)
+                    .putExtra(NotificationResources.EXTRA, notificationResources)
             )
         }
 
@@ -254,7 +247,7 @@ class FileNavigator : UnboundService() {
 
         const val ACTION_REREGISTER_MEDIA_OBSERVERS =
             "com.w2sv.filenavigator.REREGISTER_MEDIA_OBSERVERS"
-        const val ACTION_CLEANUP_IDS = "com.w2sv.filenavigator.CLEANUP_IDS"
+        const val ACTION_CANCEL_NOTIFICATION = "com.w2sv.filenavigator.CANCEL_NOTIFICATION"
         const val ACTION_STOP_SERVICE = "com.w2sv.filenavigator.STOP"
     }
 }

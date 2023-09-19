@@ -1,4 +1,4 @@
-package com.w2sv.navigator
+package com.w2sv.navigator.model
 
 import android.content.ContentResolver
 import android.content.Context
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
  * @param uri The MediaStore URI.
  */
 @Parcelize
-data class MoveFile(
+internal data class MoveFile(
     val uri: Uri,
     val type: FileType,
     val sourceKind: FileType.Source.Kind,

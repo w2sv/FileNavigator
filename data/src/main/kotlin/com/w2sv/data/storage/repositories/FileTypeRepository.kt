@@ -23,20 +23,20 @@ class FileTypeRepository @Inject constructor(dataStore: DataStore<Preferences>) 
             .map { it.isEnabled }
     )
 
-    fun getFileSourceDefaultDestinationFlow(source: FileType.Source): Flow<Uri?> =
+    fun getDefaultDestinationFlow(source: FileType.Source): Flow<Uri?> =
         getUriFlow(source.defaultDestination)
 
-    suspend fun saveFileSourceDefaultDestination(
+    suspend fun saveDefaultDestination(
         source: FileType.Source,
         defaultDestination: Uri?
     ) {
         save(source.defaultDestination.preferencesKey, defaultDestination)
     }
 
-    fun getFileSourceDefaultDestinationIsLockedFlow(source: FileType.Source): Flow<Boolean> =
+    fun getDefaultDestinationIsLockedFlow(source: FileType.Source): Flow<Boolean> =
         getFlow(source.defaultDestinationIsLocked)
 
-    suspend fun saveFileSourceDefaultDestinationIsLocked(
+    suspend fun saveDefaultDestinationIsLocked(
         source: FileType.Source,
         isLocked: Boolean
     ) {

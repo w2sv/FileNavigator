@@ -23,4 +23,5 @@
     <string name="new_file">New %1$s File</string>
     <string name="newly_downloaded_template">Newly downloaded %1$s</string>
     <string name="new_third_party_file_template">New %1$s %2$s</string>
+    <string name="new_file_detected">New file detected</string>
 </resources>

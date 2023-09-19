@@ -93,16 +93,16 @@ class NavigatorUIState(
         DefaultMoveDestinationConfiguration(
             moveDestination = UnconfirmedStateFlow(
                 coroutineScope = scope,
-                appliedFlow = fileTypeRepository.getFileSourceDefaultDestinationFlow(fileSource),
-                syncState = { fileTypeRepository.saveFileSourceDefaultDestination(fileSource, it) }
+                appliedFlow = fileTypeRepository.getDefaultDestinationFlow(fileSource),
+                syncState = { fileTypeRepository.saveDefaultDestination(fileSource, it) }
             ),
             isLocked = UnconfirmedStateFlow(
                 coroutineScope = scope,
-                appliedFlow = fileTypeRepository.getFileSourceDefaultDestinationIsLockedFlow(
+                appliedFlow = fileTypeRepository.getDefaultDestinationIsLockedFlow(
                     fileSource
                 ),
                 syncState = {
-                    fileTypeRepository.saveFileSourceDefaultDestinationIsLocked(
+                    fileTypeRepository.saveDefaultDestinationIsLocked(
                         fileSource,
                         it
                     )
