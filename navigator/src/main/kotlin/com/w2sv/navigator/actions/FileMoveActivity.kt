@@ -51,14 +51,10 @@ class FileMoveActivity : ComponentActivity() {
         private val moveFile: MoveFile =
             savedStateHandle[FileNavigator.EXTRA_MOVE_FILE]!!
 
+        val moveMediaFile: MediaFile? = moveFile.getMediaFile(context)
+
         val notificationResources: NotificationResources =
             savedStateHandle[NotificationResources.EXTRA]!!
-
-        // ===============
-        // Extra Downstream
-        // ===============
-
-        val moveMediaFile: MediaFile? = moveFile.getMediaFile(context)
 
         // ===============
         // DataStore Attributes
@@ -102,11 +98,9 @@ class FileMoveActivity : ComponentActivity() {
 
             // Exit on unsuccessful conversion to SimpleStorage objects
             val targetDirectoryDocumentFile =
-                DocumentFile.fromTreeUri(this, treeUri) ?: run {
-                    finish()
-                    return@registerForActivityResult
-                }
-            viewModel.moveMediaFile ?: run {
+                DocumentFile.fromTreeUri(this, treeUri)
+
+            if (targetDirectoryDocumentFile == null || viewModel.moveMediaFile == null) {
                 finish()
                 return@registerForActivityResult
             }

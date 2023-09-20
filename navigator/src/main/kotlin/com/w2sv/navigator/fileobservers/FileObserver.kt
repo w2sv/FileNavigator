@@ -9,6 +9,7 @@ import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.data.model.FileType
 import com.w2sv.data.model.filterEnabled
+import com.w2sv.navigator.model.MediaStoreData
 import com.w2sv.navigator.model.MoveFile
 import slimber.log.i
 
@@ -28,7 +29,7 @@ internal abstract class FileObserver(
 
         uri ?: return
 
-        MoveFile.MediaStoreData.fetch(uri, contentResolver)?.let { mediaStoreFileData ->
+        MediaStoreData.fetch(uri, contentResolver)?.let { mediaStoreFileData ->
             if (mediaStoreFileData.isPending) return@let
 
             if (mediaStoreFileData.isNewlyAdded &&
@@ -45,10 +46,10 @@ internal abstract class FileObserver(
         }
     }
 
-    protected abstract fun getMoveFileIfMatching(mediaStoreFileData: MoveFile.MediaStoreData, uri: Uri): MoveFile?
+    protected abstract fun getMoveFileIfMatching(mediaStoreFileData: MediaStoreData, uri: Uri): MoveFile?
 
     private val mediaStoreFileDataBlacklist =
-        EvictingQueue.create<MoveFile.MediaStoreData>(5)
+        EvictingQueue.create<MediaStoreData>(5)
 }
 
 internal fun getFileObservers(

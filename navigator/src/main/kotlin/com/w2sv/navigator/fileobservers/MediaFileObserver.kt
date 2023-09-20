@@ -3,6 +3,7 @@ package com.w2sv.navigator.fileobservers
 import android.content.ContentResolver
 import android.net.Uri
 import com.w2sv.data.model.FileType
+import com.w2sv.navigator.model.MediaStoreData
 import com.w2sv.navigator.model.MoveFile
 import slimber.log.i
 
@@ -23,7 +24,7 @@ internal class MediaFileObserver(
     }
 
     override fun getMoveFileIfMatching(
-        mediaStoreFileData: MoveFile.MediaStoreData,
+        mediaStoreFileData: MediaStoreData,
         uri: Uri
     ): MoveFile? {
         if (fileType.matchesFileExtension(mediaStoreFileData.fileExtension)) {

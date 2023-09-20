@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.net.Uri
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.data.model.FileType
+import com.w2sv.navigator.model.MediaStoreData
 import com.w2sv.navigator.model.MoveFile
 import slimber.log.i
 
@@ -23,7 +24,7 @@ internal class NonMediaFileObserver(
     }
 
     override fun getMoveFileIfMatching(
-        mediaStoreFileData: MoveFile.MediaStoreData,
+        mediaStoreFileData: MediaStoreData,
         uri: Uri
     ): MoveFile? =
         fileTypes
