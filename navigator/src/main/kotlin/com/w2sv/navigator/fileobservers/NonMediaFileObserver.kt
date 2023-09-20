@@ -36,7 +36,4 @@ internal class NonMediaFileObserver(
                     data = mediaStoreFileData
                 )
             }
-
-//    override fun getNotificationTitleFormatArg(moveFile: MoveFile): String =
-//        context.getString(R.string.new_file, context.getString(moveFile.type.titleRes))
 }

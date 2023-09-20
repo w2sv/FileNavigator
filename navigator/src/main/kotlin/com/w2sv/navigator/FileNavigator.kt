@@ -1,23 +1,14 @@
 package com.w2sv.navigator
 
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import androidx.core.app.NotificationCompat
 import com.w2sv.androidutils.coroutines.getSynchronousMap
 import com.w2sv.androidutils.coroutines.getValueSynchronously
-import com.w2sv.androidutils.generic.getParcelableCompat
-import com.w2sv.androidutils.notifying.getNotificationManager
 import com.w2sv.androidutils.services.UnboundService
-import com.w2sv.common.notifications.createNotificationChannelAndGetNotificationBuilder
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
-import com.w2sv.navigator.notifications.NewMoveFileNotificationProducer
-import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.notifications.getNotificationChannel
+import com.w2sv.navigator.notifications.AppNotificationsManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,18 +29,7 @@ class FileNavigator : UnboundService() {
     lateinit var statusChanged: StatusChanged
 
     @Inject
-    lateinit var notificationManager: NotificationManager
-
-    private val newMoveFileNotificationProducer by lazy {
-        NewMoveFileNotificationProducer(
-            context = this,
-            notificationChannel = getNotificationChannel(
-                "NEW_MOVE_FILE",
-                getString(R.string.new_file_detected)
-            ),
-            notificationManager = notificationManager
-        )
-    }
+    lateinit var appNotificationsManager: AppNotificationsManager
 
     private lateinit var fileObservers: List<FileObserver>
 
@@ -59,7 +39,7 @@ class FileNavigator : UnboundService() {
             mediaFileSourceEnabled = fileTypeRepository.mediaFileSourceEnabled.getSynchronousMap(),
             contentResolver = contentResolver,
             onNewMoveFile = { moveFile ->
-                newMoveFileNotificationProducer.buildAndEmit(
+                appNotificationsManager.newMoveFileNotificationManager.buildAndEmit(
                     moveFile = moveFile,
                     getDefaultMoveDestination = { source ->
                         fileTypeRepository.getDefaultDestinationFlow(source)
@@ -86,18 +66,8 @@ class FileNavigator : UnboundService() {
             }
 
             ACTION_REREGISTER_MEDIA_OBSERVERS -> {
-                unregisterContentObservers()
+                unregisterFileObservers()
                 fileObservers = getRegisteredFileObservers()
-            }
-
-            ACTION_CANCEL_NOTIFICATION -> {
-                val notificationResources = intent.getParcelableCompat<NotificationResources>(
-                    NotificationResources.EXTRA
-                )!!
-                notificationManager.cancel(notificationResources.id)
-                newMoveFileNotificationProducer.removeIds(
-                    notificationResources = notificationResources
-                )
             }
 
             else -> try {
@@ -114,43 +84,7 @@ class FileNavigator : UnboundService() {
     private fun start() {
         startForeground(
             1,
-            createNotificationChannelAndGetNotificationBuilder(
-                getNotificationChannel(
-                    id = "FILE_NAVIGATOR",
-                    name = getString(R.string.file_navigator_is_running)
-                )
-            )
-                .setSmallIcon(R.drawable.ic_file_move_24)
-                .setContentTitle(getString(R.string.file_navigator_is_running))
-                // add configure action
-                .addAction(
-                    NotificationCompat.Action(
-                        R.drawable.ic_settings_24,
-                        getString(R.string.configure),
-                        PendingIntent.getActivity(
-                            applicationContext,
-                            1,
-                            Intent.makeRestartActivityTask(
-                                ComponentName(this, "com.w2sv.filenavigator.MainActivity")
-                            ),
-                            PendingIntent.FLAG_IMMUTABLE
-                        )
-                    )
-                )
-                // add stop action
-                .addAction(
-                    NotificationCompat.Action(
-                        R.drawable.ic_cancel_24,
-                        getString(R.string.stop),
-                        PendingIntent.getService(
-                            applicationContext,
-                            0,
-                            getStopIntent(applicationContext),
-                            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-                        ),
-                    )
-                )
-                .build()
+            appNotificationsManager.foregroundServiceNotificationManagerProducer.build()
         )
 
         fileObservers = getRegisteredFileObservers()
@@ -163,7 +97,7 @@ class FileNavigator : UnboundService() {
         statusChanged.emitNewStatus(false)
     }
 
-    private fun unregisterContentObservers() {
+    private fun unregisterFileObservers() {
         fileObservers.forEach {
             contentResolver.unregisterContentObserver(it)
         }
@@ -174,7 +108,7 @@ class FileNavigator : UnboundService() {
         super.onDestroy()
 
         try {
-            unregisterContentObservers()
+            unregisterFileObservers()
         } catch (e: UninitializedPropertyAccessException) {
             i(e)
         }
@@ -207,17 +141,6 @@ class FileNavigator : UnboundService() {
             )
         }
 
-        fun cancelNotification(
-            notificationResources: NotificationResources,
-            context: Context
-        ) {
-            context.startService(
-                getIntent(context)
-                    .setAction(ACTION_CANCEL_NOTIFICATION)
-                    .putExtra(NotificationResources.EXTRA, notificationResources)
-            )
-        }
-
         fun reregisterFileObservers(context: Context) {
             context.startService(
                 getIntent(context)
@@ -225,7 +148,7 @@ class FileNavigator : UnboundService() {
             )
         }
 
-        private fun getStopIntent(context: Context): Intent =
+        fun getStopIntent(context: Context): Intent =
             getIntent(context)
                 .setAction(ACTION_STOP_SERVICE)
 
@@ -247,7 +170,6 @@ class FileNavigator : UnboundService() {
 
         const val ACTION_REREGISTER_MEDIA_OBSERVERS =
             "com.w2sv.filenavigator.REREGISTER_MEDIA_OBSERVERS"
-        const val ACTION_CANCEL_NOTIFICATION = "com.w2sv.filenavigator.CANCEL_NOTIFICATION"
         const val ACTION_STOP_SERVICE = "com.w2sv.filenavigator.STOP"
     }
 }

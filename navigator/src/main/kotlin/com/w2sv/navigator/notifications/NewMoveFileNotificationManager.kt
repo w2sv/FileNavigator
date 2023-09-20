@@ -1,7 +1,6 @@
 package com.w2sv.navigator.notifications
 
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ComponentName
@@ -11,7 +10,6 @@ import android.net.Uri
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
-import com.w2sv.androidutils.notifying.UniqueIds
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
@@ -20,45 +18,37 @@ import com.w2sv.navigator.actions.FileMoveActivity
 import com.w2sv.navigator.actions.MoveToDefaultDestinationBroadcastReceiver
 import com.w2sv.navigator.model.MoveFile
 
-internal class NewMoveFileNotificationProducer(
+class NewMoveFileNotificationManager(
     private val context: Context,
-    private val notificationChannel: NotificationChannel,
-    private val notificationManager: NotificationManager
+    notificationManager: NotificationManager
+) : AppNotificationManager(
+    notificationChannel = getNotificationChannel(
+        id = "NEW_MOVE_FILE",
+        name = context.getString(R.string.new_file_detected)
+    ),
+    notificationManager = notificationManager,
+    resourcesBaseSeed = 1
 ) {
-    private val notificationIds = UniqueIds(1)
-    private val pendingIntentRequestCodes = UniqueIds(1)
-
-    private fun getParameters(): NotificationResources =
-        NotificationResources(
-            notificationIds.addNewId(),
-            pendingIntentRequestCodes.addMultipleNewIds(4)
-        )
-
     fun buildAndEmit(
         moveFile: MoveFile,
         getDefaultMoveDestination: (FileType.Source) -> Uri?
     ) {
-        notificationManager.createNotificationChannel(notificationChannel)  // TODO: check if required to be called each time
-        val ids = getParameters()
+        val resources = getNotificationResources(4)
         notificationManager.notify(
-            ids.id,
+            resources.id,
             Builder(
                 moveFile = moveFile,
                 getDefaultMoveDestination = getDefaultMoveDestination,
-                ids = ids
-            ).build()
+                resources = resources
+            )
+                .build()
         )
-    }
-
-    fun removeIds(notificationResources: NotificationResources) {
-        notificationIds.remove(notificationResources.id)
-        pendingIntentRequestCodes.removeAll(notificationResources.actionRequestCodes.toSet())
     }
 
     inner class Builder(
         private val moveFile: MoveFile,
         private val getDefaultMoveDestination: (FileType.Source) -> Uri?,
-        private val ids: NotificationResources
+        private val resources: NotificationResources
     ) : NotificationCompat.Builder(context, notificationChannel.id) {
 
         override fun build(): Notification {
@@ -133,20 +123,20 @@ internal class NewMoveFileNotificationProducer(
             }
 
         private fun addActions() {
-            val requestCodeIterator = ids.actionRequestCodes.iterator()
+            val requestCodeIterator = resources.actionRequestCodes.iterator()
 
             addAction(getViewFileAction(requestCodeIterator.next()))
-            addAction(getMoveFileAction(requestCodeIterator.next(), ids))
+            addAction(getMoveFileAction(requestCodeIterator.next(), resources))
             getDefaultMoveDestination(moveFile.source)?.let {
                 addAction(
                     getMoveToDefaultDestinationAction(
                         requestCodeIterator.next(),
-                        ids,
+                        resources,
                         it
                     )
                 )
             }
-            addAction(getDeleteFileAction(requestCodeIterator.next(), ids))
+            addAction(getDeleteFileAction(requestCodeIterator.next(), resources))
         }
 
         private fun getViewFileAction(requestCode: Int)
@@ -196,9 +186,7 @@ internal class NewMoveFileNotificationProducer(
             requestCode: Int,
             notificationResources: NotificationResources,
             defaultMoveDestination: Uri
-        )
-
-                : NotificationCompat.Action =
+        ): NotificationCompat.Action =
             NotificationCompat.Action(
                 R.drawable.ic_add_new_folder_24,
                 context.getString(R.string.move_to_default_destination),
@@ -225,9 +213,7 @@ internal class NewMoveFileNotificationProducer(
         private fun getDeleteFileAction(
             requestCode: Int,
             notificationResources: NotificationResources
-        )
-
-                : NotificationCompat.Action =
+        ): NotificationCompat.Action =
             NotificationCompat.Action(
                 R.drawable.ic_delete_24,
                 context.getString(R.string.delete),

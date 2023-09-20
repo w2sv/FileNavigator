@@ -20,6 +20,7 @@ import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.notifications.AppNotificationsManager
 import com.w2sv.navigator.notifications.NotificationResources
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -84,6 +85,9 @@ class FileMoveActivity : ComponentActivity() {
             }
     }
 
+    @Inject
+    lateinit var appNotificationsManager: AppNotificationsManager
+
     private val viewModel by viewModels<ViewModel>()
 
     private val destinationSelectionLauncher =
@@ -112,10 +116,7 @@ class FileMoveActivity : ComponentActivity() {
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
 
-            FileNavigator.cancelNotification(
-                notificationResources = viewModel.notificationResources,
-                context = this
-            )
+            appNotificationsManager.newMoveFileNotificationManager.cancelNotification(viewModel.notificationResources)
 
             // Move file
             lifecycleScope.launch(Dispatchers.IO) {

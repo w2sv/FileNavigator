@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
  * @param uri The MediaStore URI.
  */
 @Parcelize
-internal data class MoveFile(
+data class MoveFile(
     val uri: Uri,
     val type: FileType,
     val sourceKind: FileType.Source.Kind,

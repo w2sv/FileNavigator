@@ -10,10 +10,17 @@ import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.notifications.AppNotificationsManager
 import com.w2sv.navigator.notifications.NotificationResources
+import dagger.hilt.android.AndroidEntryPoint
 import slimber.log.e
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class FileDeletionBroadcastReceiver : BroadcastReceiver() {
+
+    @Inject
+    lateinit var appNotificationsManager: AppNotificationsManager
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
@@ -49,11 +56,10 @@ class FileDeletionBroadcastReceiver : BroadcastReceiver() {
             duration = Toast.LENGTH_LONG
         )
 
-        FileNavigator.cancelNotification(
-            notificationResources = intent.getParcelableCompat<NotificationResources>(
+        appNotificationsManager.newMoveFileNotificationManager.cancelNotification(
+            intent.getParcelableCompat<NotificationResources>(
                 NotificationResources.EXTRA
-            )!!,
-            context = context
+            )!!
         )
     }
 }
