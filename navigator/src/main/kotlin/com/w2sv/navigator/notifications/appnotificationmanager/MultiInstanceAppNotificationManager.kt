@@ -1,17 +1,17 @@
-package com.w2sv.navigator.notifications
+package com.w2sv.navigator.notifications.appnotificationmanager
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import com.w2sv.androidutils.notifying.UniqueIds
+import com.w2sv.navigator.notifications.NotificationResources
 
-abstract class AppNotificationManager(
-    protected val notificationChannel: NotificationChannel,
-    protected val notificationManager: NotificationManager,
+abstract class MultiInstanceAppNotificationManager<A : AppNotificationManager.Args>(
+    notificationChannel: NotificationChannel,
+    notificationManager: NotificationManager,
+    context: Context,
     resourcesBaseSeed: Int
-) {
-    init {
-        notificationManager.createNotificationChannel(notificationChannel)
-    }
+) : AppNotificationManager<A>(notificationChannel, notificationManager, context) {
 
     private val notificationIds = UniqueIds(resourcesBaseSeed)
     private val pendingIntentRequestCodes = UniqueIds(resourcesBaseSeed)

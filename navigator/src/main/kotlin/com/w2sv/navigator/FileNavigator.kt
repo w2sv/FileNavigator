@@ -8,6 +8,7 @@ import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
+import com.w2sv.navigator.notifications.appnotificationmanager.AppNotificationManager
 import com.w2sv.navigator.notifications.AppNotificationsManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -39,13 +40,17 @@ class FileNavigator : UnboundService() {
             mediaFileSourceEnabled = fileTypeRepository.mediaFileSourceEnabled.getSynchronousMap(),
             contentResolver = contentResolver,
             onNewMoveFile = { moveFile ->
-                appNotificationsManager.newMoveFileNotificationManager.buildAndEmit(
-                    moveFile = moveFile,
-                    getDefaultMoveDestination = { source ->
-                        fileTypeRepository.getDefaultDestinationFlow(source)
-                            .getValueSynchronously()
-                    }
-                )
+                with(appNotificationsManager.newMoveFileNotificationManager) {
+                    buildAndEmit(
+                        Args(
+                            moveFile = moveFile,
+                            getDefaultMoveDestination = { source ->
+                                fileTypeRepository.getDefaultDestinationFlow(source)
+                                    .getValueSynchronously()
+                            }
+                        )
+                    )
+                }
             }
         )
             .onEach {
@@ -84,7 +89,9 @@ class FileNavigator : UnboundService() {
     private fun start() {
         startForeground(
             1,
-            appNotificationsManager.foregroundServiceNotificationManagerProducer.build()
+            appNotificationsManager.foregroundServiceNotificationManager.buildNotification(
+                AppNotificationManager.Args.Empty
+            )
         )
 
         fileObservers = getRegisteredFileObservers()
