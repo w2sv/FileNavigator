@@ -118,3 +118,10 @@ class NavigatorUIState(
             scope = scope
         )
 }
+
+fun UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>.appliedIsEnabled(fileType: FileType): Boolean {
+    val isEnabled = getValue(fileType.status).isEnabled
+    val statesDissimilar = dissimilarKeys.contains(fileType.status)
+
+    return (isEnabled && !statesDissimilar) || (!isEnabled && statesDissimilar)
+}

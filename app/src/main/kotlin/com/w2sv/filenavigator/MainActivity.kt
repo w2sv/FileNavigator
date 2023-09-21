@@ -14,7 +14,7 @@ import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.lifecycleScope
-import com.w2sv.common.utils.collectFromFlow
+import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.data.model.Theme
 import com.w2sv.filenavigator.ui.screens.AppViewModel
 import com.w2sv.filenavigator.ui.screens.main.MainScreen

@@ -58,7 +58,6 @@ import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.AppTopBar
-import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.PermissionCard
 import com.w2sv.filenavigator.ui.components.PermissionCardProperties
@@ -71,6 +70,7 @@ import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButtonCo
 import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.FileTypeSelectionColumn
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
+import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
 import com.w2sv.filenavigator.ui.utils.extensions.closeAnimated
 import com.w2sv.filenavigator.ui.utils.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.ui.utils.extensions.openAnimated
@@ -270,7 +270,10 @@ internal fun MainContent(
         Spacer(modifier = Modifier.weight(0.075f))
 
         Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.Center) {
-            FileTypeSelectionColumn(Modifier.fillMaxHeight())
+            FileTypeSelectionColumn(
+                navigatorUIState = mainScreenVM.navigatorUIState,
+                modifier = Modifier.fillMaxHeight()
+            )
         }
 
         Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {

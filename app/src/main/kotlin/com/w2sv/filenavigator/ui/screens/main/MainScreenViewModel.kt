@@ -32,8 +32,7 @@ class MainScreenViewModel @Inject constructor(
     val storageAccessState = StorageAccessState(
         priorStatus = preferencesRepository.priorStorageAccessStatus.stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(),
-            StorageAccessStatus.NoAccess
+            SharingStarted.Eagerly
         ),
         setFileTypeStatuses = navigatorUIState::setFileTypeStatus,
         saveStorageAccessStatus = {

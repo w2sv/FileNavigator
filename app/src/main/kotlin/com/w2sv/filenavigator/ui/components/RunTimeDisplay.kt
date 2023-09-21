@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import com.w2sv.androidutils.generic.timeDeltaFromNow
+import com.w2sv.androidutils.generic.toSecondsCompat
 import com.w2sv.filenavigator.ui.utils.DoOnStart
 import kotlinx.coroutines.delay
 import java.time.Duration
@@ -54,17 +56,6 @@ fun RunTimeDisplay(
         )
     }
 }
-
-fun LocalDateTime.timeDeltaFromNow(): Duration =
-    durationBetween(LocalDateTime.now())
-
-fun LocalDateTime.durationBetween(other: LocalDateTime): Duration =
-    Duration.between(
-        this, other
-    )
-
-fun Duration.toSecondsCompat(): Long =
-    seconds % 60
 
 private fun Duration.asFormattedString(): String =
     String.format(

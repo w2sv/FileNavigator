@@ -23,7 +23,7 @@ class StorageAccessState(
         _status.value = StorageAccessStatus.get(context)
             .also { status ->
                 if (status != priorStatus.value) {
-                    i { "New manageExternalStoragePermissionGranted = $status diverting from previous = $priorStatus" }
+                    i { "New manageExternalStoragePermissionGranted = $status diverting from previous = ${priorStatus.value}" }
 
                     when (status) {
                         StorageAccessStatus.NoAccess -> setFileTypeStatuses(

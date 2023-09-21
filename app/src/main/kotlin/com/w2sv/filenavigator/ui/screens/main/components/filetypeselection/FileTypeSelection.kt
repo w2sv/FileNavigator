@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,12 +20,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.DefaultMoveDestinationDialog
+import com.w2sv.filenavigator.ui.states.NavigatorUIState
+import com.w2sv.filenavigator.ui.states.appliedIsEnabled
+import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import slimber.log.i
@@ -34,7 +35,7 @@ import slimber.log.i
 @Composable
 fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier,
-    mainScreenVM: MainScreenViewModel = viewModel(),
+    navigatorUIState: NavigatorUIState,
 ) {
     var defaultMoveDestinationDialogFileSource by rememberSaveable {
         mutableStateOf<FileType.Source?>(null)
@@ -43,7 +44,7 @@ fun FileTypeSelectionColumn(
             value?.let {
                 DefaultMoveDestinationDialog(
                     fileSource = it,
-                    configuration = mainScreenVM.navigatorUIState.getDefaultMoveDestinationConfiguration(
+                    configuration = navigatorUIState.getDefaultMoveDestinationConfiguration(
                         it
                     ),
                     closeDialog = {
@@ -70,20 +71,35 @@ fun FileTypeSelectionColumn(
         }
 
         LazyColumn(state = rememberLazyListState()) {
-            items(mainScreenVM.navigatorUIState.sortedFileTypes, key = { it }) { fileType ->
+            itemsIndexed(
+                navigatorUIState.sortedFileTypes,
+                key = { _, it -> it }) { i, fileType ->
                 i { "Laying out ${fileType.identifier}" }
+
+                with(navigatorUIState) {
+                    if (i >= 1 && !fileTypeStatusMap.appliedIsEnabled(fileType) && fileTypeStatusMap.appliedIsEnabled(
+                            sortedFileTypes[i - 1]
+                        )
+                    ) {
+                        AppFontText(
+                            text = "Disabled",
+                            fontSize = 16.sp,
+                            color = AppColor.disabled,
+                        )
+                    }
+                }
 
                 FileTypeAccordion(
                     fileType = fileType,
-                    fileTypeStatusMap = mainScreenVM.navigatorUIState.fileTypeStatusMap,
-                    fileSourceEnabledMap = mainScreenVM.navigatorUIState.mediaFileSourceEnabledMap,
+                    fileTypeStatusMap = navigatorUIState.fileTypeStatusMap,
+                    fileSourceEnabledMap = navigatorUIState.mediaFileSourceEnabledMap,
                     configureDefaultMoveDestination = {
                         defaultMoveDestinationDialogFileSource = it
                     },
                     cascadeAnimationState = cascadeAnimationState,
                     modifier = Modifier
                         .padding(vertical = 4.dp)
-                        .animateItemPlacement(tween(DefaultAnimationDuration))  // Animation upon reordering
+                        .animateItemPlacement(tween(DefaultAnimationDuration))  // Animate upon reordering
                 )
             }
         }
