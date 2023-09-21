@@ -73,24 +73,13 @@ fun FileTypeSelectionColumn(
         LazyColumn(state = rememberLazyListState()) {
             itemsIndexed(
                 navigatorUIState.sortedFileTypes,
-                key = { _, it -> it }) { i, fileType ->
+                key = { _, it -> it }
+            ) { i, fileType ->
                 i { "Laying out ${fileType.identifier}" }
-
-                with(navigatorUIState) {
-                    if (i >= 1 && !fileTypeStatusMap.appliedIsEnabled(fileType) && fileTypeStatusMap.appliedIsEnabled(
-                            sortedFileTypes[i - 1]
-                        )
-                    ) {
-                        AppFontText(
-                            text = "Disabled",
-                            fontSize = 16.sp,
-                            color = AppColor.disabled,
-                        )
-                    }
-                }
 
                 FileTypeAccordion(
                     fileType = fileType,
+                    isFirstDisabled = navigatorUIState.run { sortedFileTypes.isFirstAppliedDisabled(i) },
                     fileTypeStatusMap = navigatorUIState.fileTypeStatusMap,
                     fileSourceEnabledMap = navigatorUIState.mediaFileSourceEnabledMap,
                     configureDefaultMoveDestination = {

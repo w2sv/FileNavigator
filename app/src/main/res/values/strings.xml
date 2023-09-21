@@ -83,4 +83,5 @@
     <string name="license">License</string>
     <string name="developer">Developer</string>
     <string name="permissions_missing">Missing Permissions</string>
+    <string name="disabled">Disabled</string>
 </resources>

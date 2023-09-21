@@ -49,6 +49,11 @@ class NavigatorUIState(
     val sortedFileTypes = FileType.values
         .getMutableStateList()
 
+    fun List<FileType>.isFirstAppliedDisabled(i: Int): Boolean =
+        i >= 1 && !fileTypeStatusMap.appliedIsEnabled(get(i)) && fileTypeStatusMap.appliedIsEnabled(
+            get(i - 1)
+        )
+
     private val sortFileTypes = MutableSharedFlow<Unit>()
 
     val fileTypeStatusMap =

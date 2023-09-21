@@ -70,6 +70,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun FileTypeAccordion(
     fileType: FileType,
+    isFirstDisabled: Boolean,
     fileTypeStatusMap: MutableMap<FileType.Status.StoreEntry, FileType.Status>,
     fileSourceEnabledMap: MutableMap<DataStoreEntry.UniType<Boolean>, Boolean>,
     configureDefaultMoveDestination: (FileType.Source) -> Unit,
@@ -105,6 +106,10 @@ fun FileTypeAccordion(
             scaleY = animatedAlpha
         )
     ) {
+        if (isFirstDisabled) {
+            DisabledText(modifier = Modifier.padding(bottom = 8.dp))
+        }
+
         val fileTypeEnabled by remember {
             derivedStateOf { fileTypeStatusMap.getValue(fileType.status).isEnabled }
         }
@@ -125,6 +130,16 @@ fun FileTypeAccordion(
             )
         }
     }
+}
+
+@Composable
+private fun DisabledText(modifier: Modifier = Modifier) {
+    AppFontText(
+        text = stringResource(R.string.disabled),
+        fontSize = 16.sp,
+        color = AppColor.disabled,
+        modifier = modifier
+    )
 }
 
 @Composable
