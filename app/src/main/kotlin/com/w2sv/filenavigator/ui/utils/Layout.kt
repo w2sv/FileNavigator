@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.components
+package com.w2sv.filenavigator.ui.utils
 
 import androidx.compose.runtime.Composable
 

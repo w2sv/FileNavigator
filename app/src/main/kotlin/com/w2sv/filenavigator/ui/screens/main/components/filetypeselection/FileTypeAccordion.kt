@@ -63,7 +63,7 @@ import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
-import com.w2sv.filenavigator.ui.utils.allFalseAfterEnteringValue
+import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

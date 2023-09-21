@@ -10,14 +10,13 @@ import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.data.storage.repositories.PreferencesRepository
 import com.w2sv.filenavigator.ui.model.sortByIsEnabledAndOriginalOrder
 import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.DefaultMoveDestinationConfiguration
-import com.w2sv.filenavigator.ui.utils.getMutableStateList
-import com.w2sv.filenavigator.ui.utils.getSynchronousMutableStateMap
+import com.w2sv.filenavigator.ui.utils.extensions.getMutableStateList
+import com.w2sv.filenavigator.ui.utils.extensions.getSynchronousMutableStateMap
 import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 

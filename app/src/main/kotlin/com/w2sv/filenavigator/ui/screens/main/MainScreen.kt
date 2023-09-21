@@ -58,7 +58,7 @@ import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.AppTopBar
-import com.w2sv.filenavigator.ui.components.InBetweenSpaced
+import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.PermissionCard
 import com.w2sv.filenavigator.ui.components.PermissionCardProperties
@@ -71,10 +71,10 @@ import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButtonCo
 import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.FileTypeSelectionColumn
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
-import com.w2sv.filenavigator.ui.utils.closeAnimated
-import com.w2sv.filenavigator.ui.utils.launchPermissionRequest
-import com.w2sv.filenavigator.ui.utils.openAnimated
-import com.w2sv.filenavigator.ui.utils.visibilityPercentage
+import com.w2sv.filenavigator.ui.utils.extensions.closeAnimated
+import com.w2sv.filenavigator.ui.utils.extensions.launchPermissionRequest
+import com.w2sv.filenavigator.ui.utils.extensions.openAnimated
+import com.w2sv.filenavigator.ui.utils.extensions.visibilityPercentage
 import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

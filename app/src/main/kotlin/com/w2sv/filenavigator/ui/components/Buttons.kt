@@ -43,8 +43,6 @@ fun DialogButton(
     )
 }
 
-private enum class ButtonState { Pressed, Idle }
-
 fun Modifier.bounceOnClickAnimation(minScale: Float = 0.8f) = composed {
     var buttonState by remember { mutableStateOf(ButtonState.Idle) }
     val scale by animateFloatAsState(
@@ -66,3 +64,5 @@ fun Modifier.bounceOnClickAnimation(minScale: Float = 0.8f) = composed {
             }
         }
 }
+
+private enum class ButtonState { Pressed, Idle }

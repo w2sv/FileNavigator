@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.utils
+package com.w2sv.filenavigator.ui.utils.extensions
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.FloatSpringSpec

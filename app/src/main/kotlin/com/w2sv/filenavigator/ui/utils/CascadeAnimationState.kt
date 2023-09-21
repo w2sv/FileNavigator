@@ -1,6 +1,6 @@
 package com.w2sv.filenavigator.ui.utils
 
-class CascadeAnimationState<T> {
+class CascadeAnimationState<T>(private val animationDelayPerRunningAnimation: Int = 100) {
     private val animatedElements: MutableSet<T> = mutableSetOf()
     private var nRunningAnimations: Int = 0
 
@@ -16,5 +16,6 @@ class CascadeAnimationState<T> {
         nRunningAnimations -= 1
     }
 
-    val animationDelayMillis: Int get() = nRunningAnimations * 100
+    val animationDelayMillis: Int
+        get() = nRunningAnimations * animationDelayPerRunningAnimation
 }

@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.utils
+package com.w2sv.filenavigator.ui.utils.extensions
 
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
