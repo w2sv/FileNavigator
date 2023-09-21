@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.w2sv.data.model.StorageAccessStatus
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.data.storage.repositories.PreferencesRepository
-import com.w2sv.filenavigator.ui.screens.main.states.NavigatorUIState
-import com.w2sv.filenavigator.ui.screens.main.states.StorageAccessState
+import com.w2sv.filenavigator.ui.states.NavigatorUIState
+import com.w2sv.filenavigator.ui.states.StorageAccessState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
