@@ -27,8 +27,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import slimber.log.i
 import javax.inject.Inject
@@ -66,11 +64,6 @@ class FileMoveActivity : ComponentActivity() {
                 .also {
                     i { "Retrieved ${moveFile.source.defaultDestination.preferencesKey} = $it" }
                 }
-
-        val defaultDestinationIsLocked =
-            fileTypeRepository
-                .getDefaultDestinationIsLockedFlow(moveFile.source)
-                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
         fun saveFileSourceDefaultDestination(defaultDestination: Uri): Job =
             viewModelScope.launch {
@@ -134,7 +127,7 @@ class FileMoveActivity : ComponentActivity() {
                 )
             }
 
-            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri && !viewModel.defaultDestinationIsLocked.value) {
+            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri) {
                 // Save targetDirectoryDocumentFile to DataStore and finish activity on saving completed
                 viewModel
                     .saveFileSourceDefaultDestination(targetDirectoryDocumentFile.uri)

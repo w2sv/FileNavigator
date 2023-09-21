@@ -1,22 +1,25 @@
 package com.w2sv.filenavigator.ui.states
 
 import android.content.Context
+import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
+import com.w2sv.androidutils.coroutines.mapState
 import com.w2sv.androidutils.services.isServiceRunning
-import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlow
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
 import com.w2sv.data.model.FileType
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.data.storage.repositories.PreferencesRepository
 import com.w2sv.filenavigator.ui.model.sortByIsEnabledAndOriginalOrder
-import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.DefaultMoveDestinationConfiguration
 import com.w2sv.filenavigator.ui.utils.extensions.getMutableStateList
 import com.w2sv.filenavigator.ui.utils.extensions.getSynchronousMutableStateMap
 import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -101,27 +104,34 @@ class NavigatorUIState(
         }
     }
 
-    fun getDefaultMoveDestinationConfiguration(fileSource: FileType.Source): DefaultMoveDestinationConfiguration =
-        DefaultMoveDestinationConfiguration(
-            moveDestination = UnconfirmedStateFlow(
-                coroutineScope = scope,
-                appliedFlow = fileTypeRepository.getDefaultDestinationFlow(fileSource),
-                syncState = { fileTypeRepository.saveDefaultDestination(fileSource, it) }
+    fun getDefaultMoveDestinationState(source: FileType.Source): DefaultMoveDestinationState =
+        DefaultMoveDestinationState(
+            destination = fileTypeRepository.getDefaultDestinationFlow(source).stateIn(
+                scope,
+                SharingStarted.Eagerly,
+                null
             ),
-            isLocked = UnconfirmedStateFlow(
-                coroutineScope = scope,
-                appliedFlow = fileTypeRepository.getDefaultDestinationIsLockedFlow(
-                    fileSource
-                ),
-                syncState = {
-                    fileTypeRepository.saveDefaultDestinationIsLocked(
-                        fileSource,
-                        it
-                    )
+            saveDestination = {
+                scope.launch {
+                    fileTypeRepository.saveDefaultDestination(source, it)
                 }
-            ),
-            scope = scope
+            }
         )
+}
+
+class DefaultMoveDestinationState(
+    val destination: StateFlow<Uri?>,
+    val saveDestination: (Uri?) -> Unit
+) {
+    fun onDestinationSelected(treeUri: Uri?, context: Context) {
+        if (treeUri != null) {
+            DocumentFile.fromTreeUri(context, treeUri)?.let { documentFile ->
+                saveDestination(documentFile.uri)
+            }
+        }
+    }
+
+    val isDestinationSet = destination.mapState { it != null }
 }
 
 fun UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>.appliedIsEnabled(fileType: FileType): Boolean {

@@ -25,8 +25,6 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.DefaultMoveDestinationDialog
 import com.w2sv.filenavigator.ui.states.NavigatorUIState
-import com.w2sv.filenavigator.ui.states.appliedIsEnabled
-import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import slimber.log.i
@@ -44,7 +42,7 @@ fun FileTypeSelectionColumn(
             value?.let {
                 DefaultMoveDestinationDialog(
                     fileSource = it,
-                    configuration = navigatorUIState.getDefaultMoveDestinationConfiguration(
+                    state = navigatorUIState.getDefaultMoveDestinationState(
                         it
                     ),
                     closeDialog = {
@@ -79,7 +77,11 @@ fun FileTypeSelectionColumn(
 
                 FileTypeAccordion(
                     fileType = fileType,
-                    isFirstDisabled = navigatorUIState.run { sortedFileTypes.isFirstAppliedDisabled(i) },
+                    isFirstDisabled = navigatorUIState.run {
+                        sortedFileTypes.isFirstAppliedDisabled(
+                            i
+                        )
+                    },
                     fileTypeStatusMap = navigatorUIState.fileTypeStatusMap,
                     fileSourceEnabledMap = navigatorUIState.mediaFileSourceEnabledMap,
                     configureDefaultMoveDestination = {

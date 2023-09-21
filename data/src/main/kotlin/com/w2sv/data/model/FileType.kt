@@ -256,14 +256,6 @@ sealed class FileType(
             ) {}
         }
 
-        @IgnoredOnParcel
-        val defaultDestinationIsLocked by lazy {
-            object : DataStoreEntry.UniType.Impl<Boolean>(
-                booleanPreferencesKey(getPreferencesKeyContent("DEFAULT_DESTINATION_IS_LOCKED")),
-                false
-            ) {}
-        }
-
         fun getTitle(context: Context): String =
             when (kind) {
                 Kind.Screenshot -> "Screenshot"

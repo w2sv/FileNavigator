@@ -17,11 +17,19 @@ class FileTypeRepository @Inject constructor(dataStore: DataStore<Preferences>) 
     val fileTypeStatus: Map<FileType.Status.StoreEntry, Flow<FileType.Status>> =
         getEnumValuedFlowMap(FileType.values.map { it.status })
 
-    val mediaFileSourceEnabled: Map<DataStoreEntry.UniType<Boolean>, Flow<Boolean>> = getFlowMap(
-        FileType.Media.all
-            .flatMap { it.sources }
-            .map { it.isEnabled }
-    )
+    val mediaFileSourceEnabled: Map<DataStoreEntry.UniType<Boolean>, Flow<Boolean>> =
+        getFlowMap(
+            FileType.Media.all
+                .flatMap { it.sources }
+                .map { it.isEnabled }
+        )
+
+    val defaultDestinationMap: Map<DataStoreEntry.UriValued, Flow<Uri?>> =
+        getUriFlowMap(
+            FileType.Media.all
+                .flatMap { it.sources }
+                .map { it.defaultDestination }
+        )
 
     fun getDefaultDestinationFlow(source: FileType.Source): Flow<Uri?> =
         getUriFlow(source.defaultDestination)
@@ -31,15 +39,5 @@ class FileTypeRepository @Inject constructor(dataStore: DataStore<Preferences>) 
         defaultDestination: Uri?
     ) {
         save(source.defaultDestination.preferencesKey, defaultDestination)
-    }
-
-    fun getDefaultDestinationIsLockedFlow(source: FileType.Source): Flow<Boolean> =
-        getFlow(source.defaultDestinationIsLocked)
-
-    suspend fun saveDefaultDestinationIsLocked(
-        source: FileType.Source,
-        isLocked: Boolean
-    ) {
-        save(source.defaultDestinationIsLocked.preferencesKey, isLocked)
     }
 }

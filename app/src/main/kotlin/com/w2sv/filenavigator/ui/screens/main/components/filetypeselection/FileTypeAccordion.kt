@@ -111,7 +111,7 @@ fun FileTypeAccordion(
         }
 
         val fileTypeEnabled by remember {
-            derivedStateOf { fileTypeStatusMap.getValue(fileType.status).isEnabled }
+            derivedStateOf { fileTypeStatusMap.getValue(fileType.status).isEnabled }  // TODO: necessary?
         }
         FileTypeAccordionHeader(
             fileType = fileType,
