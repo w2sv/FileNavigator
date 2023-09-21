@@ -17,6 +17,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class NavigatorUIState(
@@ -27,6 +29,12 @@ class NavigatorUIState(
 ) {
     val isRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileNavigator>())
+
+    val startDateTime = preferencesRepository.navigatorStartDateTime.stateIn(
+        scope,
+        SharingStarted.WhileSubscribed(),
+        null
+    )
 
     val disableOnLowBattery = preferencesRepository.disableNavigatorOnLowBattery.stateIn(
         scope,

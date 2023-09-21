@@ -44,11 +44,12 @@ import com.w2sv.filenavigator.ui.utils.toEasing
 fun ThemeSelectionRow(
     selected: Theme,
     onSelected: (Theme) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = horizontalArrangement,
         verticalAlignment = Alignment.CenterVertically
     ) {
         remember {

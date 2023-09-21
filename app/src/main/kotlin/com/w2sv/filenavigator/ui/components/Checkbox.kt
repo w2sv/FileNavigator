@@ -1,5 +1,7 @@
 package com.w2sv.filenavigator.ui.components
 
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
@@ -19,5 +21,14 @@ fun AppCheckbox(
         modifier = modifier,
         enabled = enabled,
         colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.secondary)
+    )
+}
+
+@Composable
+fun RowScope.RightAlignedAppCheckbox(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Spacer(modifier = Modifier.weight(1f))
+    AppCheckbox(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
     )
 }

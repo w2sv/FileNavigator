@@ -10,15 +10,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,14 +33,16 @@ import com.w2sv.androidutils.generic.appPlayStoreUrl
 import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppCheckbox
 import com.w2sv.filenavigator.ui.components.AppFontText
+import com.w2sv.filenavigator.ui.components.RightAlignedAppCheckbox
+import com.w2sv.filenavigator.ui.components.RunTimeDisplay
 import com.w2sv.filenavigator.ui.components.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.screens.AppViewModel
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 
-private sealed interface SheetElement {
-    interface Item : SheetElement {
+private sealed interface Element {
+
+    interface LabelledItem : Element {
         val iconRes: Int
         val labelRes: Int
 
@@ -49,18 +50,22 @@ private sealed interface SheetElement {
             @DrawableRes override val iconRes: Int,
             @StringRes override val labelRes: Int,
             val onClick: () -> Unit
-        ) : Item
+        ) : LabelledItem
 
-        data class CustomContent(
+        data class Custom(
             @DrawableRes override val iconRes: Int,
             @StringRes override val labelRes: Int,
             val content: @Composable RowScope.() -> Unit
-        ) : Item
+        ) : LabelledItem
     }
 
-    data class SubHeader(
+    data class Custom(
+        val content: @Composable () -> Unit
+    ) : Element
+
+    data class Header(
         @StringRes val titleRes: Int,
-    ) : SheetElement
+    ) : Element
 }
 
 @Composable
@@ -72,49 +77,62 @@ internal fun ColumnScope.SheetContent(
 ) {
     remember {
         listOf(
-            SheetElement.SubHeader(
+            Element.Header(
                 R.string.navigator
             ),
-            SheetElement.Item.CustomContent(
+            Element.Custom {
+                with(mainScreenVM.navigatorUIState) {
+                    val isRunning by isRunning.collectAsState()
+                    val startDateTime by startDateTime.collectAsState()
+
+                    if (isRunning && startDateTime != null) {
+                        RunTimeDisplay(
+                            startDateTime = startDateTime!!,
+                            modifier = Modifier.padding(top = 14.dp)
+                        )
+                    }
+                }
+            },
+            Element.LabelledItem.Custom(
                 iconRes = R.drawable.ic_battery_low_24,
                 labelRes = R.string.disable_navigator_on_low_battery,
                 content = {
-                    CheckboxContent(
+                    RightAlignedAppCheckbox(
                         checked = mainScreenVM.navigatorUIState.disableOnLowBattery.collectAsState().value,
                         onCheckedChange = mainScreenVM.navigatorUIState::saveDisableOnLowBattery
                     )
                 }
             ),
-            SheetElement.SubHeader(
+            Element.Header(
                 R.string.appearance
             ),
-            SheetElement.Item.CustomContent(
+            Element.LabelledItem.Custom(
                 R.drawable.ic_nightlight_24,
                 R.string.theme
             ) {
-                Spacer(modifier = Modifier.width(16.dp))
                 ThemeSelectionRow(
                     selected = appVM.theme.collectAsState().value,
-                    onSelected = appVM::saveTheme
+                    onSelected = appVM::saveTheme,
+                    modifier = Modifier.padding(start = 22.dp)
                 )
             },
-            SheetElement.SubHeader(R.string.legal),
-            SheetElement.Item.Clickable(
+            Element.Header(R.string.legal),
+            Element.LabelledItem.Clickable(
                 R.drawable.ic_policy_24,
                 R.string.privacy_policy
             ) {
                 context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/PRIVACY-POLICY.md")
             },
-            SheetElement.Item.Clickable(
+            Element.LabelledItem.Clickable(
                 R.drawable.ic_copyright_24,
                 R.string.license
             ) {
                 context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/LICENSE")
             },
-            SheetElement.SubHeader(
+            Element.Header(
                 R.string.more
             ),
-            SheetElement.Item.Clickable(
+            Element.LabelledItem.Clickable(
                 R.drawable.ic_star_rate_24,
                 R.string.rate
             ) {
@@ -130,7 +148,7 @@ internal fun ColumnScope.SheetContent(
                     context.showToast(context.getString(R.string.you_re_not_signed_into_the_play_store))
                 }
             },
-            SheetElement.Item.Clickable(
+            Element.LabelledItem.Clickable(
                 R.drawable.ic_share_24,
                 R.string.share
             ) {
@@ -139,7 +157,7 @@ internal fun ColumnScope.SheetContent(
                     .setText(context.getString(R.string.share_action_text))
                     .startChooser()
             },
-            SheetElement.Item.Clickable(
+            Element.LabelledItem.Clickable(
                 R.drawable.ic_developer_24,
                 R.string.developer
             ) {
@@ -149,24 +167,19 @@ internal fun ColumnScope.SheetContent(
     }
         .forEach {
             when (it) {
-                is SheetElement.Item -> {
+                is Element.LabelledItem -> {
                     Item(item = it, closeDrawer = closeDrawer)
                 }
 
-                is SheetElement.SubHeader -> {
+                is Element.Header -> {
                     SubHeader(titleRes = it.titleRes)
+                }
+
+                is Element.Custom -> {
+                    it.content()
                 }
             }
         }
-}
-
-@Composable
-private fun RowScope.CheckboxContent(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-    Spacer(modifier = Modifier.weight(1f))
-    AppCheckbox(
-        checked = checked,
-        onCheckedChange = onCheckedChange,
-    )
 }
 
 @Composable
@@ -187,7 +200,7 @@ private fun ColumnScope.SubHeader(
 
 @Composable
 private fun Item(
-    item: SheetElement.Item,
+    item: Element.LabelledItem,
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -195,7 +208,7 @@ private fun Item(
         modifier = modifier
             .fillMaxWidth()
             .then(
-                if (item is SheetElement.Item.Clickable)
+                if (item is Element.LabelledItem.Clickable)
                     Modifier.clickable {
                         item.onClick()
                         closeDrawer()
@@ -221,7 +234,7 @@ private fun Item(
             fontWeight = FontWeight.Medium,
         )
 
-        if (item is SheetElement.Item.CustomContent) {
+        if (item is Element.LabelledItem.Custom) {
             item.content(this)
         }
     }

@@ -6,6 +6,7 @@ import com.w2sv.androidutils.coroutines.getSynchronousMap
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.data.storage.repositories.FileTypeRepository
+import com.w2sv.data.storage.repositories.PreferencesRepository
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
 import com.w2sv.navigator.notifications.appnotificationmanager.AppNotificationManager
@@ -25,6 +26,9 @@ class FileNavigator : UnboundService() {
 
     @Inject
     lateinit var fileTypeRepository: FileTypeRepository
+
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
 
     @Inject
     lateinit var statusChanged: StatusChanged
@@ -96,6 +100,9 @@ class FileNavigator : UnboundService() {
 
         fileObservers = getRegisteredFileObservers()
         statusChanged.emitNewStatus(true)
+        CoroutineScope(Dispatchers.IO).launch {
+            preferencesRepository.saveNavigatorStartDateTime()
+        }
     }
 
     private fun stop() {
