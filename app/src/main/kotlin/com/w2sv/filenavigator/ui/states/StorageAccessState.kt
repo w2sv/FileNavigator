@@ -33,12 +33,12 @@ class StorageAccessState(
 
                         StorageAccessStatus.MediaFilesOnly -> {
                             setFileTypeStatuses(
-                                FileType.NonMedia.all,
+                                FileType.NonMedia.values,
                                 FileType.Status.DisabledDueToMediaAccessOnly
                             )
 
                             if (priorStatus.value == StorageAccessStatus.NoAccess) {
-                                setFileTypeStatuses(FileType.Media.all, FileType.Status.Enabled)
+                                setFileTypeStatuses(FileType.Media.values, FileType.Status.Enabled)
                             }
                         }
 

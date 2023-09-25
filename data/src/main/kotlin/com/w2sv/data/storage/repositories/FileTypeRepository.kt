@@ -19,14 +19,14 @@ class FileTypeRepository @Inject constructor(dataStore: DataStore<Preferences>) 
 
     val mediaFileSourceEnabled: Map<DataStoreEntry.UniType<Boolean>, Flow<Boolean>> =
         getFlowMap(
-            FileType.Media.all
+            FileType.Media.values
                 .flatMap { it.sources }
                 .map { it.isEnabled }
         )
 
     val defaultDestinationMap: Map<DataStoreEntry.UriValued, Flow<Uri?>> =
         getUriFlowMap(
-            FileType.Media.all
+            FileType.values
                 .flatMap { it.sources }
                 .map { it.defaultDestination }
         )

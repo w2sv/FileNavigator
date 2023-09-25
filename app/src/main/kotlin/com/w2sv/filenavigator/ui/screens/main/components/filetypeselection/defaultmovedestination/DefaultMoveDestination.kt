@@ -1,12 +1,12 @@
 package com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination
 
 import android.content.Context
+import android.net.Uri
 import android.view.animation.AnticipateOvershootInterpolator
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -60,7 +61,7 @@ fun OpenDefaultMoveDestinationDialogButton(
     ) {
         Icon(
             painter = painterResource(
-                id = R.drawable.ic_folder_settings_24
+                id = com.w2sv.navigator.R.drawable.ic_file_move_24
             ),
             tint = MaterialTheme.colorScheme.secondary,
             contentDescription = stringResource(
@@ -83,11 +84,10 @@ fun DefaultMoveDestinationDialog(
         ActivityResultContracts.OpenDocumentTree()
     ) { treeUri ->
         i { "DocumentTree Uri: $treeUri" }
-
         state.onDestinationSelected(treeUri, context)
     }
 
-    val defaultMoveDestination by state.destination.collectAsState()
+    val defaultMoveDestinationPath by state.destinationPath.collectAsState()
     val isDestinationSet by state.isDestinationSet.collectAsState()
 
     AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -121,96 +121,84 @@ fun DefaultMoveDestinationDialog(
             AppFontText(
                 text = buildAnnotatedString {
                     append("Default ")
-                    withStyle(SpanStyle(color = fileSource.fileType.color)) {
+                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                         append(fileSource.getTitle(context))
                     }
                     append(" Move Destination")
-                }, textAlign = TextAlign.Center, fontSize = 18.sp
+                },
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp
             )
         },
         text = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    AppFontText(text = defaultMoveDestination?.let {
-                        DocumentFile.fromSingleUri(context, it)?.getSimplePath(context)
-                    } ?: stringResource(R.string.not_set),
-                        fontStyle = FontStyle.Italic,
-                        fontSize = 16.sp,
-                        modifier = Modifier.weight(0.8f),
-                        color = if (isDestinationSet) Color.Unspecified else AppColor.disabled)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+            ) {
+                AppFontText(
+                    text = defaultMoveDestinationPath ?: context.getString(R.string.not_set),
+                    fontStyle = FontStyle.Italic,
+                    fontSize = 16.sp,
+                    modifier = Modifier.weight(0.8f),
+                    color = if (isDestinationSet) Color.Unspecified else AppColor.disabled
+                )
 
-                    val buttonBoxWeight = 0.15f
-                    val isDestinationSetDependentBoxWeight by animateFloatAsState(
-                        targetValue = if (isDestinationSet) buttonBoxWeight - Epsilon else Epsilon,
-                        animationSpec = tween(
-                            durationMillis = DefaultAnimationDuration,
-                            delayMillis = if (isDestinationSet) 150 else 0,
-                            easing = AnticipateOvershootInterpolator().toEasing()
-                        ),
-                        label = ""
-                    )
-                    Spacer(
-                        modifier = Modifier.weight(
-                            maxOf(
-                                (buttonBoxWeight - isDestinationSetDependentBoxWeight) * 2,
-                                Epsilon
-                            )
+                val buttonBoxWeight = 0.15f
+                val isDestinationSetDependentBoxWeight by animateFloatAsState(
+                    targetValue = if (isDestinationSet) buttonBoxWeight - Epsilon else Epsilon,
+                    animationSpec = tween(
+                        durationMillis = DefaultAnimationDuration,
+                        delayMillis = if (isDestinationSet) 150 else 0,
+                        easing = AnticipateOvershootInterpolator().toEasing()
+                    ),
+                    label = ""
+                )
+                Spacer(
+                    modifier = Modifier.weight(
+                        maxOf(
+                            (buttonBoxWeight - isDestinationSetDependentBoxWeight) * 2,
+                            Epsilon
                         )
                     )
-                    // Pick button
-                    IconButton(
-                        onClick = {
-                            defaultDestinationSelectionLauncher.launch(null)  // TODO: Pass start dir treeUri
-                        },
-                        modifier = Modifier.weight(buttonBoxWeight)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_folder_open_24),
-                            contentDescription = stringResource(
-                                R.string.change_default_move_destination
-                            ),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-                    // Delete button
-                    IconButton(
-                        onClick = {
-                            state.saveDestination(null)
-                        },
-                        modifier = Modifier.weight(
-                            maxOf(
-                                isDestinationSetDependentBoxWeight,
-                                Epsilon
-                            )
+                )
+                // Pick button
+                IconButton(
+                    onClick = {
+                        defaultDestinationSelectionLauncher.launch(null)  // TODO: Pass start dir treeUri
+                    },
+                    modifier = Modifier.weight(buttonBoxWeight)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_folder_open_24),
+                        contentDescription = stringResource(
+                            R.string.change_default_move_destination
                         ),
-                        enabled = isDestinationSet
-                    ) {
-                        Icon(
-                            painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_delete_24),
-                            contentDescription = stringResource(R.string.delete_default_move_destination),
-                            tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else AppColor.disabled
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                }
+                // Delete button
+                IconButton(
+                    onClick = {
+                        state.saveDestination(null)
+                    },
+                    modifier = Modifier.weight(
+                        maxOf(
+                            isDestinationSetDependentBoxWeight,
+                            Epsilon
                         )
-                    }
+                    ),
+                    enabled = isDestinationSet
+                ) {
+                    Icon(
+                        painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_delete_24),
+                        contentDescription = stringResource(R.string.delete_default_move_destination),
+                        tint = if (isDestinationSet) MaterialTheme.colorScheme.secondary else AppColor.disabled
+                    )
                 }
             }
         }
     )
 }
 
-//@Preview
-//@Composable
-//private fun DefaultMoveDestinationDialogPrev() {
-//    AppTheme {
-//        DefaultMoveDestinationDialog(
-//            fileSource = FileType.Source(FileType.Media.Image, FileType.Source.Kind.Camera),
-//            defaultMoveDestination = null,
-//            closeDialog = {},
-//            setDefaultDestination = {},
-//            resetDefaultDestination = {},
-//            unconfirmedDefaultMoveDestinationState = UnconfirmedStateFlow()
-//        )
-//    }
-//}
+fun getDefaultMoveDestinationPath(uri: Uri, context: Context): String? =
+    DocumentFile.fromSingleUri(context, uri)?.getSimplePath(context)

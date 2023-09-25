@@ -119,7 +119,7 @@ sealed class FileType(
         )
 
         companion object {
-            val all: List<Media> get() = listOf(Image, Video, GIF, Audio)
+            val values: List<Media> = listOf(Image, Video, GIF, Audio)
         }
     }
 
@@ -212,7 +212,7 @@ sealed class FileType(
         )
 
         companion object {
-            val all: List<NonMedia> get() = listOf(PDF, Text, Archive, APK)
+            val values: List<NonMedia> = listOf(PDF, Text, Archive, APK)
         }
     }
 
@@ -231,7 +231,7 @@ sealed class FileType(
     }
 
     companion object {
-        val values: List<FileType> = Media.all + NonMedia.all
+        val values: List<FileType> = Media.values + NonMedia.values
     }
 
     @Parcelize

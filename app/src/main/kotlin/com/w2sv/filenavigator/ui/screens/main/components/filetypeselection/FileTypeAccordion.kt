@@ -28,6 +28,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -44,7 +45,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.common.utils.manageExternalStoragePermissionRequired
 import com.w2sv.data.model.FileType
@@ -59,6 +59,8 @@ import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.toggle
 import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.OpenDefaultMoveDestinationDialogButton
+import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.getDefaultMoveDestinationPath
+import com.w2sv.filenavigator.ui.states.NavigatorUIState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.Epsilon
@@ -71,9 +73,7 @@ import kotlinx.coroutines.launch
 fun FileTypeAccordion(
     fileType: FileType,
     isFirstDisabled: Boolean,
-    fileTypeStatusMap: MutableMap<FileType.Status.StoreEntry, FileType.Status>,
-    fileSourceEnabledMap: MutableMap<DataStoreEntry.UniType<Boolean>, Boolean>,
-    configureDefaultMoveDestination: (FileType.Source) -> Unit,
+    navigatorUIState: NavigatorUIState,
     cascadeAnimationState: CascadeAnimationState<FileType>,
     modifier: Modifier = Modifier
 ) {
@@ -111,12 +111,12 @@ fun FileTypeAccordion(
         }
 
         val fileTypeEnabled by remember {
-            derivedStateOf { fileTypeStatusMap.getValue(fileType.status).isEnabled }  // TODO: necessary?
+            derivedStateOf { navigatorUIState.fileTypeStatusMap.getValue(fileType.status).isEnabled }  // TODO: derivedState necessary?
         }
         FileTypeAccordionHeader(
             fileType = fileType,
             isEnabled = fileTypeEnabled,
-            fileTypeStatusMap = fileTypeStatusMap
+            fileTypeStatusMap = navigatorUIState.fileTypeStatusMap
         )
         AnimatedVisibility(
             visible = fileTypeEnabled,
@@ -125,8 +125,7 @@ fun FileTypeAccordion(
         ) {
             FileSourcesSurface(
                 fileType = fileType,
-                fileSourceEnabledMap = fileSourceEnabledMap,
-                configureDefaultMoveDestination = configureDefaultMoveDestination
+                navigatorUIState = navigatorUIState
             )
         }
     }
@@ -249,8 +248,7 @@ private fun getManageExternalStorageSnackbarVisuals(
 @Composable
 private fun FileSourcesSurface(
     fileType: FileType,
-    fileSourceEnabledMap: MutableMap<DataStoreEntry.UniType<Boolean>, Boolean>,
-    configureDefaultMoveDestination: (FileType.Source) -> Unit,
+    navigatorUIState: NavigatorUIState,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -260,11 +258,10 @@ private fun FileSourcesSurface(
     ) {
         Column {
             fileType.sources.forEachIndexed { i, source ->
-                FileSourceRow(
+                FileSourceSurface(
                     fileType = fileType,
                     source = source,
-                    fileSourceEnabledMap = fileSourceEnabledMap,
-                    configureDefaultMoveDestination = { configureDefaultMoveDestination(source) }
+                    navigatorUIState = navigatorUIState
                 )
                 if (i != fileType.sources.lastIndex) {
                     Divider()
@@ -275,97 +272,142 @@ private fun FileSourcesSurface(
 }
 
 @Composable
-private fun FileSourceRow(
+private fun FileSourceSurface(
     fileType: FileType,
     source: FileType.Source,
-    fileSourceEnabledMap: MutableMap<DataStoreEntry.UniType<Boolean>, Boolean>,
-    configureDefaultMoveDestination: () -> Unit,
+    navigatorUIState: NavigatorUIState,
     modifier: Modifier = Modifier,
-    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
-    context: Context = LocalContext.current,
-    scope: CoroutineScope = rememberCoroutineScope()
+    context: Context = LocalContext.current
 ) {
     val isEnabled =
-        if (fileType.isMediaType) fileSourceEnabledMap.getValue(
+        if (fileType.isMediaType) navigatorUIState.mediaFileSourceEnabledMap.getValue(
             source.isEnabled
         ) else true
+    val defaultDestination by navigatorUIState.defaultDestinationStateFlowMap.getValue(source.defaultDestination)
+        .collectAsState()
+    val defaultDestinationPath by remember {
+        derivedStateOf { defaultDestination?.let { getDefaultMoveDestinationPath(it, context) } }
+    }
 
     Surface(
         shape = RoundedCornerShape(8.dp),
         tonalElevation = 8.dp,
         modifier = modifier.fillMaxWidth()
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = modifier
-                .fillMaxWidth()
-                .height(46.dp)
-        ) {
-            // Source icon
-            Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
-                Icon(
-                    painter = painterResource(id = source.kind.iconRes),
-                    contentDescription = null,
-                    tint = if (isEnabled) fileType.color.copy(alpha = 0.75f) else AppColor.disabled
-                )
-            }
-            // Source label
-            Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
-                AppFontText(
-                    text = stringResource(id = source.kind.labelRes),
-                    color = if (isEnabled) MaterialTheme.colorScheme.onSurface.copy(0.7f) else AppColor.disabled
-                )
-            }
-
-            val buttonBoxWeight = 0.1f
-            val destinationButtonBoxWeight by animateFloatAsState(
-                targetValue = if (isEnabled) buttonBoxWeight else Epsilon,
-                label = ""
+        Column {
+            FileSourceRow(
+                fileType = fileType,
+                isEnabled = isEnabled,
+                source = source,
+                navigatorUIState = navigatorUIState
             )
 
-            // Empty box, pushing the checkbox into the position of the destinationButtonBox upon vanishing of the latter
-            Spacer(modifier = Modifier.weight(buttonBoxWeight - destinationButtonBoxWeight + Epsilon))
-            // CheckboxContent
-            Box(modifier = Modifier.weight(buttonBoxWeight), contentAlignment = Alignment.Center) {
-                if (fileType.isMediaType) {
-                    AppCheckbox(
-                        checked = isEnabled,
-                        onCheckedChange = { checkedNew ->
-                            if (!fileType.sources.map {
-                                    fileSourceEnabledMap.getValue(
-                                        it.isEnabled
-                                    )
-                                }
-                                    .allFalseAfterEnteringValue(checkedNew)
-                            ) {
-                                fileSourceEnabledMap[source.isEnabled] = checkedNew
-                            } else {
-                                scope.launch {
-                                    snackbarHostState.showSnackbarAndDismissCurrent(
-                                        AppSnackbarVisuals(
-                                            message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
-                                            kind = SnackbarKind.Error
-                                        )
-                                    )
-                                }
-                            }
-                        }
+            AnimatedVisibility(visible = isEnabled && defaultDestinationPath != null) {
+                defaultDestinationPath?.let {
+                    DefaultDestinationDisplayRow(
+                        path = it,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .fillMaxWidth()
                     )
                 }
             }
+        }
+    }
+}
 
-            // Destination Button
-            Box(
-                modifier = Modifier
-                    .weight(destinationButtonBoxWeight)
-                    .alpha(destinationButtonBoxWeight * 10),
-                contentAlignment = Alignment.Center
-            ) {
-                OpenDefaultMoveDestinationDialogButton(
-                    onClick = configureDefaultMoveDestination
+@Composable
+fun DefaultDestinationDisplayRow(path: String, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+    ) {
+        Spacer(modifier = Modifier.fillMaxWidth(0.22f))
+        AppFontText(text = path, color = AppColor.disabled, fontSize = 14.sp)
+    }
+}
+
+@Composable
+fun FileSourceRow(
+    fileType: FileType,
+    isEnabled: Boolean,
+    source: FileType.Source,
+    navigatorUIState: NavigatorUIState,
+    modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
+    context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope()
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(46.dp)
+    ) {
+        // Source icon
+        Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
+            Icon(
+                painter = painterResource(id = source.kind.iconRes),
+                contentDescription = null,
+                tint = if (isEnabled) fileType.color.copy(alpha = 0.75f) else AppColor.disabled
+            )
+        }
+        // Source label
+        Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
+            AppFontText(
+                text = stringResource(id = source.kind.labelRes),
+                color = if (isEnabled) MaterialTheme.colorScheme.onSurface.copy(0.7f) else AppColor.disabled
+            )
+        }
+
+        val buttonBoxWeight = 0.1f
+        val destinationButtonBoxWeight by animateFloatAsState(
+            targetValue = if (isEnabled) buttonBoxWeight else Epsilon,
+            label = ""
+        )
+
+        // Empty box, pushing the checkbox into the position of the destinationButtonBox upon vanishing of the latter
+        Spacer(modifier = Modifier.weight(buttonBoxWeight - destinationButtonBoxWeight + Epsilon))
+        // CheckboxContent
+        Box(modifier = Modifier.weight(buttonBoxWeight), contentAlignment = Alignment.Center) {
+            if (fileType.isMediaType) {
+                AppCheckbox(
+                    checked = isEnabled,
+                    onCheckedChange = { checkedNew ->
+                        if (!fileType.sources.map {
+                                navigatorUIState.mediaFileSourceEnabledMap.getValue(
+                                    it.isEnabled
+                                )
+                            }
+                                .allFalseAfterEnteringValue(checkedNew)
+                        ) {
+                            navigatorUIState.mediaFileSourceEnabledMap[source.isEnabled] =
+                                checkedNew
+                        } else {
+                            scope.launch {
+                                snackbarHostState.showSnackbarAndDismissCurrent(
+                                    AppSnackbarVisuals(
+                                        message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
+                                        kind = SnackbarKind.Error
+                                    )
+                                )
+                            }
+                        }
+                    }
                 )
             }
+        }
+
+        // Destination Button
+        Box(
+            modifier = Modifier
+                .weight(destinationButtonBoxWeight)
+                .alpha(destinationButtonBoxWeight * 10),
+            contentAlignment = Alignment.Center
+        ) {
+            OpenDefaultMoveDestinationDialogButton(
+                onClick = { navigatorUIState.configureDefaultMoveDestination.value = source }
+            )
         }
     }
 }

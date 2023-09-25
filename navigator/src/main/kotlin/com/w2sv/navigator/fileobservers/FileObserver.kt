@@ -58,7 +58,7 @@ internal fun getFileObservers(
     contentResolver: ContentResolver,
     onNewMoveFile: (MoveFile) -> Unit
 ): List<FileObserver> {
-    val mediaFileObservers = FileType.Media.all
+    val mediaFileObservers = FileType.Media.values
         .filterEnabled(statusMap)
         .map { mediaType ->
             MediaFileObserver(
@@ -74,7 +74,7 @@ internal fun getFileObservers(
         }
 
     val nonMediaFileObserver =
-        FileType.NonMedia.all
+        FileType.NonMedia.values
             .filterEnabled(statusMap)
             .run {
                 if (isNotEmpty()) {
