@@ -235,7 +235,7 @@ fun PermissionCardColumn(
         InBetweenSpaced(
             elements = properties,
             makeElement = { PermissionCard(properties = it) },
-            spacer = { Spacer(modifier = Modifier.fillMaxHeight(0.075f)) }
+            makeSpacer = { Spacer(modifier = Modifier.fillMaxHeight(0.075f)) }
         )
     }
 }

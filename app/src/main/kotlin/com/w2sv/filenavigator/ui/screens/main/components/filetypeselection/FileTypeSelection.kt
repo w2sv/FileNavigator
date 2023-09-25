@@ -1,6 +1,8 @@
 package com.w2sv.filenavigator.ui.screens.main.components.filetypeselection
 
 import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -12,11 +14,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -26,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.DefaultMoveDestinationDialog
 import com.w2sv.filenavigator.ui.states.NavigatorUIState
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
@@ -39,20 +36,21 @@ fun FileTypeSelectionColumn(
     navigatorUIState: NavigatorUIState,
     context: Context = LocalContext.current
 ) {
-    navigatorUIState.configureDefaultMoveDestination.collectAsState().apply {
-        value?.let {
-            DefaultMoveDestinationDialog(
-                fileSource = it,
-                state = navigatorUIState.getDefaultMoveDestinationState(
-                    it,
-                    context = context
-                ),
-                closeDialog = {
-                    navigatorUIState.configureDefaultMoveDestination.value = null
-                },
-            )
+    val selectDefaultMoveDestination = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocumentTree()
+    ) { treeUri ->
+        if (treeUri != null) {
+            i { "DocumentTree Uri: $treeUri" }
+            navigatorUIState.onDefaultMoveDestinationSelected(treeUri, context)
         }
     }
+
+    navigatorUIState.setDefaultMoveDestinationSource.collectAsState()
+        .apply {
+            if (value != null) {
+                selectDefaultMoveDestination.launch(null)
+            }
+        }
 
     Column(
         modifier = modifier

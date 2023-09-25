@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.main.components.filetypeselection
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -19,7 +20,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarVisuals
@@ -27,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -45,6 +50,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.documentfile.provider.DocumentFile
+import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.common.utils.manageExternalStoragePermissionRequired
 import com.w2sv.data.model.FileType
@@ -58,13 +65,13 @@ import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.toggle
-import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.OpenDefaultMoveDestinationDialogButton
-import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.defaultmovedestination.getDefaultMoveDestinationPath
 import com.w2sv.filenavigator.ui.states.NavigatorUIState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
+import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
+import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
 import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -257,16 +264,17 @@ private fun FileSourcesSurface(
         modifier = modifier.fillMaxWidth()
     ) {
         Column {
-            fileType.sources.forEachIndexed { i, source ->
-                FileSourceSurface(
-                    fileType = fileType,
-                    source = source,
-                    navigatorUIState = navigatorUIState
-                )
-                if (i != fileType.sources.lastIndex) {
-                    Divider()
-                }
-            }
+            InBetweenSpaced(
+                elements = fileType.sources,
+                makeElement = {
+                    FileSourceSurface(
+                        fileType = fileType,
+                        source = it,
+                        navigatorUIState = navigatorUIState
+                    )
+                },
+                makeSpacer = { Divider() }
+            )
         }
     }
 }
@@ -299,30 +307,24 @@ private fun FileSourceSurface(
                 fileType = fileType,
                 isEnabled = isEnabled,
                 source = source,
-                navigatorUIState = navigatorUIState
+                navigatorUIState = navigatorUIState,
+                modifier = Modifier.height(44.dp)
             )
 
             AnimatedVisibility(visible = isEnabled && defaultDestinationPath != null) {
-                defaultDestinationPath?.let {
-                    DefaultDestinationDisplayRow(
-                        path = it,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .fillMaxWidth()
-                    )
-                }
+                DefaultDestinationDisplayRow(
+                    path = remember(this) {  // Remedies NullPointerException
+                        defaultDestinationPath!!
+                    },
+                    onDeleteButtonClick = {
+                        navigatorUIState.saveDefaultDestination(source, null)
+                    },
+                    modifier = Modifier
+                        .height(36.dp)
+                        .padding(bottom = 4.dp)
+                )
             }
         }
-    }
-}
-
-@Composable
-fun DefaultDestinationDisplayRow(path: String, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-    ) {
-        Spacer(modifier = Modifier.fillMaxWidth(0.22f))
-        AppFontText(text = path, color = AppColor.disabled, fontSize = 14.sp)
     }
 }
 
@@ -341,8 +343,6 @@ fun FileSourceRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
-            .fillMaxWidth()
-            .height(46.dp)
     ) {
         // Source icon
         Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
@@ -405,9 +405,67 @@ fun FileSourceRow(
                 .alpha(destinationButtonBoxWeight * 10),
             contentAlignment = Alignment.Center
         ) {
-            OpenDefaultMoveDestinationDialogButton(
-                onClick = { navigatorUIState.configureDefaultMoveDestination.value = source }
+            SetDefaultMoveDestinationButton(
+                onClick = { navigatorUIState.setDefaultMoveDestinationSource.value = source }
             )
+        }
+    }
+}
+
+@Composable
+private fun SetDefaultMoveDestinationButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(
+            painter = painterResource(
+                id = com.w2sv.navigator.R.drawable.ic_file_move_24
+            ),
+            tint = MaterialTheme.colorScheme.secondary,
+            contentDescription = stringResource(
+                R.string.open_target_directory_settings
+            ),
+            modifier = Modifier.size(DefaultIconDp)
+        )
+    }
+}
+
+fun getDefaultMoveDestinationPath(uri: Uri, context: Context): String? =
+    DocumentFile.fromSingleUri(context, uri)?.getSimplePath(context)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DefaultDestinationDisplayRow(
+    path: String,
+    onDeleteButtonClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(modifier = Modifier.fillMaxWidth(0.22f))
+        AppFontText(
+            text = path,
+            color = AppColor.disabled,
+            fontSize = 14.sp,
+            modifier = Modifier.weight(0.7f)
+        )
+        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+            IconButton(
+                onClick = onDeleteButtonClick,
+                modifier = Modifier.weight(0.1f)
+            ) {
+                Icon(
+                    painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_delete_24),
+                    contentDescription = stringResource(R.string.delete_default_move_destination),
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
         }
     }
 }

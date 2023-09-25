@@ -1,6 +1,8 @@
 package com.w2sv.filenavigator.ui.states
 
 import android.content.Context
+import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
@@ -99,7 +101,7 @@ class NavigatorUIState(
         }
     }
 
-    val configureDefaultMoveDestination = MutableStateFlow<FileType.Source?>(null)
+    val setDefaultMoveDestinationSource = MutableStateFlow<FileType.Source?>(null)
 
     val defaultDestinationStateFlowMap =
         fileTypeRepository.defaultDestinationMap.mapValues { (_, v) ->
@@ -110,20 +112,18 @@ class NavigatorUIState(
             )
         }
 
-    fun getDefaultMoveDestinationState(source: FileType.Source, context: Context): DefaultMoveDestinationState =
-        DefaultMoveDestinationState(
-            destination = fileTypeRepository.getDefaultDestinationFlow(source).stateIn(
-                scope,
-                SharingStarted.Eagerly,
-                null
-            ),
-            saveDestination = {
-                scope.launch {
-                    fileTypeRepository.saveDefaultDestination(source, it)
-                }
-            },
-            context = context
-        )
+    fun onDefaultMoveDestinationSelected(treeUri: Uri, context: Context) {
+        DocumentFile.fromTreeUri(context, treeUri)?.let { documentFile ->
+            saveDefaultDestination(setDefaultMoveDestinationSource.value!!, documentFile.uri)
+        }
+        setDefaultMoveDestinationSource.value = null
+    }
+
+    fun saveDefaultDestination(source: FileType.Source, destination: Uri?) {
+        scope.launch {
+            fileTypeRepository.saveDefaultDestination(source, destination)
+        }
+    }
 }
 
 fun UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>.appliedIsEnabled(fileType: FileType): Boolean {
