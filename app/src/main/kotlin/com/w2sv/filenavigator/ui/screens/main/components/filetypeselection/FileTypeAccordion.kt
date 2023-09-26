@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -130,7 +129,7 @@ fun FileTypeAccordion(
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
-            FileSourcesSurface(
+            FileTypeSourcesSurface(
                 fileType = fileType,
                 navigatorUIState = navigatorUIState
             )
@@ -253,7 +252,7 @@ private fun getManageExternalStorageSnackbarVisuals(
     )
 
 @Composable
-private fun FileSourcesSurface(
+private fun FileTypeSourcesSurface(
     fileType: FileType,
     navigatorUIState: NavigatorUIState,
     modifier: Modifier = Modifier
@@ -267,28 +266,25 @@ private fun FileSourcesSurface(
             InBetweenSpaced(
                 elements = fileType.sources,
                 makeElement = {
-                    FileSourceSurface(
-                        fileType = fileType,
+                    FileTypeSourceConfigurationView(
                         source = it,
                         navigatorUIState = navigatorUIState
                     )
-                },
-                makeSpacer = { Divider() }
+                }
             )
         }
     }
 }
 
 @Composable
-private fun FileSourceSurface(
-    fileType: FileType,
+private fun FileTypeSourceConfigurationView(
     source: FileType.Source,
     navigatorUIState: NavigatorUIState,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current
 ) {
     val isEnabled =
-        if (fileType.isMediaType) navigatorUIState.mediaFileSourceEnabledMap.getValue(
+        if (source.fileType.isMediaType) navigatorUIState.mediaFileSourceEnabledMap.getValue(
             source.isEnabled
         ) else true
     val defaultDestination by navigatorUIState.defaultDestinationStateFlowMap.getValue(source.defaultDestination)
@@ -297,40 +293,32 @@ private fun FileSourceSurface(
         derivedStateOf { defaultDestination?.let { getDefaultMoveDestinationPath(it, context) } }
     }
 
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        tonalElevation = 8.dp,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Column {
-            FileSourceRow(
-                fileType = fileType,
-                isEnabled = isEnabled,
-                source = source,
-                navigatorUIState = navigatorUIState,
-                modifier = Modifier.height(44.dp)
-            )
+    Column(modifier = modifier) {
+        FileSourceRow(
+            isEnabled = isEnabled,
+            source = source,
+            navigatorUIState = navigatorUIState,
+            modifier = Modifier.height(44.dp)
+        )
 
-            AnimatedVisibility(visible = isEnabled && defaultDestinationPath != null) {
-                DefaultDestinationDisplayRow(
-                    path = remember(this) {  // Remedies NullPointerException
-                        defaultDestinationPath!!
-                    },
-                    onDeleteButtonClick = {
-                        navigatorUIState.saveDefaultDestination(source, null)
-                    },
-                    modifier = Modifier
-                        .height(36.dp)
-                        .padding(bottom = 4.dp)
-                )
-            }
+        AnimatedVisibility(visible = isEnabled && defaultDestinationPath != null) {
+            DefaultMoveDestinationRow(
+                path = remember(this) {  // Remedies NullPointerException
+                    defaultDestinationPath!!
+                },
+                onDeleteButtonClick = {
+                    navigatorUIState.saveDefaultDestination(source, null)
+                },
+                modifier = Modifier
+                    .height(36.dp)
+                    .padding(bottom = 4.dp)
+            )
         }
     }
 }
 
 @Composable
 fun FileSourceRow(
-    fileType: FileType,
     isEnabled: Boolean,
     source: FileType.Source,
     navigatorUIState: NavigatorUIState,
@@ -349,7 +337,7 @@ fun FileSourceRow(
             Icon(
                 painter = painterResource(id = source.kind.iconRes),
                 contentDescription = null,
-                tint = if (isEnabled) fileType.color.copy(alpha = 0.75f) else AppColor.disabled
+                tint = if (isEnabled) source.fileType.color.copy(alpha = 0.75f) else AppColor.disabled
             )
         }
         // Source label
@@ -370,11 +358,11 @@ fun FileSourceRow(
         Spacer(modifier = Modifier.weight(buttonBoxWeight - destinationButtonBoxWeight + Epsilon))
         // CheckboxContent
         Box(modifier = Modifier.weight(buttonBoxWeight), contentAlignment = Alignment.Center) {
-            if (fileType.isMediaType) {
+            if (source.fileType.isMediaType) {
                 AppCheckbox(
                     checked = isEnabled,
                     onCheckedChange = { checkedNew ->
-                        if (!fileType.sources.map {
+                        if (!source.fileType.sources.map {
                                 navigatorUIState.mediaFileSourceEnabledMap.getValue(
                                     it.isEnabled
                                 )
@@ -439,7 +427,7 @@ fun getDefaultMoveDestinationPath(uri: Uri, context: Context): String? =
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DefaultDestinationDisplayRow(
+fun DefaultMoveDestinationRow(
     path: String,
     onDeleteButtonClick: () -> Unit,
     modifier: Modifier = Modifier
