@@ -5,10 +5,6 @@ import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,18 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -41,7 +33,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -55,6 +46,8 @@ import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.common.utils.manageExternalStoragePermissionRequired
 import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.components.AnimatedElements
+import com.w2sv.filenavigator.ui.components.AnimatedRowElement
 import com.w2sv.filenavigator.ui.components.AppCheckbox
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
@@ -68,7 +61,6 @@ import com.w2sv.filenavigator.ui.states.NavigatorUIState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.DefaultIconDp
-import com.w2sv.filenavigator.ui.theme.Epsilon
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
 import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
@@ -116,18 +108,16 @@ fun FileTypeAccordion(
             DisabledText(modifier = Modifier.padding(bottom = 8.dp))
         }
 
-        val fileTypeEnabled by remember {
-            derivedStateOf { navigatorUIState.fileTypeStatusMap.getValue(fileType.status).isEnabled }  // TODO: derivedState necessary?
-        }
+        val fileTypeIsEnabled =
+            navigatorUIState.fileTypeStatusMap.getValue(fileType.status).isEnabled
+
         FileTypeAccordionHeader(
             fileType = fileType,
-            isEnabled = fileTypeEnabled,
+            isEnabled = fileTypeIsEnabled,
             fileTypeStatusMap = navigatorUIState.fileTypeStatusMap
         )
         AnimatedVisibility(
-            visible = fileTypeEnabled,
-            enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut()
+            visible = fileTypeIsEnabled
         ) {
             FileTypeSourcesSurface(
                 fileType = fileType,
@@ -188,8 +178,7 @@ private fun FileTypeAccordionHeader(
                     modifier = Modifier.padding(8.dp),
                     checked = isEnabled,
                     onCheckedChange = { checkedNew ->
-                        when (val status =
-                            fileTypeStatusMap.getValue(fileType.status)) {
+                        when (fileTypeStatusMap.getValue(fileType.status)) {
                             FileType.Status.Enabled, FileType.Status.Disabled -> {
                                 if (!fileTypeStatusMap.values.map { it.isEnabled }
                                         .allFalseAfterEnteringValue(
@@ -211,10 +200,21 @@ private fun FileTypeAccordionHeader(
                                 }
                             }
 
-                            FileType.Status.DisabledDueToNoFileAccess, FileType.Status.DisabledDueToMediaAccessOnly -> {
+                            else -> {
                                 scope.launch {
                                     snackbarHostState.showSnackbarAndDismissCurrent(
-                                        getManageExternalStorageSnackbarVisuals(status, context)
+                                        AppSnackbarVisuals(
+                                            message = context.getString(R.string.non_media_files_require_all_files_access),
+                                            kind = SnackbarKind.Error,
+                                            action = SnackbarAction(
+                                                label = context.getString(R.string.grant),
+                                                callback = {
+                                                    if (manageExternalStoragePermissionRequired()) {
+                                                        goToManageExternalStorageSettings(context)
+                                                    }
+                                                }
+                                            )
+                                        )
                                     )
                                 }
                             }
@@ -225,31 +225,6 @@ private fun FileTypeAccordionHeader(
         }
     }
 }
-
-/**
- * Assumes [fileTypeStatus] to be one of [FileType.Status.DisabledDueToNoFileAccess], [FileType.Status.DisabledDueToMediaAccessOnly].
- */
-private fun getManageExternalStorageSnackbarVisuals(
-    fileTypeStatus: FileType.Status,
-    context: Context
-): SnackbarVisuals =
-    AppSnackbarVisuals(
-        message = context.getString(
-            if (fileTypeStatus == FileType.Status.DisabledDueToNoFileAccess)
-                R.string.manage_external_storage_permission_rational
-            else
-                R.string.non_media_files_require_all_files_access
-        ),
-        kind = SnackbarKind.Error,
-        action = SnackbarAction(
-            label = context.getString(R.string.grant),
-            callback = {
-                if (manageExternalStoragePermissionRequired()) {
-                    goToManageExternalStorageSettings(context)
-                }
-            }
-        )
-    )
 
 @Composable
 private fun FileTypeSourcesSurface(
@@ -289,14 +264,14 @@ private fun FileTypeSourceConfigurationView(
         ) else true
     val defaultDestination by navigatorUIState.defaultDestinationStateFlowMap.getValue(source.defaultDestination)
         .collectAsState()
-    val defaultDestinationPath by remember {
+    val defaultDestinationPath by remember(defaultDestination) {
         derivedStateOf { defaultDestination?.let { getDefaultMoveDestinationPath(it, context) } }
     }
 
     Column(modifier = modifier) {
-        FileSourceRow(
-            isEnabled = isEnabled,
+        FileTypeSourceRow(
             source = source,
+            isEnabled = isEnabled,
             navigatorUIState = navigatorUIState,
             modifier = Modifier.height(44.dp)
         )
@@ -318,9 +293,9 @@ private fun FileTypeSourceConfigurationView(
 }
 
 @Composable
-fun FileSourceRow(
-    isEnabled: Boolean,
+fun FileTypeSourceRow(
     source: FileType.Source,
+    isEnabled: Boolean,
     navigatorUIState: NavigatorUIState,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
@@ -332,7 +307,7 @@ fun FileSourceRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
     ) {
-        // Source icon
+        // Icon
         Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
             Icon(
                 painter = painterResource(id = source.kind.iconRes),
@@ -340,7 +315,7 @@ fun FileSourceRow(
                 tint = if (isEnabled) source.fileType.color.copy(alpha = 0.75f) else AppColor.disabled
             )
         }
-        // Source label
+        // Label
         Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
             AppFontText(
                 text = stringResource(id = source.kind.labelRes),
@@ -348,55 +323,48 @@ fun FileSourceRow(
             )
         }
 
-        val buttonBoxWeight = 0.1f
-        val destinationButtonBoxWeight by animateFloatAsState(
-            targetValue = if (isEnabled) buttonBoxWeight else Epsilon,
-            label = ""
-        )
-
-        // Empty box, pushing the checkbox into the position of the destinationButtonBox upon vanishing of the latter
-        Spacer(modifier = Modifier.weight(buttonBoxWeight - destinationButtonBoxWeight + Epsilon))
-        // CheckboxContent
-        Box(modifier = Modifier.weight(buttonBoxWeight), contentAlignment = Alignment.Center) {
-            if (source.fileType.isMediaType) {
-                AppCheckbox(
-                    checked = isEnabled,
-                    onCheckedChange = { checkedNew ->
-                        if (!source.fileType.sources.map {
-                                navigatorUIState.mediaFileSourceEnabledMap.getValue(
-                                    it.isEnabled
-                                )
+        AnimatedElements(
+            elementWeight = 0.1f,
+            showConditionalElement = isEnabled,
+            elements = listOf(
+                AnimatedRowElement.CounterWeight,
+                AnimatedRowElement.Static {
+                    if (source.fileType.isMediaType) {
+                        AppCheckbox(
+                            checked = isEnabled,
+                            onCheckedChange = { checkedNew ->
+                                if (!source.fileType.sources.map {
+                                        navigatorUIState.mediaFileSourceEnabledMap.getValue(
+                                            it.isEnabled
+                                        )
+                                    }
+                                        .allFalseAfterEnteringValue(checkedNew)
+                                ) {
+                                    navigatorUIState.mediaFileSourceEnabledMap[source.isEnabled] =
+                                        checkedNew
+                                } else {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbarAndDismissCurrent(
+                                            AppSnackbarVisuals(
+                                                message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
+                                                kind = SnackbarKind.Error
+                                            )
+                                        )
+                                    }
+                                }
                             }
-                                .allFalseAfterEnteringValue(checkedNew)
-                        ) {
-                            navigatorUIState.mediaFileSourceEnabledMap[source.isEnabled] =
-                                checkedNew
-                        } else {
-                            scope.launch {
-                                snackbarHostState.showSnackbarAndDismissCurrent(
-                                    AppSnackbarVisuals(
-                                        message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
-                                        kind = SnackbarKind.Error
-                                    )
-                                )
-                            }
-                        }
+                        )
                     }
-                )
-            }
-        }
-
-        // Destination Button
-        Box(
-            modifier = Modifier
-                .weight(destinationButtonBoxWeight)
-                .alpha(destinationButtonBoxWeight * 10),
-            contentAlignment = Alignment.Center
-        ) {
-            SetDefaultMoveDestinationButton(
-                onClick = { navigatorUIState.setDefaultMoveDestinationSource.value = source }
+                },
+                AnimatedRowElement.Conditional {
+                    SetDefaultMoveDestinationButton(
+                        onClick = {
+                            navigatorUIState.setDefaultMoveDestinationSource.value = source
+                        }
+                    )
+                }
             )
-        }
+        )
     }
 }
 
@@ -425,7 +393,6 @@ private fun SetDefaultMoveDestinationButton(
 fun getDefaultMoveDestinationPath(uri: Uri, context: Context): String? =
     DocumentFile.fromSingleUri(context, uri)?.getSimplePath(context)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultMoveDestinationRow(
     path: String,
@@ -443,17 +410,15 @@ fun DefaultMoveDestinationRow(
             fontSize = 14.sp,
             modifier = Modifier.weight(0.7f)
         )
-        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-            IconButton(
-                onClick = onDeleteButtonClick,
-                modifier = Modifier.weight(0.1f)
-            ) {
-                Icon(
-                    painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_delete_24),
-                    contentDescription = stringResource(R.string.delete_default_move_destination),
-                    tint = MaterialTheme.colorScheme.secondary
-                )
-            }
+        IconButton(
+            onClick = onDeleteButtonClick,
+            modifier = Modifier.weight(0.1f)
+        ) {
+            Icon(
+                painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_delete_24),
+                contentDescription = stringResource(R.string.delete_default_move_destination),
+                tint = MaterialTheme.colorScheme.secondary
+            )
         }
     }
 }
