@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.states.NavigatorState
+import com.w2sv.filenavigator.ui.states.FileTypeState
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import slimber.log.i
@@ -33,7 +35,7 @@ import slimber.log.i
 @Composable
 fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier,
-    navigatorState: NavigatorState,
+    fileTypeState: FileTypeState,
     context: Context = LocalContext.current
 ) {
     val selectDefaultMoveDestination = rememberLauncherForActivityResult(
@@ -41,11 +43,11 @@ fun FileTypeSelectionColumn(
     ) { treeUri ->
         if (treeUri != null) {
             i { "DocumentTree Uri: $treeUri" }
-            navigatorState.defaultMoveDestinationState.onDestinationSelected(treeUri, context)
+            fileTypeState.defaultMoveDestinationState.onDestinationSelected(treeUri, context)
         }
     }
 
-    navigatorState.defaultMoveDestinationState.selectionSource.collectAsState()
+    fileTypeState.defaultMoveDestinationState.selectionSource.collectAsState()
         .apply {
             if (value != null) {
                 selectDefaultMoveDestination.launch(null)
@@ -68,21 +70,19 @@ fun FileTypeSelectionColumn(
             CascadeAnimationState<FileType>()
         }
 
+        val firstDisabledFileType by fileTypeState.firstDisabledFileType.collectAsState()
+
         LazyColumn(state = rememberLazyListState()) {
-            itemsIndexed(
-                navigatorState.sortedFileTypes,
-                key = { _, it -> it }
-            ) { i, fileType ->
+            items(
+                items = fileTypeState.sortedFileTypes,
+                key = { it }
+            ) { fileType ->
                 i { "Laying out ${fileType.identifier}" }
 
                 FileTypeAccordion(
                     fileType = fileType,
-                    isFirstDisabled = navigatorState.run {
-                        sortedFileTypes.isFirstAppliedDisabled(
-                            i
-                        )
-                    },
-                    navigatorState = navigatorState,
+                    isFirstDisabled = fileType == firstDisabledFileType,
+                    fileTypeState = fileTypeState,
                     cascadeAnimationState = cascadeAnimationState,
                     modifier = Modifier
                         .padding(vertical = 4.dp)

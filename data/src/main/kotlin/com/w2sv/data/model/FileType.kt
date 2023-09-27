@@ -236,7 +236,7 @@ sealed class FileType(
             "${fileType.identifier}.$kind.$keySuffix"
 
         @IgnoredOnParcel
-        val isEnabled by lazy {
+        val isEnabled by lazy {  // TODO: Remove for NonMedia
             object : DataStoreEntry.UniType.Impl<Boolean>(
                 booleanPreferencesKey(getPreferencesKeyContent("IS_ENABLED")),
                 true

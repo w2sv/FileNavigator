@@ -68,6 +68,7 @@ import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButton
 import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButtonConfiguration
 import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButtonConfigurations
 import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.FileTypeSelectionColumn
+import com.w2sv.filenavigator.ui.states.NavigatorState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
@@ -165,6 +166,7 @@ fun MainScreen(
                 AnimatedContent(targetState = permissionCardProperties.isEmpty(), label = "") {
                     if (it) {
                         MainContent(
+                            navigatorState = mainScreenVM.navigatorState,
                             modifier = sharedModifier.padding(horizontal = 14.dp)
                         )
                     } else {
@@ -242,9 +244,9 @@ fun PermissionCardColumn(
 
 @Composable
 internal fun MainContent(
+    navigatorState: NavigatorState,
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
-    mainScreenVM: MainScreenViewModel = viewModel()
+    context: Context = LocalContext.current
 ) {
     val toggleNavigatorButtonConfigurations = remember {
         ToggleNavigatorButtonConfigurations(
@@ -271,7 +273,7 @@ internal fun MainContent(
 
         Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.Center) {
             FileTypeSelectionColumn(
-                navigatorState = mainScreenVM.navigatorState,
+                fileTypeState = navigatorState.fileTypeState,
                 modifier = Modifier.fillMaxHeight()
             )
         }
@@ -279,7 +281,7 @@ internal fun MainContent(
         Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
             AnimatedContent(
                 contentAlignment = Alignment.Center,
-                targetState = mainScreenVM.navigatorState.configuration.statesDissimilar.collectAsState().value,
+                targetState = navigatorState.fileTypeState.statesDissimilar.collectAsState().value,
                 transitionSpec = {
                     (slideInHorizontally(
                         animationSpec = tween(
@@ -306,10 +308,10 @@ internal fun MainContent(
                 label = ""
             ) {
                 if (it) {
-                    ConfigurationChangeConfirmationButtons()
+                    ConfigurationChangeConfirmationButtons(navigatorState.fileTypeState)
                 } else {
                     ToggleNavigatorButton(
-                        configuration = when (mainScreenVM.navigatorState.isRunning.collectAsState().value) {
+                        configuration = when (navigatorState.isRunning.collectAsState().value) {
                             true -> toggleNavigatorButtonConfigurations.stopNavigator
                             false -> toggleNavigatorButtonConfigurations.startNavigator
                         },

@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.screens.main.components
 
-import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
@@ -16,37 +15,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.filenavigator.ui.states.FileTypeState
 import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.navigator.FileNavigator
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun ConfigurationChangeConfirmationButtons(
-    modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
-    mainScreenVM: MainScreenViewModel = viewModel()
+    fileTypeState: FileTypeState,
+    modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
         ConfigurationChangeButton(
             iconRes = com.w2sv.navigator.R.drawable.ic_cancel_24,
             color = AppColor.error,
             textRes = R.string.discard_changes,
-            onClick = {
-                with(mainScreenVM) {
-                    viewModelScope.launch {
-                        navigatorState.configuration.reset()
-                    }
-                }
-            }
+            onClick = { fileTypeState.launchReset() }
         )
 
         Spacer(modifier = Modifier.width(10.dp))
@@ -55,18 +42,7 @@ internal fun ConfigurationChangeConfirmationButtons(
             iconRes = R.drawable.ic_check_24,
             color = AppColor.success,
             textRes = R.string.confirm_changes,
-            onClick = {
-                with(mainScreenVM) {
-                    viewModelScope.launch {
-                        navigatorState.configuration.sync()
-                        if (navigatorState.isRunning.value) {
-                            FileNavigator.reregisterFileObservers(
-                                context
-                            )
-                        }
-                    }
-                }
-            }
+            onClick = { fileTypeState.launchSync() }
         )
     }
 }

@@ -19,7 +19,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -41,19 +40,19 @@ import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.states.NavigatorState
-import com.w2sv.filenavigator.ui.states.getDefaultMoveDestinationPath
+import com.w2sv.filenavigator.ui.states.FileTypeState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
 import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
+import com.w2sv.filenavigator.ui.utils.extensions.orDisabledIf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun FileTypeSourcesSurface(
     fileType: FileType,
-    navigatorState: NavigatorState,
+    fileTypeState: FileTypeState,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -67,7 +66,7 @@ fun FileTypeSourcesSurface(
                 makeElement = {
                     SourceColumn(
                         source = it,
-                        navigatorState = navigatorState
+                        fileTypeState = fileTypeState
                     )
                 }
             )
@@ -78,25 +77,24 @@ fun FileTypeSourcesSurface(
 @Composable
 private fun SourceColumn(
     source: FileType.Source,
-    navigatorState: NavigatorState,
+    fileTypeState: FileTypeState,
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current
 ) {
-    val isEnabled =
-        if (source.fileType.isMediaType) navigatorState.mediaFileSourceEnabledMap.getValue(
-            source.isEnabled
-        ) else true
-    val defaultDestination by navigatorState.defaultMoveDestinationState.stateFlowMap.getValue(source.defaultDestination)
-        .collectAsState()
-    val defaultDestinationPath by remember(defaultDestination) {
-        derivedStateOf { defaultDestination?.let { getDefaultMoveDestinationPath(it, context) } }
-    }
-
     Column(modifier = modifier) {
+        val isEnabled =
+            fileTypeState.mediaFileSourceEnabledMap.getOrDefault(
+                key = source.isEnabled,
+                defaultValue = true
+            )
+        val defaultDestinationPath by fileTypeState.defaultMoveDestinationState.pathMap.getValue(
+            source.defaultDestination
+        )
+            .collectAsState()
+
         SourceRow(
             source = source,
             isEnabled = isEnabled,
-            navigatorState = navigatorState,
+            fileTypeState = fileTypeState,
             modifier = Modifier.height(44.dp)
         )
 
@@ -106,7 +104,7 @@ private fun SourceColumn(
                     defaultDestinationPath!!
                 },
                 onDeleteButtonClick = {
-                    navigatorState.defaultMoveDestinationState.saveDestination(source, null)
+                    fileTypeState.defaultMoveDestinationState.saveDestination(source, null)
                 },
                 modifier = Modifier
                     .height(36.dp)
@@ -120,7 +118,7 @@ private fun SourceColumn(
 private fun SourceRow(
     source: FileType.Source,
     isEnabled: Boolean,
-    navigatorState: NavigatorState,
+    fileTypeState: FileTypeState,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     context: Context = LocalContext.current,
@@ -136,14 +134,16 @@ private fun SourceRow(
             Icon(
                 painter = painterResource(id = source.kind.iconRes),
                 contentDescription = null,
-                tint = if (isEnabled) source.fileType.color.copy(alpha = 0.75f) else AppColor.disabled
+                tint = source.fileType.color.copy(alpha = 0.75f)
+                    .orDisabledIf(condition = !isEnabled)
             )
         }
         // Label
         Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
             AppFontText(
                 text = stringResource(id = source.kind.labelRes),
-                color = if (isEnabled) MaterialTheme.colorScheme.onSurface.copy(0.7f) else AppColor.disabled
+                color = MaterialTheme.colorScheme.onSurface.copy(0.7f)
+                    .orDisabledIf(condition = !isEnabled)
             )
         }
 
@@ -158,13 +158,13 @@ private fun SourceRow(
                             checked = isEnabled,
                             onCheckedChange = { checkedNew ->
                                 if (!source.fileType.sources.map {
-                                        navigatorState.mediaFileSourceEnabledMap.getValue(
+                                        fileTypeState.mediaFileSourceEnabledMap.getValue(
                                             it.isEnabled
                                         )
                                     }
                                         .allFalseAfterEnteringValue(checkedNew)
                                 ) {
-                                    navigatorState.mediaFileSourceEnabledMap[source.isEnabled] =
+                                    fileTypeState.mediaFileSourceEnabledMap[source.isEnabled] =
                                         checkedNew
                                 } else {
                                     scope.launch {
@@ -183,7 +183,8 @@ private fun SourceRow(
                 AnimatedRowElement.Conditional {
                     SetDefaultMoveDestinationButton(
                         onClick = {
-                            navigatorState.defaultMoveDestinationState.selectionSource.value = source
+                            fileTypeState.defaultMoveDestinationState.selectionSource.value =
+                                source
                         }
                     )
                 }
