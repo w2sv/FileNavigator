@@ -2,8 +2,9 @@ package com.w2sv.filenavigator.ui.model
 
 import androidx.compose.ui.graphics.Color
 import com.w2sv.data.model.FileType
+import slimber.log.i
 
-val FileType.color: Color get() = Color(colorLong)
+val FileType.color: Color get() = Color(colorLong).also { i { "Converted color" } }
 
 fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(fileTypeStatuses: Map<FileType.Status.StoreEntry, FileType.Status>) {
     sortWith(
