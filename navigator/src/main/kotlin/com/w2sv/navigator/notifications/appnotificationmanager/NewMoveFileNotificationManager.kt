@@ -100,13 +100,13 @@ class NewMoveFileNotificationManager(
 
                             FileType.Source.Kind.Download -> context.getString(
                                 R.string.newly_downloaded_template,
-                                context.getString(fileType.fileDeclarationRes)
+                                context.getString(fileType.titleRes)
                             )
 
                             FileType.Source.Kind.OtherApp -> context.getString(
                                 R.string.new_third_party_file_template,
                                 moveFile.data.dirName,
-                                context.getString(fileType.fileDeclarationRes)
+                                context.getString(fileType.titleRes)
                             )
                         }
                     }

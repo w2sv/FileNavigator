@@ -35,7 +35,6 @@ sealed class FileType(
 
     sealed class Media(
         @StringRes labelRes: Int,
-        @StringRes val fileDeclarationRes: Int,
         @DrawableRes iconRes: Int,
         color: Long,
         simpleStorageType: MediaType,
@@ -64,7 +63,6 @@ sealed class FileType(
         @Parcelize
         data object Image : Media(
             labelRes = R.string.image,
-            fileDeclarationRes = R.string.image,
             iconRes = R.drawable.ic_image_24,
             color = 0xFFBF1A2F,
             simpleStorageType = MediaType.IMAGE,
@@ -80,7 +78,6 @@ sealed class FileType(
         @Parcelize
         data object GIF : Media(
             labelRes = R.string.gif,
-            fileDeclarationRes = R.string.gif,
             iconRes = R.drawable.ic_gif_box_24,
             color = 0xFF49C6E5,
             simpleStorageType = MediaType.IMAGE,
@@ -94,7 +91,6 @@ sealed class FileType(
         @Parcelize
         data object Video : Media(
             labelRes = R.string.video,
-            fileDeclarationRes = R.string.video,
             iconRes = R.drawable.ic_video_file_24,
             color = 0xFFFFCB77,
             simpleStorageType = MediaType.VIDEO,
@@ -108,7 +104,6 @@ sealed class FileType(
         @Parcelize
         data object Audio : Media(
             labelRes = R.string.audio,
-            fileDeclarationRes = R.string.audio_file,
             iconRes = R.drawable.ic_audio_file_24,
             color = 0xFFF26430,
             simpleStorageType = MediaType.AUDIO,
