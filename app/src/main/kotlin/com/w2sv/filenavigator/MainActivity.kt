@@ -58,14 +58,14 @@ class MainActivity : ComponentActivity() {
 
     private fun CoroutineScope.collectFromFlows() {
         collectFromFlow(fileNavigatorStatusChanged.isRunning) {
-            mainScreenVM.navigatorUIState.isRunning.value = it
+            mainScreenVM.navigatorState.isRunning.value = it
         }
 
         collectFromFlow(appVM.exitApplication) {
             finishAffinity()
         }
 
-        collectFromFlow(mainScreenVM.navigatorUIState.disableOnLowBattery) {
+        collectFromFlow(mainScreenVM.navigatorState.disableOnLowBattery) {
             val intent = PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity)
 
             i { "Collected disableListenerOnLowBattery=$it" }

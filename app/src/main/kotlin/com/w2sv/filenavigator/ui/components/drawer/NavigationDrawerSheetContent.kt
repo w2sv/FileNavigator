@@ -81,7 +81,7 @@ internal fun ColumnScope.SheetContent(
                 R.string.navigator
             ),
             Element.Custom {
-                with(mainScreenVM.navigatorUIState) {
+                with(mainScreenVM.navigatorState) {
                     val isRunning by isRunning.collectAsState()
                     val startDateTime by startDateTime.collectAsState()
 
@@ -98,8 +98,8 @@ internal fun ColumnScope.SheetContent(
                 labelRes = R.string.disable_navigator_on_low_battery,
                 content = {
                     RightAlignedAppCheckbox(
-                        checked = mainScreenVM.navigatorUIState.disableOnLowBattery.collectAsState().value,
-                        onCheckedChange = mainScreenVM.navigatorUIState::saveDisableOnLowBattery
+                        checked = mainScreenVM.navigatorState.disableOnLowBattery.collectAsState().value,
+                        onCheckedChange = mainScreenVM.navigatorState::saveDisableOnLowBattery
                     )
                 }
             ),

@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.states.NavigatorUIState
+import com.w2sv.filenavigator.ui.states.NavigatorState
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import slimber.log.i
@@ -33,7 +33,7 @@ import slimber.log.i
 @Composable
 fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier,
-    navigatorUIState: NavigatorUIState,
+    navigatorState: NavigatorState,
     context: Context = LocalContext.current
 ) {
     val selectDefaultMoveDestination = rememberLauncherForActivityResult(
@@ -41,11 +41,11 @@ fun FileTypeSelectionColumn(
     ) { treeUri ->
         if (treeUri != null) {
             i { "DocumentTree Uri: $treeUri" }
-            navigatorUIState.onDefaultMoveDestinationSelected(treeUri, context)
+            navigatorState.defaultMoveDestinationState.onDestinationSelected(treeUri, context)
         }
     }
 
-    navigatorUIState.setDefaultMoveDestinationSource.collectAsState()
+    navigatorState.defaultMoveDestinationState.selectionSource.collectAsState()
         .apply {
             if (value != null) {
                 selectDefaultMoveDestination.launch(null)
@@ -70,19 +70,19 @@ fun FileTypeSelectionColumn(
 
         LazyColumn(state = rememberLazyListState()) {
             itemsIndexed(
-                navigatorUIState.sortedFileTypes,
+                navigatorState.sortedFileTypes,
                 key = { _, it -> it }
             ) { i, fileType ->
                 i { "Laying out ${fileType.identifier}" }
 
                 FileTypeAccordion(
                     fileType = fileType,
-                    isFirstDisabled = navigatorUIState.run {
+                    isFirstDisabled = navigatorState.run {
                         sortedFileTypes.isFirstAppliedDisabled(
                             i
                         )
                     },
-                    navigatorUIState = navigatorUIState,
+                    navigatorState = navigatorState,
                     cascadeAnimationState = cascadeAnimationState,
                     modifier = Modifier
                         .padding(vertical = 4.dp)

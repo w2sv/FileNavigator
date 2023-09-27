@@ -43,7 +43,7 @@ internal fun ConfigurationChangeConfirmationButtons(
             onClick = {
                 with(mainScreenVM) {
                     viewModelScope.launch {
-                        navigatorUIState.configuration.reset()
+                        navigatorState.configuration.reset()
                     }
                 }
             }
@@ -58,8 +58,8 @@ internal fun ConfigurationChangeConfirmationButtons(
             onClick = {
                 with(mainScreenVM) {
                     viewModelScope.launch {
-                        navigatorUIState.configuration.sync()
-                        if (navigatorUIState.isRunning.value) {
+                        navigatorState.configuration.sync()
+                        if (navigatorState.isRunning.value) {
                             FileNavigator.reregisterFileObservers(
                                 context
                             )

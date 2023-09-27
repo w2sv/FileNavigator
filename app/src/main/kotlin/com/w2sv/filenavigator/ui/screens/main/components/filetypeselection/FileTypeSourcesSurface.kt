@@ -41,7 +41,7 @@ import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.states.NavigatorUIState
+import com.w2sv.filenavigator.ui.states.NavigatorState
 import com.w2sv.filenavigator.ui.states.getDefaultMoveDestinationPath
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultIconDp
@@ -53,7 +53,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun FileTypeSourcesSurface(
     fileType: FileType,
-    navigatorUIState: NavigatorUIState,
+    navigatorState: NavigatorState,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -67,7 +67,7 @@ fun FileTypeSourcesSurface(
                 makeElement = {
                     SourceColumn(
                         source = it,
-                        navigatorUIState = navigatorUIState
+                        navigatorState = navigatorState
                     )
                 }
             )
@@ -78,15 +78,15 @@ fun FileTypeSourcesSurface(
 @Composable
 private fun SourceColumn(
     source: FileType.Source,
-    navigatorUIState: NavigatorUIState,
+    navigatorState: NavigatorState,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current
 ) {
     val isEnabled =
-        if (source.fileType.isMediaType) navigatorUIState.mediaFileSourceEnabledMap.getValue(
+        if (source.fileType.isMediaType) navigatorState.mediaFileSourceEnabledMap.getValue(
             source.isEnabled
         ) else true
-    val defaultDestination by navigatorUIState.defaultMoveDestinationStateFlowMap.getValue(source.defaultDestination)
+    val defaultDestination by navigatorState.defaultMoveDestinationState.stateFlowMap.getValue(source.defaultDestination)
         .collectAsState()
     val defaultDestinationPath by remember(defaultDestination) {
         derivedStateOf { defaultDestination?.let { getDefaultMoveDestinationPath(it, context) } }
@@ -96,7 +96,7 @@ private fun SourceColumn(
         SourceRow(
             source = source,
             isEnabled = isEnabled,
-            navigatorUIState = navigatorUIState,
+            navigatorState = navigatorState,
             modifier = Modifier.height(44.dp)
         )
 
@@ -106,7 +106,7 @@ private fun SourceColumn(
                     defaultDestinationPath!!
                 },
                 onDeleteButtonClick = {
-                    navigatorUIState.saveDefaultDestination(source, null)
+                    navigatorState.defaultMoveDestinationState.saveDestination(source, null)
                 },
                 modifier = Modifier
                     .height(36.dp)
@@ -120,7 +120,7 @@ private fun SourceColumn(
 private fun SourceRow(
     source: FileType.Source,
     isEnabled: Boolean,
-    navigatorUIState: NavigatorUIState,
+    navigatorState: NavigatorState,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     context: Context = LocalContext.current,
@@ -158,13 +158,13 @@ private fun SourceRow(
                             checked = isEnabled,
                             onCheckedChange = { checkedNew ->
                                 if (!source.fileType.sources.map {
-                                        navigatorUIState.mediaFileSourceEnabledMap.getValue(
+                                        navigatorState.mediaFileSourceEnabledMap.getValue(
                                             it.isEnabled
                                         )
                                     }
                                         .allFalseAfterEnteringValue(checkedNew)
                                 ) {
-                                    navigatorUIState.mediaFileSourceEnabledMap[source.isEnabled] =
+                                    navigatorState.mediaFileSourceEnabledMap[source.isEnabled] =
                                         checkedNew
                                 } else {
                                     scope.launch {
@@ -183,7 +183,7 @@ private fun SourceRow(
                 AnimatedRowElement.Conditional {
                     SetDefaultMoveDestinationButton(
                         onClick = {
-                            navigatorUIState.setDefaultMoveDestinationSource.value = source
+                            navigatorState.defaultMoveDestinationState.selectionSource.value = source
                         }
                     )
                 }

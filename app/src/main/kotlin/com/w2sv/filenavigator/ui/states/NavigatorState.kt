@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
-class NavigatorUIState(
+class NavigatorState(
     private val scope: CoroutineScope,
     private val fileTypeRepository: FileTypeRepository,
     private val preferencesRepository: PreferencesRepository,
@@ -147,9 +147,14 @@ class NavigatorUIState(
         }
     }
 
-    val setDefaultMoveDestinationSource = MutableStateFlow<FileType.Source?>(null)
+    val defaultMoveDestinationState = DefaultMoveDestinationState(fileTypeRepository, scope)
+}
 
-    val defaultMoveDestinationStateFlowMap =
+class DefaultMoveDestinationState(
+    private val fileTypeRepository: FileTypeRepository,
+    private val scope: CoroutineScope
+) {
+    val stateFlowMap =
         fileTypeRepository.defaultDestinationMap.mapValues { (_, v) ->
             v.stateIn(
                 scope,
@@ -158,14 +163,20 @@ class NavigatorUIState(
             )
         }
 
-    fun onDefaultMoveDestinationSelected(treeUri: Uri, context: Context) {
+    // ==================
+    // Configuration
+    // ==================
+
+    val selectionSource = MutableStateFlow<FileType.Source?>(null)
+
+    fun onDestinationSelected(treeUri: Uri, context: Context) {
         DocumentFile.fromTreeUri(context, treeUri)?.let { documentFile ->
-            saveDefaultDestination(setDefaultMoveDestinationSource.value!!, documentFile.uri)
+            saveDestination(selectionSource.value!!, documentFile.uri)
         }
-        setDefaultMoveDestinationSource.value = null
+        selectionSource.value = null
     }
 
-    fun saveDefaultDestination(source: FileType.Source, destination: Uri?) {
+    fun saveDestination(source: FileType.Source, destination: Uri?) {
         scope.launch {
             fileTypeRepository.saveDefaultDestination(source, destination)
         }
