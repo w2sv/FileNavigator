@@ -183,8 +183,7 @@ private fun SourceRow(
                 AnimatedRowElement.Conditional {
                     SetDefaultMoveDestinationButton(
                         onClick = {
-                            fileTypeState.defaultMoveDestinationState.selectionSource.value =
-                                source
+                            fileTypeState.defaultMoveDestinationState.launchPickerFor(source)
                         }
                     )
                 }

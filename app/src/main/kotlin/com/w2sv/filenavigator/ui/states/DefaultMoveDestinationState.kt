@@ -8,8 +8,10 @@ import com.w2sv.androidutils.coroutines.mapState
 import com.w2sv.data.model.FileType
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -37,13 +39,29 @@ class DefaultMoveDestinationState(
     // Configuration
     // ==================
 
-    val selectionSource = MutableStateFlow<FileType.Source?>(null)
+    fun launchPickerFor(source: FileType.Source) {
+        pickerSource.value = source
+    }
+
+    val launchPicker get() = _launchPicker.asSharedFlow()
+    private val _launchPicker = MutableSharedFlow<Unit>()
+
+    private val pickerSource = MutableStateFlow<FileType.Source?>(null)
+        .apply {
+            scope.launch {
+                collect {
+                    if (it != null) {
+                        _launchPicker.emit(Unit)
+                    }
+                }
+            }
+        }
 
     fun onDestinationSelected(treeUri: Uri, context: Context) {
         DocumentFile.fromTreeUri(context, treeUri)?.let { documentFile ->
-            saveDestination(selectionSource.value!!, documentFile.uri)
+            saveDestination(pickerSource.value!!, documentFile.uri)
         }
-        selectionSource.value = null
+        pickerSource.value = null
     }
 
     fun saveDestination(source: FileType.Source, destination: Uri?) {

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
+import com.w2sv.filenavigator.ui.states.DefaultMoveDestinationState
 import com.w2sv.filenavigator.ui.states.FileTypeState
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
@@ -36,23 +37,8 @@ import slimber.log.i
 fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier,
     fileTypeState: FileTypeState,
-    context: Context = LocalContext.current
 ) {
-    val selectDefaultMoveDestination = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocumentTree()
-    ) { treeUri ->
-        if (treeUri != null) {
-            i { "DocumentTree Uri: $treeUri" }
-            fileTypeState.defaultMoveDestinationState.onDestinationSelected(treeUri, context)
-        }
-    }
-
-    fileTypeState.defaultMoveDestinationState.selectionSource.collectAsState()
-        .apply {
-            if (value != null) {
-                selectDefaultMoveDestination.launch(null)
-            }
-        }
+    SelectDefaultMoveDestinationPicker(defaultMoveDestinationState = fileTypeState.defaultMoveDestinationState)
 
     Column(
         modifier = modifier
@@ -89,6 +75,27 @@ fun FileTypeSelectionColumn(
                         .animateItemPlacement(tween(DefaultAnimationDuration))  // Animate upon reordering
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun SelectDefaultMoveDestinationPicker(
+    defaultMoveDestinationState: DefaultMoveDestinationState,
+    context: Context = LocalContext.current
+) {
+    val picker = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocumentTree()
+    ) { treeUri ->
+        if (treeUri != null) {
+            i { "DocumentTree Uri: $treeUri" }
+            defaultMoveDestinationState.onDestinationSelected(treeUri, context)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        defaultMoveDestinationState.launchPicker.collect {
+            picker.launch(null)
         }
     }
 }
