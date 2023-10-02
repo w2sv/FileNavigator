@@ -20,12 +20,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.states.FileTypeState
+import com.w2sv.filenavigator.ui.states.FileTypesState
 import com.w2sv.filenavigator.ui.theme.AppColor
 
 @Composable
 internal fun ConfigurationChangeConfirmationButtons(
-    fileTypeState: FileTypeState,
+    fileTypesState: FileTypesState,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
@@ -33,7 +33,7 @@ internal fun ConfigurationChangeConfirmationButtons(
             iconRes = com.w2sv.navigator.R.drawable.ic_cancel_24,
             color = AppColor.error,
             textRes = R.string.discard_changes,
-            onClick = { fileTypeState.launchReset() }
+            onClick = { fileTypesState.reset() }
         )
 
         Spacer(modifier = Modifier.width(10.dp))
@@ -42,7 +42,7 @@ internal fun ConfigurationChangeConfirmationButtons(
             iconRes = R.drawable.ic_check_24,
             color = AppColor.success,
             textRes = R.string.confirm_changes,
-            onClick = { fileTypeState.launchSync() }
+            onClick = { fileTypesState.launchSync() }
         )
     }
 }

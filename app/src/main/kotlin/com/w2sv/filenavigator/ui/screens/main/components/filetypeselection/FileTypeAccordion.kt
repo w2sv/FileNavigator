@@ -33,7 +33,7 @@ import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.states.FileTypeState
+import com.w2sv.filenavigator.ui.states.FileTypesState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import com.w2sv.filenavigator.ui.utils.extensions.orDisabledIf
@@ -43,8 +43,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun FileTypeAccordion(
     fileType: FileType,
-    isFirstDisabled: Boolean,
-    fileTypeState: FileTypeState,
+    isFirstDisabled: () -> Boolean,
+    fileTypesState: FileTypesState,
     cascadeAnimationState: CascadeAnimationState<FileType>,
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -60,18 +60,18 @@ fun FileTypeAccordion(
             scaleY = animatedAlpha
         )
     ) {
-        if (isFirstDisabled) {
+        if (isFirstDisabled()) {
             DisabledText(modifier = Modifier.padding(bottom = 8.dp))
         }
 
         val fileTypeStatus =
-            fileTypeState.statusMap.getValue(fileType.status)
+            fileTypesState.statusMap.getValue(fileType.status)
 
         Header(
             fileType = fileType,
             status = fileTypeStatus,
             onCheckedChange = { checkedNew ->
-                fileTypeState.onFileTypeCheckedChange(
+                fileTypesState.onFileTypeCheckedChange(
                     fileType = fileType,
                     checkedNew = checkedNew,
                     showSnackbar = { visuals ->
@@ -90,7 +90,7 @@ fun FileTypeAccordion(
         ) {
             FileTypeSourcesSurface(
                 fileType = fileType,
-                fileTypeState = fileTypeState
+                fileTypesState = fileTypesState
             )
         }
     }

@@ -122,7 +122,7 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
         color: Long,
-        val fileExtensions: Set<String>
+        private val fileExtensions: Set<String>
     ) : FileType(
         titleRes = labelRes,
         iconRes = iconRes,

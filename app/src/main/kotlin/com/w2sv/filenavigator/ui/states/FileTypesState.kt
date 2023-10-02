@@ -2,6 +2,8 @@ package com.w2sv.filenavigator.ui.states
 
 import android.content.Context
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.w2sv.androidutils.coroutines.collectFromFlow
+import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
@@ -17,20 +19,19 @@ import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
 import com.w2sv.filenavigator.ui.utils.extensions.getMutableStateList
 import com.w2sv.filenavigator.ui.utils.extensions.getSynchronousMutableStateMap
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import slimber.log.i
 
-class FileTypeState(
+class FileTypesState(
     val statusMap: UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>,
     val mediaFileSourceEnabledMap: UnconfirmedStateMap<DataStoreEntry.UniType<Boolean>, Boolean>,
     onStateSynced: () -> Unit,
     val defaultMoveDestinationState: DefaultMoveDestinationState,
     private val scope: CoroutineScope,
-    private val triggerOnStatusMapChangedActions: MutableSharedFlow<Unit>
+    private val statusMapChanged: MutableSharedFlow<Unit>
 ) : UnconfirmedStatesComposition(
     unconfirmedStates = listOf(
         statusMap,
@@ -44,34 +45,43 @@ class FileTypeState(
         fileTypeRepository: FileTypeRepository,
         onStateSynced: () -> Unit,
         defaultMoveDestinationState: DefaultMoveDestinationState,
-        triggerOnStatusMapChangedActions: MutableSharedFlow<Unit> = MutableSharedFlow()
+        statusMapChanged: MutableSharedFlow<Unit> = MutableSharedFlow()
     ) : this(
         scope = scope,
         defaultMoveDestinationState = defaultMoveDestinationState,
-        triggerOnStatusMapChangedActions = triggerOnStatusMapChangedActions,
+        statusMapChanged = statusMapChanged,
         statusMap = UnconfirmedStateMap(
             coroutineScope = scope,
             appliedFlowMap = fileTypeRepository.fileTypeStatus,
-            makeSynchronousMutableMap = { it.getSynchronousMutableStateMap() },
+            getDefaultValue = {
+                fileTypeRepository.fileTypeStatus.getValue(it).getValueSynchronously()
+            },
+            makeMap = { it.getSynchronousMutableStateMap() },
             syncState = {
                 fileTypeRepository.saveEnumValuedMap(it)
-                triggerOnStatusMapChangedActions.emit(Unit)
+            },
+            onStateSynced = {
+                statusMapChanged.emit(Unit)
             }
         ),
         mediaFileSourceEnabledMap = UnconfirmedStateMap(
             coroutineScope = scope,
             appliedFlowMap = fileTypeRepository.mediaFileSourceEnabled,
-            makeSynchronousMutableMap = { it.getSynchronousMutableStateMap() },
+            getDefaultValue = {
+                fileTypeRepository.mediaFileSourceEnabled.getValue(it).getValueSynchronously()
+            },
+            makeMap = { it.getSynchronousMutableStateMap() },
             syncState = { fileTypeRepository.saveMap(it) }
         ),
         onStateSynced = onStateSynced
     )
 
-    val sortedFileTypes: SnapshotStateList<FileType> = FileType.values
-        .getMutableStateList()
-        .apply {
-            sortByIsEnabledAndOriginalOrder(statusMap)
-        }
+    val sortedFileTypes: SnapshotStateList<FileType> =
+        FileType.values
+            .getMutableStateList()
+            .apply {
+                sortByIsEnabledAndOriginalOrder(statusMap)
+            }
 
     private fun getFirstDisabledFileType(): FileType? =
         sortedFileTypes.getFirstDisabledFileType { !statusMap.appliedIsEnabled(it) }
@@ -80,11 +90,9 @@ class FileTypeState(
     private val _firstDisabledFileType = MutableStateFlow(getFirstDisabledFileType())
 
     init {
-        scope.launch {
-            triggerOnStatusMapChangedActions.collect {
-                sortedFileTypes.sortByIsEnabledAndOriginalOrder(statusMap)
-                _firstDisabledFileType.value = getFirstDisabledFileType()
-            }
+        scope.collectFromFlow(statusMapChanged) {
+            sortedFileTypes.sortByIsEnabledAndOriginalOrder(statusMap)
+            _firstDisabledFileType.value = getFirstDisabledFileType()
         }
     }
 
@@ -131,13 +139,6 @@ class FileTypeState(
             statusMap.sync()
         }
     }
-
-    // TODO: Move to AndroidUtils
-    fun launchSync(): Job =
-        scope.launch { sync() }
-
-    fun launchReset(): Job =
-        scope.launch { reset() }
 }
 
 private sealed interface FileTypeCheckedChangeResult {
@@ -199,7 +200,7 @@ private fun List<FileType>.getFirstDisabledFileType(isDisabled: (FileType) -> Bo
     windowed(2)
         .firstOrNull { !isDisabled(it[0]) && isDisabled(it[1]) }
         ?.let { it[1] }
-        .also { i{"First disabled: $it"} }
+        .also { i { "First disabled: $it" } }
 
 private fun UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>.appliedIsEnabled(
     fileType: FileType
@@ -207,7 +208,7 @@ private fun UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>.app
     val isEnabled = getValue(fileType.status).isEnabled
     val statesDissimilar = dissimilarKeys.contains(fileType.status)
 
-    return (isEnabled && !statesDissimilar) || (!isEnabled && statesDissimilar)
+    return ((isEnabled && !statesDissimilar) || (!isEnabled && statesDissimilar)).also { i{"$fileType enabled: $it"} }
 }
 
 private fun UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>.allowToggle(checkedNew: Boolean): Boolean =

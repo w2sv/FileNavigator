@@ -273,7 +273,7 @@ internal fun MainContent(
 
         Box(modifier = Modifier.weight(0.7f), contentAlignment = Alignment.Center) {
             FileTypeSelectionColumn(
-                fileTypeState = navigatorState.fileTypeState,
+                fileTypesState = navigatorState.fileTypesState,
                 modifier = Modifier.fillMaxHeight()
             )
         }
@@ -281,7 +281,7 @@ internal fun MainContent(
         Box(modifier = Modifier.weight(0.25f), contentAlignment = Alignment.Center) {
             AnimatedContent(
                 contentAlignment = Alignment.Center,
-                targetState = navigatorState.fileTypeState.statesDissimilar.collectAsState().value,
+                targetState = navigatorState.fileTypesState.statesDissimilar.collectAsState().value,
                 transitionSpec = {
                     (slideInHorizontally(
                         animationSpec = tween(
@@ -308,7 +308,7 @@ internal fun MainContent(
                 label = ""
             ) {
                 if (it) {
-                    ConfigurationChangeConfirmationButtons(navigatorState.fileTypeState)
+                    ConfigurationChangeConfirmationButtons(navigatorState.fileTypesState)
                 } else {
                     ToggleNavigatorButton(
                         configuration = when (navigatorState.isRunning.collectAsState().value) {

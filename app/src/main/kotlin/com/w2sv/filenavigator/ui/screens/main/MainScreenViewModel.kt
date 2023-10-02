@@ -32,7 +32,7 @@ class MainScreenViewModel @Inject constructor(
             viewModelScope,
             SharingStarted.Eagerly
         ),
-        setFileTypeStatuses = navigatorState.fileTypeState::setAndApplyStatus,
+        setFileTypeStatuses = navigatorState.fileTypesState::setAndApplyStatus,
         saveStorageAccessStatus = {
             viewModelScope.launch {
                 preferencesRepository.priorStorageAccessStatus.save(it)

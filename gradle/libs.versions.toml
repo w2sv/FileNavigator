@@ -9,7 +9,7 @@ ksp = "1.9.10-1.0.13"
 triplet-play = '3.8.4'
 
 compose-compiler = '1.5.3'
-compose-tooling = "1.5.1"
+compose-tooling = "1.5.2"
 hilt = '2.48'
 junit = '5.9.2'
 lifecycle = "2.6.2"
@@ -17,7 +17,7 @@ lifecycle = "2.6.2"
 [libraries]
 
 # owned
-androidutils = 'com.github.w2sv:AndroidUtils:0.3.18-rc1'
+androidutils = 'com.github.w2sv:AndroidUtils:0.3.19-rc1'
 kotlinutils = 'com.github.w2sv:KotlinUtils:0.0.7-rc2'
 
 # androidx
@@ -25,7 +25,7 @@ androidx-appcompat = 'androidx.appcompat:appcompat:1.6.1'
 androidx-core = "androidx.core:core-ktx:1.12.0"
 androidx-splashscreen = 'androidx.core:core-splashscreen:1.0.1'
 androidx-lifecycle-runtime = { module = 'androidx.lifecycle:lifecycle-runtime-ktx', version.ref = 'lifecycle' }
-androidx-compose-bom = "androidx.compose:compose-bom:2023.09.01"
+androidx-compose-bom = "androidx.compose:compose-bom:2023.09.02"
 androidx-compose-material3 = 'androidx.compose.material3:material3:1.1.2'
 androidx-compose-ui = { module = 'androidx.compose.ui:ui', version.ref = 'compose-tooling' }
 androidx-compose-ui-tooling-preview = { module = 'androidx.compose.ui:ui-tooling-preview', version.ref = 'compose-tooling' }

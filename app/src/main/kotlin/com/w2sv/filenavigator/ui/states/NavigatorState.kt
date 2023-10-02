@@ -37,7 +37,7 @@ class NavigatorState(
             preferencesRepository.disableNavigatorOnLowBattery.save(value)
         }
 
-    val fileTypeState = FileTypeState(
+    val fileTypesState = FileTypesState(
         scope = scope,
         fileTypeRepository = fileTypeRepository,
         onStateSynced = {

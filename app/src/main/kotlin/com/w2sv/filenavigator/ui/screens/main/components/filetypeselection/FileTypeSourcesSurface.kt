@@ -40,7 +40,7 @@ import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.states.FileTypeState
+import com.w2sv.filenavigator.ui.states.FileTypesState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
@@ -52,7 +52,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun FileTypeSourcesSurface(
     fileType: FileType,
-    fileTypeState: FileTypeState,
+    fileTypesState: FileTypesState,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -66,7 +66,7 @@ fun FileTypeSourcesSurface(
                 makeElement = {
                     SourceColumn(
                         source = it,
-                        fileTypeState = fileTypeState
+                        fileTypesState = fileTypesState
                     )
                 }
             )
@@ -77,16 +77,16 @@ fun FileTypeSourcesSurface(
 @Composable
 private fun SourceColumn(
     source: FileType.Source,
-    fileTypeState: FileTypeState,
+    fileTypesState: FileTypesState,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         val isEnabled =
-            fileTypeState.mediaFileSourceEnabledMap.getOrDefault(
+            fileTypesState.mediaFileSourceEnabledMap.getOrDefault(
                 key = source.isEnabled,
                 defaultValue = true
             )
-        val defaultDestinationPath by fileTypeState.defaultMoveDestinationState.pathMap.getValue(
+        val defaultDestinationPath by fileTypesState.defaultMoveDestinationState.pathMap.getValue(
             source.defaultDestination
         )
             .collectAsState()
@@ -94,7 +94,7 @@ private fun SourceColumn(
         SourceRow(
             source = source,
             isEnabled = isEnabled,
-            fileTypeState = fileTypeState,
+            fileTypesState = fileTypesState,
             modifier = Modifier.height(44.dp)
         )
 
@@ -104,7 +104,7 @@ private fun SourceColumn(
                     defaultDestinationPath!!
                 },
                 onDeleteButtonClick = {
-                    fileTypeState.defaultMoveDestinationState.saveDestination(source, null)
+                    fileTypesState.defaultMoveDestinationState.saveDestination(source, null)
                 },
                 modifier = Modifier
                     .height(36.dp)
@@ -118,7 +118,7 @@ private fun SourceColumn(
 private fun SourceRow(
     source: FileType.Source,
     isEnabled: Boolean,
-    fileTypeState: FileTypeState,
+    fileTypesState: FileTypesState,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     context: Context = LocalContext.current,
@@ -158,13 +158,13 @@ private fun SourceRow(
                             checked = isEnabled,
                             onCheckedChange = { checkedNew ->
                                 if (!source.fileType.sources.map {
-                                        fileTypeState.mediaFileSourceEnabledMap.getValue(
+                                        fileTypesState.mediaFileSourceEnabledMap.getValue(
                                             it.isEnabled
                                         )
                                     }
                                         .allFalseAfterEnteringValue(checkedNew)
                                 ) {
-                                    fileTypeState.mediaFileSourceEnabledMap[source.isEnabled] =
+                                    fileTypesState.mediaFileSourceEnabledMap[source.isEnabled] =
                                         checkedNew
                                 } else {
                                     scope.launch {
@@ -183,7 +183,7 @@ private fun SourceRow(
                 AnimatedRowElement.Conditional {
                     SetDefaultMoveDestinationButton(
                         onClick = {
-                            fileTypeState.defaultMoveDestinationState.launchPickerFor(source)
+                            fileTypesState.defaultMoveDestinationState.launchPickerFor(source)
                         }
                     )
                 }

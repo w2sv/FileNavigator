@@ -27,7 +27,7 @@ import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.states.DefaultMoveDestinationState
-import com.w2sv.filenavigator.ui.states.FileTypeState
+import com.w2sv.filenavigator.ui.states.FileTypesState
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import slimber.log.i
@@ -36,9 +36,9 @@ import slimber.log.i
 @Composable
 fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier,
-    fileTypeState: FileTypeState,
+    fileTypesState: FileTypesState,
 ) {
-    SelectDefaultMoveDestinationPicker(defaultMoveDestinationState = fileTypeState.defaultMoveDestinationState)
+    SelectDefaultMoveDestinationPicker(defaultMoveDestinationState = fileTypesState.defaultMoveDestinationState)
 
     Column(
         modifier = modifier
@@ -56,19 +56,23 @@ fun FileTypeSelectionColumn(
             CascadeAnimationState<FileType>()
         }
 
-        val firstDisabledFileType by fileTypeState.firstDisabledFileType.collectAsState()
+        val firstDisabledFileType by fileTypesState.firstDisabledFileType.collectAsState()
+
+        LaunchedEffect(key1 = firstDisabledFileType) {
+            i { "First disabled file type: $firstDisabledFileType" }
+        }
 
         LazyColumn(state = rememberLazyListState()) {
             items(
-                items = fileTypeState.sortedFileTypes,
+                items = fileTypesState.sortedFileTypes,
                 key = { it }
             ) { fileType ->
                 i { "Laying out ${fileType.identifier}" }
 
                 FileTypeAccordion(
                     fileType = fileType,
-                    isFirstDisabled = fileType == firstDisabledFileType,
-                    fileTypeState = fileTypeState,
+                    isFirstDisabled = { fileType == firstDisabledFileType },
+                    fileTypesState = fileTypesState,
                     cascadeAnimationState = cascadeAnimationState,
                     modifier = Modifier
                         .padding(vertical = 4.dp)
