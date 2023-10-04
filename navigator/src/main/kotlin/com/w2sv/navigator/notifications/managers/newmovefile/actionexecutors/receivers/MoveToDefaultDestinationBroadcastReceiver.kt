@@ -1,4 +1,4 @@
-package com.w2sv.navigator.actionexecutors.receivers
+package com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -14,7 +14,11 @@ import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
-import com.w2sv.navigator.notifications.appnotificationmanager.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.NotificationResources
+import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.putDefaultMoveDestinationExtra
+import com.w2sv.navigator.notifications.putMoveFileExtra
+import com.w2sv.navigator.notifications.putNotificationResourcesExtra
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,7 +36,7 @@ class MoveToDefaultDestinationBroadcastReceiver : BroadcastReceiver() {
         }
 
         val moveFile =
-            intent.getParcelableCompat<MoveFile>(FileNavigator.EXTRA_MOVE_FILE)!!
+            intent.getParcelableCompat<MoveFile>(MoveFile.EXTRA)!!
         val defaultMoveDestination =
             intent.getParcelableCompat<Uri>(FileNavigator.EXTRA_DEFAULT_MOVE_DESTINATION)!!
 
@@ -68,5 +72,18 @@ class MoveToDefaultDestinationBroadcastReceiver : BroadcastReceiver() {
         }
 
         NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(context, intent)
+    }
+
+    companion object {
+        fun getIntent(
+            moveFile: MoveFile,
+            notificationResources: NotificationResources,
+            defaultMoveDestination: Uri,
+            context: Context
+        ): Intent =
+            Intent(context, MoveToDefaultDestinationBroadcastReceiver::class.java)
+                .putMoveFileExtra(moveFile)
+                .putNotificationResourcesExtra(notificationResources)
+                .putDefaultMoveDestinationExtra(defaultMoveDestination)
     }
 }

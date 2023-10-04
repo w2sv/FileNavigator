@@ -1,9 +1,8 @@
-package com.w2sv.navigator.notifications.appnotificationmanager
+package com.w2sv.navigator.notifications.managers.newmovefile
 
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -16,16 +15,17 @@ import androidx.core.text.buildSpannedString
 import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.common.utils.whiteSpaceWrapped
 import com.w2sv.data.model.FileType
-import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
-import com.w2sv.navigator.actionexecutors.FileMoveActivity
-import com.w2sv.navigator.actionexecutors.receivers.FileDeletionBroadcastReceiver
-import com.w2sv.navigator.actionexecutors.receivers.MoveToDefaultDestinationBroadcastReceiver
-import com.w2sv.navigator.actionexecutors.receivers.NotificationResourcesCleanupBroadcastReceiver
+import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.FileMoveActivity
+import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.FileDeletionBroadcastReceiver
+import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.MoveToDefaultDestinationBroadcastReceiver
+import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.NotificationResourcesCleanupBroadcastReceiver
 import com.w2sv.navigator.model.MoveFile
-import com.w2sv.navigator.notifications.AppNotificationsManager
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.getNotificationChannel
+import com.w2sv.navigator.notifications.managers.AppNotificationsManager
+import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
+import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -178,17 +178,11 @@ class NewMoveFileNotificationManager(
                     PendingIntent.getActivity(
                         context,
                         requestCode,
-                        Intent.makeRestartActivityTask(
-                            ComponentName(
-                                context,
-                                FileMoveActivity::class.java
-                            )
-                        )
-                            .putExtra(FileNavigator.EXTRA_MOVE_FILE, moveFile)
-                            .putExtra(
-                                NotificationResources.EXTRA,
-                                notificationResources
-                            ),
+                        FileMoveActivity.makeRestartActivityIntent(
+                            moveFile,
+                            notificationResources,
+                            context
+                        ),
                         PendingIntent.FLAG_IMMUTABLE
                     )
                 )
@@ -204,19 +198,12 @@ class NewMoveFileNotificationManager(
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,
-                        Intent(
-                            context,
-                            MoveToDefaultDestinationBroadcastReceiver::class.java
-                        )
-                            .putExtra(FileNavigator.EXTRA_MOVE_FILE, moveFile)
-                            .putExtra(
-                                NotificationResources.EXTRA,
-                                notificationResources
-                            )
-                            .putExtra(
-                                FileNavigator.EXTRA_DEFAULT_MOVE_DESTINATION,
-                                defaultMoveDestination
-                            ),
+                        MoveToDefaultDestinationBroadcastReceiver.getIntent(
+                            moveFile,
+                            notificationResources,
+                            defaultMoveDestination,
+                            context
+                        ),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
                     )
                 )
@@ -231,15 +218,11 @@ class NewMoveFileNotificationManager(
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,
-                        Intent(
-                            context,
-                            FileDeletionBroadcastReceiver::class.java
-                        )
-                            .putExtra(FileNavigator.EXTRA_MOVE_FILE, moveFile)
-                            .putExtra(
-                                NotificationResources.EXTRA,
-                                notificationResources
-                            ),
+                        FileDeletionBroadcastReceiver.getIntent(
+                            moveFile,
+                            notificationResources,
+                            context
+                        ),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
                     )
                 )

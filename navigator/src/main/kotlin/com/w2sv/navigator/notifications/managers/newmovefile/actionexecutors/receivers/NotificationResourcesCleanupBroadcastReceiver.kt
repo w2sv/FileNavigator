@@ -1,11 +1,11 @@
-package com.w2sv.navigator.actionexecutors.receivers
+package com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.notifications.appnotificationmanager.MultiInstanceAppNotificationManager
+import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 
 abstract class NotificationResourcesCleanupBroadcastReceiver : BroadcastReceiver() {
 

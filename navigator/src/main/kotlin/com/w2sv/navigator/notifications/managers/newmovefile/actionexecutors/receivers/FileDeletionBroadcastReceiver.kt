@@ -1,4 +1,4 @@
-package com.w2sv.navigator.actionexecutors.receivers
+package com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -7,10 +7,12 @@ import android.widget.Toast
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.isExternalStorageManger
-import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
-import com.w2sv.navigator.notifications.appnotificationmanager.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.NotificationResources
+import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.putMoveFileExtra
+import com.w2sv.navigator.notifications.putNotificationResourcesExtra
 import slimber.log.e
 
 class FileDeletionBroadcastReceiver : BroadcastReceiver() {
@@ -43,7 +45,7 @@ class FileDeletionBroadcastReceiver : BroadcastReceiver() {
             !isExternalStorageManger() -> R.string.file_deletion_requires_access_to_manage_all_files
             else -> {
                 val moveFile =
-                    intent.getParcelableCompat<MoveFile>(FileNavigator.EXTRA_MOVE_FILE)!!
+                    intent.getParcelableCompat<MoveFile>(MoveFile.EXTRA)!!
 
                 val mediaFile = moveFile.getMediaFile(context)
                     .also {
@@ -55,4 +57,15 @@ class FileDeletionBroadcastReceiver : BroadcastReceiver() {
                 if (mediaFile?.delete() == true) R.string.successfully_deleted_file else R.string.couldn_t_delete_file
             }
         }
+
+    companion object {
+        fun getIntent(
+            moveFile: MoveFile,
+            notificationResources: NotificationResources,
+            context: Context
+        ): Intent =
+            Intent(context, FileDeletionBroadcastReceiver::class.java)
+                .putMoveFileExtra(moveFile)
+                .putNotificationResourcesExtra(notificationResources)
+    }
 }

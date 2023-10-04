@@ -32,11 +32,11 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.w2sv.navigator.actionexecutors.receivers.FileDeletionBroadcastReceiver" />
-        <receiver android:name="com.w2sv.navigator.actionexecutors.receivers.MoveToDefaultDestinationBroadcastReceiver" />
-        <receiver android:name="com.w2sv.navigator.notifications.appnotificationmanager.NewMoveFileNotificationManager$ResourcesCleanupBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.FileDeletionBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.MoveToDefaultDestinationBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager$ResourcesCleanupBroadcastReceiver" />
 
-        <activity android:name="com.w2sv.navigator.actionexecutors.FileMoveActivity" />
+        <activity android:name="com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.FileMoveActivity" />
     </application>
 
 </manifest>

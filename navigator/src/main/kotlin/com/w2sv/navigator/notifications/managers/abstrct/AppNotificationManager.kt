@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications.appnotificationmanager
+package com.w2sv.navigator.notifications.managers.abstrct
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -16,7 +16,7 @@ abstract class AppNotificationManager<A: AppNotificationManager.Args>(
         notificationManager.createNotificationChannel(notificationChannel)
     }
 
-    sealed interface Args {
+    interface Args {
         data object Empty: Args
     }
 

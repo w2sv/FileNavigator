@@ -1,5 +1,6 @@
-package com.w2sv.navigator.actionexecutors
+package com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -17,10 +18,12 @@ import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.data.storage.repositories.FileTypeRepository
-import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
-import com.w2sv.navigator.notifications.appnotificationmanager.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.NotificationResources
+import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.putMoveFileExtra
+import com.w2sv.navigator.notifications.putNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -46,7 +49,7 @@ class FileMoveActivity : ComponentActivity() {
         // ===============
 
         private val moveFile: MoveFile =
-            savedStateHandle[FileNavigator.EXTRA_MOVE_FILE]!!
+            savedStateHandle[MoveFile.EXTRA]!!
 
         val moveMediaFile: MediaFile? = moveFile.getMediaFile(context)
 
@@ -140,5 +143,21 @@ class FileMoveActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         destinationSelectionLauncher.launch(viewModel.defaultTargetDirDocumentUri)
+    }
+
+    companion object {
+        fun makeRestartActivityIntent(
+            moveFile: MoveFile,
+            notificationResources: NotificationResources,
+            context: Context
+        ): Intent =
+            Intent.makeRestartActivityTask(
+                ComponentName(
+                    context,
+                    FileMoveActivity::class.java
+                )
+            )
+                .putMoveFileExtra(moveFile)
+                .putNotificationResourcesExtra(notificationResources)
     }
 }

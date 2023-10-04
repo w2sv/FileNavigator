@@ -9,8 +9,8 @@ import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.data.storage.repositories.PreferencesRepository
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
-import com.w2sv.navigator.notifications.appnotificationmanager.AppNotificationManager
-import com.w2sv.navigator.notifications.AppNotificationsManager
+import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
+import com.w2sv.navigator.notifications.managers.AppNotificationsManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -173,8 +173,6 @@ class FileNavigator : UnboundService() {
         // Extras
         // ===========
 
-        const val EXTRA_MOVE_FILE =
-            "com.w2sv.filenavigator.extra.MOVE_FILE"
         const val EXTRA_DEFAULT_MOVE_DESTINATION =
             "com.w2sv.filenavigator.extra.DEFAULT_MOVE_DESTINATION"
 

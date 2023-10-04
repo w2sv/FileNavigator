@@ -31,4 +31,8 @@ data class MoveFile(
             type.mediaType,
             data.id
         )
+
+    companion object {
+        const val EXTRA = "com.w2sv.filenavigator.extra.MOVE_FILE"
+    }
 }

@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications.appnotificationmanager
+package com.w2sv.navigator.notifications.managers
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -9,6 +9,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
+import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.notifications.getNotificationChannel
 
 class ForegroundServiceNotificationManager(

@@ -1,9 +1,8 @@
-package com.w2sv.navigator.notifications
+package com.w2sv.navigator.notifications.managers
 
 import android.app.NotificationManager
 import android.content.Context
-import com.w2sv.navigator.notifications.appnotificationmanager.ForegroundServiceNotificationManager
-import com.w2sv.navigator.notifications.appnotificationmanager.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
