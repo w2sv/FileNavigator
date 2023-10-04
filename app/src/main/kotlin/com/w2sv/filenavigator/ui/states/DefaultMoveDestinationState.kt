@@ -3,8 +3,8 @@ package com.w2sv.filenavigator.ui.states
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.androidutils.coroutines.mapState
+import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.data.model.FileType
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +31,7 @@ class DefaultMoveDestinationState(
                         null
                     )
                     .mapState { uri ->
-                        uri?.let { getDefaultMoveDestinationPath(it, context) }
+                        uri?.let { getDocumentUriPath(it, context) }
                     }
             }
 
@@ -70,6 +70,3 @@ class DefaultMoveDestinationState(
         }
     }
 }
-
-private fun getDefaultMoveDestinationPath(uri: Uri, context: Context): String? =
-    DocumentFile.fromSingleUri(context, uri)?.getSimplePath(context)

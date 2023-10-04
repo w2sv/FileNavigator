@@ -26,7 +26,7 @@ class MoveToDefaultDestinationBroadcastReceiver : BroadcastReceiver() {
 
         if (!isExternalStorageManger()) {
             context.showToast(
-                "Moving to the default destination requires permission to manage all files!",
+                "Moving to default destination requires permission to manage all files!",
                 duration = Toast.LENGTH_LONG
             )
         }

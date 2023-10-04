@@ -6,9 +6,6 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -16,6 +13,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
+import com.w2sv.common.utils.getDocumentUriPath
+import com.w2sv.common.utils.whiteSpaceWrapped
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
@@ -72,7 +71,7 @@ class NewMoveFileNotificationManager(
                         .bigText(
                             buildSpannedString {
                                 bold { append(moveFile.data.name) }
-                                append(" ${context.getString(R.string.found_at)} ")
+                                append(context.getString(R.string.found_at).whiteSpaceWrapped())
                                 bold { append(moveFile.data.relativePath) }
                             }
                         )
@@ -132,7 +131,7 @@ class NewMoveFileNotificationManager(
             @DrawableRes
             private fun getLargeIconDrawable(): Int =
                 when (moveFile.sourceKind) {
-                    FileType.Source.Kind.Screenshot -> moveFile.sourceKind.iconRes
+                    FileType.Source.Kind.Screenshot, FileType.Source.Kind.Camera -> moveFile.sourceKind.iconRes
                     else -> moveFile.type.iconRes
                 }
 
@@ -201,7 +200,7 @@ class NewMoveFileNotificationManager(
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
                     R.drawable.ic_app_logo_24,
-                    context.getString(R.string.move_to_default_destination),
+                    getMoveToDefaultDestinationActionTitle(defaultMoveDestination, context),
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,
@@ -295,30 +294,12 @@ class NewMoveFileNotificationManager(
     }
 }
 
-fun Context.combineDrawables(drawable1Id: Int, drawable2Id: Int): Bitmap {
-    // Load the drawables from resources
-    val drawable1: Drawable = AppCompatResources.getDrawable(this, drawable1Id)!!
-    val drawable2: Drawable = AppCompatResources.getDrawable(this, drawable2Id)!!
-
-    val width = drawable1.intrinsicWidth
-    val height = drawable1.intrinsicHeight
-
-    // Create a blank bitmap with the specified width and height
-    val combinedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-
-    // Create a canvas for drawing on the bitmap
-    val canvas = Canvas(combinedBitmap)
-
-    // Calculate the width for each drawable
-    val drawableWidth = width / 2
-
-    // Draw the first drawable at the left side
-    drawable1.setBounds(0, 0, drawableWidth, height)
-    drawable1.draw(canvas)
-
-    // Draw the second drawable to the right of the first drawable
-    drawable2.setBounds(drawableWidth, 0, width, height)
-    drawable2.draw(canvas)
-
-    return combinedBitmap
-}
+private fun getMoveToDefaultDestinationActionTitle(
+    defaultMoveDestination: Uri,
+    context: Context
+): String? =
+    getDocumentUriPath(defaultMoveDestination, context)
+        ?.substringAfterLast("/")
+        ?.run {
+            "To /$this"
+        }
