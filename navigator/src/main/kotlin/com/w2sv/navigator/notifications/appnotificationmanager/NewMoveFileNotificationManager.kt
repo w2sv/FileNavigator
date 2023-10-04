@@ -6,10 +6,16 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.net.Uri
+import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.text.bold
+import androidx.core.text.buildSpannedString
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
@@ -56,25 +62,21 @@ class NewMoveFileNotificationManager(
                 // Set icons
                 setSmallIcon(R.drawable.ic_app_logo_24)
                 setLargeIcon(
-                    AppCompatResources.getDrawable(
-                        context,
-                        moveFile.sourceKind.iconRes
-                    )
+                    AppCompatResources.getDrawable(context, getLargeIconDrawable())
+                        ?.apply { setTint(moveFile.type.colorInt) }
                         ?.toBitmap()
                 )
                 // Set content
-                val notificationContentText =
-                    context.getString(
-                        R.string.found_at,
-                        moveFile.data.name,
-                        moveFile.data.relativePath
-                    )
-
                 setStyle(
                     NotificationCompat.BigTextStyle()
-                        .bigText(notificationContentText)
+                        .bigText(
+                            buildSpannedString {
+                                bold { append(moveFile.data.name) }
+                                append(" ${context.getString(R.string.found_at)} ")
+                                bold { append(moveFile.data.relativePath) }
+                            }
+                        )
                 )
-                setContentText(notificationContentText)
 
                 // Set actions & intents
                 val requestCodeIterator = resources.actionRequestCodes.iterator()
@@ -125,6 +127,13 @@ class NewMoveFileNotificationManager(
                             context.getString(moveFile.type.titleRes)
                         )
                     }
+                }
+
+            @DrawableRes
+            private fun getLargeIconDrawable(): Int =
+                when (moveFile.sourceKind) {
+                    FileType.Source.Kind.Screenshot -> moveFile.sourceKind.iconRes
+                    else -> moveFile.type.iconRes
                 }
 
             private fun addActions(requestCodeIterator: Iterator<Int>) {
@@ -284,4 +293,32 @@ class NewMoveFileNotificationManager(
             }
         }
     }
+}
+
+fun Context.combineDrawables(drawable1Id: Int, drawable2Id: Int): Bitmap {
+    // Load the drawables from resources
+    val drawable1: Drawable = AppCompatResources.getDrawable(this, drawable1Id)!!
+    val drawable2: Drawable = AppCompatResources.getDrawable(this, drawable2Id)!!
+
+    val width = drawable1.intrinsicWidth
+    val height = drawable1.intrinsicHeight
+
+    // Create a blank bitmap with the specified width and height
+    val combinedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+    // Create a canvas for drawing on the bitmap
+    val canvas = Canvas(combinedBitmap)
+
+    // Calculate the width for each drawable
+    val drawableWidth = width / 2
+
+    // Draw the first drawable at the left side
+    drawable1.setBounds(0, 0, drawableWidth, height)
+    drawable1.draw(canvas)
+
+    // Draw the second drawable to the right of the first drawable
+    drawable2.setBounds(drawableWidth, 0, width, height)
+    drawable2.draw(canvas)
+
+    return combinedBitmap
 }

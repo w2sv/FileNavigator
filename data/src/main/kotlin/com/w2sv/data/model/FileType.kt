@@ -2,6 +2,8 @@ package com.w2sv.data.model
 
 import android.content.Context
 import android.os.Parcelable
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorLong
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -16,7 +18,7 @@ import kotlinx.parcelize.Parcelize
 sealed class FileType(
     @StringRes val titleRes: Int,
     @DrawableRes val iconRes: Int,
-    val colorLong: Long,
+    @ColorInt val colorInt: Int,
     val mediaType: MediaType,
     sourceKinds: List<Source.Kind>,
 ) : Parcelable {
@@ -29,14 +31,15 @@ sealed class FileType(
 
     val sources: List<Source> = sourceKinds.map { Source(this, it) }
 
-    val isMediaType: Boolean get() = this is Media
+    val isMediaType: Boolean
+        get() = this is Media
 
     abstract fun matchesFileExtension(extension: String): Boolean
 
     sealed class Media(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
-        color: Long,
+        @ColorLong colorLong: Long,
         simpleStorageType: MediaType,
         sourceKinds: List<Source.Kind>,
         val fileExtensions: Set<String>? = null,
@@ -44,7 +47,7 @@ sealed class FileType(
     ) : FileType(
         titleRes = labelRes,
         iconRes = iconRes,
-        colorLong = color,
+        colorInt = colorLong.toInt(),
         mediaType = simpleStorageType,
         sourceKinds = sourceKinds,
     ) {
@@ -64,7 +67,7 @@ sealed class FileType(
         data object Image : Media(
             labelRes = R.string.image,
             iconRes = R.drawable.ic_image_24,
-            color = 0xFFBF1A2F,
+            colorLong = 0xFFBF1A2F,
             simpleStorageType = MediaType.IMAGE,
             sourceKinds = listOf(
                 Source.Kind.Camera,
@@ -79,7 +82,7 @@ sealed class FileType(
         data object GIF : Media(
             labelRes = R.string.gif,
             iconRes = R.drawable.ic_gif_box_24,
-            color = 0xFF49C6E5,
+            colorLong = 0xFF49C6E5,
             simpleStorageType = MediaType.IMAGE,
             sourceKinds = listOf(
                 Source.Kind.Download,
@@ -92,7 +95,7 @@ sealed class FileType(
         data object Video : Media(
             labelRes = R.string.video,
             iconRes = R.drawable.ic_video_file_24,
-            color = 0xFFFFCB77,
+            colorLong = 0xFFFFCB77,
             simpleStorageType = MediaType.VIDEO,
             sourceKinds = listOf(
                 Source.Kind.Camera,
@@ -105,7 +108,7 @@ sealed class FileType(
         data object Audio : Media(
             labelRes = R.string.audio,
             iconRes = R.drawable.ic_audio_file_24,
-            color = 0xFFF26430,
+            colorLong = 0xFFF26430,
             simpleStorageType = MediaType.AUDIO,
             sourceKinds = listOf(
                 Source.Kind.Download,
@@ -121,12 +124,12 @@ sealed class FileType(
     sealed class NonMedia(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
-        color: Long,
+        @ColorLong colorLong: Long,
         private val fileExtensions: Set<String>
     ) : FileType(
         titleRes = labelRes,
         iconRes = iconRes,
-        colorLong = color,
+        colorInt = colorLong.toInt(),
         mediaType = MediaType.DOWNLOADS,
         sourceKinds = listOf(
             Source.Kind.Download
