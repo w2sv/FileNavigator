@@ -203,7 +203,7 @@ private fun SetDefaultMoveDestinationButton(
     ) {
         Icon(
             painter = painterResource(
-                id = com.w2sv.navigator.R.drawable.ic_file_move_24
+                id = com.w2sv.navigator.R.drawable.ic_app_logo_24
             ),
             tint = MaterialTheme.colorScheme.secondary,
             contentDescription = stringResource(

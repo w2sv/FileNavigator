@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
 
 abstract class AppNotificationManager<A: AppNotificationManager.Args>(
@@ -19,7 +20,15 @@ abstract class AppNotificationManager<A: AppNotificationManager.Args>(
         data object Empty: Args
     }
 
-    abstract inner class Builder: NotificationCompat.Builder(context, notificationChannel.id)
+    abstract inner class Builder: NotificationCompat.Builder(context, notificationChannel.id) {
+
+        @CallSuper
+        override fun build(): Notification {
+            priority = NotificationCompat.PRIORITY_DEFAULT
+
+            return super.build()
+        }
+    }
 
     protected abstract fun getBuilder(args: A): Builder
 

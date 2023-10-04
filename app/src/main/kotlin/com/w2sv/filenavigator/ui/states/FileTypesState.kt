@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import slimber.log.i
 
 class FileTypesState(
     val statusMap: UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>,
@@ -200,7 +199,6 @@ private fun List<FileType>.getFirstDisabledFileType(isDisabled: (FileType) -> Bo
     windowed(2)
         .firstOrNull { !isDisabled(it[0]) && isDisabled(it[1]) }
         ?.let { it[1] }
-        .also { i { "First disabled: $it" } }
 
 private fun UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>.appliedIsEnabled(
     fileType: FileType
@@ -208,7 +206,7 @@ private fun UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>.app
     val isEnabled = getValue(fileType.status).isEnabled
     val statesDissimilar = dissimilarKeys.contains(fileType.status)
 
-    return ((isEnabled && !statesDissimilar) || (!isEnabled && statesDissimilar)).also { i{"$fileType enabled: $it"} }
+    return (isEnabled && !statesDissimilar) || (!isEnabled && statesDissimilar)
 }
 
 private fun UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>.allowToggle(checkedNew: Boolean): Boolean =

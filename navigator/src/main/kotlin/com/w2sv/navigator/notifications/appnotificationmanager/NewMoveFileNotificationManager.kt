@@ -13,12 +13,16 @@ import androidx.core.graphics.drawable.toBitmap
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
-import com.w2sv.navigator.actions.FileDeletionBroadcastReceiver
-import com.w2sv.navigator.actions.FileMoveActivity
-import com.w2sv.navigator.actions.MoveToDefaultDestinationBroadcastReceiver
+import com.w2sv.navigator.actionexecutors.FileMoveActivity
+import com.w2sv.navigator.actionexecutors.receivers.FileDeletionBroadcastReceiver
+import com.w2sv.navigator.actionexecutors.receivers.MoveToDefaultDestinationBroadcastReceiver
+import com.w2sv.navigator.actionexecutors.receivers.NotificationResourcesCleanupBroadcastReceiver
 import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.notifications.AppNotificationsManager
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.getNotificationChannel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 class NewMoveFileNotificationManager(
     context: Context,
@@ -35,7 +39,7 @@ class NewMoveFileNotificationManager(
     inner class Args(
         val moveFile: MoveFile,
         val getDefaultMoveDestination: (FileType.Source) -> Uri?,
-        val resources: NotificationResources = getNotificationResources(4)
+        val resources: NotificationResources = getNotificationResources(5)
     ) : AppNotificationManager.Args
 
     override fun getBuilder(args: Args): Builder =
@@ -46,16 +50,11 @@ class NewMoveFileNotificationManager(
             private val resources by args::resources
 
             override fun build(): Notification {
-                priority = NotificationCompat.PRIORITY_DEFAULT
-
                 setContentTitle(
-                    context.getString(
-                        R.string.new_file_detected_template,
-                        getNotificationTitleFormatArg()
-                    )
+                    getContentTitle()
                 )
-                // set icons
-                setSmallIcon(moveFile.type.iconRes)
+                // Set icons
+                setSmallIcon(R.drawable.ic_app_logo_24)
                 setLargeIcon(
                     AppCompatResources.getDrawable(
                         context,
@@ -63,7 +62,7 @@ class NewMoveFileNotificationManager(
                     )
                         ?.toBitmap()
                 )
-                // set content
+                // Set content
                 val notificationContentText =
                     context.getString(
                         R.string.found_at,
@@ -77,12 +76,21 @@ class NewMoveFileNotificationManager(
                 )
                 setContentText(notificationContentText)
 
-                addActions()
+                // Set actions & intents
+                val requestCodeIterator = resources.actionRequestCodes.iterator()
+
+                addActions(requestCodeIterator)
+
+                setDeleteIntent(
+                    getCleanupNotificationResourcesPendingIntent(
+                        requestCode = requestCodeIterator.next(),
+                    )
+                )
 
                 return super.build()
             }
 
-            private fun getNotificationTitleFormatArg() =
+            private fun getContentTitle() =
                 when (val fileType = moveFile.type) {
                     is FileType.Media -> {
                         when (moveFile.data.getSourceKind()) {
@@ -112,13 +120,14 @@ class NewMoveFileNotificationManager(
                     }
 
                     is FileType.NonMedia -> {
-                        context.getString(R.string.new_file, context.getString(moveFile.type.titleRes))
+                        context.getString(
+                            R.string.new_,
+                            context.getString(moveFile.type.titleRes)
+                        )
                     }
                 }
 
-            private fun addActions() {
-                val requestCodeIterator = resources.actionRequestCodes.iterator()
-
+            private fun addActions(requestCodeIterator: Iterator<Int>) {
                 addAction(getViewFileAction(requestCodeIterator.next()))
                 addAction(getMoveFileAction(requestCodeIterator.next(), resources))
                 getDefaultMoveDestination(moveFile.source)?.let {
@@ -156,7 +165,7 @@ class NewMoveFileNotificationManager(
                 notificationResources: NotificationResources
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
-                    R.drawable.ic_file_move_24,
+                    R.drawable.ic_app_logo_24,
                     context.getString(R.string.move),
                     PendingIntent.getActivity(
                         context,
@@ -182,7 +191,7 @@ class NewMoveFileNotificationManager(
                 defaultMoveDestination: Uri
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
-                    R.drawable.ic_add_new_folder_24,
+                    R.drawable.ic_app_logo_24,
                     context.getString(R.string.move_to_default_destination),
                     PendingIntent.getBroadcast(
                         context,
@@ -226,9 +235,53 @@ class NewMoveFileNotificationManager(
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
                     )
                 )
+
+            private fun getCleanupNotificationResourcesPendingIntent(
+                requestCode: Int
+            ): PendingIntent =
+                PendingIntent.getBroadcast(
+                    context,
+                    requestCode,
+                    ResourcesCleanupBroadcastReceiver.getIntent(
+                        context,
+                        resources
+                    ),
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+                )
         }
 
     fun buildAndEmit(args: Args) {
         super.buildAndEmit(args.resources.id, args)
+    }
+
+    @AndroidEntryPoint
+    class ResourcesCleanupBroadcastReceiver : NotificationResourcesCleanupBroadcastReceiver() {
+
+        @Inject
+        lateinit var appNotificationsManager: AppNotificationsManager
+
+        override val multiInstanceAppNotificationManager: MultiInstanceAppNotificationManager<*>
+            get() = appNotificationsManager.newMoveFileNotificationManager
+
+        companion object {
+            fun getIntent(
+                context: Context,
+                notificationResources: NotificationResources
+            ): Intent =
+                getIntent<ResourcesCleanupBroadcastReceiver>(
+                    context,
+                    notificationResources
+                )
+
+            fun startFromResourcesComprisingIntent(
+                context: Context,
+                intent: Intent
+            ) {
+                startFromResourcesComprisingIntent<ResourcesCleanupBroadcastReceiver>(
+                    context,
+                    intent
+                )
+            }
+        }
     }
 }

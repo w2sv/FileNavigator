@@ -1,4 +1,4 @@
-package com.w2sv.navigator.actions
+package com.w2sv.navigator.actionexecutors
 
 import android.content.Context
 import android.content.Intent
@@ -20,8 +20,7 @@ import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
-import com.w2sv.navigator.notifications.AppNotificationsManager
-import com.w2sv.navigator.notifications.NotificationResources
+import com.w2sv.navigator.notifications.appnotificationmanager.NewMoveFileNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -51,9 +50,6 @@ class FileMoveActivity : ComponentActivity() {
 
         val moveMediaFile: MediaFile? = moveFile.getMediaFile(context)
 
-        val notificationResources: NotificationResources =
-            savedStateHandle[NotificationResources.EXTRA]!!
-
         // ===============
         // DataStore Attributes
         // ===============
@@ -73,9 +69,6 @@ class FileMoveActivity : ComponentActivity() {
                 )
             }
     }
-
-    @Inject
-    lateinit var appNotificationsManager: AppNotificationsManager
 
     private val viewModel by viewModels<ViewModel>()
 
@@ -103,7 +96,10 @@ class FileMoveActivity : ComponentActivity() {
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
 
-            appNotificationsManager.newMoveFileNotificationManager.cancelNotification(viewModel.notificationResources)
+            NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+                this,
+                intent
+            )
 
             // Move file
             lifecycleScope.launch(Dispatchers.IO) {
@@ -127,16 +123,17 @@ class FileMoveActivity : ComponentActivity() {
                 )
             }
 
-            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri) {
-                // Save targetDirectoryDocumentFile to DataStore and finish activity on saving completed
-                viewModel
-                    .saveFileSourceDefaultDestination(targetDirectoryDocumentFile.uri)
-                    .invokeOnCompletion {
-                        finish()
-                    }
-            } else {
-                finish()
-            }
+            finish()
+//            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri) {
+//                // Save targetDirectoryDocumentFile to DataStore and finish activity on saving completed
+//                viewModel
+//                    .saveFileSourceDefaultDestination(targetDirectoryDocumentFile.uri)
+//                    .invokeOnCompletion {
+//                        finish()
+//                    }
+//            } else {
+//                finish()
+//            }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {

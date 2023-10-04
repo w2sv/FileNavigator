@@ -1,4 +1,4 @@
-package com.w2sv.navigator.actions
+package com.w2sv.navigator.actionexecutors.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -14,19 +14,12 @@ import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
-import com.w2sv.navigator.notifications.AppNotificationsManager
-import com.w2sv.navigator.notifications.NotificationResources
-import dagger.hilt.android.AndroidEntryPoint
+import com.w2sv.navigator.notifications.appnotificationmanager.NewMoveFileNotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class MoveToDefaultDestinationBroadcastReceiver : BroadcastReceiver() {
-
-    @Inject
-    lateinit var appNotificationsManager: AppNotificationsManager
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
@@ -74,10 +67,6 @@ class MoveToDefaultDestinationBroadcastReceiver : BroadcastReceiver() {
             )
         }
 
-        appNotificationsManager.newMoveFileNotificationManager.cancelNotification(
-            intent.getParcelableCompat<NotificationResources>(
-                NotificationResources.EXTRA
-            )!!
-        )
+        NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(context, intent)
     }
 }

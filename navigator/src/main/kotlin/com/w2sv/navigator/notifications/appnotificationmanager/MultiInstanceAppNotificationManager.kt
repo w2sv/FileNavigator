@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import com.w2sv.androidutils.notifying.UniqueIds
 import com.w2sv.navigator.notifications.NotificationResources
+import slimber.log.i
 
 abstract class MultiInstanceAppNotificationManager<A : AppNotificationManager.Args>(
     notificationChannel: NotificationChannel,
@@ -22,7 +23,7 @@ abstract class MultiInstanceAppNotificationManager<A : AppNotificationManager.Ar
             pendingIntentRequestCodes.addMultipleNewIds(nPendingRequestCodes)
         )
 
-    fun cancelNotification(resources: NotificationResources) {
+    fun cancelNotificationAndFreeResources(resources: NotificationResources) {
         notificationManager.cancel(resources.id)
         freeNotificationResources(resources)
     }
@@ -30,5 +31,7 @@ abstract class MultiInstanceAppNotificationManager<A : AppNotificationManager.Ar
     private fun freeNotificationResources(resources: NotificationResources) {
         notificationIds.remove(resources.id)
         pendingIntentRequestCodes.removeAll(resources.actionRequestCodes.toSet())
+
+        i { "Post-freeNotificationResources: NotificationIds: $notificationIds | pendingIntentRequestCodes: $pendingIntentRequestCodes" }
     }
 }

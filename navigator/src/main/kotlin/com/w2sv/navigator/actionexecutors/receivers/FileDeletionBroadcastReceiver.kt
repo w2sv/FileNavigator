@@ -1,0 +1,58 @@
+package com.w2sv.navigator.actionexecutors.receivers
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
+import com.w2sv.androidutils.generic.getParcelableCompat
+import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.common.utils.isExternalStorageManger
+import com.w2sv.navigator.FileNavigator
+import com.w2sv.navigator.R
+import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.notifications.appnotificationmanager.NewMoveFileNotificationManager
+import slimber.log.e
+
+class FileDeletionBroadcastReceiver : BroadcastReceiver() {
+
+    override fun onReceive(context: Context?, intent: Intent?) {
+        if (context == null || intent == null)
+            return
+
+        // Attempt deletion
+        val snackbarTextRes = attemptFileDeletion(context, intent)
+
+        // Show result snackbar
+        context.showToast(
+            text = snackbarTextRes,
+            duration = Toast.LENGTH_LONG
+        )
+
+        // Clean up notification resources
+        NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+            context,
+            intent
+        )
+    }
+
+    /**
+     * @return Result snackbar text resource id.
+     */
+    private fun attemptFileDeletion(context: Context, intent: Intent): Int =
+        when {
+            !isExternalStorageManger() -> R.string.file_deletion_requires_access_to_manage_all_files
+            else -> {
+                val moveFile =
+                    intent.getParcelableCompat<MoveFile>(FileNavigator.EXTRA_MOVE_FILE)!!
+
+                val mediaFile = moveFile.getMediaFile(context)
+                    .also {
+                        if (it == null) {
+                            e { "mediaFile=null" }
+                        }
+                    }
+
+                if (mediaFile?.delete() == true) R.string.successfully_deleted_file else R.string.couldn_t_delete_file
+            }
+        }
+}

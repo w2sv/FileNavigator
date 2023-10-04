@@ -26,7 +26,7 @@ class ForegroundServiceNotificationManager(
         object : Builder() {
             override fun build(): Notification {
                 priority = NotificationCompat.PRIORITY_DEFAULT
-                setSmallIcon(R.drawable.ic_file_move_24)
+                setSmallIcon(R.drawable.ic_app_logo_24)
                 setContentTitle(context.getString(R.string.file_navigator_is_running))
 
                 // add configure action

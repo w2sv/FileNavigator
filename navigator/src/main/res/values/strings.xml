@@ -10,7 +10,6 @@
     <string name="move">Move</string>
     <string name="view">View</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
-    <string name="new_file_detected_template">%1s Detected</string>
     <string name="stop">Stop</string>
     <string name="waiting_for_new_files_to_be_navigated">Waiting for new files to be navigated</string>
     <string name="found_at">%1$s found at %2$s</string>
@@ -20,7 +19,7 @@
     <string name="new_photo">New Photo</string>
     <string name="new_screenshot">New Screenshot</string>
     <string name="new_video">New Video</string>
-    <string name="new_file">New %1$s File</string>
+    <string name="new_">New %1$s</string>
     <string name="newly_downloaded_template">Newly downloaded %1$s</string>
     <string name="new_third_party_file_template">New %1$s %2$s</string>
     <string name="new_file_detected">New file detected</string>
