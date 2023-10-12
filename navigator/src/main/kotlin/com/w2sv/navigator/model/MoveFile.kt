@@ -17,7 +17,7 @@ data class MoveFile(
     val uri: Uri,
     val type: FileType,
     val sourceKind: FileType.Source.Kind,
-    val data: MediaStoreData
+    val mediaStoreData: MediaStoreData
 ) : Parcelable {
 
     @IgnoredOnParcel
@@ -29,7 +29,7 @@ data class MoveFile(
         MediaStoreCompat.fromMediaId(
             context,
             type.mediaType,
-            data.id
+            mediaStoreData.rowId
         )
 
     companion object {

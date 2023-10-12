@@ -25,17 +25,17 @@ internal class MediaFileObserver(
 
     override fun getMoveFileIfMatching(
         mediaStoreFileData: MediaStoreData,
-        uri: Uri
+        mediaUri: Uri
     ): MoveFile? {
         if (fileType.matchesFileExtension(mediaStoreFileData.fileExtension)) {
             val sourceKind = mediaStoreFileData.getSourceKind()
 
             if (sourceKinds.contains(sourceKind)) {
                 return MoveFile(
-                    uri = uri,
+                    uri = mediaUri,
                     type = fileType,
                     sourceKind = sourceKind,
-                    data = mediaStoreFileData
+                    mediaStoreData = mediaStoreFileData
                 )
             }
         }

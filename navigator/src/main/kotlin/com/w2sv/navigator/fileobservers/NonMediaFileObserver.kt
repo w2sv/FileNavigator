@@ -25,16 +25,16 @@ internal class NonMediaFileObserver(
 
     override fun getMoveFileIfMatching(
         mediaStoreFileData: MediaStoreData,
-        uri: Uri
+        mediaUri: Uri
     ): MoveFile? =
         fileTypes
             .firstOrNull { it.matchesFileExtension(mediaStoreFileData.fileExtension) }
             ?.let { fileType ->
                 MoveFile(
-                    uri = uri,
+                    uri = mediaUri,
                     type = fileType,
                     sourceKind = FileType.Source.Kind.Download,
-                    data = mediaStoreFileData
+                    mediaStoreData = mediaStoreFileData
                 )
             }
 }

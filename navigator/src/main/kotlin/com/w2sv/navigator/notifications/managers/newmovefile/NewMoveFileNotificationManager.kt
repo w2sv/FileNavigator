@@ -70,9 +70,9 @@ class NewMoveFileNotificationManager(
                     NotificationCompat.BigTextStyle()
                         .bigText(
                             buildSpannedString {
-                                bold { append(moveFile.data.name) }
+                                bold { append(moveFile.mediaStoreData.name) }
                                 append(context.getString(R.string.found_at).whiteSpaceWrapped())
-                                bold { append(moveFile.data.relativePath) }
+                                bold { append(moveFile.mediaStoreData.volumeRelativeDirPath) }
                             }
                         )
                 )
@@ -94,7 +94,7 @@ class NewMoveFileNotificationManager(
             private fun getContentTitle() =
                 when (val fileType = moveFile.type) {
                     is FileType.Media -> {
-                        when (moveFile.data.getSourceKind()) {
+                        when (moveFile.mediaStoreData.getSourceKind()) {
                             FileType.Source.Kind.Screenshot -> context.getString(
                                 R.string.new_screenshot
                             )
@@ -114,7 +114,7 @@ class NewMoveFileNotificationManager(
 
                             FileType.Source.Kind.OtherApp -> context.getString(
                                 R.string.new_third_party_file_template,
-                                moveFile.data.dirName,
+                                moveFile.mediaStoreData.dirName,
                                 context.getString(fileType.titleRes)
                             )
                         }

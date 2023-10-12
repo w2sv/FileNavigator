@@ -25,31 +25,48 @@ internal abstract class FileObserver(
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
 
-        i { "onChange | Uri: $uri" }
+        i { "${this::class.java.simpleName} onChange | Uri: $uri" }
 
         uri ?: return
 
-        MediaStoreData.fetch(uri, contentResolver)?.let { mediaStoreFileData ->
-            if (mediaStoreFileData.isPending) return@let
+        when (val mediaStoreData = MediaStoreData.fetch(uri, contentResolver)) {
+            null -> emitDiscardedLog("MediaStoreData = null")
+            else -> {
+                when {
+                    mediaStoreData.isPending -> {
+                        emitDiscardedLog("pending")
+                        return
+                    }
 
-            if (mediaStoreFileData.isNewlyAdded &&
-                mediaStoreFileDataBlacklist.none {
-                    it.pointsToSameContentAs(
-                        mediaStoreFileData
-                    )
+                    !mediaStoreData.recentlyAdded -> emitDiscardedLog("not recently added")
+                    mediaStoreDataCache.any {
+                        it.pointsToSameContentAs(
+                            mediaStoreData
+                        )
+                    } -> emitDiscardedLog("file with identical content in cache")
+
+                    else -> {
+                        getMoveFileIfMatching(mediaStoreData, uri)
+                            ?.let(onNewMoveFile)
+                    }
                 }
-            ) {
-                getMoveFileIfMatching(mediaStoreFileData, uri)?.let(onNewMoveFile)
-            }
 
-            mediaStoreFileDataBlacklist.add(mediaStoreFileData)
+                mediaStoreDataCache.add(mediaStoreData)
+            }
         }
     }
 
-    protected abstract fun getMoveFileIfMatching(mediaStoreFileData: MediaStoreData, uri: Uri): MoveFile?
-
-    private val mediaStoreFileDataBlacklist =
+    private val mediaStoreDataCache =
         EvictingQueue.create<MediaStoreData>(5)
+
+    protected abstract fun getMoveFileIfMatching(
+        mediaStoreFileData: MediaStoreData,
+        mediaUri: Uri
+    ): MoveFile?
+}
+
+private fun emitDiscardedLog(reason: String) {
+    i { "DISCARDED: $reason" }
 }
 
 internal fun getFileObservers(

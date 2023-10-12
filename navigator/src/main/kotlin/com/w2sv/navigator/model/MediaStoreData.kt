@@ -10,40 +10,38 @@ import com.w2sv.common.utils.parseBoolean
 import com.w2sv.common.utils.queryNonNullMediaStoreData
 import com.w2sv.data.model.FileType
 import com.w2sv.kotlinutils.dateFromUnixTimestamp
-import com.w2sv.kotlinutils.timeDeltaFromNow
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.security.MessageDigest
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
 /**
- * @param relativePath Relative path from the storage volume, e.g. "Documents/", "DCIM/Camera/".
+ * @param volumeRelativeDirPath Relative dir path from the storage volume, e.g. "Documents/", "DCIM/Camera/".
  */
 @Parcelize
 data class MediaStoreData(
-    val id: String,
+    val rowId: String,
     val absPath: String,
-    val relativePath: String,
+    val volumeRelativeDirPath: String,
     val name: String,
     val dateAdded: Date,
     val size: Long,
-    val isDownload: Boolean,
-    val isPendingFlag: Boolean
+    val isPending: Boolean,
+    val sha256: String
 ) : Parcelable {
 
-    val isNewlyAdded: Boolean
-        get() = timeDeltaFromNow(
-            date = dateAdded,
-            timeUnit = TimeUnit.SECONDS
-        ) < 10
+    @IgnoredOnParcel
+    val recentlyAdded = !addedBeforeForMoreThan(5_000)
 
-    val isPending: Boolean
-        get() = isPendingFlag || size == 0L
+    fun addedBeforeForMoreThan(ms: Long): Boolean =
+        (System.currentTimeMillis() - dateAdded.time) > ms
 
     fun pointsToSameContentAs(other: MediaStoreData): Boolean =
-        id == other.id || (size == other.size && nonIncrementedNameWOExtension == other.nonIncrementedNameWOExtension)    // TODO
+        rowId == other.rowId || sha256 == other.sha256
 
     @IgnoredOnParcel
     val fileExtension: String by lazy {
@@ -52,67 +50,93 @@ data class MediaStoreData(
 
     @IgnoredOnParcel
     val nonIncrementedNameWOExtension: String by lazy {
-        name.substringBeforeLast(".")  // remove file extension
-            .replace(
+        name
+            .substringBeforeLast(".")  // remove file extension
+            .replace(  // remove trailing file incrementation parentheses
                 Regex("\\(\\d+\\)$"),
                 ""
-            )  // remove trailing file incrementation parentheses
+            )
     }
 
     @IgnoredOnParcel
     val dirName: String by lazy {
-        relativePath
+        volumeRelativeDirPath
             .removeSuffix(File.separator)
             .substringAfterLast(File.separator)
     }
 
-    fun getSourceKind(): FileType.Source.Kind = when {
-        isDownload -> FileType.Source.Kind.Download
-        // NOTE: Don't change the order of the Screenshot and Camera branches, as the actual screenshot dir
-        // may be a child dir of the camera directory
-        relativePath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileType.Source.Kind.Screenshot
-        relativePath.contains(Environment.DIRECTORY_DCIM) -> FileType.Source.Kind.Camera
-        else -> FileType.Source.Kind.OtherApp
-    }
-        .also {
-            i { "Determined Source.Kind: ${it.name}" }
+    fun getSourceKind(): FileType.Source.Kind =
+        when {
+            volumeRelativeDirPath.contains(Environment.DIRECTORY_DOWNLOADS) -> FileType.Source.Kind.Download
+            // NOTE: Don't change the order of the Screenshot and Camera branches, as Environment.DIRECTORY_SCREENSHOTS
+            // may be a child dir of Environment.DIRECTORY_DCIM
+            volumeRelativeDirPath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileType.Source.Kind.Screenshot
+            volumeRelativeDirPath.contains(Environment.DIRECTORY_DCIM) -> FileType.Source.Kind.Camera
+            else -> FileType.Source.Kind.OtherApp
         }
+            .also {
+                i { "Determined Source.Kind: ${it.name}" }
+            }
 
     companion object {
 
         fun fetch(
             uri: Uri, contentResolver: ContentResolver
-        ): MediaStoreData? = try {
-            contentResolver.queryNonNullMediaStoreData(
-                uri,
-                arrayOf(
-                    MediaStore.MediaColumns._ID,
-                    MediaStore.MediaColumns.DATA,
-                    MediaStore.MediaColumns.RELATIVE_PATH,
-                    MediaStore.MediaColumns.DISPLAY_NAME,
-                    MediaStore.MediaColumns.DATE_ADDED,
-                    MediaStore.MediaColumns.SIZE,
-                    MediaStore.MediaColumns.IS_DOWNLOAD,
-                    MediaStore.MediaColumns.IS_PENDING
+        ): MediaStoreData? =
+            try {
+                contentResolver.queryNonNullMediaStoreData(
+                    uri,
+                    arrayOf(
+                        MediaStore.MediaColumns._ID,
+                        MediaStore.MediaColumns.DATA,
+                        MediaStore.MediaColumns.RELATIVE_PATH,
+                        MediaStore.MediaColumns.DISPLAY_NAME,
+                        MediaStore.MediaColumns.DATE_ADDED,
+                        MediaStore.MediaColumns.SIZE,
+                        MediaStore.MediaColumns.IS_PENDING
+                    )
                 )
-            )?.run {
-                MediaStoreData(
-                    id = get(0),
-                    absPath = get(1),
-                    relativePath = get(2),
-                    name = get(3),
-                    dateAdded = dateFromUnixTimestamp(get(4)),
-                    size = get(5).toLong(),
-                    isDownload = parseBoolean(get(6)),
-                    isPendingFlag = parseBoolean(get(7))
-                )
-                    .also {
-                        i { it.toString() }
+                    ?.run {
+                        val absPath = get(1)
+                        val size = get(5).toLong()
+                        val sha256 = File(absPath).getSHA256()
+
+                        MediaStoreData(
+                            rowId = get(0),
+                            absPath = get(1),
+                            volumeRelativeDirPath = get(2),
+                            name = get(3),
+                            dateAdded = dateFromUnixTimestamp(get(4)),
+                            size = size,
+                            isPending = parseBoolean(get(6)) || size == 0L || sha256.isEmpty(),
+                            sha256 = sha256
+                        )
+                            .also {
+                                i { it.toString() }
+                            }
                     }
+            } catch (e: CursorIndexOutOfBoundsException) {
+                i { e.toString() }
+                null
             }
-        } catch (e: CursorIndexOutOfBoundsException) {
-            i { e.toString() }
-            null
+    }
+}
+
+@OptIn(ExperimentalStdlibApi::class)
+private fun File.getSHA256(): String {
+    val digest = MessageDigest.getInstance("SHA-256")
+    return try {
+        FileInputStream(this).use { inputStream ->
+            val buffer = ByteArray(8192)
+            var bytesRead: Int
+            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                digest.update(buffer, 0, bytesRead)
+            }
         }
+
+        digest.digest().toHexString().also { i { "SHA256 ($name) = $it" } }
+    } catch (e: FileNotFoundException) {
+        i { e.toString() }
+        ""
     }
 }
