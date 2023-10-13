@@ -21,23 +21,48 @@ class FileTypeRepository @Inject constructor(dataStore: DataStore<Preferences>) 
         getFlowMap(
             FileType.Media.values
                 .flatMap { it.sources }
-                .map { it.isEnabled }
+                .map { it.isEnabledDSE }
         )
+
+    // =======================
+    // Default Destination
+    // =======================
 
     val defaultDestinationMap: Map<DataStoreEntry.UriValued, Flow<Uri?>> =
         getUriFlowMap(
             FileType.values
                 .flatMap { it.sources }
-                .map { it.defaultDestination }
+                .map { it.defaultDestinationDSE }
         )
 
     fun getDefaultDestinationFlow(source: FileType.Source): Flow<Uri?> =
-        getUriFlow(source.defaultDestination)
+        getUriFlow(source.defaultDestinationDSE)
 
     suspend fun saveDefaultDestination(
         source: FileType.Source,
         defaultDestination: Uri?
     ) {
-        save(source.defaultDestination.preferencesKey, defaultDestination)
+        save(source.defaultDestinationDSE.preferencesKey, defaultDestination)
+    }
+
+    // =======================
+    // Last manual move destination
+    // =======================
+
+    val lastManualMoveDestinationMap: Map<DataStoreEntry.UriValued, Flow<Uri?>> =
+        getUriFlowMap(
+            FileType.values
+                .flatMap { it.sources }
+                .map { it.lastManualMoveDestinationDSE }
+        )
+
+    fun getLastManualMoveDestinationFlow(source: FileType.Source): Flow<Uri?> =
+        getUriFlow(source.lastManualMoveDestinationDSE)
+
+    suspend fun saveLastManualMoveDestination(
+        source: FileType.Source,
+        destination: Uri?
+    ) {
+        save(source.lastManualMoveDestinationDSE.preferencesKey, destination)
     }
 }

@@ -8,7 +8,6 @@ import android.os.Looper
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.data.model.FileType
-import com.w2sv.data.model.filterEnabled
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.model.NavigatableFile
 import slimber.log.i
@@ -20,6 +19,10 @@ internal abstract class FileObserver(
 ) :
     ContentObserver(Handler(Looper.getMainLooper())) {
 
+    private val mediaStoreFileProvider by lazy {
+        MediaStoreFile.Provider()
+    }
+
     override fun deliverSelfNotifications(): Boolean = false
 
     override fun onChange(selfChange: Boolean, uri: Uri?) {
@@ -29,7 +32,8 @@ internal abstract class FileObserver(
 
         uri ?: return
 
-        val mediaStoreFile = MediaStoreFile.getIfNotPending(uri, contentResolver) ?: return
+        val mediaStoreFile =
+            mediaStoreFileProvider.getMediaStoreFileIfNotPending(uri, contentResolver) ?: return
 
         when {
             !mediaStoreFile.columnData.recentlyAdded -> emitDiscardedLog("not recently added")
@@ -72,7 +76,7 @@ internal fun getFileObservers(
                 fileType = mediaType,
                 sourceKinds = mediaType
                     .sources
-                    .filter { source -> mediaFileSourceEnabled.getValue(source.isEnabled) }
+                    .filter { source -> mediaFileSourceEnabled.getValue(source.isEnabledDSE) }
                     .map { source -> source.kind }
                     .toSet(),
                 contentResolver = contentResolver,
@@ -102,3 +106,6 @@ internal fun getFileObservers(
         }
     }
 }
+
+fun <FT : FileType> Iterable<FT>.filterEnabled(statusMap: Map<FileType.Status.StoreEntry, FileType.Status>): List<FT> =
+    filter { statusMap.getValue(it.status).isEnabled }

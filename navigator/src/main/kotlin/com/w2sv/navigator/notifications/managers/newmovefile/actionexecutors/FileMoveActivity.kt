@@ -57,25 +57,25 @@ class FileMoveActivity : ComponentActivity() {
         // DataStore Attributes
         // ===============
 
-        val defaultTargetDirDocumentUri: Uri? =
-            fileTypeRepository.getUriFlow(navigatableFile.source.defaultDestination)
-                .getValueSynchronously()
-                .also {
-                    i { "Retrieved ${navigatableFile.source.defaultDestination.preferencesKey} = $it" }
-                }
-
-        fun saveFileSourceDefaultDestination(defaultDestination: Uri): Job =
+        fun saveLastManualMoveDestination(destination: Uri): Job =
             viewModelScope.launch {
-                fileTypeRepository.saveDefaultDestination(
+                fileTypeRepository.saveLastManualMoveDestination(
                     navigatableFile.source,
-                    defaultDestination
+                    destination
                 )
             }
+
+        fun getDestinationPickerStartLocation(): Uri? =
+            fileTypeRepository.getLastManualMoveDestinationFlow(navigatableFile.source)
+                .getValueSynchronously() ?: fileTypeRepository.getDefaultDestinationFlow(
+                navigatableFile.source
+            )
+                .getValueSynchronously()
     }
 
     private val viewModel by viewModels<ViewModel>()
 
-    private val destinationSelectionLauncher =
+    private val destinationPickerLauncher =
         registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { treeUri ->
             i { "DocumentTree Uri: $treeUri" }
 
@@ -126,23 +126,18 @@ class FileMoveActivity : ComponentActivity() {
                 )
             }
 
-            finish()
-//            if (targetDirectoryDocumentFile != viewModel.defaultTargetDirDocumentUri) {
-//                // Save targetDirectoryDocumentFile to DataStore and finish activity on saving completed
-//                viewModel
-//                    .saveFileSourceDefaultDestination(targetDirectoryDocumentFile.uri)
-//                    .invokeOnCompletion {
-//                        finish()
-//                    }
-//            } else {
-//                finish()
-//            }
+            // Save targetDirectoryDocumentFile to DataStore and finish activity on saving completed
+            viewModel
+                .saveLastManualMoveDestination(targetDirectoryDocumentFile.uri)
+                .invokeOnCompletion {
+                    finish()
+                }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        destinationSelectionLauncher.launch(viewModel.defaultTargetDirDocumentUri)
+        destinationPickerLauncher.launch(viewModel.getDestinationPickerStartLocation())
     }
 
     companion object {

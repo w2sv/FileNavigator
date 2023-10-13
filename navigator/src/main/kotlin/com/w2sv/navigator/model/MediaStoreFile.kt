@@ -25,8 +25,9 @@ data class MediaStoreFile(
     fun isIdenticalFileAs(other: MediaStoreFile): Boolean =
         uri == other.uri || (sha256 == other.sha256 && columnData.name == other.columnData.name)
 
-    companion object {
-        fun getIfNotPending(
+    class Provider {
+
+        fun getMediaStoreFileIfNotPending(
             mediaUri: Uri,
             contentResolver: ContentResolver
         ): MediaStoreFile? {
@@ -39,7 +40,8 @@ data class MediaStoreFile(
             }
 
             val sha256 = try {
-                columnData.getFile().getContentHash(sha256MessageDigest).also { i { "SHA256 ($mediaUri) = $it" } }
+                columnData.getFile().getContentHash(sha256MessageDigest)
+                    .also { i { "SHA256 ($mediaUri) = $it" } }
             } catch (e: FileNotFoundException) {
                 emitDiscardedLog(e.toString())
                 return null

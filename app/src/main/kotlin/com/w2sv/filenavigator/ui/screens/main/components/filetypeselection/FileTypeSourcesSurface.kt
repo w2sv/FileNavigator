@@ -83,11 +83,11 @@ private fun SourceColumn(
     Column(modifier = modifier) {
         val isEnabled =
             fileTypesState.mediaFileSourceEnabledMap.getOrDefault(
-                key = source.isEnabled,
+                key = source.isEnabledDSE,
                 defaultValue = true
             )
         val defaultDestinationPath by fileTypesState.defaultMoveDestinationState.pathMap.getValue(
-            source.defaultDestination
+            source.defaultDestinationDSE
         )
             .collectAsState()
 
@@ -159,12 +159,12 @@ private fun SourceRow(
                             onCheckedChange = { checkedNew ->
                                 if (!source.fileType.sources.map {
                                         fileTypesState.mediaFileSourceEnabledMap.getValue(
-                                            it.isEnabled
+                                            it.isEnabledDSE
                                         )
                                     }
                                         .allFalseAfterEnteringValue(checkedNew)
                                 ) {
-                                    fileTypesState.mediaFileSourceEnabledMap[source.isEnabled] =
+                                    fileTypesState.mediaFileSourceEnabledMap[source.isEnabledDSE] =
                                         checkedNew
                                 } else {
                                     scope.launch {

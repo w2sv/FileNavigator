@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
 import com.w2sv.data.model.FileType
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -14,8 +15,10 @@ data class NavigatableFile(
     val sourceKind: FileType.Source.Kind,
 ) : Parcelable {
 
-    val source: FileType.Source
-        get() = FileType.Source(type, sourceKind)
+    @IgnoredOnParcel
+    val source: FileType.Source by lazy {
+        FileType.Source(type, sourceKind)
+    }
 
     fun getSimpleStorageMediaFile(context: Context): MediaFile? =
         MediaStoreCompat.fromMediaId(

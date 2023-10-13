@@ -239,7 +239,7 @@ sealed class FileType(
             "${fileType.identifier}.$kind.$keySuffix"
 
         @IgnoredOnParcel
-        val isEnabled by lazy {  // TODO: Remove for NonMedia
+        val isEnabledDSE by lazy {  // TODO: Remove for NonMedia
             object : DataStoreEntry.UniType.Impl<Boolean>(
                 booleanPreferencesKey(getPreferencesKeyContent("IS_ENABLED")),
                 true
@@ -247,9 +247,17 @@ sealed class FileType(
         }
 
         @IgnoredOnParcel
-        val defaultDestination by lazy {
+        val defaultDestinationDSE by lazy {
             object : DataStoreEntry.UriValued.Impl(
                 stringPreferencesKey(getPreferencesKeyContent("DEFAULT_DESTINATION")),
+                null
+            ) {}
+        }
+
+        @IgnoredOnParcel
+        val lastManualMoveDestinationDSE by lazy {
+            object : DataStoreEntry.UriValued.Impl(
+                stringPreferencesKey(getPreferencesKeyContent("LAST_MANUAL_MOVE_DESTINATION")),
                 null
             ) {}
         }
@@ -291,6 +299,3 @@ sealed class FileType(
         }
     }
 }
-
-fun <FT : FileType> Iterable<FT>.filterEnabled(statusMap: Map<FileType.Status.StoreEntry, FileType.Status>): List<FT> =
-    filter { statusMap.getValue(it.status).isEnabled }
