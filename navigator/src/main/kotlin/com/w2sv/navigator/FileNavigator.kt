@@ -47,7 +47,7 @@ class FileNavigator : UnboundService() {
                 with(appNotificationsManager.newMoveFileNotificationManager) {
                     buildAndEmit(
                         Args(
-                            moveFile = moveFile,
+                            navigatableFile = moveFile,
                             getDefaultMoveDestination = { source ->
                                 fileTypeRepository.getDefaultDestinationFlow(source)
                                     .getValueSynchronously()

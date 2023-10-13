@@ -1,20 +1,19 @@
 package com.w2sv.navigator.fileobservers
 
 import android.content.ContentResolver
-import android.net.Uri
 import com.w2sv.data.model.FileType
-import com.w2sv.navigator.model.MediaStoreData
-import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.model.MediaStoreFile
+import com.w2sv.navigator.model.NavigatableFile
 import slimber.log.i
 
 internal class MediaFileObserver(
     private val fileType: FileType.Media,
     private val sourceKinds: Set<FileType.Source.Kind>,
     contentResolver: ContentResolver,
-    onNewMoveFile: (MoveFile) -> Unit
+    onNewMoveFile: (NavigatableFile) -> Unit
 ) :
     FileObserver(
-        fileType.mediaType.readUri!!,
+        fileType.simpleStorageMediaType.readUri!!,
         contentResolver,
         onNewMoveFile
     ) {
@@ -24,18 +23,16 @@ internal class MediaFileObserver(
     }
 
     override fun getMoveFileIfMatching(
-        mediaStoreFileData: MediaStoreData,
-        mediaUri: Uri
-    ): MoveFile? {
-        if (fileType.matchesFileExtension(mediaStoreFileData.fileExtension)) {
-            val sourceKind = mediaStoreFileData.getSourceKind()
+        mediaStoreFile: MediaStoreFile
+    ): NavigatableFile? {
+        if (fileType.matchesFileExtension(mediaStoreFile.columnData.fileExtension)) {
+            val sourceKind = mediaStoreFile.columnData.getSourceKind()
 
             if (sourceKinds.contains(sourceKind)) {
-                return MoveFile(
-                    uri = mediaUri,
+                return NavigatableFile(
                     type = fileType,
                     sourceKind = sourceKind,
-                    mediaStoreData = mediaStoreFileData
+                    mediaStoreFile = mediaStoreFile
                 )
             }
         }

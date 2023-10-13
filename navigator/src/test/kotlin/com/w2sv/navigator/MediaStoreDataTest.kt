@@ -1,6 +1,6 @@
 package com.w2sv.navigator
 
-import com.w2sv.navigator.model.MediaStoreData
+import com.w2sv.navigator.model.MediaStoreColumnData
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
@@ -46,19 +46,16 @@ class MediaStoreDataTest {
             volumeRelativeDirPath: String = "",
             dateAdded: Date = Date(),
             size: Long = 0L,
-            isDownload: Boolean = false,
             isPending: Boolean = false
-        ): MediaStoreData =
-            MediaStoreData(
+        ): MediaStoreColumnData =
+            MediaStoreColumnData(
                 rowId = rowId,
                 absPath = absPath,
                 volumeRelativeDirPath = volumeRelativeDirPath,
                 name = name,
                 dateAdded = dateAdded,
                 size = size,
-                isDownload = isDownload,
                 isPending = isPending,
-                sha256 = ""
             )
     }
 }

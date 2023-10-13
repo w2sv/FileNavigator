@@ -3,10 +3,10 @@ package com.w2sv.navigator.notifications
 import android.content.Intent
 import android.net.Uri
 import com.w2sv.navigator.FileNavigator
-import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.model.NavigatableFile
 
-internal fun Intent.putMoveFileExtra(moveFile: MoveFile): Intent =
-    putExtra(MoveFile.EXTRA, moveFile)
+internal fun Intent.putMoveFileExtra(navigatableFile: NavigatableFile): Intent =
+    putExtra(NavigatableFile.EXTRA, navigatableFile)
 
 internal fun Intent.putNotificationResourcesExtra(notificationResources: NotificationResources): Intent =
     putExtra(

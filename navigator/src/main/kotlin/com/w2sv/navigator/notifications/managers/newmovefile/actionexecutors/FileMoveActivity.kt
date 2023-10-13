@@ -19,7 +19,7 @@ import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.R
-import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.model.NavigatableFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putMoveFileExtra
@@ -48,26 +48,26 @@ class FileMoveActivity : ComponentActivity() {
         // Intent Extras
         // ===============
 
-        private val moveFile: MoveFile =
-            savedStateHandle[MoveFile.EXTRA]!!
+        private val navigatableFile: NavigatableFile =
+            savedStateHandle[NavigatableFile.EXTRA]!!
 
-        val moveMediaFile: MediaFile? = moveFile.getMediaFile(context)
+        val moveMediaFile: MediaFile? = navigatableFile.getSimpleStorageMediaFile(context)
 
         // ===============
         // DataStore Attributes
         // ===============
 
         val defaultTargetDirDocumentUri: Uri? =
-            fileTypeRepository.getUriFlow(moveFile.source.defaultDestination)
+            fileTypeRepository.getUriFlow(navigatableFile.source.defaultDestination)
                 .getValueSynchronously()
                 .also {
-                    i { "Retrieved ${moveFile.source.defaultDestination.preferencesKey} = $it" }
+                    i { "Retrieved ${navigatableFile.source.defaultDestination.preferencesKey} = $it" }
                 }
 
         fun saveFileSourceDefaultDestination(defaultDestination: Uri): Job =
             viewModelScope.launch {
                 fileTypeRepository.saveDefaultDestination(
-                    moveFile.source,
+                    navigatableFile.source,
                     defaultDestination
                 )
             }
@@ -147,7 +147,7 @@ class FileMoveActivity : ComponentActivity() {
 
     companion object {
         fun makeRestartActivityIntent(
-            moveFile: MoveFile,
+            navigatableFile: NavigatableFile,
             notificationResources: NotificationResources,
             context: Context
         ): Intent =
@@ -157,7 +157,7 @@ class FileMoveActivity : ComponentActivity() {
                     FileMoveActivity::class.java
                 )
             )
-                .putMoveFileExtra(moveFile)
+                .putMoveFileExtra(navigatableFile)
                 .putNotificationResourcesExtra(notificationResources)
     }
 }

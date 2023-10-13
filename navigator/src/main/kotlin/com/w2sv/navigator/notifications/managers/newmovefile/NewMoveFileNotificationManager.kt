@@ -20,7 +20,7 @@ import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.Fil
 import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.FileDeletionBroadcastReceiver
 import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.MoveToDefaultDestinationBroadcastReceiver
 import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.NotificationResourcesCleanupBroadcastReceiver
-import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.model.NavigatableFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.AppNotificationsManager
@@ -42,7 +42,7 @@ class NewMoveFileNotificationManager(
     resourcesBaseSeed = 1
 ) {
     inner class Args(
-        val moveFile: MoveFile,
+        val navigatableFile: NavigatableFile,
         val getDefaultMoveDestination: (FileType.Source) -> Uri?,
         val resources: NotificationResources = getNotificationResources(5)
     ) : AppNotificationManager.Args
@@ -50,11 +50,13 @@ class NewMoveFileNotificationManager(
     override fun getBuilder(args: Args): Builder =
         object : Builder() {
 
-            private val moveFile by args::moveFile
+            private val moveFile by args::navigatableFile
             private val getDefaultMoveDestination by args::getDefaultMoveDestination
             private val resources by args::resources
 
             override fun build(): Notification {
+                setGroup("GROUP")
+
                 setContentTitle(
                     getContentTitle()
                 )
@@ -70,9 +72,9 @@ class NewMoveFileNotificationManager(
                     NotificationCompat.BigTextStyle()
                         .bigText(
                             buildSpannedString {
-                                bold { append(moveFile.mediaStoreData.name) }
+                                bold { append(moveFile.mediaStoreFile.columnData.name) }
                                 append(context.getString(R.string.found_at).whiteSpaceWrapped())
-                                bold { append(moveFile.mediaStoreData.volumeRelativeDirPath) }
+                                bold { append(moveFile.mediaStoreFile.columnData.volumeRelativeDirPath) }
                             }
                         )
                 )
@@ -94,7 +96,7 @@ class NewMoveFileNotificationManager(
             private fun getContentTitle() =
                 when (val fileType = moveFile.type) {
                     is FileType.Media -> {
-                        when (moveFile.mediaStoreData.getSourceKind()) {
+                        when (moveFile.mediaStoreFile.columnData.getSourceKind()) {
                             FileType.Source.Kind.Screenshot -> context.getString(
                                 R.string.new_screenshot
                             )
@@ -114,7 +116,7 @@ class NewMoveFileNotificationManager(
 
                             FileType.Source.Kind.OtherApp -> context.getString(
                                 R.string.new_third_party_file_template,
-                                moveFile.mediaStoreData.dirName,
+                                moveFile.mediaStoreFile.columnData.dirName,
                                 context.getString(fileType.titleRes)
                             )
                         }
@@ -161,8 +163,8 @@ class NewMoveFileNotificationManager(
                         Intent()
                             .setAction(Intent.ACTION_VIEW)
                             .setDataAndType(
-                                moveFile.uri,
-                                moveFile.type.mediaType.mimeType
+                                moveFile.mediaStoreFile.uri,
+                                moveFile.type.simpleStorageMediaType.mimeType
                             ),
                         PendingIntent.FLAG_IMMUTABLE
                     )

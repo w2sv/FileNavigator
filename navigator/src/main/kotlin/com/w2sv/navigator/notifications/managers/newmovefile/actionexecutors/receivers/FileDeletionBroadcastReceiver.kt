@@ -8,7 +8,7 @@ import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.navigator.R
-import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.model.NavigatableFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putMoveFileExtra
@@ -44,10 +44,10 @@ class FileDeletionBroadcastReceiver : BroadcastReceiver() {
         when {
             !isExternalStorageManger() -> R.string.file_deletion_requires_access_to_manage_all_files
             else -> {
-                val moveFile =
-                    intent.getParcelableCompat<MoveFile>(MoveFile.EXTRA)!!
+                val navigatableFile =
+                    intent.getParcelableCompat<NavigatableFile>(NavigatableFile.EXTRA)!!
 
-                val mediaFile = moveFile.getMediaFile(context)
+                val mediaFile = navigatableFile.getSimpleStorageMediaFile(context)
                     .also {
                         if (it == null) {
                             e { "mediaFile=null" }
@@ -60,12 +60,12 @@ class FileDeletionBroadcastReceiver : BroadcastReceiver() {
 
     companion object {
         fun getIntent(
-            moveFile: MoveFile,
+            navigatableFile: NavigatableFile,
             notificationResources: NotificationResources,
             context: Context
         ): Intent =
             Intent(context, FileDeletionBroadcastReceiver::class.java)
-                .putMoveFileExtra(moveFile)
+                .putMoveFileExtra(navigatableFile)
                 .putNotificationResourcesExtra(notificationResources)
     }
 }

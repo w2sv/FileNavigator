@@ -14,34 +14,30 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.security.MessageDigest
 import java.util.Date
 
 /**
  * @param volumeRelativeDirPath Relative dir path from the storage volume, e.g. "Documents/", "DCIM/Camera/".
  */
 @Parcelize
-data class MediaStoreData(
+data class MediaStoreColumnData(
     val rowId: String,
     val absPath: String,
     val volumeRelativeDirPath: String,
     val name: String,
     val dateAdded: Date,
     val size: Long,
-    val isPending: Boolean,
-    val sha256: String
+    val isPending: Boolean
 ) : Parcelable {
+
+    fun comesFromIdenticalEntryAs(other: MediaStoreColumnData): Boolean =
+        rowId == other.rowId
 
     @IgnoredOnParcel
     val recentlyAdded = !addedBeforeForMoreThan(5_000)
 
     fun addedBeforeForMoreThan(ms: Long): Boolean =
         (System.currentTimeMillis() - dateAdded.time) > ms
-
-    fun pointsToSameContentAs(other: MediaStoreData): Boolean =
-        rowId == other.rowId || sha256 == other.sha256
 
     @IgnoredOnParcel
     val fileExtension: String by lazy {
@@ -65,6 +61,9 @@ data class MediaStoreData(
             .substringAfterLast(File.separator)
     }
 
+    fun getFile(): File =
+        File(absPath)
+
     fun getSourceKind(): FileType.Source.Kind =
         when {
             volumeRelativeDirPath.contains(Environment.DIRECTORY_DOWNLOADS) -> FileType.Source.Kind.Download
@@ -81,8 +80,9 @@ data class MediaStoreData(
     companion object {
 
         fun fetch(
-            uri: Uri, contentResolver: ContentResolver
-        ): MediaStoreData? =
+            uri: Uri,
+            contentResolver: ContentResolver
+        ): MediaStoreColumnData? =
             try {
                 contentResolver.queryNonNullMediaStoreData(
                     uri,
@@ -97,19 +97,14 @@ data class MediaStoreData(
                     )
                 )
                     ?.run {
-                        val absPath = get(1)
-                        val size = get(5).toLong()
-                        val sha256 = File(absPath).getSHA256()
-
-                        MediaStoreData(
+                        MediaStoreColumnData(
                             rowId = get(0),
                             absPath = get(1),
                             volumeRelativeDirPath = get(2),
                             name = get(3),
                             dateAdded = dateFromUnixTimestamp(get(4)),
-                            size = size,
-                            isPending = parseBoolean(get(6)) || size == 0L || sha256.isEmpty(),
-                            sha256 = sha256
+                            size = get(5).toLong(),
+                            isPending = parseBoolean(get(6))
                         )
                             .also {
                                 i { it.toString() }
@@ -119,24 +114,5 @@ data class MediaStoreData(
                 i { e.toString() }
                 null
             }
-    }
-}
-
-@OptIn(ExperimentalStdlibApi::class)
-private fun File.getSHA256(): String {
-    val digest = MessageDigest.getInstance("SHA-256")
-    return try {
-        FileInputStream(this).use { inputStream ->
-            val buffer = ByteArray(8192)
-            var bytesRead: Int
-            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                digest.update(buffer, 0, bytesRead)
-            }
-        }
-
-        digest.digest().toHexString().also { i { "SHA256 ($name) = $it" } }
-    } catch (e: FileNotFoundException) {
-        i { e.toString() }
-        ""
     }
 }

@@ -13,7 +13,7 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
-import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.model.NavigatableFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putDefaultMoveDestinationExtra
@@ -35,15 +35,15 @@ class MoveToDefaultDestinationBroadcastReceiver : BroadcastReceiver() {
             )
         }
 
-        val moveFile =
-            intent.getParcelableCompat<MoveFile>(MoveFile.EXTRA)!!
+        val navigatableFile =
+            intent.getParcelableCompat<NavigatableFile>(NavigatableFile.EXTRA)!!
         val defaultMoveDestination =
             intent.getParcelableCompat<Uri>(FileNavigator.EXTRA_DEFAULT_MOVE_DESTINATION)!!
 
         // Exit on unsuccessful conversion to SimpleStorage objects
         val targetDirectoryDocumentFile =
             DocumentFile.fromSingleUri(context, defaultMoveDestination)
-        val moveMediaFile = moveFile.getMediaFile(context)
+        val moveMediaFile = navigatableFile.getSimpleStorageMediaFile(context)
 
         if (targetDirectoryDocumentFile == null || moveMediaFile == null) {
             context.showToast(R.string.couldn_t_move_file)
@@ -76,13 +76,13 @@ class MoveToDefaultDestinationBroadcastReceiver : BroadcastReceiver() {
 
     companion object {
         fun getIntent(
-            moveFile: MoveFile,
+            navigatableFile: NavigatableFile,
             notificationResources: NotificationResources,
             defaultMoveDestination: Uri,
             context: Context
         ): Intent =
             Intent(context, MoveToDefaultDestinationBroadcastReceiver::class.java)
-                .putMoveFileExtra(moveFile)
+                .putMoveFileExtra(navigatableFile)
                 .putNotificationResourcesExtra(notificationResources)
                 .putDefaultMoveDestinationExtra(defaultMoveDestination)
     }

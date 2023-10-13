@@ -19,7 +19,7 @@ sealed class FileType(
     @StringRes val titleRes: Int,
     @DrawableRes val iconRes: Int,
     @ColorInt val colorInt: Int,
-    val mediaType: MediaType,
+    val simpleStorageMediaType: MediaType,
     sourceKinds: List<Source.Kind>,
 ) : Parcelable {
 
@@ -40,7 +40,7 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
         @ColorLong colorLong: Long,
-        simpleStorageType: MediaType,
+        mediaType: MediaType,
         sourceKinds: List<Source.Kind>,
         val fileExtensions: Set<String>? = null,
         val ignoreFileExtensionsOf: Media? = null
@@ -48,7 +48,7 @@ sealed class FileType(
         titleRes = labelRes,
         iconRes = iconRes,
         colorInt = colorLong.toInt(),
-        mediaType = simpleStorageType,
+        simpleStorageMediaType = mediaType,
         sourceKinds = sourceKinds,
     ) {
 
@@ -68,7 +68,7 @@ sealed class FileType(
             labelRes = R.string.image,
             iconRes = R.drawable.ic_image_24,
             colorLong = 0xFFBF1A2F,
-            simpleStorageType = MediaType.IMAGE,
+            mediaType = MediaType.IMAGE,
             sourceKinds = listOf(
                 Source.Kind.Camera,
                 Source.Kind.Screenshot,
@@ -83,7 +83,7 @@ sealed class FileType(
             labelRes = R.string.gif,
             iconRes = R.drawable.ic_gif_box_24,
             colorLong = 0xFF49C6E5,
-            simpleStorageType = MediaType.IMAGE,
+            mediaType = MediaType.IMAGE,
             sourceKinds = listOf(
                 Source.Kind.Download,
                 Source.Kind.OtherApp
@@ -96,7 +96,7 @@ sealed class FileType(
             labelRes = R.string.video,
             iconRes = R.drawable.ic_video_file_24,
             colorLong = 0xFFFFCB77,
-            simpleStorageType = MediaType.VIDEO,
+            mediaType = MediaType.VIDEO,
             sourceKinds = listOf(
                 Source.Kind.Camera,
                 Source.Kind.Download,
@@ -109,7 +109,7 @@ sealed class FileType(
             labelRes = R.string.audio,
             iconRes = R.drawable.ic_audio_file_24,
             colorLong = 0xFFF26430,
-            simpleStorageType = MediaType.AUDIO,
+            mediaType = MediaType.AUDIO,
             sourceKinds = listOf(
                 Source.Kind.Download,
                 Source.Kind.OtherApp
@@ -130,7 +130,7 @@ sealed class FileType(
         titleRes = labelRes,
         iconRes = iconRes,
         colorInt = colorLong.toInt(),
-        mediaType = MediaType.DOWNLOADS,
+        simpleStorageMediaType = MediaType.DOWNLOADS,
         sourceKinds = listOf(
             Source.Kind.Download
         )

@@ -9,14 +9,14 @@ import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.data.model.FileType
 import com.w2sv.data.model.filterEnabled
-import com.w2sv.navigator.model.MediaStoreData
-import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.model.MediaStoreFile
+import com.w2sv.navigator.model.NavigatableFile
 import slimber.log.i
 
 internal abstract class FileObserver(
     val contentObserverUri: Uri,
     private val contentResolver: ContentResolver,
-    private val onNewMoveFile: (MoveFile) -> Unit
+    private val onNewMoveFileListener: (NavigatableFile) -> Unit
 ) :
     ContentObserver(Handler(Looper.getMainLooper())) {
 
@@ -29,43 +29,33 @@ internal abstract class FileObserver(
 
         uri ?: return
 
-        when (val mediaStoreData = MediaStoreData.fetch(uri, contentResolver)) {
-            null -> emitDiscardedLog("MediaStoreData = null")
+        val mediaStoreFile = MediaStoreFile.getIfNotPending(uri, contentResolver) ?: return
+
+        when {
+            !mediaStoreFile.columnData.recentlyAdded -> emitDiscardedLog("not recently added")
+            cache.any { it.isIdenticalFileAs(mediaStoreFile) } -> emitDiscardedLog(
+                "identical file in cache"
+            )
+
             else -> {
-                when {
-                    mediaStoreData.isPending -> {
-                        emitDiscardedLog("pending")
-                        return
-                    }
+                getMoveFileIfMatching(mediaStoreFile)
+                    ?.let(onNewMoveFileListener)
 
-                    !mediaStoreData.recentlyAdded -> emitDiscardedLog("not recently added")
-                    mediaStoreDataCache.any {
-                        it.pointsToSameContentAs(
-                            mediaStoreData
-                        )
-                    } -> emitDiscardedLog("file with identical content in cache")
-
-                    else -> {
-                        getMoveFileIfMatching(mediaStoreData, uri)
-                            ?.let(onNewMoveFile)
-                    }
-                }
-
-                mediaStoreDataCache.add(mediaStoreData)
+                cache.add(mediaStoreFile)
+                i { "Added ${mediaStoreFile.sha256} to cache" }
             }
         }
     }
 
-    private val mediaStoreDataCache =
-        EvictingQueue.create<MediaStoreData>(5)
+    private val cache =
+        EvictingQueue.create<MediaStoreFile>(5)
 
     protected abstract fun getMoveFileIfMatching(
-        mediaStoreFileData: MediaStoreData,
-        mediaUri: Uri
-    ): MoveFile?
+        mediaStoreFile: MediaStoreFile
+    ): NavigatableFile?
 }
 
-private fun emitDiscardedLog(reason: String) {
+fun emitDiscardedLog(reason: String) {
     i { "DISCARDED: $reason" }
 }
 
@@ -73,7 +63,7 @@ internal fun getFileObservers(
     statusMap: Map<FileType.Status.StoreEntry, FileType.Status>,
     mediaFileSourceEnabled: Map<DataStoreEntry.UniType<Boolean>, Boolean>,
     contentResolver: ContentResolver,
-    onNewMoveFile: (MoveFile) -> Unit
+    onNewMoveFile: (NavigatableFile) -> Unit
 ): List<FileObserver> {
     val mediaFileObservers = FileType.Media.values
         .filterEnabled(statusMap)
