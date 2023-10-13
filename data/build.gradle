@@ -29,5 +29,5 @@ dependencies {
     // ---------------
     // Test
 
-    testImplementation libs.bundles.unitTest
+    testImplementation project(path: ':test')
 }

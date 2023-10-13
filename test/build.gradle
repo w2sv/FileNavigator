@@ -1,0 +1,15 @@
+plugins {
+    alias libs.plugins.library
+    alias libs.plugins.kotlin
+    id 'kotlin-parcelize'
+}
+
+apply from: '../modulebase.gradle'
+
+android {
+    namespace 'com.w2sv.test'
+}
+
+dependencies {
+    api libs.bundles.unitTest
+}

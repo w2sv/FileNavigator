@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/navigator" />
+            <option value="$PROJECT_DIR$/test" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
