@@ -11,7 +11,7 @@ import com.w2sv.navigator.R
 import com.w2sv.navigator.model.NavigatableFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
-import com.w2sv.navigator.notifications.putMoveFileExtra
+import com.w2sv.navigator.notifications.putNavigatableFileExtra
 import com.w2sv.navigator.notifications.putNotificationResourcesExtra
 import slimber.log.e
 
@@ -65,7 +65,7 @@ class FileDeletionBroadcastReceiver : BroadcastReceiver() {
             context: Context
         ): Intent =
             Intent(context, FileDeletionBroadcastReceiver::class.java)
-                .putMoveFileExtra(navigatableFile)
+                .putNavigatableFileExtra(navigatableFile)
                 .putNotificationResourcesExtra(notificationResources)
     }
 }

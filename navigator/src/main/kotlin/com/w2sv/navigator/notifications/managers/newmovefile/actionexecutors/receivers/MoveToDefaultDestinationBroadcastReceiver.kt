@@ -17,7 +17,7 @@ import com.w2sv.navigator.model.NavigatableFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putDefaultMoveDestinationExtra
-import com.w2sv.navigator.notifications.putMoveFileExtra
+import com.w2sv.navigator.notifications.putNavigatableFileExtra
 import com.w2sv.navigator.notifications.putNotificationResourcesExtra
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -82,7 +82,7 @@ class MoveToDefaultDestinationBroadcastReceiver : BroadcastReceiver() {
             context: Context
         ): Intent =
             Intent(context, MoveToDefaultDestinationBroadcastReceiver::class.java)
-                .putMoveFileExtra(navigatableFile)
+                .putNavigatableFileExtra(navigatableFile)
                 .putNotificationResourcesExtra(notificationResources)
                 .putDefaultMoveDestinationExtra(defaultMoveDestination)
     }

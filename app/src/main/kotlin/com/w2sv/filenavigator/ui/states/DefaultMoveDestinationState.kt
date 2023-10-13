@@ -35,9 +35,6 @@ class DefaultMoveDestinationState(
         pickerSource.value = source
     }
 
-    val launchPicker get() = _launchPicker.asSharedFlow()
-    private val _launchPicker = MutableSharedFlow<Unit>()
-
     private val pickerSource = MutableStateFlow<FileType.Source?>(null)
         .apply {
             scope.launch {
@@ -48,6 +45,9 @@ class DefaultMoveDestinationState(
                 }
             }
         }
+
+    val launchPicker get() = _launchPicker.asSharedFlow()
+    private val _launchPicker = MutableSharedFlow<Unit>()
 
     fun onDestinationSelected(treeUri: Uri, context: Context) {
         DocumentFile.fromTreeUri(context, treeUri)?.let { documentFile ->

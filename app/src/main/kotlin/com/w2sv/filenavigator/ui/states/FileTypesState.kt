@@ -181,7 +181,7 @@ private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(fileTypeStatus
             )
                 .isEnabled
         }
-            .thenBy(FileType.getValues::indexOf)
+            .thenBy(FileType.getValues()::indexOf)
     )
 }
 

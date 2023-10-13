@@ -5,7 +5,7 @@ import android.net.Uri
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.model.NavigatableFile
 
-internal fun Intent.putMoveFileExtra(navigatableFile: NavigatableFile): Intent =
+internal fun Intent.putNavigatableFileExtra(navigatableFile: NavigatableFile): Intent =
     putExtra(NavigatableFile.EXTRA, navigatableFile)
 
 internal fun Intent.putNotificationResourcesExtra(notificationResources: NotificationResources): Intent =

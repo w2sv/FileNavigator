@@ -21,7 +21,7 @@ import com.w2sv.navigator.R
 import com.w2sv.navigator.model.NavigatableFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
-import com.w2sv.navigator.notifications.putMoveFileExtra
+import com.w2sv.navigator.notifications.putNavigatableFileExtra
 import com.w2sv.navigator.notifications.putNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,10 +42,6 @@ class FileMoveActivity : ComponentActivity() {
         @ApplicationContext context: Context
     ) :
         androidx.lifecycle.ViewModel() {
-
-        // ===============
-        // Intent Extras
-        // ===============
 
         private val navigatableFile: NavigatableFile =
             savedStateHandle[NavigatableFile.EXTRA]!!
@@ -148,7 +144,7 @@ class FileMoveActivity : ComponentActivity() {
                     FileMoveActivity::class.java
                 )
             )
-                .putMoveFileExtra(navigatableFile)
+                .putNavigatableFileExtra(navigatableFile)
                 .putNotificationResourcesExtra(notificationResources)
     }
 }

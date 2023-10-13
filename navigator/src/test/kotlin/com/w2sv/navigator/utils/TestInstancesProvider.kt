@@ -28,8 +28,8 @@ object TestInstancesProvider {
 
     fun getMediaStoreFile(): MediaStoreFile =
         MediaStoreFile(
-            Uri.parse("content://example-uri"),
+            Uri.parse("content://media/external/images/media/1000012597"),
             getMediaStoreColumnData(),
-            "abc123"
+            "c9232c60753d1c181e8bb8b9658c43f2563bbc649dee793659b5df60ca0e57a0"
         )
 }
