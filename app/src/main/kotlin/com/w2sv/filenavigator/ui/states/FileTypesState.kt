@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FileTypesState(
-    val statusMap: UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>,
+    val statusMap: UnconfirmedStateMap<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>,
     val mediaFileSourceEnabledMap: UnconfirmedStateMap<DataStoreEntry.UniType<Boolean>, Boolean>,
     onStateSynced: () -> Unit,
     val defaultMoveDestinationState: DefaultMoveDestinationState,
@@ -76,7 +76,7 @@ class FileTypesState(
     )
 
     val sortedFileTypes: SnapshotStateList<FileType> =
-        FileType.values
+        FileType.getValues()
             .getMutableStateList()
             .apply {
                 sortByIsEnabledAndOriginalOrder(statusMap)
@@ -102,10 +102,10 @@ class FileTypesState(
         context: Context
     ) {
         when (val result = getFileTypeCheckedChangeResult(
-            statusMap.getValue(fileType.status),
+            statusMap.getValue(fileType.statusDSE),
             checkedNew
         )) {
-            is FileTypeCheckedChangeResult.ToggleStatus -> statusMap.toggle(fileType.status)
+            is FileTypeCheckedChangeResult.ToggleStatus -> statusMap.toggle(fileType.statusDSE)
             is FileTypeCheckedChangeResult.ShowSnackbar -> showSnackbar(
                 result.getAppSnackbarVisuals(
                     context
@@ -132,7 +132,7 @@ class FileTypesState(
 
     fun setAndApplyStatus(fileTypes: Iterable<FileType>, newStatus: FileType.Status) {
         fileTypes.forEach {
-            statusMap[it.status] = newStatus
+            statusMap[it.statusDSE] = newStatus
         }
         scope.launch {
             statusMap.sync()
@@ -173,15 +173,15 @@ private sealed interface FileTypeCheckedChangeResult {
     }
 }
 
-private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(fileTypeStatuses: Map<FileType.Status.StoreEntry, FileType.Status>) {
+private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(fileTypeStatuses: Map<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>) {
     sortWith(
         compareByDescending<FileType> {
             fileTypeStatuses.getValue(
-                it.status
+                it.statusDSE
             )
                 .isEnabled
         }
-            .thenBy(FileType.values::indexOf)
+            .thenBy(FileType.getValues::indexOf)
     )
 }
 
@@ -200,16 +200,16 @@ private fun List<FileType>.getFirstDisabledFileType(isDisabled: (FileType) -> Bo
         .firstOrNull { !isDisabled(it[0]) && isDisabled(it[1]) }
         ?.let { it[1] }
 
-private fun UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>.appliedIsEnabled(
+private fun UnconfirmedStateMap<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>.appliedIsEnabled(
     fileType: FileType
 ): Boolean {
-    val isEnabled = getValue(fileType.status).isEnabled
-    val statesDissimilar = dissimilarKeys.contains(fileType.status)
+    val isEnabled = getValue(fileType.statusDSE).isEnabled
+    val statesDissimilar = dissimilarKeys.contains(fileType.statusDSE)
 
     return (isEnabled && !statesDissimilar) || (!isEnabled && statesDissimilar)
 }
 
-private fun UnconfirmedStateMap<FileType.Status.StoreEntry, FileType.Status>.allowToggle(checkedNew: Boolean): Boolean =
+private fun UnconfirmedStateMap<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>.allowToggle(checkedNew: Boolean): Boolean =
     !values
         .map { it.isEnabled }
         .allFalseAfterEnteringValue(

@@ -1,6 +1,5 @@
 package com.w2sv.data.model
 
-import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorLong
@@ -25,12 +24,14 @@ sealed class FileType(
 
     val identifier: String = this::class.java.simpleName
 
-    val status by lazy {
-        Status.StoreEntry(this)
-    }
+    @IgnoredOnParcel
+    val statusDSE
+        get() = Status.getDSE(this)
 
+    @IgnoredOnParcel
     val sources: List<Source> = sourceKinds.map { Source(this, it) }
 
+    @IgnoredOnParcel
     val isMediaType: Boolean
         get() = this is Media
 
@@ -117,7 +118,8 @@ sealed class FileType(
         )
 
         companion object {
-            val values: List<Media> = listOf(Image, Video, GIF, Audio)
+            @JvmStatic
+            fun getValues(): List<Media> = listOf(Image, Video, GIF, Audio)
         }
     }
 
@@ -210,7 +212,8 @@ sealed class FileType(
         )
 
         companion object {
-            val values: List<NonMedia> = listOf(PDF, Text, Archive, APK)
+            @JvmStatic
+            fun getValues(): List<NonMedia> = listOf(PDF, Text, Archive, APK)
         }
     }
 
@@ -222,59 +225,58 @@ sealed class FileType(
 
         val isEnabled: Boolean get() = this == Enabled
 
-        class StoreEntry(fileType: FileType) : DataStoreEntry.EnumValued.Impl<Status>(
-            preferencesKey = intPreferencesKey(name = fileType.identifier),
-            defaultValue = DisabledDueToNoFileAccess
-        )
+        companion object {
+            fun getDSE(fileType: FileType): DataStoreEntry.EnumValued<Status> =
+                DataStoreEntry.EnumValued.Impl(
+                    preferencesKey = intPreferencesKey(name = fileType.identifier),
+                    defaultValue = DisabledDueToNoFileAccess
+                )
+        }
     }
 
     companion object {
-        val values: List<FileType> = Media.values + NonMedia.values
+        @JvmStatic
+        fun getValues(): List<FileType> = Media.getValues() + NonMedia.getValues()
     }
 
     @Parcelize
-    class Source(val fileType: FileType, val kind: Kind) : Parcelable {
+    data class Source(val fileType: FileType, val kind: Kind) : Parcelable {
 
         private fun getPreferencesKeyContent(keySuffix: String): String =
             "${fileType.identifier}.$kind.$keySuffix"
 
         @IgnoredOnParcel
-        val isEnabledDSE by lazy {  // TODO: Remove for NonMedia
-            object : DataStoreEntry.UniType.Impl<Boolean>(
-                booleanPreferencesKey(getPreferencesKeyContent("IS_ENABLED")),
-                true
-            ) {}
-        }
+        val isEnabledDSE = DataStoreEntry.UniType.Impl(  // TODO: Remove for NonMedia
+            booleanPreferencesKey(getPreferencesKeyContent("IS_ENABLED")),
+            true
+        )
 
         @IgnoredOnParcel
-        val defaultDestinationDSE by lazy {
-            object : DataStoreEntry.UriValued.Impl(
+        val defaultDestinationDSE =
+            DataStoreEntry.UriValued.Impl(
                 stringPreferencesKey(getPreferencesKeyContent("DEFAULT_DESTINATION")),
                 null
-            ) {}
-        }
+            )
 
         @IgnoredOnParcel
-        val lastManualMoveDestinationDSE by lazy {
-            object : DataStoreEntry.UriValued.Impl(
-                stringPreferencesKey(getPreferencesKeyContent("LAST_MANUAL_MOVE_DESTINATION")),
-                null
-            ) {}
-        }
+        val lastManualMoveDestinationDSE = DataStoreEntry.UriValued.Impl(
+            stringPreferencesKey(getPreferencesKeyContent("LAST_MANUAL_MOVE_DESTINATION")),
+            null
+        )
 
-        fun getTitle(context: Context): String =
-            when (kind) {
-                Kind.Screenshot -> "Screenshot"
-                Kind.Camera -> {
-                    if (fileType == Media.Image)
-                        "Photo"
-                    else
-                        "Video"
-                }
-
-                Kind.Download -> "${context.getString(fileType.titleRes)} Download"
-                Kind.OtherApp -> "External App ${context.getString(fileType.titleRes)}"
-            }
+//        fun getTitle(context: Context): String =
+//            when (kind) {
+//                Kind.Screenshot -> "Screenshot"
+//                Kind.Camera -> {
+//                    if (fileType == Media.Image)
+//                        "Photo"
+//                    else
+//                        "Video"
+//                }
+//
+//                Kind.Download -> "${context.getString(fileType.titleRes)} Download"
+//                Kind.OtherApp -> "External App ${context.getString(fileType.titleRes)}"
+//            }
 
         enum class Kind(
             @StringRes val labelRes: Int,

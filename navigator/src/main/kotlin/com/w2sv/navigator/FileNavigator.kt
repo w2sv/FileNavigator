@@ -3,14 +3,15 @@ package com.w2sv.navigator
 import android.content.Context
 import android.content.Intent
 import com.w2sv.androidutils.coroutines.getSynchronousMap
-import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.services.UnboundService
+import com.w2sv.common.di.AppDispatcher
+import com.w2sv.common.di.Scope
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.data.storage.repositories.PreferencesRepository
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
-import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.notifications.managers.AppNotificationsManager
+import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,8 +50,7 @@ class FileNavigator : UnboundService() {
                         Args(
                             navigatableFile = moveFile,
                             getDefaultMoveDestination = { source ->
-                                fileTypeRepository.getDefaultDestinationFlow(source)
-                                    .getValueSynchronously()
+                                fileTypeRepository.getDefaultDestination(source)
                             }
                         )
                     )
@@ -129,11 +129,9 @@ class FileNavigator : UnboundService() {
     }
 
     @Singleton
-    class StatusChanged @Inject constructor() {
+    class StatusChanged @Inject constructor(@Scope(AppDispatcher.Default) private val scope: CoroutineScope) {
         val isRunning get() = _isRunning.asSharedFlow()
         private val _isRunning: MutableSharedFlow<Boolean> = MutableSharedFlow()
-
-        private val scope = CoroutineScope(Dispatchers.Default)
 
         internal fun emitNewStatus(isRunning: Boolean) {
             scope.launch {

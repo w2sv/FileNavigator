@@ -10,9 +10,7 @@ import com.w2sv.data.storage.repositories.FileTypeRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DefaultMoveDestinationState(
@@ -22,17 +20,11 @@ class DefaultMoveDestinationState(
 ) {
     val pathMap =
         fileTypeRepository
-            .defaultDestinationMap
-            .mapValues { (_, destinationFlow) ->
-                destinationFlow
-                    .stateIn(
-                        scope,
-                        SharingStarted.Eagerly,
-                        null
-                    )
-                    .mapState { uri ->
-                        uri?.let { getDocumentUriPath(it, context) }
-                    }
+            .defaultDestinationStateFlowMap
+            .mapValues { (_, destinationStateFlow) ->
+                destinationStateFlow.mapState { uri ->
+                    uri?.let { getDocumentUriPath(it, context) }
+                }
             }
 
     // ==================

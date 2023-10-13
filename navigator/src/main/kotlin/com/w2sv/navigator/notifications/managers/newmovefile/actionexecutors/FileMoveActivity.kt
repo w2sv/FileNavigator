@@ -15,7 +15,6 @@ import androidx.lifecycle.viewModelScope
 import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.file.getSimplePath
 import com.anggrayudi.storage.media.MediaFile
-import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.R
@@ -66,11 +65,8 @@ class FileMoveActivity : ComponentActivity() {
             }
 
         fun getDestinationPickerStartLocation(): Uri? =
-            fileTypeRepository.getLastManualMoveDestinationFlow(navigatableFile.source)
-                .getValueSynchronously() ?: fileTypeRepository.getDefaultDestinationFlow(
-                navigatableFile.source
-            )
-                .getValueSynchronously()
+            fileTypeRepository.getLastManualMoveDestination(navigatableFile.source)
+                ?: fileTypeRepository.getDefaultDestination(navigatableFile.source)
     }
 
     private val viewModel by viewModels<ViewModel>()

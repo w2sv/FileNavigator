@@ -25,4 +25,9 @@ dependencies {
     ksp libs.google.hilt.compiler
 
     implementation libs.simplestorage
+
+    // ---------------
+    // Test
+
+    testImplementation libs.bundles.unitTest
 }

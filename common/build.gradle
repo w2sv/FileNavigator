@@ -1,6 +1,8 @@
 plugins {
     alias libs.plugins.library
     alias libs.plugins.kotlin
+    alias libs.plugins.hilt
+    alias libs.plugins.ksp
     id 'kotlin-parcelize'
 }
 
@@ -16,4 +18,8 @@ dependencies {
     implementation libs.simplestorage
 
     implementation libs.androidx.core
+
+    // hilt
+    implementation libs.google.hilt
+    ksp libs.google.hilt.compiler
 }

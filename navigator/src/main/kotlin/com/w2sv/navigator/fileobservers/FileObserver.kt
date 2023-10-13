@@ -15,13 +15,10 @@ import slimber.log.i
 internal abstract class FileObserver(
     val contentObserverUri: Uri,
     private val contentResolver: ContentResolver,
-    private val onNewMoveFileListener: (NavigatableFile) -> Unit
+    private val onNewMoveFileListener: (NavigatableFile) -> Unit,
+    private val mediaStoreFileProvider: MediaStoreFile.Provider = MediaStoreFile.Provider()
 ) :
     ContentObserver(Handler(Looper.getMainLooper())) {
-
-    private val mediaStoreFileProvider by lazy {
-        MediaStoreFile.Provider()
-    }
 
     override fun deliverSelfNotifications(): Boolean = false
 
@@ -64,12 +61,12 @@ fun emitDiscardedLog(reason: String) {
 }
 
 internal fun getFileObservers(
-    statusMap: Map<FileType.Status.StoreEntry, FileType.Status>,
+    statusMap: Map<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>,
     mediaFileSourceEnabled: Map<DataStoreEntry.UniType<Boolean>, Boolean>,
     contentResolver: ContentResolver,
     onNewMoveFile: (NavigatableFile) -> Unit
 ): List<FileObserver> {
-    val mediaFileObservers = FileType.Media.values
+    val mediaFileObservers = FileType.Media.getValues()
         .filterEnabled(statusMap)
         .map { mediaType ->
             MediaFileObserver(
@@ -85,7 +82,7 @@ internal fun getFileObservers(
         }
 
     val nonMediaFileObserver =
-        FileType.NonMedia.values
+        FileType.NonMedia.getValues()
             .filterEnabled(statusMap)
             .run {
                 if (isNotEmpty()) {
@@ -107,5 +104,5 @@ internal fun getFileObservers(
     }
 }
 
-fun <FT : FileType> Iterable<FT>.filterEnabled(statusMap: Map<FileType.Status.StoreEntry, FileType.Status>): List<FT> =
-    filter { statusMap.getValue(it.status).isEnabled }
+fun <FT : FileType> Iterable<FT>.filterEnabled(statusMap: Map<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>): List<FT> =
+    filter { statusMap.getValue(it.statusDSE).isEnabled }

@@ -1,6 +1,6 @@
 package com.w2sv.navigator
 
-import com.w2sv.navigator.model.MediaStoreColumnData
+import com.w2sv.navigator.utils.TestInstancesProvider
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
@@ -12,7 +12,12 @@ class MediaStoreDataTest {
 
     @Test
     fun testExistsForMoreThan() {
-        val instance = getInstance(dateAdded = Date.from(Instant.now().minusSeconds(10)))
+        val instance =
+            TestInstancesProvider.getMediaStoreColumnData(
+                dateAdded = Date.from(
+                    Instant.now().minusSeconds(10)
+                )
+            )
 
         assertFalse(instance.addedBeforeForMoreThan(15_000))
         assertTrue(instance.addedBeforeForMoreThan(10_000))
@@ -21,41 +26,20 @@ class MediaStoreDataTest {
 
     @Test
     fun testFileExtension() {
-        val instance = getInstance(name = "someName.jpeg")
+        val instance = TestInstancesProvider.getMediaStoreColumnData(name = "someName.jpeg")
 
         assertEquals("jpeg", instance.fileExtension)
     }
 
     @Test
     fun testNonIncrementedNameWOExtension() {
-        val instance = getInstance(name = "someName.jpeg")
+        val instance = TestInstancesProvider.getMediaStoreColumnData(name = "someName.jpeg")
         assertEquals("someName", instance.nonIncrementedNameWOExtension)
 
-        val instance1 = getInstance(name = "someName(1).jpeg")
+        val instance1 = TestInstancesProvider.getMediaStoreColumnData(name = "someName(1).jpeg")
         assertEquals("someName", instance1.nonIncrementedNameWOExtension)
 
-        val instance2 = getInstance(name = "someName (435).jpeg")
+        val instance2 = TestInstancesProvider.getMediaStoreColumnData(name = "someName (435).jpeg")
         assertEquals("someName ", instance2.nonIncrementedNameWOExtension)
-    }
-
-    companion object {
-        private fun getInstance(
-            rowId: String = "",
-            absPath: String = "",
-            name: String = "",
-            volumeRelativeDirPath: String = "",
-            dateAdded: Date = Date(),
-            size: Long = 0L,
-            isPending: Boolean = false
-        ): MediaStoreColumnData =
-            MediaStoreColumnData(
-                rowId = rowId,
-                absPath = absPath,
-                volumeRelativeDirPath = volumeRelativeDirPath,
-                name = name,
-                dateAdded = dateAdded,
-                size = size,
-                isPending = isPending,
-            )
     }
 }

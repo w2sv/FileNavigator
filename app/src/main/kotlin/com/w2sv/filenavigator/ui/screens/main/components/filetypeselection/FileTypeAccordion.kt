@@ -65,7 +65,7 @@ fun FileTypeAccordion(
         }
 
         val fileTypeStatus =
-            fileTypesState.statusMap.getValue(fileType.status)
+            fileTypesState.statusMap.getValue(fileType.statusDSE)
 
         Header(
             fileType = fileType,
