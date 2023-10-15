@@ -18,10 +18,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -99,10 +102,18 @@ private fun SourceColumn(
         )
 
         AnimatedVisibility(visible = isEnabled && defaultDestinationPath != null) {
+            var nonNullPath by remember(this) {  // Remedies NullPointerException
+                mutableStateOf(defaultDestinationPath!!)
+            }
+
+            LaunchedEffect(defaultDestinationPath) {
+                if (defaultDestinationPath != null) {
+                    nonNullPath = defaultDestinationPath!!
+                }
+            }
+
             DefaultMoveDestinationRow(
-                path = remember(this) {  // Remedies NullPointerException
-                    defaultDestinationPath!!
-                },
+                path = { nonNullPath },
                 onDeleteButtonClick = {
                     fileTypesState.defaultMoveDestinationState.saveDestination(source, null)
                 },
@@ -216,7 +227,7 @@ private fun SetDefaultMoveDestinationButton(
 
 @Composable
 private fun DefaultMoveDestinationRow(
-    path: String,
+    path: () -> String,
     onDeleteButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -226,7 +237,7 @@ private fun DefaultMoveDestinationRow(
     ) {
         Spacer(modifier = Modifier.fillMaxWidth(0.22f))
         AppFontText(
-            text = path,
+            text = path(),
             color = AppColor.disabled,
             fontSize = 14.sp,
             modifier = Modifier.weight(0.7f)

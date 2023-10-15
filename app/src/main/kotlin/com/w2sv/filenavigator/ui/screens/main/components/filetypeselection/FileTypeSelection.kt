@@ -91,10 +91,7 @@ fun SelectDefaultMoveDestinationPicker(
     val picker = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocumentTree()
     ) { treeUri ->
-        if (treeUri != null) {
-            i { "DocumentTree Uri: $treeUri" }
-            defaultMoveDestinationState.onDestinationSelected(treeUri, context)
-        }
+        defaultMoveDestinationState.onDestinationReceived(treeUri, context)
     }
 
     LaunchedEffect(Unit) {

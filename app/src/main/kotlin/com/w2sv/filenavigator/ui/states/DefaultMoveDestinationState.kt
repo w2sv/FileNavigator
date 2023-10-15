@@ -49,9 +49,11 @@ class DefaultMoveDestinationState(
     val launchPicker get() = _launchPicker.asSharedFlow()
     private val _launchPicker = MutableSharedFlow<Unit>()
 
-    fun onDestinationSelected(treeUri: Uri, context: Context) {
-        DocumentFile.fromTreeUri(context, treeUri)?.let { documentFile ->
-            saveDestination(pickerSource.value!!, documentFile.uri)
+    fun onDestinationReceived(treeUri: Uri?, context: Context) {
+        if (treeUri != null) {
+            DocumentFile.fromTreeUri(context, treeUri)?.let { documentFile ->
+                saveDestination(pickerSource.value!!, documentFile.uri)
+            }
         }
         pickerSource.value = null
     }
