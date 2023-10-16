@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -89,10 +90,6 @@ private fun SourceColumn(
                 key = source.isEnabledDSE,
                 defaultValue = true
             )
-        val defaultDestinationPath by fileTypesState.defaultMoveDestinationState.pathStateFlowMap.getValue(
-            source.defaultDestinationDSE
-        )
-            .collectAsState()
 
         SourceRow(
             source = source,
@@ -101,27 +98,43 @@ private fun SourceColumn(
             modifier = Modifier.height(44.dp)
         )
 
-        AnimatedVisibility(visible = isEnabled && defaultDestinationPath != null) {
-            var nonNullPath by remember(this) {  // Remedies NullPointerException
-                mutableStateOf(defaultDestinationPath!!)
-            }
-
-            LaunchedEffect(defaultDestinationPath) {
-                if (defaultDestinationPath != null) {
-                    nonNullPath = defaultDestinationPath!!
-                }
-            }
-
-            DefaultMoveDestinationRow(
-                path = { nonNullPath },
-                onDeleteButtonClick = {
-                    fileTypesState.defaultMoveDestinationState.deleteDestination(source)
-                },
-                modifier = Modifier
-                    .height(36.dp)
-                    .padding(bottom = 4.dp)
+        ConditionalDefaultDestinationRow(
+            sourceEnabled = isEnabled,
+            defaultDestinationPath = fileTypesState.defaultMoveDestinationState.pathStateFlowMap.getValue(
+                source.defaultDestinationDSE
             )
+                .collectAsState().value,
+            deleteDestination = {
+                fileTypesState.defaultMoveDestinationState.deleteDestination(source)
+            }
+        )
+    }
+}
+
+@Composable
+private fun ColumnScope.ConditionalDefaultDestinationRow(
+    sourceEnabled: Boolean,
+    defaultDestinationPath: String?,
+    deleteDestination: () -> Unit
+) {
+    AnimatedVisibility(visible = sourceEnabled && defaultDestinationPath != null) {
+        var nonNullPath by remember(this) {
+            mutableStateOf(defaultDestinationPath!!)
         }
+
+        LaunchedEffect(defaultDestinationPath) {
+            if (defaultDestinationPath != null) {
+                nonNullPath = defaultDestinationPath
+            }
+        }
+
+        DefaultDestinationRow(
+            path = { nonNullPath },
+            onDeleteButtonClick = deleteDestination,
+            modifier = Modifier
+                .height(36.dp)
+                .padding(bottom = 4.dp)
+        )
     }
 }
 
@@ -192,7 +205,7 @@ private fun SourceRow(
                     }
                 },
                 AnimatedRowElement.Conditional {
-                    SetDefaultMoveDestinationButton(
+                    SelectDefaultMoveDestinationButton(
                         onClick = {
                             fileTypesState.defaultMoveDestinationState.launchPickerFor(source)
                         }
@@ -204,7 +217,7 @@ private fun SourceRow(
 }
 
 @Composable
-private fun SetDefaultMoveDestinationButton(
+private fun SelectDefaultMoveDestinationButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -226,7 +239,7 @@ private fun SetDefaultMoveDestinationButton(
 }
 
 @Composable
-private fun DefaultMoveDestinationRow(
+private fun DefaultDestinationRow(
     path: () -> String,
     onDeleteButtonClick: () -> Unit,
     modifier: Modifier = Modifier
