@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.w2sv.androidutils.coroutines.mapState
+import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlowMap
 import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.data.model.FileType
 import com.w2sv.data.storage.repositories.FileTypeRepository
@@ -18,14 +19,19 @@ class DefaultMoveDestinationState(
     private val scope: CoroutineScope,
     context: Context
 ) {
-    val pathMap =
-        fileTypeRepository
-            .defaultDestinationStateFlowMap
-            .mapValues { (_, destinationStateFlow) ->
-                destinationStateFlow.mapState { uri ->
-                    uri?.let { getDocumentUriPath(it, context) }
-                }
+    val unconfirmedDefaultDestinationMap =
+        UnconfirmedStateFlowMap.fromAppliedStateFlowMap(
+            appliedStateFlowMap = fileTypeRepository
+                .defaultDestinationStateFlowMap,
+            syncState = { fileTypeRepository.saveUriValuedMap(it) }
+        )
+
+    val pathStateFlowMap = unconfirmedDefaultDestinationMap
+        .mapValues { (_, destinationStateFlow) ->
+            destinationStateFlow.mapState { uri ->
+                uri?.let { getDocumentUriPath(it, context) }
             }
+        }
 
     // ==================
     // Configuration
@@ -52,15 +58,14 @@ class DefaultMoveDestinationState(
     fun onDestinationReceived(treeUri: Uri?, context: Context) {
         if (treeUri != null) {
             DocumentFile.fromTreeUri(context, treeUri)?.let { documentFile ->
-                saveDestination(pickerSource.value!!, documentFile.uri)
+                unconfirmedDefaultDestinationMap[pickerSource.value!!.defaultDestinationDSE] =
+                    documentFile.uri
             }
         }
         pickerSource.value = null
     }
 
-    fun saveDestination(source: FileType.Source, destination: Uri?) {
-        scope.launch {
-            fileTypeRepository.saveDefaultDestination(source, destination)
-        }
+    fun deleteDestination(source: FileType.Source) {
+        unconfirmedDefaultDestinationMap[source.defaultDestinationDSE] = null
     }
 }

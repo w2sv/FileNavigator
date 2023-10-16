@@ -34,7 +34,8 @@ class FileTypesState(
 ) : UnconfirmedStatesComposition(
     unconfirmedStates = listOf(
         statusMap,
-        mediaFileSourceEnabledMap
+        mediaFileSourceEnabledMap,
+        defaultMoveDestinationState.unconfirmedDefaultDestinationMap
     ),
     coroutineScope = scope,
     onStateSynced = onStateSynced

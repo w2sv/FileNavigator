@@ -89,7 +89,7 @@ private fun SourceColumn(
                 key = source.isEnabledDSE,
                 defaultValue = true
             )
-        val defaultDestinationPath by fileTypesState.defaultMoveDestinationState.pathMap.getValue(
+        val defaultDestinationPath by fileTypesState.defaultMoveDestinationState.pathStateFlowMap.getValue(
             source.defaultDestinationDSE
         )
             .collectAsState()
@@ -115,7 +115,7 @@ private fun SourceColumn(
             DefaultMoveDestinationRow(
                 path = { nonNullPath },
                 onDeleteButtonClick = {
-                    fileTypesState.defaultMoveDestinationState.saveDestination(source, null)
+                    fileTypesState.defaultMoveDestinationState.deleteDestination(source)
                 },
                 modifier = Modifier
                     .height(36.dp)
