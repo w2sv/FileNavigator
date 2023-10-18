@@ -13,7 +13,7 @@ import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.navigator.R
-import com.w2sv.navigator.model.NavigatableFile
+import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putNavigatableFileExtra
@@ -38,10 +38,10 @@ class QuickMoveBroadcastReceiver : BroadcastReceiver() {
         }
 
         // Extract extras
-        val navigatableFile =
-            intent.getParcelableCompat<NavigatableFile>(NavigatableFile.EXTRA)!!
+        val moveFile =
+            intent.getParcelableCompat<MoveFile>(MoveFile.EXTRA)!!
 
-        if (!navigatableFile.mediaStoreFile.columnData.fileExists) {
+        if (!moveFile.mediaStoreFile.columnData.fileExists) {
             removeNotificationAndCleanupResources(context, intent)
             context.showToast(R.string.couldn_t_move_file_has_already_been_moved_deleted_or_renamed)
             return
@@ -57,7 +57,7 @@ class QuickMoveBroadcastReceiver : BroadcastReceiver() {
                     }
             ) ?: return context.showToast(R.string.internal_error)
 
-        val moveMediaFile = navigatableFile.getSimpleStorageMediaFile(context)
+        val moveMediaFile = moveFile.getSimpleStorageMediaFile(context)
             ?: return context.showToast(R.string.internal_error)
 
         moveMediaFile.launchMoveTo(
@@ -83,13 +83,13 @@ class QuickMoveBroadcastReceiver : BroadcastReceiver() {
 
     companion object {
         fun getIntent(
-            navigatableFile: NavigatableFile,
+            moveFile: MoveFile,
             notificationResources: NotificationResources,
             moveDestination: Uri,
             context: Context
         ): Intent =
             Intent(context, QuickMoveBroadcastReceiver::class.java)
-                .putNavigatableFileExtra(navigatableFile)
+                .putNavigatableFileExtra(moveFile)
                 .putNotificationResourcesExtra(notificationResources)
                 .putExtra(
                     EXTRA_MOVE_DESTINATION,

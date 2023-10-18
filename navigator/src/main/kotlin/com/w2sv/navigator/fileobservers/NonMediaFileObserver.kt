@@ -4,13 +4,13 @@ import android.content.ContentResolver
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
-import com.w2sv.navigator.model.NavigatableFile
+import com.w2sv.navigator.model.MoveFile
 import slimber.log.i
 
 internal class NonMediaFileObserver(
     private val fileTypes: List<FileType.NonMedia>,
     contentResolver: ContentResolver,
-    onNewMoveFile: (NavigatableFile) -> Unit
+    onNewMoveFile: (MoveFile) -> Unit
 ) :
     FileObserver(
         MediaType.DOWNLOADS.readUri!!,
@@ -24,11 +24,11 @@ internal class NonMediaFileObserver(
 
     override fun getNavigatableFileIfMatching(
         mediaStoreFile: MediaStoreFile
-    ): NavigatableFile? =
+    ): MoveFile? =
         fileTypes
             .firstOrNull { it.matchesFileExtension(mediaStoreFile.columnData.fileExtension) }
             ?.let { fileType ->
-                NavigatableFile(
+                MoveFile(
                     type = fileType,
                     sourceKind = FileType.Source.Kind.Download,
                     mediaStoreFile = mediaStoreFile

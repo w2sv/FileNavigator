@@ -257,20 +257,6 @@ sealed class FileType(
             null
         )
 
-//        fun getTitle(context: Context): String =
-//            when (kind) {
-//                Kind.Screenshot -> "Screenshot"
-//                Kind.Camera -> {
-//                    if (fileType == Media.Image)
-//                        "Photo"
-//                    else
-//                        "Video"
-//                }
-//
-//                Kind.Download -> "${context.getString(fileType.titleRes)} Download"
-//                Kind.OtherApp -> "External App ${context.getString(fileType.titleRes)}"
-//            }
-
         enum class Kind(
             @StringRes val labelRes: Int,
             @DrawableRes val iconRes: Int

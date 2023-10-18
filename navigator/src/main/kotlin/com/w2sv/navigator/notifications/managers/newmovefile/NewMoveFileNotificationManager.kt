@@ -16,7 +16,7 @@ import com.w2sv.common.utils.getDocumentUriFileName
 import com.w2sv.common.utils.whiteSpaceWrapped
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.R
-import com.w2sv.navigator.model.NavigatableFile
+import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.AppNotificationsManager
@@ -42,7 +42,7 @@ class NewMoveFileNotificationManager(
     resourcesBaseSeed = 1
 ) {
     inner class Args(
-        val navigatableFile: NavigatableFile,
+        val moveFile: MoveFile,
         val getLastMoveDestination: (FileType.Source) -> Uri?,
         val resources: NotificationResources = getNotificationResources(4)
     ) : AppNotificationManager.Args
@@ -50,7 +50,7 @@ class NewMoveFileNotificationManager(
     override fun getBuilder(args: Args): Builder =
         object : Builder() {
 
-            private val navigatableFile by args::navigatableFile
+            private val navigatableFile by args::moveFile
             private val getLastMoveDestination by args::getLastMoveDestination
             private val resources by args::resources
 

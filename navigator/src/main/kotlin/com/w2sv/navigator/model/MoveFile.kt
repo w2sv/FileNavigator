@@ -9,7 +9,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class NavigatableFile(
+data class MoveFile(
     val mediaStoreFile: MediaStoreFile,
     val type: FileType,
     val sourceKind: FileType.Source.Kind,

@@ -9,13 +9,13 @@ import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
-import com.w2sv.navigator.model.NavigatableFile
+import com.w2sv.navigator.model.MoveFile
 import slimber.log.i
 
 internal abstract class FileObserver(
     val contentObserverUri: Uri,
     private val contentResolver: ContentResolver,
-    private val onNewNavigatableFileListener: (NavigatableFile) -> Unit,
+    private val onNewNavigatableFileListener: (MoveFile) -> Unit,
 ) :
     ContentObserver(Handler(Looper.getMainLooper())) {
 
@@ -57,7 +57,7 @@ internal abstract class FileObserver(
 
     protected abstract fun getNavigatableFileIfMatching(
         mediaStoreFile: MediaStoreFile
-    ): NavigatableFile?
+    ): MoveFile?
 }
 
 fun emitDiscardedLog(reason: String) {
@@ -68,7 +68,7 @@ internal fun getFileObservers(
     statusMap: Map<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>,
     mediaFileSourceEnabled: Map<DataStoreEntry.UniType<Boolean>, Boolean>,
     contentResolver: ContentResolver,
-    onNewNavigatableFileListener: (NavigatableFile) -> Unit
+    onNewNavigatableFileListener: (MoveFile) -> Unit
 ): List<FileObserver> {
     val mediaFileObservers = FileType.Media.getValues()
         .filterEnabled(statusMap)

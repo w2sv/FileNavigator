@@ -10,7 +10,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.file.getSimplePath
@@ -18,7 +17,7 @@ import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.R
-import com.w2sv.navigator.model.NavigatableFile
+import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putNavigatableFileExtra
@@ -26,6 +25,7 @@ import com.w2sv.navigator.notifications.putNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -43,13 +43,13 @@ class FileMoveActivity : ComponentActivity() {
     ) :
         androidx.lifecycle.ViewModel() {
 
-        private val navigatableFile: NavigatableFile =
-            savedStateHandle[NavigatableFile.EXTRA]!!
+        private val moveFile: MoveFile =
+            savedStateHandle[MoveFile.EXTRA]!!
 
         val moveFileExists: Boolean
-            get() = navigatableFile.mediaStoreFile.columnData.fileExists
+            get() = moveFile.mediaStoreFile.columnData.fileExists
 
-        val moveMediaFile: MediaFile? = navigatableFile.getSimpleStorageMediaFile(context)
+        val moveMediaFile: MediaFile? = moveFile.getSimpleStorageMediaFile(context)
 
         // ===============
         // FileTypeRepository
@@ -58,12 +58,12 @@ class FileMoveActivity : ComponentActivity() {
         fun saveLastMoveDestination(destination: Uri): Job =
             viewModelScope.launch {
                 fileTypeRepository.saveLastMoveDestination(
-                    navigatableFile.source,
+                    moveFile.source,
                     destination
                 )
             }
 
-        val lastMoveDestination = fileTypeRepository.getLastMoveDestination(navigatableFile.source)
+        val lastMoveDestination = fileTypeRepository.getLastMoveDestination(moveFile.source)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,34 +105,34 @@ class FileMoveActivity : ComponentActivity() {
                 ?: return showResultToastAndFinishActivity(getString(R.string.internal_error))
 
         // Move file
-        lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.moveMediaFile!!.moveTo(
-                targetFolder = targetDirectoryDocumentFile,
-                callback = object : FileCallback() {
-                    override fun onCompleted(result: Any) {
-                        removeNotificationAndCleanupResources()
+        CoroutineScope(Dispatchers.IO)
+            .launch {
+                viewModel.moveMediaFile!!.moveTo(
+                    targetFolder = targetDirectoryDocumentFile,
+                    callback = object : FileCallback() {
+                        override fun onCompleted(result: Any) {
+                            viewModel
+                                .saveLastMoveDestination(targetDirectoryDocumentFile.uri)
 
-                        viewModel
-                            .saveLastMoveDestination(targetDirectoryDocumentFile.uri)
-//                                .invokeOnCompletion {
-//                                    finishAndRemoveTask()
-//                                }
+                            removeNotificationAndCleanupResources()
 
-                        showResultToastAndFinishActivity(
-                            message = getString(
-                                R.string.moved_file_to,
-                                targetDirectoryDocumentFile.getSimplePath(applicationContext)
+                            showToast(
+                                getString(
+                                    R.string.moved_file_to,
+                                    targetDirectoryDocumentFile.getSimplePath(applicationContext)
+                                )
                             )
-                        )
-                    }
+                        }
 
-                    override fun onFailed(errorCode: ErrorCode) {
-                        i { errorCode.toString() }
-                        showResultToastAndFinishActivity(errorCode.name)
+                        override fun onFailed(errorCode: ErrorCode) {
+                            i { errorCode.toString() }
+                            showToast(errorCode.name)
+                        }
                     }
-                }
-            )
-        }
+                )
+            }
+
+        finishAndRemoveTask()
     }
 
     private fun removeNotificationAndCleanupResources() {
@@ -149,7 +149,7 @@ class FileMoveActivity : ComponentActivity() {
 
     companion object {
         fun makeRestartActivityIntent(
-            navigatableFile: NavigatableFile,
+            moveFile: MoveFile,
             notificationResources: NotificationResources,
             context: Context
         ): Intent =
@@ -159,7 +159,7 @@ class FileMoveActivity : ComponentActivity() {
                     FileMoveActivity::class.java
                 )
             )
-                .putNavigatableFileExtra(navigatableFile)
+                .putNavigatableFileExtra(moveFile)
                 .putNotificationResourcesExtra(notificationResources)
     }
 }
