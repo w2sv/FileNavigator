@@ -13,6 +13,9 @@ object AppColor {
     val disabled: Color
         @Composable get() = MaterialTheme.colorScheme.onSurface.copy(0.38f)
 
+    val lessDisabled: Color
+        @Composable get() = MaterialTheme.colorScheme.onSurface.copy(0.52f)
+
     object ThemeLight {
         val onPrimary = Color(0xFFFFFFFF)
         val primaryContainer = Color(0xFF6FF6FE)

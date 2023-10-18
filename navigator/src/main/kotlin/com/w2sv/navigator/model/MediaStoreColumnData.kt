@@ -64,6 +64,9 @@ data class MediaStoreColumnData(
     fun getFile(): File =
         File(absPath)
 
+    val fileExists: Boolean
+        get() = getFile().exists()
+
     fun getSourceKind(): FileType.Source.Kind =
         when {
             volumeRelativeDirPath.contains(Environment.DIRECTORY_DOWNLOADS) -> FileType.Source.Kind.Download

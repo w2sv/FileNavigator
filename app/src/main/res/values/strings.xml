@@ -23,14 +23,6 @@
     <string name="third_party_app">Other Apps</string>
     <string name="screenshot">Screenshot</string>
     <string name="camera">Camera</string>
-
-    <string name="new_photo">New Photo</string>
-    <string name="new_screenshot">New Screenshot</string>
-    <string name="new_video">New Video</string>
-    <string name="new_">New %1$s File</string>
-    <string name="newly_downloaded_template">Newly downloaded %1$s</string>
-    <string name="new_third_party_file_template">New %1$s %2$s</string>
-
     <string name="tap_again_to_exit">Tap again to exit</string>
     <string name="alright">Alright</string>
     <string name="maybe_later">Maybe later</string>

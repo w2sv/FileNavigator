@@ -15,10 +15,11 @@ import slimber.log.i
 internal abstract class FileObserver(
     val contentObserverUri: Uri,
     private val contentResolver: ContentResolver,
-    private val onNewMoveFileListener: (NavigatableFile) -> Unit,
-    private val mediaStoreFileProvider: MediaStoreFile.Provider = MediaStoreFile.Provider()
+    private val onNewNavigatableFileListener: (NavigatableFile) -> Unit,
 ) :
     ContentObserver(Handler(Looper.getMainLooper())) {
+
+    private val mediaStoreFileProvider: MediaStoreFile.Provider = MediaStoreFile.Provider()
 
     override fun deliverSelfNotifications(): Boolean = false
 
@@ -39,11 +40,14 @@ internal abstract class FileObserver(
             )
 
             else -> {
-                getMoveFileIfMatching(mediaStoreFile)
-                    ?.let(onNewMoveFileListener)
+                getNavigatableFileIfMatching(mediaStoreFile)
+                    ?.let {
+                        i { "Calling onNewNavigatableFileListener on $it" }
+                        onNewNavigatableFileListener(it)
+                    }
 
                 cache.add(mediaStoreFile)
-                i { "Added ${mediaStoreFile.sha256} to cache" }
+                i { "Added $mediaStoreFile to cache" }
             }
         }
     }
@@ -51,7 +55,7 @@ internal abstract class FileObserver(
     private val cache =
         EvictingQueue.create<MediaStoreFile>(5)
 
-    protected abstract fun getMoveFileIfMatching(
+    protected abstract fun getNavigatableFileIfMatching(
         mediaStoreFile: MediaStoreFile
     ): NavigatableFile?
 }
@@ -64,7 +68,7 @@ internal fun getFileObservers(
     statusMap: Map<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>,
     mediaFileSourceEnabled: Map<DataStoreEntry.UniType<Boolean>, Boolean>,
     contentResolver: ContentResolver,
-    onNewMoveFile: (NavigatableFile) -> Unit
+    onNewNavigatableFileListener: (NavigatableFile) -> Unit
 ): List<FileObserver> {
     val mediaFileObservers = FileType.Media.getValues()
         .filterEnabled(statusMap)
@@ -77,7 +81,7 @@ internal fun getFileObservers(
                     .map { source -> source.kind }
                     .toSet(),
                 contentResolver = contentResolver,
-                onNewMoveFile = onNewMoveFile
+                onNewMoveFile = onNewNavigatableFileListener
             )
         }
 
@@ -89,7 +93,7 @@ internal fun getFileObservers(
                     NonMediaFileObserver(
                         fileTypes = this,
                         contentResolver = contentResolver,
-                        onNewMoveFile = onNewMoveFile
+                        onNewMoveFile = onNewNavigatableFileListener
                     )
                 } else {
                     null
@@ -98,9 +102,7 @@ internal fun getFileObservers(
 
     return buildList {
         addAll(mediaFileObservers)
-        nonMediaFileObserver?.let {
-            add(it)
-        }
+        nonMediaFileObserver?.let(::add)
     }
 }
 

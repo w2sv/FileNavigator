@@ -7,3 +7,6 @@ import com.anggrayudi.storage.file.getSimplePath
 
 fun getDocumentUriPath(documentUri: Uri, context: Context): String? =
     DocumentFile.fromSingleUri(context, documentUri)?.getSimplePath(context)
+
+fun getDocumentUriFileName(documentUri: Uri, context: Context) =
+    DocumentFile.fromSingleUri(context, documentUri)?.name

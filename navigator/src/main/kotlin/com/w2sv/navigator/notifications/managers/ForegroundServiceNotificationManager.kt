@@ -30,21 +30,17 @@ class ForegroundServiceNotificationManager(
                 setSmallIcon(R.drawable.ic_app_logo_24)
                 setContentTitle(context.getString(R.string.file_navigator_is_running))
 
-                // add configure action
-                addAction(
-                    NotificationCompat.Action(
-                        R.drawable.ic_settings_24,
-                        context.getString(R.string.configure),
-                        PendingIntent.getActivity(
-                            context,
-                            1,
-                            Intent.makeRestartActivityTask(
-                                ComponentName(context, "com.w2sv.filenavigator.MainActivity")
-                            ),
-                            PendingIntent.FLAG_IMMUTABLE
-                        )
+                setContentIntent(
+                    PendingIntent.getActivity(
+                        context,
+                        1,
+                        Intent.makeRestartActivityTask(
+                            ComponentName(context, "com.w2sv.filenavigator.MainActivity")
+                        ),
+                        PendingIntent.FLAG_IMMUTABLE
                     )
                 )
+
                 // add stop action
                 addAction(
                     NotificationCompat.Action(

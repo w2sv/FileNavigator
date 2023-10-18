@@ -12,21 +12,21 @@ import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
-import com.w2sv.common.utils.getDocumentUriPath
+import com.w2sv.common.utils.getDocumentUriFileName
 import com.w2sv.common.utils.whiteSpaceWrapped
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.R
-import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.FileMoveActivity
-import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.FileDeletionBroadcastReceiver
-import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.MoveToDefaultDestinationBroadcastReceiver
-import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.NotificationResourcesCleanupBroadcastReceiver
 import com.w2sv.navigator.model.NavigatableFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.AppNotificationsManager
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
+import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.FileMoveActivity
+import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.NotificationResourcesCleanupBroadcastReceiver
+import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.QuickMoveBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
+import slimber.log.i
 import javax.inject.Inject
 
 class NewMoveFileNotificationManager(
@@ -43,15 +43,15 @@ class NewMoveFileNotificationManager(
 ) {
     inner class Args(
         val navigatableFile: NavigatableFile,
-        val getDefaultMoveDestination: (FileType.Source) -> Uri?,
-        val resources: NotificationResources = getNotificationResources(5)
+        val getLastMoveDestination: (FileType.Source) -> Uri?,
+        val resources: NotificationResources = getNotificationResources(4)
     ) : AppNotificationManager.Args
 
     override fun getBuilder(args: Args): Builder =
         object : Builder() {
 
-            private val moveFile by args::navigatableFile
-            private val getDefaultMoveDestination by args::getDefaultMoveDestination
+            private val navigatableFile by args::navigatableFile
+            private val getLastMoveDestination by args::getLastMoveDestination
             private val resources by args::resources
 
             override fun build(): Notification {
@@ -64,7 +64,7 @@ class NewMoveFileNotificationManager(
                 setSmallIcon(R.drawable.ic_app_logo_24)
                 setLargeIcon(
                     AppCompatResources.getDrawable(context, getLargeIconDrawable())
-                        ?.apply { setTint(moveFile.type.colorInt) }
+                        ?.apply { setTint(navigatableFile.type.colorInt) }
                         ?.toBitmap()
                 )
                 // Set content
@@ -72,9 +72,9 @@ class NewMoveFileNotificationManager(
                     NotificationCompat.BigTextStyle()
                         .bigText(
                             buildSpannedString {
-                                bold { append(moveFile.mediaStoreFile.columnData.name) }
+                                bold { append(navigatableFile.mediaStoreFile.columnData.name) }
                                 append(context.getString(R.string.found_at).whiteSpaceWrapped())
-                                bold { append(moveFile.mediaStoreFile.columnData.volumeRelativeDirPath) }
+                                bold { append(navigatableFile.mediaStoreFile.columnData.volumeRelativeDirPath) }
                             }
                         )
                 )
@@ -83,6 +83,8 @@ class NewMoveFileNotificationManager(
                 val requestCodeIterator = resources.actionRequestCodes.iterator()
 
                 addActions(requestCodeIterator)
+
+                setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
 
                 setDeleteIntent(
                     getCleanupNotificationResourcesPendingIntent(
@@ -94,15 +96,15 @@ class NewMoveFileNotificationManager(
             }
 
             private fun getContentTitle() =
-                when (val fileType = moveFile.type) {
+                when (val fileType = navigatableFile.type) {
                     is FileType.Media -> {
-                        when (moveFile.mediaStoreFile.columnData.getSourceKind()) {
+                        when (navigatableFile.mediaStoreFile.columnData.getSourceKind()) {
                             FileType.Source.Kind.Screenshot -> context.getString(
                                 R.string.new_screenshot
                             )
 
                             FileType.Source.Kind.Camera -> context.getString(
-                                when (moveFile.type) {
+                                when (navigatableFile.type) {
                                     FileType.Media.Image -> R.string.new_photo
                                     FileType.Media.Video -> R.string.new_video
                                     else -> throw Error()
@@ -110,13 +112,13 @@ class NewMoveFileNotificationManager(
                             )
 
                             FileType.Source.Kind.Download -> context.getString(
-                                R.string.newly_downloaded_template,
+                                R.string.new_downloaded_template,
                                 context.getString(fileType.titleRes)
                             )
 
                             FileType.Source.Kind.OtherApp -> context.getString(
                                 R.string.new_third_party_file_template,
-                                moveFile.mediaStoreFile.columnData.dirName,
+                                navigatableFile.mediaStoreFile.columnData.dirName,
                                 context.getString(fileType.titleRes)
                             )
                         }
@@ -125,54 +127,46 @@ class NewMoveFileNotificationManager(
                     is FileType.NonMedia -> {
                         context.getString(
                             R.string.new_,
-                            context.getString(moveFile.type.titleRes)
+                            context.getString(navigatableFile.type.titleRes)
                         )
                     }
                 }
 
             @DrawableRes
             private fun getLargeIconDrawable(): Int =
-                when (moveFile.sourceKind) {
-                    FileType.Source.Kind.Screenshot, FileType.Source.Kind.Camera -> moveFile.sourceKind.iconRes
-                    else -> moveFile.type.iconRes
+                when (navigatableFile.sourceKind) {
+                    FileType.Source.Kind.Screenshot, FileType.Source.Kind.Camera -> navigatableFile.sourceKind.iconRes
+                    else -> navigatableFile.type.iconRes
                 }
 
             private fun addActions(requestCodeIterator: Iterator<Int>) {
-                addAction(getViewFileAction(requestCodeIterator.next()))
-                addAction(getMoveFileAction(requestCodeIterator.next(), resources))
-                getDefaultMoveDestination(moveFile.source)?.let {
+                addAction(getMoveFileAction(requestCodeIterator.next()))
+                getLastMoveDestination(navigatableFile.source)?.let {
                     addAction(
-                        getMoveToDefaultDestinationAction(
+                        getQuickMoveAction(
                             requestCodeIterator.next(),
-                            resources,
                             it
                         )
                     )
                 }
-                addAction(getDeleteFileAction(requestCodeIterator.next(), resources))
             }
 
-            private fun getViewFileAction(requestCode: Int)
-                    : NotificationCompat.Action =
-                NotificationCompat.Action(
-                    R.drawable.ic_file_open_24,
-                    context.getString(R.string.view),
-                    PendingIntent.getActivity(
-                        context,
-                        requestCode,
-                        Intent()
-                            .setAction(Intent.ACTION_VIEW)
-                            .setDataAndType(
-                                moveFile.mediaStoreFile.uri,
-                                moveFile.type.simpleStorageMediaType.mimeType
-                            ),
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
+            private fun getViewFilePendingIntent(requestCode: Int)
+                    : PendingIntent =
+                PendingIntent.getActivity(
+                    context,
+                    requestCode,
+                    Intent()
+                        .setAction(Intent.ACTION_VIEW)
+                        .setDataAndType(
+                            navigatableFile.mediaStoreFile.uri,
+                            navigatableFile.type.simpleStorageMediaType.mimeType
+                        ),
+                    PendingIntent.FLAG_IMMUTABLE
                 )
 
             private fun getMoveFileAction(
                 requestCode: Int,
-                notificationResources: NotificationResources
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
                     R.drawable.ic_app_logo_24,
@@ -181,51 +175,33 @@ class NewMoveFileNotificationManager(
                         context,
                         requestCode,
                         FileMoveActivity.makeRestartActivityIntent(
-                            moveFile,
-                            notificationResources,
+                            navigatableFile,
+                            resources,
                             context
                         ),
-                        PendingIntent.FLAG_IMMUTABLE
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )
 
-            private fun getMoveToDefaultDestinationAction(
+            private fun getQuickMoveAction(
                 requestCode: Int,
-                notificationResources: NotificationResources,
-                defaultMoveDestination: Uri
+                moveDestination: Uri
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
                     R.drawable.ic_app_logo_24,
-                    getMoveToDefaultDestinationActionTitle(defaultMoveDestination, context),
+                    getDocumentUriFileName(moveDestination, context)?.let { "/$it" },
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,
-                        MoveToDefaultDestinationBroadcastReceiver.getIntent(
-                            moveFile,
-                            notificationResources,
-                            defaultMoveDestination,
+                        QuickMoveBroadcastReceiver.getIntent(
+                            navigatableFile,
+                            resources,
+                            moveDestination.also {
+                                i { "MoveDestination Extra: $it" }
+                            },
                             context
                         ),
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-                    )
-                )
-
-            private fun getDeleteFileAction(
-                requestCode: Int,
-                notificationResources: NotificationResources
-            ): NotificationCompat.Action =
-                NotificationCompat.Action(
-                    R.drawable.ic_delete_24,
-                    context.getString(R.string.delete),
-                    PendingIntent.getBroadcast(
-                        context,
-                        requestCode,
-                        FileDeletionBroadcastReceiver.getIntent(
-                            moveFile,
-                            notificationResources,
-                            context
-                        ),
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )
 
@@ -278,13 +254,3 @@ class NewMoveFileNotificationManager(
         }
     }
 }
-
-private fun getMoveToDefaultDestinationActionTitle(
-    defaultMoveDestination: Uri,
-    context: Context
-): String? =
-    getDocumentUriPath(defaultMoveDestination, context)
-        ?.substringAfterLast("/")
-        ?.run {
-            "To /$this"
-        }

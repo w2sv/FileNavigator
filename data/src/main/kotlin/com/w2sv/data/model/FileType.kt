@@ -252,15 +252,8 @@ sealed class FileType(
         )
 
         @IgnoredOnParcel
-        val defaultDestinationDSE =
-            DataStoreEntry.UriValued.Impl(
-                stringPreferencesKey(getPreferencesKeyContent("DEFAULT_DESTINATION")),
-                null
-            )
-
-        @IgnoredOnParcel
-        val lastManualMoveDestinationDSE = DataStoreEntry.UriValued.Impl(
-            stringPreferencesKey(getPreferencesKeyContent("LAST_MANUAL_MOVE_DESTINATION")),
+        val lastMoveDestinationDSE = DataStoreEntry.UriValued.Impl(
+            stringPreferencesKey(getPreferencesKeyContent("LAST_MOVE_DESTINATION")),
             null
         )
 

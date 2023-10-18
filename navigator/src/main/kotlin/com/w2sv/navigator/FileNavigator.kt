@@ -14,7 +14,6 @@ import com.w2sv.navigator.notifications.managers.AppNotificationsManager
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -37,6 +36,10 @@ class FileNavigator : UnboundService() {
     @Inject
     lateinit var appNotificationsManager: AppNotificationsManager
 
+    @Inject
+    @Scope(AppDispatcher.IO)
+    lateinit var ioScope: CoroutineScope
+
     private lateinit var fileObservers: List<FileObserver>
 
     private fun getRegisteredFileObservers(): List<FileObserver> =
@@ -44,13 +47,13 @@ class FileNavigator : UnboundService() {
             statusMap = fileTypeRepository.fileTypeStatus.getSynchronousMap(),
             mediaFileSourceEnabled = fileTypeRepository.mediaFileSourceEnabled.getSynchronousMap(),
             contentResolver = contentResolver,
-            onNewMoveFile = { moveFile ->
+            onNewNavigatableFileListener = { moveFile ->
                 with(appNotificationsManager.newMoveFileNotificationManager) {
                     buildAndEmit(
                         Args(
                             navigatableFile = moveFile,
-                            getDefaultMoveDestination = { source ->
-                                fileTypeRepository.getDefaultDestination(source)
+                            getLastMoveDestination = { source ->
+                                fileTypeRepository.getLastMoveDestination(source)
                             }
                         )
                     )
@@ -100,7 +103,7 @@ class FileNavigator : UnboundService() {
 
         fileObservers = getRegisteredFileObservers()
         statusChanged.emitNewStatus(true)
-        CoroutineScope(Dispatchers.IO).launch {
+        ioScope.launch {
             preferencesRepository.saveNavigatorStartDateTime()
         }
     }
@@ -166,13 +169,6 @@ class FileNavigator : UnboundService() {
 
         private fun getIntent(context: Context): Intent =
             Intent(context, FileNavigator::class.java)
-
-        // ===========
-        // Extras
-        // ===========
-
-        const val EXTRA_DEFAULT_MOVE_DESTINATION =
-            "com.w2sv.filenavigator.extra.DEFAULT_MOVE_DESTINATION"
 
         // ===========
         // Actions

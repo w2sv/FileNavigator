@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -35,8 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AnimatedElements
-import com.w2sv.filenavigator.ui.components.AnimatedRowElement
 import com.w2sv.filenavigator.ui.components.AppCheckbox
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
@@ -45,8 +41,6 @@ import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.states.FileTypesState
-import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.theme.DefaultIconDp
 import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
 import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
 import com.w2sv.filenavigator.ui.utils.extensions.orDisabledIf
@@ -98,39 +92,34 @@ private fun SourceColumn(
             modifier = Modifier.height(44.dp)
         )
 
-        ConditionalDefaultDestinationRow(
+        ConditionalLastMoveDestinationRow(
             sourceEnabled = isEnabled,
-            defaultDestinationPath = fileTypesState.defaultMoveDestinationState.pathStateFlowMap.getValue(
-                source.defaultDestinationDSE
+            lastMoveDestination = fileTypesState.lastMoveDestinationPathStateFlowMap.getValue(
+                source.lastMoveDestinationDSE
             )
                 .collectAsState().value,
-            deleteDestination = {
-                fileTypesState.defaultMoveDestinationState.deleteDestination(source)
-            }
         )
     }
 }
 
 @Composable
-private fun ColumnScope.ConditionalDefaultDestinationRow(
+private fun ColumnScope.ConditionalLastMoveDestinationRow(
     sourceEnabled: Boolean,
-    defaultDestinationPath: String?,
-    deleteDestination: () -> Unit
+    lastMoveDestination: String?,
 ) {
-    AnimatedVisibility(visible = sourceEnabled && defaultDestinationPath != null) {
+    AnimatedVisibility(visible = sourceEnabled && lastMoveDestination != null) {
         var nonNullPath by remember(this) {
-            mutableStateOf(defaultDestinationPath!!)
+            mutableStateOf(lastMoveDestination!!)
         }
 
-        LaunchedEffect(defaultDestinationPath) {
-            if (defaultDestinationPath != null) {
-                nonNullPath = defaultDestinationPath
+        LaunchedEffect(lastMoveDestination) {
+            if (lastMoveDestination != null) {
+                nonNullPath = lastMoveDestination
             }
         }
 
-        DefaultDestinationRow(
+        LastMoveDestinationRow(
             path = { nonNullPath },
-            onDeleteButtonClick = deleteDestination,
             modifier = Modifier
                 .height(36.dp)
                 .padding(bottom = 4.dp)
@@ -158,7 +147,7 @@ private fun SourceRow(
             Icon(
                 painter = painterResource(id = source.kind.iconRes),
                 contentDescription = null,
-                tint = source.fileType.color.copy(alpha = 0.75f)
+                tint = source.fileType.color
                     .orDisabledIf(condition = !isEnabled)
             )
         }
@@ -166,104 +155,64 @@ private fun SourceRow(
         Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
             AppFontText(
                 text = stringResource(id = source.kind.labelRes),
-                color = MaterialTheme.colorScheme.onSurface.copy(0.7f)
+                color = MaterialTheme.colorScheme.onSurface
                     .orDisabledIf(condition = !isEnabled)
             )
         }
 
-        AnimatedElements(
-            elementWeight = 0.1f,
-            showConditionalElement = isEnabled,
-            elements = listOf(
-                AnimatedRowElement.CounterWeight,
-                AnimatedRowElement.Static {
-                    if (source.fileType.isMediaType) {
-                        AppCheckbox(
-                            checked = isEnabled,
-                            onCheckedChange = { checkedNew ->
-                                if (!source.fileType.sources.map {
-                                        fileTypesState.mediaFileSourceEnabledMap.getValue(
-                                            it.isEnabledDSE
-                                        )
-                                    }
-                                        .allFalseAfterEnteringValue(checkedNew)
-                                ) {
-                                    fileTypesState.mediaFileSourceEnabledMap[source.isEnabledDSE] =
-                                        checkedNew
-                                } else {
-                                    scope.launch {
-                                        snackbarHostState.showSnackbarAndDismissCurrent(
-                                            AppSnackbarVisuals(
-                                                message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
-                                                kind = SnackbarKind.Error
-                                            )
-                                        )
-                                    }
-                                }
+        Box(modifier = Modifier.weight(0.15f), contentAlignment = Alignment.Center) {
+            if (source.fileType.isMediaType) {
+                AppCheckbox(
+                    checked = isEnabled,
+                    onCheckedChange = { checkedNew ->
+                        if (!source.fileType.sources.map {
+                                fileTypesState.mediaFileSourceEnabledMap.getValue(
+                                    it.isEnabledDSE
+                                )
                             }
-                        )
-                    }
-                },
-                AnimatedRowElement.Conditional {
-                    SelectDefaultMoveDestinationButton(
-                        onClick = {
-                            fileTypesState.defaultMoveDestinationState.launchPickerFor(source)
+                                .allFalseAfterEnteringValue(checkedNew)
+                        ) {
+                            fileTypesState.mediaFileSourceEnabledMap[source.isEnabledDSE] =
+                                checkedNew
+                        } else {
+                            scope.launch {
+                                snackbarHostState.showSnackbarAndDismissCurrent(
+                                    AppSnackbarVisuals(
+                                        message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
+                                        kind = SnackbarKind.Error
+                                    )
+                                )
+                            }
                         }
-                    )
-                }
-            )
-        )
+                    }
+                )
+            }
+        }
     }
 }
 
 @Composable
-private fun SelectDefaultMoveDestinationButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = modifier
-    ) {
-        Icon(
-            painter = painterResource(
-                id = com.w2sv.navigator.R.drawable.ic_app_logo_24
-            ),
-            tint = MaterialTheme.colorScheme.secondary,
-            contentDescription = stringResource(
-                R.string.open_target_directory_settings
-            ),
-            modifier = Modifier.size(DefaultIconDp)
-        )
-    }
-}
-
-@Composable
-private fun DefaultDestinationRow(
+private fun LastMoveDestinationRow(
     path: () -> String,
-    onDeleteButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Spacer(modifier = Modifier.fillMaxWidth(0.22f))
-        AppFontText(
-            text = path(),
-            color = AppColor.disabled,
-            fontSize = 14.sp,
-            modifier = Modifier.weight(0.7f)
-        )
-        IconButton(
-            onClick = onDeleteButtonClick,
-            modifier = Modifier.weight(0.1f)
-        ) {
+        Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
             Icon(
-                painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_delete_24),
-                contentDescription = stringResource(R.string.delete_default_move_destination),
-                tint = MaterialTheme.colorScheme.secondary
+                painter = painterResource(id = R.drawable.ic_history_24),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface.copy(0.7f)
             )
         }
+        AppFontText(
+            text = path(),
+            fontSize = 14.sp,
+            modifier = Modifier.weight(0.5f),
+            color = MaterialTheme.colorScheme.onSurface.copy(0.7f)
+        )
+        Spacer(modifier = Modifier.weight(0.15f))
     }
 }

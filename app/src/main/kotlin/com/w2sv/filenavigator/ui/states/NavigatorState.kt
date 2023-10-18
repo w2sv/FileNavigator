@@ -47,10 +47,6 @@ class NavigatorState(
                 )
             }
         },
-        defaultMoveDestinationState = DefaultMoveDestinationState(
-            fileTypeRepository = fileTypeRepository,
-            scope = scope,
-            context = context
-        )
+        context = context
     )
 }

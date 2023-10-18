@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.coroutines.getValueSynchronously
+import com.w2sv.androidutils.coroutines.mapState
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
+import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.common.utils.manageExternalStoragePermissionRequired
 import com.w2sv.data.model.FileType
@@ -21,21 +23,21 @@ import com.w2sv.filenavigator.ui.utils.extensions.getSynchronousMutableStateMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FileTypesState(
     val statusMap: UnconfirmedStateMap<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>,
     val mediaFileSourceEnabledMap: UnconfirmedStateMap<DataStoreEntry.UniType<Boolean>, Boolean>,
+    val lastMoveDestinationPathStateFlowMap: Map<DataStoreEntry.UriValued, StateFlow<String?>>,
     onStateSynced: () -> Unit,
-    val defaultMoveDestinationState: DefaultMoveDestinationState,
     private val scope: CoroutineScope,
-    private val statusMapChanged: MutableSharedFlow<Unit>
+    statusMapChanged: MutableSharedFlow<Unit>
 ) : UnconfirmedStatesComposition(
     unconfirmedStates = listOf(
         statusMap,
         mediaFileSourceEnabledMap,
-        defaultMoveDestinationState.unconfirmedDefaultDestinationMap
     ),
     coroutineScope = scope,
     onStateSynced = onStateSynced
@@ -44,11 +46,10 @@ class FileTypesState(
         scope: CoroutineScope,
         fileTypeRepository: FileTypeRepository,
         onStateSynced: () -> Unit,
-        defaultMoveDestinationState: DefaultMoveDestinationState,
-        statusMapChanged: MutableSharedFlow<Unit> = MutableSharedFlow()
+        statusMapChanged: MutableSharedFlow<Unit> = MutableSharedFlow(),
+        context: Context
     ) : this(
         scope = scope,
-        defaultMoveDestinationState = defaultMoveDestinationState,
         statusMapChanged = statusMapChanged,
         statusMap = UnconfirmedStateMap(
             coroutineScope = scope,
@@ -73,6 +74,16 @@ class FileTypesState(
             makeMap = { it.getSynchronousMutableStateMap() },
             syncState = { fileTypeRepository.saveMap(it) }
         ),
+        lastMoveDestinationPathStateFlowMap = fileTypeRepository.lastMoveDestinationStateFlowMap.mapValues { (_, v) ->
+            v.mapState { optionalUri ->
+                optionalUri?.let { uri ->
+                    getDocumentUriPath(
+                        documentUri = uri,
+                        context = context
+                    )
+                }
+            }
+        },
         onStateSynced = onStateSynced
     )
 
@@ -210,7 +221,9 @@ private fun UnconfirmedStateMap<DataStoreEntry.EnumValued<FileType.Status>, File
     return (isEnabled && !statesDissimilar) || (!isEnabled && statesDissimilar)
 }
 
-private fun UnconfirmedStateMap<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>.allowToggle(checkedNew: Boolean): Boolean =
+private fun UnconfirmedStateMap<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>.allowToggle(
+    checkedNew: Boolean
+): Boolean =
     !values
         .map { it.isEnabled }
         .allFalseAfterEnteringValue(

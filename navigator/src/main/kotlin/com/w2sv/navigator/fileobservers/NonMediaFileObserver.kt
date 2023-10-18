@@ -22,7 +22,7 @@ internal class NonMediaFileObserver(
         i { "Initialized NonMediaFileObserver with fileTypes: ${fileTypes.map { it.identifier }}" }
     }
 
-    override fun getMoveFileIfMatching(
+    override fun getNavigatableFileIfMatching(
         mediaStoreFile: MediaStoreFile
     ): NavigatableFile? =
         fileTypes

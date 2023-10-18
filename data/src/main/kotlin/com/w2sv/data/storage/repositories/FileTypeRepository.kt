@@ -34,47 +34,24 @@ class FileTypeRepository @Inject constructor(
         )
 
     // =======================
-    // Default Destination
-    // =======================
-
-    val defaultDestinationStateFlowMap: Map<DataStoreEntry.UriValued, StateFlow<Uri?>> =
-        getUriFlowMap(
-            FileType.getValues()
-                .flatMap { it.sources }
-                .map { it.defaultDestinationDSE }
-        )
-            .mapValues { (_, v) -> v.stateIn(scope, SharingStarted.Eagerly, null) }
-
-    fun getDefaultDestination(source: FileType.Source): Uri? =
-        defaultDestinationStateFlowMap
-            .getValue(source.defaultDestinationDSE).value
-
-    suspend fun saveDefaultDestination(
-        source: FileType.Source,
-        defaultDestination: Uri?
-    ) {
-        save(source.defaultDestinationDSE.preferencesKey, defaultDestination)
-    }
-
-    // =======================
     // Last manual move destination
     // =======================
 
-    private val lastManualMoveDestinationStateFlowMap: Map<DataStoreEntry.UriValued, StateFlow<Uri?>> =
+    val lastMoveDestinationStateFlowMap: Map<DataStoreEntry.UriValued, StateFlow<Uri?>> =
         getUriFlowMap(
             FileType.getValues()
                 .flatMap { it.sources }
-                .map { it.lastManualMoveDestinationDSE }
+                .map { it.lastMoveDestinationDSE }
         )
             .mapValues { (_, v) -> v.stateIn(scope, SharingStarted.Eagerly, null) }
 
-    fun getLastManualMoveDestination(source: FileType.Source): Uri? =
-        lastManualMoveDestinationStateFlowMap.getValue(source.lastManualMoveDestinationDSE).value
+    fun getLastMoveDestination(source: FileType.Source): Uri? =
+        lastMoveDestinationStateFlowMap.getValue(source.lastMoveDestinationDSE).value
 
-    suspend fun saveLastManualMoveDestination(
+    suspend fun saveLastMoveDestination(
         source: FileType.Source,
         destination: Uri?
     ) {
-        save(source.lastManualMoveDestinationDSE.preferencesKey, destination)
+        save(source.lastMoveDestinationDSE.preferencesKey, destination)
     }
 }

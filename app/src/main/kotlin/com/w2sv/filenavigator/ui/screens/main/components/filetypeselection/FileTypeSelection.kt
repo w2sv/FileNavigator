@@ -1,8 +1,5 @@
 package com.w2sv.filenavigator.ui.screens.main.components.filetypeselection
 
-import android.content.Context
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -18,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -26,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.states.DefaultMoveDestinationState
 import com.w2sv.filenavigator.ui.states.FileTypesState
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
@@ -38,8 +33,6 @@ fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier,
     fileTypesState: FileTypesState,
 ) {
-    SelectDefaultMoveDestinationPicker(defaultMoveDestinationState = fileTypesState.defaultMoveDestinationState)
-
     Column(
         modifier = modifier
             .padding(horizontal = 10.dp)
@@ -79,24 +72,6 @@ fun FileTypeSelectionColumn(
                         .animateItemPlacement(tween(DefaultAnimationDuration))  // Animate upon reordering
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun SelectDefaultMoveDestinationPicker(
-    defaultMoveDestinationState: DefaultMoveDestinationState,
-    context: Context = LocalContext.current
-) {
-    val picker = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocumentTree()
-    ) { treeUri ->
-        defaultMoveDestinationState.onDestinationReceived(treeUri, context)
-    }
-
-    LaunchedEffect(Unit) {
-        defaultMoveDestinationState.launchPicker.collect {
-            picker.launch(null)
         }
     }
 }

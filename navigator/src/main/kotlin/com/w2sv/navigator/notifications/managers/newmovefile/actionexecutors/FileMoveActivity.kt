@@ -46,90 +46,105 @@ class FileMoveActivity : ComponentActivity() {
         private val navigatableFile: NavigatableFile =
             savedStateHandle[NavigatableFile.EXTRA]!!
 
+        val moveFileExists: Boolean
+            get() = navigatableFile.mediaStoreFile.columnData.fileExists
+
         val moveMediaFile: MediaFile? = navigatableFile.getSimpleStorageMediaFile(context)
 
         // ===============
-        // DataStore Attributes
+        // FileTypeRepository
         // ===============
 
-        fun saveLastManualMoveDestination(destination: Uri): Job =
+        fun saveLastMoveDestination(destination: Uri): Job =
             viewModelScope.launch {
-                fileTypeRepository.saveLastManualMoveDestination(
+                fileTypeRepository.saveLastMoveDestination(
                     navigatableFile.source,
                     destination
                 )
             }
 
-        fun getDestinationPickerStartLocation(): Uri? =
-            fileTypeRepository.getLastManualMoveDestination(navigatableFile.source)
-                ?: fileTypeRepository.getDefaultDestination(navigatableFile.source)
+        val lastMoveDestination = fileTypeRepository.getLastMoveDestination(navigatableFile.source)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        when {
+            viewModel.moveMediaFile == null -> return showResultToastAndFinishActivity(getString(R.string.internal_error))
+            !viewModel.moveFileExists -> {
+                showResultToastAndFinishActivity(getString(R.string.couldn_t_move_file_has_already_been_moved_deleted_or_renamed))
+                removeNotificationAndCleanupResources()
+                return
+            }
+        }
+
+        destinationPickerLauncher.launch(viewModel.lastMoveDestination)
     }
 
     private val viewModel by viewModels<ViewModel>()
 
     private val destinationPickerLauncher =
-        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { treeUri ->
-            i { "DocumentTree Uri: $treeUri" }
+        registerForActivityResult(ActivityResultContracts.OpenDocumentTree(), ::onTargetDirSelected)
 
-            // Exit on null treeUri (received on exiting folder picker via back press)
-            treeUri ?: run {
-                finish()
-                return@registerForActivityResult
-            }
+    private fun onTargetDirSelected(treeUri: Uri?) {
+        i { "Move destination DocumentTree Uri: $treeUri" }
 
-            // Exit on unsuccessful conversion to SimpleStorage objects
-            val targetDirectoryDocumentFile =
-                DocumentFile.fromTreeUri(this, treeUri)
+        // Exit on null treeUri (received on exiting folder picker via back press)
+        treeUri ?: return showResultToastAndFinishActivity()
 
-            if (targetDirectoryDocumentFile == null || viewModel.moveMediaFile == null) {
-                finish()
-                return@registerForActivityResult
-            }
+        // Take persistable read & write permission
+        // Required for quick move by remedying of "Failed query: java.lang.SecurityException: Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider from ProcessRecord{6fc17ee 8097:com.w2sv.filenavigator.debug/u0a753} (pid=8097, uid=10753) requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs"
+        contentResolver.takePersistableUriPermission(
+            treeUri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        )
 
-            contentResolver.takePersistableUriPermission(
-                treeUri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            )
+        // Exit on unsuccessful conversion to DocumentFile
+        val targetDirectoryDocumentFile =
+            DocumentFile.fromTreeUri(this, treeUri)
+                ?: return showResultToastAndFinishActivity(getString(R.string.internal_error))
 
-            NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
-                this,
-                intent
-            )
+        // Move file
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.moveMediaFile!!.moveTo(
+                targetFolder = targetDirectoryDocumentFile,
+                callback = object : FileCallback() {
+                    override fun onCompleted(result: Any) {
+                        removeNotificationAndCleanupResources()
 
-            // Move file
-            lifecycleScope.launch(Dispatchers.IO) {
-                viewModel.moveMediaFile!!.moveTo(
-                    targetDirectoryDocumentFile,
-                    callback = object : FileCallback() {
-                        override fun onCompleted(result: Any) {
-                            showToast(
-                                getString(
-                                    R.string.moved_file_to,
-                                    targetDirectoryDocumentFile.getSimplePath(this@FileMoveActivity)
-                                )
+                        viewModel
+                            .saveLastMoveDestination(targetDirectoryDocumentFile.uri)
+//                                .invokeOnCompletion {
+//                                    finishAndRemoveTask()
+//                                }
+
+                        showResultToastAndFinishActivity(
+                            message = getString(
+                                R.string.moved_file_to,
+                                targetDirectoryDocumentFile.getSimplePath(applicationContext)
                             )
-                        }
-
-                        // TODO: refined errorCode handling
-                        override fun onFailed(errorCode: ErrorCode) {
-                            showToast(R.string.couldn_t_move_file)
-                        }
+                        )
                     }
-                )
-            }
 
-            // Save targetDirectoryDocumentFile to DataStore and finish activity on saving completed
-            viewModel
-                .saveLastManualMoveDestination(targetDirectoryDocumentFile.uri)
-                .invokeOnCompletion {
-                    finish()
+                    override fun onFailed(errorCode: ErrorCode) {
+                        i { errorCode.toString() }
+                        showResultToastAndFinishActivity(errorCode.name)
+                    }
                 }
+            )
         }
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private fun removeNotificationAndCleanupResources() {
+        NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+            applicationContext,
+            intent
+        )
+    }
 
-        destinationPickerLauncher.launch(viewModel.getDestinationPickerStartLocation())
+    private fun showResultToastAndFinishActivity(message: String? = null) {
+        message?.let(::showToast)
+        finishAndRemoveTask()
     }
 
     companion object {
