@@ -40,7 +40,7 @@ internal abstract class FileObserver(
             )
 
             else -> {
-                getNavigatableFileIfMatching(mediaStoreFile)
+                getMoveFileIfMatching(mediaStoreFile)
                     ?.let {
                         i { "Calling onNewNavigatableFileListener on $it" }
                         onNewNavigatableFileListener(it)
@@ -55,7 +55,7 @@ internal abstract class FileObserver(
     private val cache =
         EvictingQueue.create<MediaStoreFile>(5)
 
-    protected abstract fun getNavigatableFileIfMatching(
+    protected abstract fun getMoveFileIfMatching(
         mediaStoreFile: MediaStoreFile
     ): MoveFile?
 }

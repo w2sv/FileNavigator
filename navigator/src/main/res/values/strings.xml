@@ -23,7 +23,8 @@
     <string name="new_downloaded_template">New downloaded %1$s</string>
     <string name="new_third_party_file_template">New %1$s %2$s</string>
     <string name="new_file_detected">New file detected</string>
-    <string name="internal_error">Internal Error</string>
+    <string name="couldnt_move_file_internal_error">Couldn\'t move file: Internal Error</string>
     <string name="moving_to_default_destination_requires_permission_to_manage_all_files">Moving to default destination requires permission to manage all files!</string>
     <string name="couldn_t_move_file_has_already_been_moved_deleted_or_renamed">Couldn\'t move: File has already been moved, deleted or renamed!</string>
+    <string name="couldn_t_find_move_file">Couldn\'t find move file!</string>
 </resources>

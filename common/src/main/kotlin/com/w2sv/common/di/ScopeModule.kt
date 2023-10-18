@@ -12,12 +12,12 @@ import kotlinx.coroutines.Dispatchers
 object ScopeModule {
 
     @Provides
-    @Scope(AppDispatcher.Default)
+    @GlobalScope(AppDispatcher.Default)
     fun defaultScope(): CoroutineScope =
         CoroutineScope(Dispatchers.Default)
 
     @Provides
-    @Scope(AppDispatcher.IO)
+    @GlobalScope(AppDispatcher.IO)
     fun ioScope(): CoroutineScope =
         CoroutineScope(Dispatchers.IO)
 }

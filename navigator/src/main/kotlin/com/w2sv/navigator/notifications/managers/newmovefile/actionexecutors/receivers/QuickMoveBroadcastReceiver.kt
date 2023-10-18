@@ -55,10 +55,10 @@ class QuickMoveBroadcastReceiver : BroadcastReceiver() {
                     .also {
                         i { "Received move destination: $it" }
                     }
-            ) ?: return context.showToast(R.string.internal_error)
+            ) ?: return context.showToast(R.string.couldnt_move_file_internal_error)
 
         val moveMediaFile = moveFile.getSimpleStorageMediaFile(context)
-            ?: return context.showToast(R.string.internal_error)
+            ?: return context.showToast(R.string.couldnt_move_file_internal_error)
 
         moveMediaFile.launchMoveTo(
             targetFolder = targetDirectoryDocumentFile,

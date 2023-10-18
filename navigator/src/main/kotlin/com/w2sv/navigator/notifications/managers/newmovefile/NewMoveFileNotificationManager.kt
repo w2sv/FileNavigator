@@ -64,7 +64,7 @@ class NewMoveFileNotificationManager(
                 setSmallIcon(R.drawable.ic_app_logo_24)
                 setLargeIcon(
                     AppCompatResources.getDrawable(context, getLargeIconDrawable())
-                        ?.apply { setTint(navigatableFile.type.colorInt) }
+                        ?.apply { setTint(navigatableFile.source.fileType.colorInt) }
                         ?.toBitmap()
                 )
                 // Set content
@@ -96,7 +96,7 @@ class NewMoveFileNotificationManager(
             }
 
             private fun getContentTitle() =
-                when (val fileType = navigatableFile.type) {
+                when (val fileType = navigatableFile.source.fileType) {
                     is FileType.Media -> {
                         when (navigatableFile.mediaStoreFile.columnData.getSourceKind()) {
                             FileType.Source.Kind.Screenshot -> context.getString(
@@ -104,7 +104,7 @@ class NewMoveFileNotificationManager(
                             )
 
                             FileType.Source.Kind.Camera -> context.getString(
-                                when (navigatableFile.type) {
+                                when (navigatableFile.source.fileType) {
                                     FileType.Media.Image -> R.string.new_photo
                                     FileType.Media.Video -> R.string.new_video
                                     else -> throw Error()
@@ -127,16 +127,16 @@ class NewMoveFileNotificationManager(
                     is FileType.NonMedia -> {
                         context.getString(
                             R.string.new_,
-                            context.getString(navigatableFile.type.titleRes)
+                            context.getString(navigatableFile.source.fileType.titleRes)
                         )
                     }
                 }
 
             @DrawableRes
             private fun getLargeIconDrawable(): Int =
-                when (navigatableFile.sourceKind) {
-                    FileType.Source.Kind.Screenshot, FileType.Source.Kind.Camera -> navigatableFile.sourceKind.iconRes
-                    else -> navigatableFile.type.iconRes
+                when (navigatableFile.source.kind) {
+                    FileType.Source.Kind.Screenshot, FileType.Source.Kind.Camera -> navigatableFile.source.kind.iconRes
+                    else -> navigatableFile.source.fileType.iconRes
                 }
 
             private fun addActions(requestCodeIterator: Iterator<Int>) {
@@ -160,7 +160,7 @@ class NewMoveFileNotificationManager(
                         .setAction(Intent.ACTION_VIEW)
                         .setDataAndType(
                             navigatableFile.mediaStoreFile.uri,
-                            navigatableFile.type.simpleStorageMediaType.mimeType
+                            navigatableFile.source.fileType.simpleStorageMediaType.mimeType
                         ),
                     PendingIntent.FLAG_IMMUTABLE
                 )

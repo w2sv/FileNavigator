@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -15,6 +16,7 @@ import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.file.getSimplePath
 import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.common.model.ToastArgs
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
@@ -25,8 +27,6 @@ import com.w2sv.navigator.notifications.putNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import slimber.log.i
@@ -35,8 +35,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class FileMoveActivity : ComponentActivity() {
 
+    internal enum class PreemptiveExitReason {
+        MoveMediaFileNull,
+        MoveFileNotFound
+    }
+
     @HiltViewModel
-    class ViewModel @Inject constructor(
+    internal class ViewModel @Inject constructor(
         savedStateHandle: SavedStateHandle,
         private val fileTypeRepository: FileTypeRepository,
         @ApplicationContext context: Context
@@ -46,10 +51,14 @@ class FileMoveActivity : ComponentActivity() {
         private val moveFile: MoveFile =
             savedStateHandle[MoveFile.EXTRA]!!
 
-        val moveFileExists: Boolean
-            get() = moveFile.mediaStoreFile.columnData.fileExists
-
         val moveMediaFile: MediaFile? = moveFile.getSimpleStorageMediaFile(context)
+
+        fun preemptiveExitReason(): PreemptiveExitReason? =
+            when {
+                !moveFile.mediaStoreFile.columnData.fileExists -> PreemptiveExitReason.MoveFileNotFound
+                moveMediaFile == null -> PreemptiveExitReason.MoveMediaFileNull
+                else -> null
+            }
 
         // ===============
         // FileTypeRepository
@@ -69,16 +78,25 @@ class FileMoveActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        when {
-            viewModel.moveMediaFile == null -> return showResultToastAndFinishActivity(getString(R.string.internal_error))
-            !viewModel.moveFileExists -> {
-                showResultToastAndFinishActivity(getString(R.string.couldn_t_move_file_has_already_been_moved_deleted_or_renamed))
-                removeNotificationAndCleanupResources()
-                return
-            }
-        }
+        when (viewModel.preemptiveExitReason()) {
+            PreemptiveExitReason.MoveMediaFileNull -> showResultToastAndFinishActivity(
+                ToastArgs(
+                    getString(R.string.couldnt_move_file_internal_error)
+                )
+            )
 
-        destinationPickerLauncher.launch(viewModel.lastMoveDestination)
+            PreemptiveExitReason.MoveFileNotFound -> {
+                removeNotificationAndCleanupResources()
+                showResultToastAndFinishActivity(
+                    ToastArgs(
+                        getString(R.string.couldn_t_find_move_file),
+                        Toast.LENGTH_LONG
+                    )
+                )
+            }
+
+            null -> destinationPickerLauncher.launch(viewModel.lastMoveDestination)
+        }
     }
 
     private val viewModel by viewModels<ViewModel>()
@@ -102,10 +120,10 @@ class FileMoveActivity : ComponentActivity() {
         // Exit on unsuccessful conversion to DocumentFile
         val targetDirectoryDocumentFile =
             DocumentFile.fromTreeUri(this, treeUri)
-                ?: return showResultToastAndFinishActivity(getString(R.string.internal_error))
+                ?: return showResultToastAndFinishActivity(ToastArgs(getString(R.string.couldnt_move_file_internal_error)))
 
         // Move file
-        CoroutineScope(Dispatchers.IO)
+        viewModel.viewModelScope
             .launch {
                 viewModel.moveMediaFile!!.moveTo(
                     targetFolder = targetDirectoryDocumentFile,
@@ -142,8 +160,10 @@ class FileMoveActivity : ComponentActivity() {
         )
     }
 
-    private fun showResultToastAndFinishActivity(message: String? = null) {
-        message?.let(::showToast)
+    private fun showResultToastAndFinishActivity(toastArgs: ToastArgs? = null) {
+        toastArgs?.run {
+            showToast(message, duration)
+        }
         finishAndRemoveTask()
     }
 

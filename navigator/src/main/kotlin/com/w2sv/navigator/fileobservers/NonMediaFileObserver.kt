@@ -22,16 +22,16 @@ internal class NonMediaFileObserver(
         i { "Initialized NonMediaFileObserver with fileTypes: ${fileTypes.map { it.identifier }}" }
     }
 
-    override fun getNavigatableFileIfMatching(
+    override fun getMoveFileIfMatching(
         mediaStoreFile: MediaStoreFile
     ): MoveFile? =
         fileTypes
             .firstOrNull { it.matchesFileExtension(mediaStoreFile.columnData.fileExtension) }
             ?.let { fileType ->
                 MoveFile(
-                    type = fileType,
-                    sourceKind = FileType.Source.Kind.Download,
-                    mediaStoreFile = mediaStoreFile
+                    mediaStoreFile = mediaStoreFile,
+                    fileType = fileType,
+                    sourceKind = FileType.Source.Kind.Download
                 )
             }
 }

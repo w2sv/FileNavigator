@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.androidutils.datastorage.datastore.preferences.PreferencesDataStoreRepository
 import com.w2sv.common.di.AppDispatcher
-import com.w2sv.common.di.Scope
+import com.w2sv.common.di.GlobalScope
 import com.w2sv.data.model.FileType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +19,7 @@ import javax.inject.Singleton
 @Singleton
 class FileTypeRepository @Inject constructor(
     dataStore: DataStore<Preferences>,
-    @Scope(AppDispatcher.Default) scope: CoroutineScope
+    @GlobalScope(AppDispatcher.Default) scope: CoroutineScope
 ) :
     PreferencesDataStoreRepository(dataStore) {
 

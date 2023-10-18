@@ -5,25 +5,27 @@ import android.os.Parcelable
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
 import com.w2sv.data.model.FileType
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MoveFile(
     val mediaStoreFile: MediaStoreFile,
-    val type: FileType,
-    val sourceKind: FileType.Source.Kind,
+    val source: FileType.Source
 ) : Parcelable {
 
-    @IgnoredOnParcel
-    val source: FileType.Source by lazy {
-        FileType.Source(type, sourceKind)
-    }
+    constructor(
+        mediaStoreFile: MediaStoreFile,
+        fileType: FileType,
+        sourceKind: FileType.Source.Kind
+    ) : this(
+        mediaStoreFile = mediaStoreFile,
+        source = FileType.Source(fileType, sourceKind)
+    )
 
     fun getSimpleStorageMediaFile(context: Context): MediaFile? =
         MediaStoreCompat.fromMediaId(
             context,
-            type.simpleStorageMediaType,
+            source.fileType.simpleStorageMediaType,
             mediaStoreFile.columnData.rowId
         )
 

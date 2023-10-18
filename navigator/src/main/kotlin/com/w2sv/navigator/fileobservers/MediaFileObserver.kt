@@ -22,7 +22,7 @@ internal class MediaFileObserver(
         i { "Initialized ${fileType.identifier} MediaFileObserver with sourceKinds: ${sourceKinds.map { it.name }}" }
     }
 
-    override fun getNavigatableFileIfMatching(
+    override fun getMoveFileIfMatching(
         mediaStoreFile: MediaStoreFile
     ): MoveFile? {
         if (fileType.matchesFileExtension(mediaStoreFile.columnData.fileExtension)) {
@@ -30,9 +30,9 @@ internal class MediaFileObserver(
 
             if (sourceKinds.contains(sourceKind)) {
                 return MoveFile(
-                    type = fileType,
-                    sourceKind = sourceKind,
-                    mediaStoreFile = mediaStoreFile
+                    mediaStoreFile = mediaStoreFile,
+                    fileType = fileType,
+                    sourceKind = sourceKind
                 )
             }
         }

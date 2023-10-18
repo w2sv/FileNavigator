@@ -5,7 +5,7 @@ import android.content.Intent
 import com.w2sv.androidutils.coroutines.getSynchronousMap
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.common.di.AppDispatcher
-import com.w2sv.common.di.Scope
+import com.w2sv.common.di.GlobalScope
 import com.w2sv.data.storage.repositories.FileTypeRepository
 import com.w2sv.data.storage.repositories.PreferencesRepository
 import com.w2sv.navigator.fileobservers.FileObserver
@@ -37,7 +37,7 @@ class FileNavigator : UnboundService() {
     lateinit var appNotificationsManager: AppNotificationsManager
 
     @Inject
-    @Scope(AppDispatcher.IO)
+    @GlobalScope(AppDispatcher.IO)
     lateinit var ioScope: CoroutineScope
 
     private lateinit var fileObservers: List<FileObserver>
@@ -132,7 +132,7 @@ class FileNavigator : UnboundService() {
     }
 
     @Singleton
-    class StatusChanged @Inject constructor(@Scope(AppDispatcher.Default) private val scope: CoroutineScope) {
+    class StatusChanged @Inject constructor(@GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope) {
         val isRunning get() = _isRunning.asSharedFlow()
         private val _isRunning: MutableSharedFlow<Boolean> = MutableSharedFlow()
 

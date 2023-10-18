@@ -9,8 +9,8 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
-import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.notifications.getNotificationChannel
+import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 
 class ForegroundServiceNotificationManager(
     context: Context,
@@ -26,9 +26,15 @@ class ForegroundServiceNotificationManager(
     override fun getBuilder(args: Args.Empty): Builder =
         object : Builder() {
             override fun build(): Notification {
-                priority = NotificationCompat.PRIORITY_DEFAULT
                 setSmallIcon(R.drawable.ic_app_logo_24)
                 setContentTitle(context.getString(R.string.file_navigator_is_running))
+
+                setStyle(
+                    NotificationCompat.BigTextStyle()
+                        .bigText(
+                            "You will receive a notification when a new file pertaining to your selected file types gets registered."
+                        )
+                )
 
                 setContentIntent(
                     PendingIntent.getActivity(

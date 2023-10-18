@@ -4,7 +4,7 @@ import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Scope(val appDispatcher: AppDispatcher)
+annotation class GlobalScope(val appDispatcher: AppDispatcher)
 
 enum class AppDispatcher {
     Default,
