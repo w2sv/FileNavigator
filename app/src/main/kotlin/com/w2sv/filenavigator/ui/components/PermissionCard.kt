@@ -68,7 +68,7 @@ fun PermissionCard(
             )
             Spacer(modifier = Modifier.height(12.dp))
             AppFontText(
-                text = stringResource(id = properties.textRes),
+                text = styledTextResource(id = properties.textRes),
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(16.dp))

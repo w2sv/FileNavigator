@@ -31,7 +31,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -75,7 +74,6 @@ import com.w2sv.filenavigator.ui.utils.extensions.visibilityPercentage
 import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import slimber.log.i
 
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("NewApi")
