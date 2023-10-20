@@ -31,6 +31,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -43,10 +44,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -54,16 +52,15 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.AppTopBar
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
-import com.w2sv.filenavigator.ui.components.PermissionCard
 import com.w2sv.filenavigator.ui.components.PermissionCardProperties
 import com.w2sv.filenavigator.ui.components.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.screens.AppViewModel
 import com.w2sv.filenavigator.ui.screens.main.components.ConfigurationChangeConfirmationButtons
+import com.w2sv.filenavigator.ui.screens.main.components.PermissionScreen
 import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButton
 import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButtonConfiguration
 import com.w2sv.filenavigator.ui.screens.main.components.ToggleNavigatorButtonConfigurations
@@ -71,7 +68,6 @@ import com.w2sv.filenavigator.ui.screens.main.components.filetypeselection.FileT
 import com.w2sv.filenavigator.ui.states.NavigatorState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
-import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
 import com.w2sv.filenavigator.ui.utils.extensions.closeAnimated
 import com.w2sv.filenavigator.ui.utils.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.ui.utils.extensions.openAnimated
@@ -79,11 +75,12 @@ import com.w2sv.filenavigator.ui.utils.extensions.visibilityPercentage
 import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import slimber.log.i
 
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("NewApi")
 @Composable
-fun MainScreen(
+fun UI(
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -93,9 +90,12 @@ fun MainScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val postNotificationsPermissionState =
-        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS) {
-            mainScreenVM.savePostNotificationsPermissionRequested()
-        }
+        rememberPermissionState(
+            permission = Manifest.permission.POST_NOTIFICATIONS,
+            onPermissionResult = {
+                mainScreenVM.savePostNotificationsPermissionRequested()
+            }
+        )
 
     val anyStorageAccessGranted by mainScreenVM.storageAccessState.anyAccessGranted.collectAsState()
 
@@ -125,7 +125,7 @@ fun MainScreen(
             if (!anyStorageAccessGranted) {
                 add(
                     PermissionCardProperties(
-                        iconRes = R.drawable.ic_storage_24,
+                        iconRes = R.drawable.ic_folder_open_24,
                         textRes = R.string.manage_external_storage_permission_rational,
                         onGrantButtonClick = {
                             goToManageExternalStorageSettings(context)
@@ -161,16 +161,16 @@ fun MainScreen(
                 val sharedModifier =
                     Modifier
                         .fillMaxSize()
-                        .animateDrawerProgressionBased(drawerState)
+                        .animateBasedOnDrawerProgression(drawerState)
 
                 AnimatedContent(targetState = permissionCardProperties.isEmpty(), label = "") {
                     if (it) {
-                        MainContent(
+                        MainScreen(
                             navigatorState = mainScreenVM.navigatorState,
                             modifier = sharedModifier.padding(horizontal = 14.dp)
                         )
                     } else {
-                        PermissionCardColumn(
+                        PermissionScreen(
                             properties = permissionCardProperties,
                             modifier = sharedModifier.padding(horizontal = 32.dp)
                         )
@@ -179,6 +179,7 @@ fun MainScreen(
             }
         }
     }
+
     BackHandler {
         when (drawerState.currentValue) {
             DrawerValue.Closed -> appVM.onBackPress(context)
@@ -189,61 +190,37 @@ fun MainScreen(
     }
 }
 
-private fun Modifier.animateDrawerProgressionBased(drawerState: DrawerState): Modifier = composed {
-    val maxDrawerWidthPx =
-        with(LocalDensity.current) { DrawerDefaults.MaximumDrawerWidth.toPx() }
+private fun Modifier.animateBasedOnDrawerProgression(drawerState: DrawerState): Modifier =
+    composed {
+        val maxDrawerWidthPx =
+            with(LocalDensity.current) { DrawerDefaults.MaximumDrawerWidth.toPx() }
 
-    val drawerVisibilityPercentage by remember {
-        drawerState.visibilityPercentage(maxWidthPx = maxDrawerWidthPx)
-    }
-    val drawerVisibilityPercentageInverse by remember {
-        derivedStateOf {
-            1 - drawerVisibilityPercentage
+        val drawerVisibilityPercentage by remember {
+            drawerState.visibilityPercentage(maxWidthPx = maxDrawerWidthPx)
         }
-    }
-    val drawerVisibilityPercentageAngle by remember {
-        derivedStateOf {
-            180 * drawerVisibilityPercentage
+        val drawerVisibilityPercentageInverse by remember {
+            derivedStateOf {
+                1 - drawerVisibilityPercentage
+            }
         }
-    }
+        val drawerVisibilityPercentageAngle by remember {
+            derivedStateOf {
+                180 * drawerVisibilityPercentage
+            }
+        }
 
-    return@composed graphicsLayer(
-        scaleX = drawerVisibilityPercentageInverse,
-        scaleY = drawerVisibilityPercentageInverse,
-        translationX = LocalConfiguration.current.screenWidthDp * drawerVisibilityPercentage,
-        translationY = LocalConfiguration.current.screenHeightDp * drawerVisibilityPercentage,
-        rotationY = drawerVisibilityPercentageAngle,
-        rotationZ = drawerVisibilityPercentageAngle
-    )
-}
-
-@Composable
-fun PermissionCardColumn(
-    properties: List<PermissionCardProperties>,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Spacer(modifier = Modifier.fillMaxHeight(0.15f))
-        AppFontText(
-            text = stringResource(id = R.string.permissions_missing),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.align(Alignment.Start)
-        )
-        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
-        InBetweenSpaced(
-            elements = properties,
-            makeElement = { PermissionCard(properties = it) },
-            makeDivider = { Spacer(modifier = Modifier.fillMaxHeight(0.075f)) }
+        return@composed graphicsLayer(
+            scaleX = drawerVisibilityPercentageInverse,
+            scaleY = drawerVisibilityPercentageInverse,
+            translationX = LocalConfiguration.current.screenWidthDp * drawerVisibilityPercentage,
+            translationY = LocalConfiguration.current.screenHeightDp * drawerVisibilityPercentage,
+            rotationY = drawerVisibilityPercentageAngle,
+            rotationZ = drawerVisibilityPercentageAngle
         )
     }
-}
 
 @Composable
-internal fun MainContent(
+private fun MainScreen(
     navigatorState: NavigatorState,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current

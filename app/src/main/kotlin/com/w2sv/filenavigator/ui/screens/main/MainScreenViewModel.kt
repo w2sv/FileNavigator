@@ -43,7 +43,7 @@ class MainScreenViewModel @Inject constructor(
     val postNotificationsPermissionRequested =
         preferencesRepository.postNotificationsPermissionRequested.stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(),
+            SharingStarted.Eagerly,
         )
 
     fun savePostNotificationsPermissionRequested() {
