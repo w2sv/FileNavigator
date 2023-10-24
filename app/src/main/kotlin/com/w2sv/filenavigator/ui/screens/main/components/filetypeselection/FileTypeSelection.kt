@@ -60,7 +60,7 @@ fun FileTypeSelectionColumn(
                 items = fileTypesState.sortedFileTypes,
                 key = { it }
             ) { fileType ->
-                i { "Laying out ${fileType.identifier}" }
+                i { "Laying out ${fileType.name}" }
 
                 FileTypeAccordion(
                     fileType = fileType,

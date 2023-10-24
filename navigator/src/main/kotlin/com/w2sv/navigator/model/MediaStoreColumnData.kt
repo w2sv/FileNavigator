@@ -100,7 +100,7 @@ data class MediaStoreColumnData(
                         MediaStore.MediaColumns.DISPLAY_NAME,
                         MediaStore.MediaColumns.DATE_ADDED,
                         MediaStore.MediaColumns.SIZE,
-                        MediaStore.MediaColumns.IS_PENDING
+                        MediaStore.MediaColumns.IS_PENDING,
                     )
                 )
                     ?.run {

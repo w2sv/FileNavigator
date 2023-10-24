@@ -21,12 +21,14 @@ internal abstract class FileObserver(
 
     private val mediaStoreFileProvider: MediaStoreFile.Provider = MediaStoreFile.Provider()
 
+    protected abstract val logIdentifier: String
+
     override fun deliverSelfNotifications(): Boolean = false
 
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
 
-        i { "${this::class.java.simpleName} onChange | Uri: $uri" }
+        i { "$logIdentifier onChange | Uri: $uri" }
 
         uri ?: return
 

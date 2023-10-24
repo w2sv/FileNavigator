@@ -22,7 +22,7 @@ sealed class FileType(
     sourceKinds: List<Source.Kind>,
 ) : Parcelable {
 
-    val identifier: String = this::class.java.simpleName
+    val name: String = this::class.java.simpleName
 
     @IgnoredOnParcel
     val statusDSE
@@ -43,8 +43,6 @@ sealed class FileType(
         @ColorLong colorLong: Long,
         mediaType: MediaType,
         sourceKinds: List<Source.Kind>,
-        val fileExtensions: Set<String>? = null,
-        val ignoreFileExtensionsOf: Media? = null
     ) : FileType(
         titleRes = labelRes,
         iconRes = iconRes,
@@ -54,15 +52,7 @@ sealed class FileType(
     ) {
 
         override fun matchesFileExtension(extension: String): Boolean =
-            when {
-                fileExtensions != null -> fileExtensions.contains(extension)
-
-                ignoreFileExtensionsOf != null -> !ignoreFileExtensionsOf.fileExtensions!!.contains(
-                    extension
-                )
-
-                else -> true
-            }
+            true
 
         @Parcelize
         data object Image : Media(
@@ -76,20 +66,6 @@ sealed class FileType(
                 Source.Kind.Download,
                 Source.Kind.OtherApp
             ),
-            ignoreFileExtensionsOf = GIF
-        )
-
-        @Parcelize
-        data object GIF : Media(
-            labelRes = R.string.gif,
-            iconRes = R.drawable.ic_gif_box_24,
-            colorLong = 0xFF49C6E5,
-            mediaType = MediaType.IMAGE,
-            sourceKinds = listOf(
-                Source.Kind.Download,
-                Source.Kind.OtherApp
-            ),
-            fileExtensions = setOf("gif", "GIF", "giff")
         )
 
         @Parcelize
@@ -120,7 +96,7 @@ sealed class FileType(
 
         companion object {
             @JvmStatic
-            fun getValues(): List<Media> = listOf(Image, Video, GIF, Audio)
+            fun getValues(): List<Media> = listOf(Image, Video, Audio)
         }
     }
 
@@ -229,7 +205,7 @@ sealed class FileType(
         companion object {
             fun getDSE(fileType: FileType): DataStoreEntry.EnumValued<Status> =
                 DataStoreEntry.EnumValued.Impl(
-                    preferencesKey = intPreferencesKey(name = fileType.identifier),
+                    preferencesKey = intPreferencesKey(name = fileType.name),
                     defaultValue = DisabledDueToNoFileAccess
                 )
         }
@@ -244,7 +220,7 @@ sealed class FileType(
     data class Source(val fileType: FileType, val kind: Kind) : Parcelable {
 
         private fun getPreferencesKeyContent(keySuffix: String): String =
-            "${fileType.identifier}.$kind.$keySuffix"
+            "${fileType.name}.$kind.$keySuffix"
 
         @IgnoredOnParcel
         val isEnabledDSE = DataStoreEntry.UniType.Impl(  // TODO: Remove for NonMedia

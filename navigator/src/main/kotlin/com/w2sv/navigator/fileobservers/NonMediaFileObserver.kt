@@ -19,8 +19,11 @@ internal class NonMediaFileObserver(
     ) {
 
     init {
-        i { "Initialized NonMediaFileObserver with fileTypes: ${fileTypes.map { it.identifier }}" }
+        i { "Initialized NonMediaFileObserver with fileTypes: ${fileTypes.map { it.name }}" }
     }
+
+    override val logIdentifier: String
+        get() = this.javaClass.simpleName
 
     override fun getMoveFileIfMatching(
         mediaStoreFile: MediaStoreFile
