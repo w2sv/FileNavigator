@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.components.drawer
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -12,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -40,7 +40,7 @@ fun NavigationDrawer(
     ModalNavigationDrawer(
         modifier = modifier,
         drawerContent = {
-            NavigationDrawerSheet {
+            Sheet {
                 SheetContent(closeDrawer = { scope.launch { state.closeAnimated() } })
             }
         },
@@ -51,7 +51,7 @@ fun NavigationDrawer(
 }
 
 @Composable
-private fun NavigationDrawerSheet(
+private fun Sheet(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -62,9 +62,7 @@ private fun NavigationDrawerSheet(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AppLogoImage()
-            Spacer(modifier = Modifier.height(26.dp))
-            VersionText()
+            Header()
             Divider(modifier = Modifier.padding(top = 16.dp, bottom = 12.dp))
             content()
         }
@@ -72,10 +70,18 @@ private fun NavigationDrawerSheet(
 }
 
 @Composable
-fun AppLogoImage(modifier: Modifier = Modifier) {
-    Image(
+private fun Header() {
+    AppLogoWCircularBackground()
+    Spacer(modifier = Modifier.height(26.dp))
+    VersionText()
+}
+
+@Composable
+fun AppLogoWCircularBackground(modifier: Modifier = Modifier) {
+    Icon(
         painterResource(id = R.drawable.ic_launcher_foreground),
-        null,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.inversePrimary,
         modifier = modifier
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.primary)

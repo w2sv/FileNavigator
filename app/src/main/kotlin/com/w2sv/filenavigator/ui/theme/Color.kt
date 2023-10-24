@@ -6,15 +6,13 @@ import androidx.compose.ui.graphics.Color
 
 object AppColor {
     val primary = Color(0xFF00696E)
+    val inversePrimary = Color(0xFF00DFC2)
 
     val success = Color(12, 173, 34, 200)
     val error = Color(201, 14, 52, 200)
 
     val disabled: Color
         @Composable get() = MaterialTheme.colorScheme.onSurface.copy(0.38f)
-
-    val lessDisabled: Color
-        @Composable get() = MaterialTheme.colorScheme.onSurface.copy(0.52f)
 
     object ThemeLight {
         val onPrimary = Color(0xFFFFFFFF)
@@ -41,7 +39,6 @@ object AppColor {
         val outline = Color(0xFF6F7979)
         val inverseOnSurface = Color(0xFFEFF1F1)
         val inverseSurface = Color(0xFF2D3131)
-        val inversePrimary = Color(0xFF4CD9E1)
         val surfaceTint = Color(0xFF00696E)
         val outlineVariant = Color(0xFFBEC8C9)
         val scrim = Color(0xFF000000)
@@ -51,7 +48,7 @@ object AppColor {
         val onPrimary = Color(0xFF003739)
         val primaryContainer = Color(0xFF004F53)
         val onPrimaryContainer = Color(0xFF6FF6FE)
-        val secondary = Color(0xFF00DFC2)
+        val secondary = inversePrimary
         val onSecondary = Color(0xFF00382F)
         val secondaryContainer = Color(0xFF005045)
         val onSecondaryContainer = Color(0xFF09FEDD)
@@ -72,7 +69,6 @@ object AppColor {
         val outline = Color(0xFF899393)
         val inverseOnSurface = Color(0xFF191C1C)
         val inverseSurface = Color(0xFFE0E3E3)
-        val inversePrimary = Color(0xFF00696E)
         val surfaceTint = Color(0xFF4CD9E1)
         val outlineVariant = Color(0xFF3F4949)
         val scrim = Color(0xFF000000)
