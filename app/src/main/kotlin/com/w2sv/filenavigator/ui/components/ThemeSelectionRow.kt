@@ -1,6 +1,8 @@
 package com.w2sv.filenavigator.ui.components
 
+import android.os.Build
 import android.view.animation.OvershootInterpolator
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
@@ -18,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -209,3 +212,6 @@ fun ThemeButtonPrev() {
             isSelected = { true })
     }
 }
+
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
+val dynamicColorsSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S

@@ -27,6 +27,11 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
         Theme.DeviceDefault
     )
 
+    val useDynamicColors = getPersistedValue(
+        booleanPreferencesKey("useDynamicColors"),
+        false
+    )
+
     val navigatorStartDateTime =
         getNullableFlow(
             Key.navigatorStartDateTime,

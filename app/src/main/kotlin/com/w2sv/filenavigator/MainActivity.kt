@@ -45,6 +45,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme(
+                useDynamicTheme = appVM.useDynamicColors.collectAsState().value,
                 useDarkTheme = when (appVM.theme.collectAsState().value) {
                     Theme.Dark -> true
                     Theme.Light -> false

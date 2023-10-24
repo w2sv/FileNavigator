@@ -35,10 +35,111 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.RightAlignedAppCheckbox
+import com.w2sv.filenavigator.ui.components.RightAlignedSwitch
 import com.w2sv.filenavigator.ui.components.RunTimeDisplay
 import com.w2sv.filenavigator.ui.components.ThemeSelectionRow
+import com.w2sv.filenavigator.ui.components.dynamicColorsSupported
 import com.w2sv.filenavigator.ui.screens.AppViewModel
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+
+@Composable
+internal fun ColumnScope.SheetContent(
+    closeDrawer: () -> Unit,
+    context: Context = LocalContext.current,
+    mainScreenVM: MainScreenViewModel = viewModel(),
+    appVM: AppViewModel = viewModel()
+) {
+    remember {
+        buildList {
+            add(Element.Header(R.string.navigator))
+            add(Element.Custom {
+                with(mainScreenVM.navigatorState) {
+                    val isRunning by isRunning.collectAsState()
+                    val startDateTime by startDateTime.collectAsState()
+
+                    if (isRunning && startDateTime != null) {
+                        RunTimeDisplay(
+                            startDateTime = startDateTime!!,
+                            modifier = Modifier.padding(top = 14.dp)
+                        )
+                    }
+                }
+            })
+            add(Element.LabelledItem.Custom(
+                iconRes = R.drawable.ic_battery_low_24,
+                labelRes = R.string.disable_navigator_on_low_battery,
+            ) {
+                RightAlignedAppCheckbox(
+                    checked = mainScreenVM.navigatorState.disableOnLowBattery.collectAsState().value,
+                    onCheckedChange = mainScreenVM.navigatorState::saveDisableOnLowBattery
+                )
+            })
+            add(Element.Header(R.string.appearance))
+            add(Element.LabelledItem.Custom(R.drawable.ic_nightlight_24, R.string.theme) {
+                ThemeSelectionRow(
+                    selected = appVM.theme.collectAsState().value,
+                    onSelected = appVM::saveTheme,
+                    modifier = Modifier.padding(start = 22.dp)
+                )
+            })
+            if (dynamicColorsSupported) {
+                add(Element.LabelledItem.Custom(
+                    iconRes = R.drawable.ic_palette_24,
+                    labelRes = R.string.use_dynamic_colors,
+                ) {
+                    RightAlignedSwitch(
+                        checked = appVM.useDynamicColors.collectAsState().value,
+                        onCheckedChange = appVM::saveUseDynamicColors
+                    )
+                })
+            }
+            add(Element.Header(R.string.legal))
+            add(Element.LabelledItem.Clickable(R.drawable.ic_policy_24, R.string.privacy_policy) {
+                context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/PRIVACY-POLICY.md")
+            })
+            add(Element.LabelledItem.Clickable(R.drawable.ic_copyright_24, R.string.license) {
+                context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/LICENSE")
+            })
+            add(Element.Header(R.string.more))
+            add(Element.LabelledItem.Clickable(R.drawable.ic_star_rate_24, R.string.rate) {
+                try {
+                    context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse(appPlayStoreUrl(context))
+                        ).setPackage("com.android.vending")
+                    )
+                } catch (e: ActivityNotFoundException) {
+                    context.showToast(context.getString(R.string.you_re_not_signed_into_the_play_store))
+                }
+            })
+            add(Element.LabelledItem.Clickable(R.drawable.ic_share_24, R.string.share) {
+                ShareCompat.IntentBuilder(context)
+                    .setType("text/plain")
+                    .setText(context.getString(R.string.share_action_text))
+                    .startChooser()
+            })
+            add(Element.LabelledItem.Clickable(R.drawable.ic_developer_24, R.string.developer) {
+                context.openUrlWithActivityNotFoundHandling("https://play.google.com/store/apps/dev?id=6884111703871536890")
+            })
+        }
+    }
+        .forEach {
+            when (it) {
+                is Element.LabelledItem -> {
+                    Item(item = it, closeDrawer = closeDrawer)
+                }
+
+                is Element.Header -> {
+                    SubHeader(titleRes = it.titleRes)
+                }
+
+                is Element.Custom -> {
+                    it.content()
+                }
+            }
+        }
+}
 
 private sealed interface Element {
 
@@ -66,120 +167,6 @@ private sealed interface Element {
     data class Header(
         @StringRes val titleRes: Int,
     ) : Element
-}
-
-@Composable
-internal fun ColumnScope.SheetContent(
-    closeDrawer: () -> Unit,
-    context: Context = LocalContext.current,
-    mainScreenVM: MainScreenViewModel = viewModel(),
-    appVM: AppViewModel = viewModel()
-) {
-    remember {
-        listOf(
-            Element.Header(
-                R.string.navigator
-            ),
-            Element.Custom {
-                with(mainScreenVM.navigatorState) {
-                    val isRunning by isRunning.collectAsState()
-                    val startDateTime by startDateTime.collectAsState()
-
-                    if (isRunning && startDateTime != null) {
-                        RunTimeDisplay(
-                            startDateTime = startDateTime!!,
-                            modifier = Modifier.padding(top = 14.dp)
-                        )
-                    }
-                }
-            },
-            Element.LabelledItem.Custom(
-                iconRes = R.drawable.ic_battery_low_24,
-                labelRes = R.string.disable_navigator_on_low_battery,
-                content = {
-                    RightAlignedAppCheckbox(
-                        checked = mainScreenVM.navigatorState.disableOnLowBattery.collectAsState().value,
-                        onCheckedChange = mainScreenVM.navigatorState::saveDisableOnLowBattery
-                    )
-                }
-            ),
-            Element.Header(
-                R.string.appearance
-            ),
-            Element.LabelledItem.Custom(
-                R.drawable.ic_nightlight_24,
-                R.string.theme
-            ) {
-                ThemeSelectionRow(
-                    selected = appVM.theme.collectAsState().value,
-                    onSelected = appVM::saveTheme,
-                    modifier = Modifier.padding(start = 22.dp)
-                )
-            },
-            Element.Header(R.string.legal),
-            Element.LabelledItem.Clickable(
-                R.drawable.ic_policy_24,
-                R.string.privacy_policy
-            ) {
-                context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/PRIVACY-POLICY.md")
-            },
-            Element.LabelledItem.Clickable(
-                R.drawable.ic_copyright_24,
-                R.string.license
-            ) {
-                context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/LICENSE")
-            },
-            Element.Header(
-                R.string.more
-            ),
-            Element.LabelledItem.Clickable(
-                R.drawable.ic_star_rate_24,
-                R.string.rate
-            ) {
-                try {
-                    context.startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse(appPlayStoreUrl(context))
-                        )
-                            .setPackage("com.android.vending")
-                    )
-                } catch (e: ActivityNotFoundException) {
-                    context.showToast(context.getString(R.string.you_re_not_signed_into_the_play_store))
-                }
-            },
-            Element.LabelledItem.Clickable(
-                R.drawable.ic_share_24,
-                R.string.share
-            ) {
-                ShareCompat.IntentBuilder(context)
-                    .setType("text/plain")
-                    .setText(context.getString(R.string.share_action_text))
-                    .startChooser()
-            },
-            Element.LabelledItem.Clickable(
-                R.drawable.ic_developer_24,
-                R.string.developer
-            ) {
-                context.openUrlWithActivityNotFoundHandling("https://play.google.com/store/apps/dev?id=6884111703871536890")
-            }
-        )
-    }
-        .forEach {
-            when (it) {
-                is Element.LabelledItem -> {
-                    Item(item = it, closeDrawer = closeDrawer)
-                }
-
-                is Element.Header -> {
-                    SubHeader(titleRes = it.titleRes)
-                }
-
-                is Element.Custom -> {
-                    it.content()
-                }
-            }
-        }
 }
 
 @Composable

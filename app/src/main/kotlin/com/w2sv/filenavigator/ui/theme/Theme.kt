@@ -1,24 +1,33 @@
 package com.w2sv.filenavigator.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 
+@SuppressLint("NewApi")
 @Composable
 fun AppTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    useDynamicTheme: Boolean = false,
+    useDarkTheme: Boolean = false,
+    context: Context = LocalContext.current,
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
-        colorScheme = if (useDarkTheme) {
-            darkColors
-        } else {
-            lightColors
+        colorScheme = when {
+            useDynamicTheme && useDarkTheme -> dynamicDarkColorScheme(context)
+            useDynamicTheme && !useDarkTheme -> dynamicLightColorScheme(context)
+            !useDynamicTheme && useDarkTheme -> darkColors
+            else -> lightColors
         },
-        content = content
-    )
+    ) {
+        content()
+    }
 }
 
 private val lightColors = lightColorScheme(

@@ -30,6 +30,17 @@ class AppViewModel @Inject constructor(private val preferencesRepository: Prefer
         }
     }
 
+    val useDynamicColors = preferencesRepository.useDynamicColors.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+    )
+
+    fun saveUseDynamicColors(value: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.useDynamicColors.save(value)
+        }
+    }
+
     // ==============
     // BackPress Handling
     // ==============

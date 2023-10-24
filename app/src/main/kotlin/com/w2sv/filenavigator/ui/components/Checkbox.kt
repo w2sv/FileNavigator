@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
@@ -28,6 +29,15 @@ fun AppCheckbox(
 fun RowScope.RightAlignedAppCheckbox(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     Spacer(modifier = Modifier.weight(1f))
     AppCheckbox(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+    )
+}
+
+@Composable
+fun RowScope.RightAlignedSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Spacer(modifier = Modifier.weight(1f))
+    Switch(
         checked = checked,
         onCheckedChange = onCheckedChange,
     )
