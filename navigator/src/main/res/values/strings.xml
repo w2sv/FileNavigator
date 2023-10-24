@@ -16,12 +16,8 @@
     <string name="start_navigator">Start Navigator</string>
     <string name="stop_navigator">Stop Navigator</string>
 
-    <string name="new_photo">New Photo</string>
-    <string name="new_screenshot">New Screenshot</string>
-    <string name="new_video">New Video</string>
-    <string name="new_">New %1$s</string>
-    <string name="new_downloaded_template">New downloaded %1$s</string>
-    <string name="new_third_party_file_template">New %1$s %2$s</string>
+    <string name="new_">New</string>
+    <string name="downloaded">"downloaded"</string>
     <string name="new_file_detected">New file detected</string>
     <string name="couldnt_move_file_internal_error">Couldn\'t move file: Internal Error</string>
     <string name="moving_to_default_destination_requires_permission_to_manage_all_files">Moving to default destination requires permission to manage all files!</string>

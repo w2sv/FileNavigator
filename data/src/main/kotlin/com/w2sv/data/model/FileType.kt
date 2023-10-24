@@ -112,6 +112,7 @@ sealed class FileType(
             colorLong = 0xFFF26430,
             mediaType = MediaType.AUDIO,
             sourceKinds = listOf(
+                Source.Kind.Recording,
                 Source.Kind.Download,
                 Source.Kind.OtherApp
             )
@@ -268,6 +269,10 @@ sealed class FileType(
             Screenshot(
                 R.string.screenshot,
                 R.drawable.ic_screenshot_24
+            ),
+            Recording(
+                R.string.recording,
+                R.drawable.ic_mic_24
             ),
             Download(
                 R.string.download,

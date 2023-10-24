@@ -3,6 +3,7 @@ package com.w2sv.navigator.model
 import android.content.ContentResolver
 import android.database.CursorIndexOutOfBoundsException
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore
@@ -69,11 +70,14 @@ data class MediaStoreColumnData(
 
     fun getSourceKind(): FileType.Source.Kind =
         when {
-            volumeRelativeDirPath.contains(Environment.DIRECTORY_DOWNLOADS) -> FileType.Source.Kind.Download
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && volumeRelativeDirPath.contains(
+                Environment.DIRECTORY_RECORDINGS
+            ) || volumeRelativeDirPath.contains("Recordings") -> FileType.Source.Kind.Recording
             // NOTE: Don't change the order of the Screenshot and Camera branches, as Environment.DIRECTORY_SCREENSHOTS
             // may be a child dir of Environment.DIRECTORY_DCIM
             volumeRelativeDirPath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileType.Source.Kind.Screenshot
             volumeRelativeDirPath.contains(Environment.DIRECTORY_DCIM) -> FileType.Source.Kind.Camera
+            volumeRelativeDirPath.contains(Environment.DIRECTORY_DOWNLOADS) -> FileType.Source.Kind.Download
             else -> FileType.Source.Kind.OtherApp
         }
             .also {

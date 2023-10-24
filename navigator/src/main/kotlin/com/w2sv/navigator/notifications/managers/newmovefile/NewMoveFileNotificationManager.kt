@@ -58,7 +58,7 @@ class NewMoveFileNotificationManager(
                 setGroup("GROUP")
 
                 setContentTitle(
-                    getContentTitle()
+                    "${context.getString(R.string.new_)} ${getMoveFileTitle()}"
                 )
                 // Set icons
                 setSmallIcon(R.drawable.ic_app_logo_24)
@@ -95,40 +95,39 @@ class NewMoveFileNotificationManager(
                 return super.build()
             }
 
-            private fun getContentTitle() =
+            private fun getMoveFileTitle(): String =
                 when (val fileType = navigatableFile.source.fileType) {
                     is FileType.Media -> {
                         when (navigatableFile.mediaStoreFile.columnData.getSourceKind()) {
+                            FileType.Source.Kind.Recording -> context.getString(com.w2sv.data.R.string.recording)
                             FileType.Source.Kind.Screenshot -> context.getString(
-                                R.string.new_screenshot
+                                com.w2sv.data.R.string.screenshot
                             )
 
                             FileType.Source.Kind.Camera -> context.getString(
                                 when (navigatableFile.source.fileType) {
-                                    FileType.Media.Image -> R.string.new_photo
-                                    FileType.Media.Video -> R.string.new_video
+                                    FileType.Media.Image -> com.w2sv.data.R.string.photo
+                                    FileType.Media.Video -> com.w2sv.data.R.string.video
                                     else -> throw Error()
                                 }
                             )
 
-                            FileType.Source.Kind.Download -> context.getString(
-                                R.string.new_downloaded_template,
-                                context.getString(fileType.titleRes)
-                            )
+                            FileType.Source.Kind.Download -> "${
+                                context.getString(
+                                    R.string.downloaded
+                                )
+                            } ${context.getString(fileType.titleRes)}"
 
-                            FileType.Source.Kind.OtherApp -> context.getString(
-                                R.string.new_third_party_file_template,
-                                navigatableFile.mediaStoreFile.columnData.dirName,
-                                context.getString(fileType.titleRes)
-                            )
+                            FileType.Source.Kind.OtherApp -> "${navigatableFile.mediaStoreFile.columnData.dirName} ${
+                                context.getString(
+                                    fileType.titleRes
+                                )
+                            }"
                         }
                     }
 
                     is FileType.NonMedia -> {
-                        context.getString(
-                            R.string.new_,
-                            context.getString(navigatableFile.source.fileType.titleRes)
-                        )
+                        context.getString(navigatableFile.source.fileType.titleRes)
                     }
                 }
 
