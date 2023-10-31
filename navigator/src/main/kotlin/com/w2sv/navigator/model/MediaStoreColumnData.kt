@@ -11,6 +11,7 @@ import com.w2sv.common.utils.parseBoolean
 import com.w2sv.common.utils.queryNonNullMediaStoreData
 import com.w2sv.data.model.FileType
 import com.w2sv.kotlinutils.dateFromUnixTimestamp
+import com.w2sv.navigator.fileobservers.emitDiscardedLog
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
@@ -118,7 +119,7 @@ data class MediaStoreColumnData(
                             }
                     }
             } catch (e: CursorIndexOutOfBoundsException) {
-                i { e.toString() }
+                emitDiscardedLog(e::toString)
                 null
             }
     }

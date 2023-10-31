@@ -13,7 +13,6 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.common.utils.getDocumentUriFileName
-import com.w2sv.common.utils.whiteSpaceWrapped
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
@@ -73,8 +72,16 @@ class NewMoveFileNotificationManager(
                         .bigText(
                             buildSpannedString {
                                 bold { append(navigatableFile.mediaStoreFile.columnData.name) }
-                                append(context.getString(R.string.found_at).whiteSpaceWrapped())
-                                bold { append(navigatableFile.mediaStoreFile.columnData.volumeRelativeDirPath) }
+                                append(" ${context.getString(R.string.found_at)} ")
+                                bold {
+                                    append(
+                                        "/${
+                                            navigatableFile.mediaStoreFile.columnData.volumeRelativeDirPath.removeSuffix(
+                                                "/"
+                                            )
+                                        }"
+                                    )
+                                }
                             }
                         )
                 )
@@ -118,7 +125,7 @@ class NewMoveFileNotificationManager(
                                 )
                             } ${context.getString(fileType.titleRes)}"
 
-                            FileType.Source.Kind.OtherApp -> "${navigatableFile.mediaStoreFile.columnData.dirName} ${
+                            FileType.Source.Kind.OtherApp -> "/${navigatableFile.mediaStoreFile.columnData.dirName} ${
                                 context.getString(
                                     fileType.titleRes
                                 )
@@ -188,7 +195,10 @@ class NewMoveFileNotificationManager(
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
                     R.drawable.ic_app_logo_24,
-                    getDocumentUriFileName(moveDestination, context)?.let { "/$it" },
+                    getDocumentUriFileName(
+                        moveDestination,
+                        context
+                    )?.let { "$/$it" },
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,

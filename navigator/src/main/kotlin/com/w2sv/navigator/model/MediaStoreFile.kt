@@ -27,30 +27,40 @@ data class MediaStoreFile(
 
     class Provider {
 
+        sealed interface Result {
+            class Success(val mediaStoreFile: MediaStoreFile) : Result
+            data object CouldntFetchMediaStoreColumnData : Result
+            data object FileIsPending : Result
+            data object FileNotFoundException : Result
+        }
+
         fun getMediaStoreFileIfNotPending(
             mediaUri: Uri,
             contentResolver: ContentResolver
-        ): MediaStoreFile? {
+        ): Result {
             val columnData =
-                MediaStoreColumnData.fetch(mediaUri, contentResolver) ?: return null
+                MediaStoreColumnData.fetch(mediaUri, contentResolver)
+                    ?: return Result.CouldntFetchMediaStoreColumnData
 
             if (columnData.isPending) {
-                emitDiscardedLog("pending")
-                return null
+                emitDiscardedLog { "pending" }
+                return Result.FileIsPending
             }
 
             val sha256 = try {
                 columnData.getFile().getContentHash(sha256MessageDigest)
                     .also { i { "SHA256 ($mediaUri) = $it" } }
             } catch (e: FileNotFoundException) {
-                emitDiscardedLog(e.toString())
-                return null
+                emitDiscardedLog(e::toString)
+                return Result.FileNotFoundException
             }
 
-            return MediaStoreFile(
-                mediaUri,
-                columnData,
-                sha256
+            return Result.Success(
+                MediaStoreFile(
+                    uri = mediaUri,
+                    columnData = columnData,
+                    sha256 = sha256
+                )
             )
         }
 
