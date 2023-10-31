@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.text.SpannedString
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
@@ -19,7 +20,6 @@ import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.AppNotificationsManager
-import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.FileMoveActivity
 import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.NotificationResourcesCleanupBroadcastReceiver
@@ -31,7 +31,7 @@ import javax.inject.Inject
 class NewMoveFileNotificationManager(
     context: Context,
     notificationManager: NotificationManager
-) : MultiInstanceAppNotificationManager<NewMoveFileNotificationManager.Args>(
+) : MultiInstanceAppNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
     notificationChannel = getNotificationChannel(
         id = "NEW_MOVE_FILE",
         name = context.getString(R.string.new_file_detected)
@@ -40,18 +40,13 @@ class NewMoveFileNotificationManager(
     context = context,
     resourcesBaseSeed = 1
 ) {
-    inner class Args(
+    inner class BuilderArgs(
         val moveFile: MoveFile,
         val getLastMoveDestination: (FileType.Source) -> Uri?,
-        val resources: NotificationResources = getNotificationResources(4)
-    ) : AppNotificationManager.Args
+    ) : MultiInstanceAppNotificationManager.BuilderArgs(getNotificationResources(4))
 
-    override fun getBuilder(args: Args): Builder =
+    override fun getBuilder(args: BuilderArgs): Builder =
         object : Builder() {
-
-            private val navigatableFile by args::moveFile
-            private val getLastMoveDestination by args::getLastMoveDestination
-            private val resources by args::resources
 
             override fun build(): Notification {
                 setGroup("GROUP")
@@ -62,34 +57,28 @@ class NewMoveFileNotificationManager(
                 // Set icons
                 setSmallIcon(R.drawable.ic_app_logo_24)
                 setLargeIcon(
-                    AppCompatResources.getDrawable(context, getLargeIconDrawable())
-                        ?.apply { setTint(navigatableFile.source.fileType.colorInt) }
+                    AppCompatResources.getDrawable(context, getLargeIconDrawableRes())
+                        ?.apply { setTint(args.moveFile.source.fileType.colorInt) }
                         ?.toBitmap()
                 )
                 // Set content
                 setStyle(
                     NotificationCompat.BigTextStyle()
-                        .bigText(
-                            buildSpannedString {
-                                bold { append(navigatableFile.mediaStoreFile.columnData.name) }
-                                append(" ${context.getString(R.string.found_at)} ")
-                                bold {
-                                    append(
-                                        "/${
-                                            navigatableFile.mediaStoreFile.columnData.volumeRelativeDirPath.removeSuffix(
-                                                "/"
-                                            )
-                                        }"
-                                    )
-                                }
-                            }
-                        )
+                        .bigText(getContentText())
                 )
 
                 // Set actions & intents
-                val requestCodeIterator = resources.actionRequestCodes.iterator()
+                val requestCodeIterator = args.resources.actionRequestCodes.iterator()
 
-                addActions(requestCodeIterator)
+                addAction(getMoveFileAction(requestCodeIterator.next()))
+                args.getLastMoveDestination(args.moveFile.source)?.let {
+                    addAction(
+                        getQuickMoveAction(
+                            requestCodeIterator.next(),
+                            it
+                        )
+                    )
+                }
 
                 setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
 
@@ -103,16 +92,16 @@ class NewMoveFileNotificationManager(
             }
 
             private fun getMoveFileTitle(): String =
-                when (val fileType = navigatableFile.source.fileType) {
+                when (val fileType = args.moveFile.source.fileType) {
                     is FileType.Media -> {
-                        when (navigatableFile.mediaStoreFile.columnData.getSourceKind()) {
+                        when (args.moveFile.mediaStoreFile.columnData.getSourceKind()) {
                             FileType.Source.Kind.Recording -> context.getString(com.w2sv.data.R.string.recording)
                             FileType.Source.Kind.Screenshot -> context.getString(
                                 com.w2sv.data.R.string.screenshot
                             )
 
                             FileType.Source.Kind.Camera -> context.getString(
-                                when (navigatableFile.source.fileType) {
+                                when (args.moveFile.source.fileType) {
                                     FileType.Media.Image -> com.w2sv.data.R.string.photo
                                     FileType.Media.Video -> com.w2sv.data.R.string.video
                                     else -> throw Error()
@@ -125,7 +114,7 @@ class NewMoveFileNotificationManager(
                                 )
                             } ${context.getString(fileType.titleRes)}"
 
-                            FileType.Source.Kind.OtherApp -> "/${navigatableFile.mediaStoreFile.columnData.dirName} ${
+                            FileType.Source.Kind.OtherApp -> "/${args.moveFile.mediaStoreFile.columnData.dirName} ${
                                 context.getString(
                                     fileType.titleRes
                                 )
@@ -134,28 +123,31 @@ class NewMoveFileNotificationManager(
                     }
 
                     is FileType.NonMedia -> {
-                        context.getString(navigatableFile.source.fileType.titleRes)
+                        context.getString(args.moveFile.source.fileType.titleRes)
+                    }
+                }
+
+            private fun getContentText(): SpannedString =
+                buildSpannedString {
+                    bold { append(args.moveFile.mediaStoreFile.columnData.name) }
+                    append(" ${context.getString(R.string.found_at)} ")
+                    bold {
+                        append(
+                            "/${
+                                args.moveFile.mediaStoreFile.columnData.volumeRelativeDirPath.removeSuffix(
+                                    "/"
+                                )
+                            }"
+                        )
                     }
                 }
 
             @DrawableRes
-            private fun getLargeIconDrawable(): Int =
-                when (navigatableFile.source.kind) {
-                    FileType.Source.Kind.Screenshot, FileType.Source.Kind.Camera -> navigatableFile.source.kind.iconRes
-                    else -> navigatableFile.source.fileType.iconRes
+            private fun getLargeIconDrawableRes(): Int =
+                when (args.moveFile.source.kind) {
+                    FileType.Source.Kind.Screenshot, FileType.Source.Kind.Camera -> args.moveFile.source.kind.iconRes
+                    else -> args.moveFile.source.fileType.iconRes
                 }
-
-            private fun addActions(requestCodeIterator: Iterator<Int>) {
-                addAction(getMoveFileAction(requestCodeIterator.next()))
-                getLastMoveDestination(navigatableFile.source)?.let {
-                    addAction(
-                        getQuickMoveAction(
-                            requestCodeIterator.next(),
-                            it
-                        )
-                    )
-                }
-            }
 
             private fun getViewFilePendingIntent(requestCode: Int)
                     : PendingIntent =
@@ -165,8 +157,8 @@ class NewMoveFileNotificationManager(
                     Intent()
                         .setAction(Intent.ACTION_VIEW)
                         .setDataAndType(
-                            navigatableFile.mediaStoreFile.uri,
-                            navigatableFile.source.fileType.simpleStorageMediaType.mimeType
+                            args.moveFile.mediaStoreFile.uri,
+                            args.moveFile.source.fileType.simpleStorageMediaType.mimeType
                         ),
                     PendingIntent.FLAG_IMMUTABLE
                 )
@@ -181,8 +173,8 @@ class NewMoveFileNotificationManager(
                         context,
                         requestCode,
                         FileMoveActivity.makeRestartActivityIntent(
-                            navigatableFile,
-                            resources,
+                            args.moveFile,
+                            args.resources,
                             context
                         ),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -195,16 +187,18 @@ class NewMoveFileNotificationManager(
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
                     R.drawable.ic_app_logo_24,
-                    getDocumentUriFileName(
-                        moveDestination,
-                        context
-                    )?.let { "$/$it" },
+                    "to ${
+                        getDocumentUriFileName(
+                            moveDestination,
+                            context
+                        )?.let { "/$it" }
+                    }",
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,
                         QuickMoveBroadcastReceiver.getIntent(
-                            navigatableFile,
-                            resources,
+                            args.moveFile,
+                            args.resources,
                             moveDestination.also {
                                 i { "MoveDestination Extra: $it" }
                             },
@@ -222,15 +216,11 @@ class NewMoveFileNotificationManager(
                     requestCode,
                     ResourcesCleanupBroadcastReceiver.getIntent(
                         context,
-                        resources
+                        args.resources
                     ),
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
                 )
         }
-
-    fun buildAndEmit(args: Args) {
-        super.buildAndEmit(args.resources.id, args)
-    }
 
     @AndroidEntryPoint
     class ResourcesCleanupBroadcastReceiver : NotificationResourcesCleanupBroadcastReceiver() {

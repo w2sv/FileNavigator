@@ -7,7 +7,7 @@ import com.w2sv.androidutils.notifying.UniqueIds
 import com.w2sv.navigator.notifications.NotificationResources
 import slimber.log.i
 
-abstract class MultiInstanceAppNotificationManager<A : AppNotificationManager.Args>(
+abstract class MultiInstanceAppNotificationManager<A : MultiInstanceAppNotificationManager.BuilderArgs>(
     notificationChannel: NotificationChannel,
     notificationManager: NotificationManager,
     context: Context,
@@ -33,5 +33,12 @@ abstract class MultiInstanceAppNotificationManager<A : AppNotificationManager.Ar
         pendingIntentRequestCodes.removeAll(resources.actionRequestCodes.toSet())
 
         i { "Post-freeNotificationResources: NotificationIds: $notificationIds | pendingIntentRequestCodes: $pendingIntentRequestCodes" }
+    }
+
+    abstract class BuilderArgs(val resources: NotificationResources) :
+        AppNotificationManager.BuilderArgs
+
+    fun buildAndEmit(args: A) {
+        super.buildAndEmit(args.resources.id, args)
     }
 }

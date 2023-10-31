@@ -15,7 +15,7 @@ import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 class ForegroundServiceNotificationManager(
     context: Context,
     notificationManager: NotificationManager
-) : AppNotificationManager<AppNotificationManager.Args.Empty>(
+) : AppNotificationManager<AppNotificationManager.BuilderArgs.Empty>(
     notificationChannel = getNotificationChannel(
         id = "FILE_NAVIGATOR",
         name = context.getString(R.string.file_navigator_is_running)
@@ -23,7 +23,7 @@ class ForegroundServiceNotificationManager(
     notificationManager = notificationManager,
     context = context
 ) {
-    override fun getBuilder(args: Args.Empty): Builder =
+    override fun getBuilder(args: BuilderArgs.Empty): Builder =
         object : Builder() {
             override fun build(): Notification {
                 setSmallIcon(R.drawable.ic_app_logo_24)

@@ -50,7 +50,7 @@ class FileNavigator : UnboundService() {
             onNewNavigatableFileListener = { moveFile ->
                 with(appNotificationsManager.newMoveFileNotificationManager) {
                     buildAndEmit(
-                        Args(
+                        BuilderArgs(
                             moveFile = moveFile,
                             getLastMoveDestination = { source ->
                                 fileTypeRepository.getLastMoveDestination(source)
@@ -97,7 +97,7 @@ class FileNavigator : UnboundService() {
         startForeground(
             1,
             appNotificationsManager.foregroundServiceNotificationManager.buildNotification(
-                AppNotificationManager.Args.Empty
+                AppNotificationManager.BuilderArgs.Empty
             )
         )
 

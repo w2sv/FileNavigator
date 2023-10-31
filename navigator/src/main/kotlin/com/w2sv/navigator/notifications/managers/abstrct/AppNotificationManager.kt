@@ -7,17 +7,13 @@ import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
 
-abstract class AppNotificationManager<A: AppNotificationManager.Args>(
+abstract class AppNotificationManager<A: AppNotificationManager.BuilderArgs>(
     protected val notificationChannel: NotificationChannel,
     protected val notificationManager: NotificationManager,
     protected val context: Context
 ) {
     init {
         notificationManager.createNotificationChannel(notificationChannel)
-    }
-
-    interface Args {
-        data object Empty: Args
     }
 
     abstract inner class Builder: NotificationCompat.Builder(context, notificationChannel.id) {
@@ -28,6 +24,10 @@ abstract class AppNotificationManager<A: AppNotificationManager.Args>(
 
             return super.build()
         }
+    }
+
+    interface BuilderArgs {
+        data object Empty: BuilderArgs
     }
 
     protected abstract fun getBuilder(args: A): Builder
