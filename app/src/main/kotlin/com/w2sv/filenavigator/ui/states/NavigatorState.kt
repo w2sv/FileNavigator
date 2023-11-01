@@ -47,6 +47,5 @@ class NavigatorState(
                 )
             }
         },
-        context = context
     )
 }

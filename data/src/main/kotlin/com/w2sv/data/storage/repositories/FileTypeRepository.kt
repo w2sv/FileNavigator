@@ -5,21 +5,14 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.androidutils.datastorage.datastore.preferences.PreferencesDataStoreRepository
-import com.w2sv.common.di.AppDispatcher
-import com.w2sv.common.di.GlobalScope
 import com.w2sv.data.model.FileType
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class FileTypeRepository @Inject constructor(
     dataStore: DataStore<Preferences>,
-    @GlobalScope(AppDispatcher.Default) scope: CoroutineScope
 ) :
     PreferencesDataStoreRepository(dataStore) {
 
@@ -34,19 +27,11 @@ class FileTypeRepository @Inject constructor(
         )
 
     // =======================
-    // Last manual move destination
+    // Last move destination
     // =======================
 
-    val lastMoveDestinationStateFlowMap: Map<DataStoreEntry.UriValued, StateFlow<Uri?>> =
-        getUriFlowMap(
-            FileType.getValues()
-                .flatMap { it.sources }
-                .map { it.lastMoveDestinationDSE }
-        )
-            .mapValues { (_, v) -> v.stateIn(scope, SharingStarted.Eagerly, null) }
-
-    fun getLastMoveDestination(source: FileType.Source): Uri? =
-        lastMoveDestinationStateFlowMap.getValue(source.lastMoveDestinationDSE).value
+    fun getLastMoveDestinationFlow(source: FileType.Source): Flow<Uri?> =
+        getUriFlow(source.lastMoveDestinationDSE)
 
     suspend fun saveLastMoveDestination(
         source: FileType.Source,

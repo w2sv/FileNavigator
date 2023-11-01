@@ -3,6 +3,7 @@ package com.w2sv.navigator
 import android.content.Context
 import android.content.Intent
 import com.w2sv.androidutils.coroutines.getSynchronousMap
+import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
@@ -53,7 +54,8 @@ class FileNavigator : UnboundService() {
                         BuilderArgs(
                             moveFile = moveFile,
                             getLastMoveDestination = { source ->
-                                fileTypeRepository.getLastMoveDestination(source)
+                                fileTypeRepository.getLastMoveDestinationFlow(source)
+                                    .getValueSynchronously()
                             }
                         )
                     )

@@ -15,6 +15,7 @@ import androidx.lifecycle.viewModelScope
 import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.file.getSimplePath
 import com.anggrayudi.storage.media.MediaFile
+import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.model.ToastArgs
 import com.w2sv.data.storage.repositories.FileTypeRepository
@@ -72,7 +73,8 @@ class FileMoveActivity : ComponentActivity() {
                 )
             }
 
-        val lastMoveDestination = fileTypeRepository.getLastMoveDestination(moveFile.source)
+        val lastMoveDestination =
+            fileTypeRepository.getLastMoveDestinationFlow(moveFile.source).getValueSynchronously()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

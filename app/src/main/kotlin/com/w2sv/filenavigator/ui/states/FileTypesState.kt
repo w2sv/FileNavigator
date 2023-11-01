@@ -4,11 +4,9 @@ import android.content.Context
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.coroutines.getValueSynchronously
-import com.w2sv.androidutils.coroutines.mapState
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
-import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.common.utils.manageExternalStoragePermissionRequired
 import com.w2sv.data.model.FileType
@@ -23,14 +21,12 @@ import com.w2sv.filenavigator.ui.utils.extensions.getSynchronousMutableStateMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FileTypesState(
     val statusMap: UnconfirmedStateMap<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>,
     val mediaFileSourceEnabledMap: UnconfirmedStateMap<DataStoreEntry.UniType<Boolean>, Boolean>,
-    val lastMoveDestinationPathStateFlowMap: Map<DataStoreEntry.UriValued, StateFlow<String?>>,
     onStateSynced: () -> Unit,
     private val scope: CoroutineScope,
     statusMapChanged: MutableSharedFlow<Unit>
@@ -47,7 +43,6 @@ class FileTypesState(
         fileTypeRepository: FileTypeRepository,
         onStateSynced: () -> Unit,
         statusMapChanged: MutableSharedFlow<Unit> = MutableSharedFlow(),
-        context: Context
     ) : this(
         scope = scope,
         statusMapChanged = statusMapChanged,
@@ -74,16 +69,6 @@ class FileTypesState(
             makeMap = { it.getSynchronousMutableStateMap() },
             syncState = { fileTypeRepository.saveMap(it) }
         ),
-        lastMoveDestinationPathStateFlowMap = fileTypeRepository.lastMoveDestinationStateFlowMap.mapValues { (_, v) ->
-            v.mapState { optionalUri ->
-                optionalUri?.let { uri ->
-                    getDocumentUriPath(
-                        documentUri = uri,
-                        context = context
-                    )
-                }
-            }
-        },
         onStateSynced = onStateSynced
     )
 

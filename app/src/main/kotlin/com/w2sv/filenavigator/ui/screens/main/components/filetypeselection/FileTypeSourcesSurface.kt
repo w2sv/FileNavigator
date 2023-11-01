@@ -1,36 +1,25 @@
 package com.w2sv.filenavigator.ui.screens.main.components.filetypeselection
 
 import android.content.Context
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.w2sv.data.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppCheckbox
@@ -62,68 +51,18 @@ fun FileTypeSourcesSurface(
             InBetweenSpaced(
                 elements = fileType.sources,
                 makeElement = {
-                    SourceColumn(
+                    SourceRow(
                         source = it,
-                        fileTypesState = fileTypesState
+                        isEnabled = fileTypesState.mediaFileSourceEnabledMap.getOrDefault(
+                            key = it.isEnabledDSE,
+                            defaultValue = true
+                        ),
+                        fileTypesState = fileTypesState,
+                        modifier = Modifier.height(44.dp)
                     )
                 }
             )
         }
-    }
-}
-
-@Composable
-private fun SourceColumn(
-    source: FileType.Source,
-    fileTypesState: FileTypesState,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        val isEnabled =
-            fileTypesState.mediaFileSourceEnabledMap.getOrDefault(
-                key = source.isEnabledDSE,
-                defaultValue = true
-            )
-
-        SourceRow(
-            source = source,
-            isEnabled = isEnabled,
-            fileTypesState = fileTypesState,
-            modifier = Modifier.height(44.dp)
-        )
-
-        ConditionalLastMoveDestinationRow(
-            sourceEnabled = isEnabled,
-            lastMoveDestination = fileTypesState.lastMoveDestinationPathStateFlowMap.getValue(
-                source.lastMoveDestinationDSE
-            )
-                .collectAsState().value,
-        )
-    }
-}
-
-@Composable
-private fun ColumnScope.ConditionalLastMoveDestinationRow(
-    sourceEnabled: Boolean,
-    lastMoveDestination: String?,
-) {
-    AnimatedVisibility(visible = sourceEnabled && lastMoveDestination != null) {
-        var nonNullPath by remember(this) {
-            mutableStateOf(lastMoveDestination!!)
-        }
-
-        LaunchedEffect(lastMoveDestination) {
-            if (lastMoveDestination != null) {
-                nonNullPath = lastMoveDestination
-            }
-        }
-
-        LastMoveDestinationRow(
-            path = { nonNullPath },
-            modifier = Modifier
-                .height(36.dp)
-                .padding(bottom = 4.dp)
-        )
     }
 }
 
@@ -188,31 +127,5 @@ private fun SourceRow(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun LastMoveDestinationRow(
-    path: () -> String,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_history_24),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(0.7f)
-            )
-        }
-        AppFontText(
-            text = path(),
-            fontSize = 14.sp,
-            modifier = Modifier.weight(0.5f),
-            color = MaterialTheme.colorScheme.onSurface.copy(0.7f)
-        )
-        Spacer(modifier = Modifier.weight(0.15f))
     }
 }
