@@ -9,17 +9,15 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.R
+import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 
-class ForegroundServiceNotificationManager(
+class FileNavigatorIsRunningNotificationManager(
     context: Context,
     notificationManager: NotificationManager
 ) : AppNotificationManager<AppNotificationManager.BuilderArgs.Empty>(
-    notificationChannel = getNotificationChannel(
-        id = "FILE_NAVIGATOR",
-        name = context.getString(R.string.file_navigator_is_running)
-    ),
+    notificationChannel = AppNotificationChannel.FileNavigatorIsRunning.getNotificationChannel(context),
     notificationManager = notificationManager,
     context = context
 ) {

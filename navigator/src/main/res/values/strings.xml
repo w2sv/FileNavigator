@@ -18,7 +18,7 @@
 
     <string name="new_">New</string>
     <string name="downloaded">"downloaded"</string>
-    <string name="new_file_detected">New file detected</string>
+    <string name="new_file">New file</string>
     <string name="couldnt_move_file_internal_error">Couldn\'t move file: Internal Error</string>
     <string name="moving_to_default_destination_requires_permission_to_manage_all_files">Moving to default destination requires permission to manage all files!</string>
     <string name="couldn_t_move_file_has_already_been_moved_deleted_or_renamed">Couldn\'t move: File has already been moved, deleted or renamed!</string>

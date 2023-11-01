@@ -17,6 +17,7 @@ import com.w2sv.common.utils.getDocumentUriFileName
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.AppNotificationsManager
@@ -32,14 +33,11 @@ class NewMoveFileNotificationManager(
     context: Context,
     notificationManager: NotificationManager
 ) : MultiInstanceAppNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
-    notificationChannel = getNotificationChannel(
-        id = "NEW_MOVE_FILE",
-        name = context.getString(R.string.new_file_detected)
-    ),
+    notificationChannel = AppNotificationChannel.NewFile.getNotificationChannel(context),
     notificationManager = notificationManager,
     context = context,
     resourcesBaseSeed = 1,
-    summaryId = 9999,
+    summaryId = 999,
 ) {
     inner class BuilderArgs(
         val moveFile: MoveFile,

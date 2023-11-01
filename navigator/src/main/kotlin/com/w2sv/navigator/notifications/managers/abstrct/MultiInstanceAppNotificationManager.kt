@@ -31,7 +31,7 @@ abstract class MultiInstanceAppNotificationManager<A : MultiInstanceAppNotificat
 
         @CallSuper
         override fun build(): Notification {
-            setGroup(groupKey)
+            setGroup(notificationChannel.group)
 
             return super.build()
         }
@@ -55,8 +55,6 @@ abstract class MultiInstanceAppNotificationManager<A : MultiInstanceAppNotificat
     }
 
     abstract fun buildSummaryNotification(): Notification
-
-    private val groupKey: String = "GROUP"
 
     // ================
     // Cancelling

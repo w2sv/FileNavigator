@@ -20,7 +20,7 @@ class AppNotificationsManager @Inject constructor(
         notificationManager = notificationManager
     )
 
-    val foregroundServiceNotificationManager = ForegroundServiceNotificationManager(
+    val fileNavigatorIsRunningNotificationManager = FileNavigatorIsRunningNotificationManager(
         context = context,
         notificationManager = notificationManager
     )
