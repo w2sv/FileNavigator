@@ -14,5 +14,5 @@ fun getNotificationChannel(
     NotificationChannel(
         id,
         name,
-        importance
+        importance,
     )

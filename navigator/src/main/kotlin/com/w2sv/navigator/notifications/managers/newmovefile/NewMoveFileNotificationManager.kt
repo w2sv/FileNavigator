@@ -38,7 +38,8 @@ class NewMoveFileNotificationManager(
     ),
     notificationManager = notificationManager,
     context = context,
-    resourcesBaseSeed = 1
+    resourcesBaseSeed = 1,
+    summaryId = 9999,
 ) {
     inner class BuilderArgs(
         val moveFile: MoveFile,
@@ -49,13 +50,10 @@ class NewMoveFileNotificationManager(
         object : Builder() {
 
             override fun build(): Notification {
-                setGroup("GROUP")
-
                 setContentTitle(
                     "${context.getString(R.string.new_)} ${getMoveFileTitle()}"
                 )
                 // Set icons
-                setSmallIcon(R.drawable.ic_app_logo_24)
                 setLargeIcon(
                     AppCompatResources.getDrawable(context, getLargeIconDrawableRes())
                         ?.apply { setTint(args.moveFile.source.fileType.colorInt) }
@@ -221,6 +219,12 @@ class NewMoveFileNotificationManager(
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
                 )
         }
+
+    override fun buildSummaryNotification(): Notification =
+        Builder()
+            .setGroupSummary(true)
+            .setContentTitle("$nActiveNotifications new navigatable files")
+            .build()
 
     @AndroidEntryPoint
     class ResourcesCleanupBroadcastReceiver : NotificationResourcesCleanupBroadcastReceiver() {

@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
+import com.w2sv.navigator.R
 
 abstract class AppNotificationManager<A: AppNotificationManager.BuilderArgs>(
     protected val notificationChannel: NotificationChannel,
@@ -16,10 +17,12 @@ abstract class AppNotificationManager<A: AppNotificationManager.BuilderArgs>(
         notificationManager.createNotificationChannel(notificationChannel)
     }
 
-    abstract inner class Builder: NotificationCompat.Builder(context, notificationChannel.id) {
+    open inner class Builder: NotificationCompat.Builder(context, notificationChannel.id) {
 
         @CallSuper
         override fun build(): Notification {
+            setSmallIcon(R.drawable.ic_app_logo_24)
+
             priority = NotificationCompat.PRIORITY_DEFAULT
 
             return super.build()
@@ -30,12 +33,12 @@ abstract class AppNotificationManager<A: AppNotificationManager.BuilderArgs>(
         data object Empty: BuilderArgs
     }
 
-    protected abstract fun getBuilder(args: A): Builder
+    fun buildAndEmit(id: Int, args: A) {
+        notificationManager.notify(id, buildNotification(args))
+    }
 
     fun buildNotification(args: A): Notification =
         getBuilder(args).build()
 
-    fun buildAndEmit(id: Int, args: A) {
-        notificationManager.notify(id, buildNotification(args))
-    }
+    protected abstract fun getBuilder(args: A): Builder
 }

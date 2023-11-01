@@ -26,7 +26,6 @@ class ForegroundServiceNotificationManager(
     override fun getBuilder(args: BuilderArgs.Empty): Builder =
         object : Builder() {
             override fun build(): Notification {
-                setSmallIcon(R.drawable.ic_app_logo_24)
                 setContentTitle(context.getString(R.string.file_navigator_is_running))
 
                 setStyle(
