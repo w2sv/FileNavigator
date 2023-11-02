@@ -34,12 +34,10 @@ fun FileTypeSelectionColumn(
 ) {
     Column(
         modifier = modifier
-            .padding(horizontal = 10.dp)
     ) {
         AppFontText(
             text = stringResource(id = R.string.file_types),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Medium
+            fontSize = 17.sp,
         )
 
         Spacer(modifier = Modifier.height(16.dp))

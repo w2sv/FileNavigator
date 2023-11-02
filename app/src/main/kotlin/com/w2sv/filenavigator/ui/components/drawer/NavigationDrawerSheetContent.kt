@@ -36,7 +36,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.RightAlignedAppCheckbox
 import com.w2sv.filenavigator.ui.components.RightAlignedSwitch
-import com.w2sv.filenavigator.ui.components.RunTimeDisplay
+import com.w2sv.filenavigator.ui.screens.main.components.statusdisplay.RunTimeDisplay
 import com.w2sv.filenavigator.ui.components.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.components.dynamicColorsSupported
 import com.w2sv.filenavigator.ui.screens.AppViewModel

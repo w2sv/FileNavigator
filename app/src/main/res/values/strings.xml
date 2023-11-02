@@ -8,8 +8,8 @@
     <string name="new_file_detected_template">%1s Detected</string>
     <string name="stop">Stop</string>
     <string name="waiting_for_new_files_to_be_navigated">Waiting for new files to be navigated</string>
-    <string name="start_navigator">Start Navigator</string>
-    <string name="stop_navigator">Stop Navigator</string>
+    <string name="start_navigator">Start</string>
+    <string name="stop_navigator">Stop</string>
     <string name="image">Image</string>
     <string name="video">Video</string>
     <string name="audio">Audio</string>
@@ -56,7 +56,6 @@
     <string name="share_action_text">Check out File Navigator!\\nhttps://play.google.com/store/apps/details?id=com.w2sv.filenavigator</string>
     <string name="you_re_not_signed_into_the_play_store">You\'re not signed into the Play Store</string>
     <string name="version">Version: %s</string>
-    <string name="navigator_settings">Navigator Settings</string>
     <string name="non_media_files_require_all_files_access">Navigation of non-media files requires permission to manage all files.</string>
     <string name="open_target_directory_settings">Open the target directory settings dialog.</string>
     <string name="change_default_move_destination">Change default move destination.</string>
@@ -76,4 +75,9 @@
     <string name="permissions_missing">Missing Permissions</string>
     <string name="disabled">Disabled</string>
     <string name="use_dynamic_colors">Use Dynamic Colors</string>
+    <string name="settings">Settings</string>
+    <string name="navigator_status">Navigator Status:</string>
+    <string name="active">Active</string>
+    <string name="inactive">Inactive</string>
+    <string name="running_for">"Running for: "</string>
 </resources>

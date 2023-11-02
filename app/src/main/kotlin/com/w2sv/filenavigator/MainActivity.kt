@@ -17,8 +17,8 @@ import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.data.model.Theme
 import com.w2sv.filenavigator.ui.screens.AppViewModel
-import com.w2sv.filenavigator.ui.screens.main.UI
 import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.filenavigator.ui.screens.main.UI
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.PowerSaveModeChangedReceiver
@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
 
     private fun CoroutineScope.collectFromFlows() {
         collectFromFlow(fileNavigatorStatusChanged.isRunning) {
-            mainScreenVM.navigatorState.isRunning.value = it
+            mainScreenVM.navigatorState.setIsRunning(it)
         }
 
         collectFromFlow(appVM.exitApplication) {

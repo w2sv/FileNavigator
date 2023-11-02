@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main.components
+package com.w2sv.filenavigator.ui.screens.main.components.statusdisplay
 
 import android.view.animation.AnticipateOvershootInterpolator
 import androidx.annotation.DrawableRes
@@ -10,9 +10,8 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -28,29 +27,24 @@ import com.w2sv.filenavigator.ui.components.bounceOnClickAnimation
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.toEasing
 
-data class ToggleNavigatorButtonConfiguration(
+data class ToggleNavigatorButtonProperties(
     val color: Color,
     @DrawableRes val iconRes: Int,
     @StringRes val labelRes: Int,
     val onClick: () -> Unit
 )
 
-data class ToggleNavigatorButtonConfigurations(
-    val startNavigator: ToggleNavigatorButtonConfiguration,
-    val stopNavigator: ToggleNavigatorButtonConfiguration
-)
-
 @Composable
 internal fun ToggleNavigatorButton(
-    configuration: ToggleNavigatorButtonConfiguration,
+    properties: ToggleNavigatorButtonProperties,
     modifier: Modifier = Modifier
 ) {
-    ElevatedButton(
-        onClick = configuration.onClick,
+    FilledTonalButton(
+        onClick = properties.onClick,
         modifier = modifier.bounceOnClickAnimation(),
     ) {
         AnimatedContent(
-            targetState = configuration,
+            targetState = properties,
             label = "",
             transitionSpec = {
                 slideInVertically(
@@ -71,7 +65,6 @@ internal fun ToggleNavigatorButton(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxSize()
             ) {
                 Icon(
                     painter = painterResource(id = it.iconRes),

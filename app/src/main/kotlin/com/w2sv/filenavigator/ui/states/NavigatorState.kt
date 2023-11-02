@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -18,8 +19,14 @@ class NavigatorState(
     private val preferencesRepository: PreferencesRepository,
     context: Context
 ) {
-    val isRunning: MutableStateFlow<Boolean> =
+    val isRunning get() = _isRunning.asStateFlow()
+
+    private val _isRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileNavigator>())
+
+    fun setIsRunning(value: Boolean) {
+        _isRunning.value = value
+    }
 
     val startDateTime = preferencesRepository.navigatorStartDateTime.stateIn(
         scope,
