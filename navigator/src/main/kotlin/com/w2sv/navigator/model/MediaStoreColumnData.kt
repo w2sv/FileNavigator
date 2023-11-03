@@ -86,7 +86,6 @@ data class MediaStoreColumnData(
             }
 
     companion object {
-
         fun fetch(
             uri: Uri,
             contentResolver: ContentResolver

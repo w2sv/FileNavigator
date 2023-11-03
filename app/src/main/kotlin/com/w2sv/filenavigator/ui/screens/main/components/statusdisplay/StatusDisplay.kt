@@ -89,8 +89,7 @@ fun StatusDisplay(
         Row(verticalAlignment = Alignment.CenterVertically) {
             AppFontText(
                 text = stringResource(R.string.navigator_status),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 20.sp
+                style = MaterialTheme.typography.headlineMedium
             )
             Spacer(modifier = Modifier.width(14.dp))
             AppFontText(

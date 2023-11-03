@@ -8,23 +8,35 @@ import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.file.getSimplePath
-import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.common.di.AppDispatcher
+import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.isExternalStorageManger
+import com.w2sv.data.storage.database.InsertMoveEntryUseCase
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.model.getMoveEntry
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putNavigatableFileExtra
 import com.w2sv.navigator.notifications.putNotificationResourcesExtra
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import slimber.log.i
+import java.util.Date
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class QuickMoveBroadcastReceiver : BroadcastReceiver() {
+
+    @Inject
+    lateinit var insertMoveEntryUseCase: InsertMoveEntryUseCase
+
+    @Inject
+    @GlobalScope(AppDispatcher.IO)
+    lateinit var scope: CoroutineScope
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
@@ -42,7 +54,10 @@ class QuickMoveBroadcastReceiver : BroadcastReceiver() {
             intent.getParcelableCompat<MoveFile>(MoveFile.EXTRA)!!
 
         if (!moveFile.mediaStoreFile.columnData.fileExists) {
-            removeNotificationAndCleanupResources(context, intent)
+            NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+                context,
+                intent
+            )
             context.showToast(R.string.couldn_t_move_file_has_already_been_moved_deleted_or_renamed)
             return
         }
@@ -60,25 +75,41 @@ class QuickMoveBroadcastReceiver : BroadcastReceiver() {
         val moveMediaFile = moveFile.getSimpleStorageMediaFile(context)
             ?: return context.showToast(R.string.couldnt_move_file_internal_error)
 
-        moveMediaFile.launchMoveTo(
-            targetFolder = targetDirectoryDocumentFile,
-            callback = object : FileCallback() {
-                override fun onCompleted(result: Any) {
-                    context.showToast(
-                        context.getString(
-                            R.string.moved_file_to,
-                            targetDirectoryDocumentFile.getSimplePath(context)
+        scope.launch {
+            moveMediaFile.moveTo(
+                targetFolder = targetDirectoryDocumentFile,
+                callback = object : FileCallback() {
+                    override fun onCompleted(result: Any) {
+                        context.showToast(
+                            context.getString(
+                                R.string.moved_file_to,
+                                targetDirectoryDocumentFile.getSimplePath(context)
+                            )
                         )
-                    )
-                    removeNotificationAndCleanupResources(context, intent)
-                }
 
-                override fun onFailed(errorCode: ErrorCode) {
-                    i { errorCode.toString() }
-                    context.showToast(errorCode.name)
+                        scope.launch {
+                            insertMoveEntryUseCase(
+                                getMoveEntry(
+                                    moveFile,
+                                    targetDirectoryDocumentFile.uri,
+                                    Date()
+                                )
+                            )
+                        }
+
+                        NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+                            context,
+                            intent
+                        )
+                    }
+
+                    override fun onFailed(errorCode: ErrorCode) {
+                        i { errorCode.toString() }
+                        context.showToast(errorCode.name)
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     companion object {
@@ -100,19 +131,3 @@ class QuickMoveBroadcastReceiver : BroadcastReceiver() {
             "com.w2sv.filenavigator.extra.MOVE_DESTINATION"
     }
 }
-
-fun removeNotificationAndCleanupResources(context: Context, intent: Intent) {
-    NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
-        context,
-        intent
-    )
-}
-
-fun MediaFile.launchMoveTo(targetFolder: DocumentFile, callback: FileCallback): Job =
-    CoroutineScope(Dispatchers.IO)
-        .launch {
-            moveTo(
-                targetFolder = targetFolder,
-                callback = callback
-            )
-        }

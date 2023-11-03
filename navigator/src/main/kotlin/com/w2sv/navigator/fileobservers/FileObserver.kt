@@ -10,6 +10,7 @@ import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.model.MediaStoreFileProvider
 import slimber.log.i
 import java.util.Date
 
@@ -20,7 +21,7 @@ internal abstract class FileObserver(
 ) :
     ContentObserver(Handler(Looper.getMainLooper())) {
 
-    private val mediaStoreFileProvider: MediaStoreFile.Provider = MediaStoreFile.Provider()
+    private val mediaStoreFileProvider: MediaStoreFileProvider = MediaStoreFileProvider()
 
     protected abstract val logIdentifier: String
 
@@ -37,7 +38,7 @@ internal abstract class FileObserver(
 
         when (val result =
             mediaStoreFileProvider.getMediaStoreFileIfNotPending(uri, contentResolver)) {
-            is MediaStoreFile.Provider.Result.Success -> {
+            is MediaStoreFileProvider.Result.Success -> {
                 when {
                     latestCutCandidate?.matches(
                         PasteCandidate(uri, changeObservationTime),
@@ -65,7 +66,7 @@ internal abstract class FileObserver(
             }
 
             else -> {
-                if (result is MediaStoreFile.Provider.Result.CouldntFetchMediaStoreColumnData) {
+                if (result is MediaStoreFileProvider.Result.CouldntFetchMediaStoreColumnData) {
                     latestCutCandidate = CutCandidate(uri, changeObservationTime)
                 }
             }

@@ -3,12 +3,16 @@ package com.w2sv.filenavigator.ui.theme
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 @SuppressLint("NewApi")
 @Composable
@@ -25,10 +29,18 @@ fun AppTheme(
             !useDynamicTheme && useDarkTheme -> darkColors
             else -> lightColors
         },
+        typography = typography
     ) {
         content()
     }
 }
+
+private val typography = Typography(
+    headlineMedium = TextStyle(
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold
+    )
+)
 
 private val lightColors = lightColorScheme(
     primary = AppColor.primary,

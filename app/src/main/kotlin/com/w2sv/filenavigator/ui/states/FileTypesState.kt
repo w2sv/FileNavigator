@@ -10,7 +10,7 @@ import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.common.utils.manageExternalStoragePermissionRequired
 import com.w2sv.data.model.FileType
-import com.w2sv.data.storage.repositories.FileTypeRepository
+import com.w2sv.data.storage.preferences.repositories.FileTypeRepository
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.SnackbarAction

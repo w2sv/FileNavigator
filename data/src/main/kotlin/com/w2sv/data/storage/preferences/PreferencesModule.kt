@@ -1,4 +1,4 @@
-package com.w2sv.data.storage.di
+package com.w2sv.data.storage.preferences
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-object DataStorageModule {
+object PreferencesModule {
 
     @Singleton
     @Provides

@@ -1,4 +1,4 @@
-package com.w2sv.data.storage.repositories
+package com.w2sv.data.storage.preferences.repositories
 
 import android.net.Uri
 import androidx.datastore.core.DataStore

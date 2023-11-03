@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.data.model.Theme
-import com.w2sv.data.storage.repositories.PreferencesRepository
+import com.w2sv.data.storage.preferences.repositories.PreferencesRepository
 import com.w2sv.filenavigator.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

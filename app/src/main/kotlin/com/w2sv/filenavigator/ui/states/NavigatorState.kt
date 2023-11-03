@@ -2,8 +2,8 @@ package com.w2sv.filenavigator.ui.states
 
 import android.content.Context
 import com.w2sv.androidutils.services.isServiceRunning
-import com.w2sv.data.storage.repositories.FileTypeRepository
-import com.w2sv.data.storage.repositories.PreferencesRepository
+import com.w2sv.data.storage.preferences.repositories.FileTypeRepository
+import com.w2sv.data.storage.preferences.repositories.PreferencesRepository
 import com.w2sv.navigator.FileNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

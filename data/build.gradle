@@ -21,8 +21,15 @@ dependencies {
     implementation libs.androidutils
     implementation libs.slimber
 
+    // Hilt
     implementation libs.google.hilt
     ksp libs.google.hilt.compiler
+
+    // Room
+    implementation libs.androidx.room.runtime
+    implementation libs.androidx.room.ktx
+    annotationProcessor libs.androidx.room.compiler
+    ksp libs.androidx.room.compiler
 
     implementation libs.simplestorage
 

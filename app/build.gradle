@@ -102,6 +102,12 @@ dependencies {
     implementation libs.androidx.splashscreen
     implementation libs.androidx.datastore.preferences
 
+    // Room
+    implementation libs.androidx.room.runtime
+    implementation libs.androidx.room.ktx
+    annotationProcessor libs.androidx.room.compiler
+    ksp libs.androidx.room.compiler
+
     // .compose
     implementation platform(libs.androidx.compose.bom)
     implementation libs.androidx.compose.material3

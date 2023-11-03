@@ -22,7 +22,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -32,6 +31,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.common.utils.goToManageExternalStorageSettings
+import com.w2sv.data.model.MoveEntry
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
@@ -42,12 +42,14 @@ import com.w2sv.filenavigator.ui.components.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.components.drawer.animateBasedOnDrawerProgression
 import com.w2sv.filenavigator.ui.screens.AppViewModel
 import com.w2sv.filenavigator.ui.screens.main.components.PermissionScreen
+import com.w2sv.filenavigator.ui.screens.main.components.movehistory.MoveHistory
 import com.w2sv.filenavigator.ui.screens.main.components.statusdisplay.StatusDisplay
 import com.w2sv.filenavigator.ui.states.NavigatorState
 import com.w2sv.filenavigator.ui.utils.extensions.closeAnimated
 import com.w2sv.filenavigator.ui.utils.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.ui.utils.extensions.openAnimated
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -140,6 +142,7 @@ fun UI(
                     if (it) {
                         MainScreen(
                             navigatorState = mainScreenVM.navigatorState,
+                            moveEntryFlow = mainScreenVM.moveHistory,
                             modifier = sharedModifier.padding(horizontal = 32.dp)
                         )
                     } else {
@@ -166,18 +169,21 @@ fun UI(
 @Composable
 private fun MainScreen(
     navigatorState: NavigatorState,
+    moveEntryFlow: Flow<List<MoveEntry>>,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         StatusDisplay(
             navigatorState = navigatorState,
             modifier = Modifier
                 .fillMaxHeight(0.3f)
-                .fillMaxWidth()
+        )
+        MoveHistory(
+            moveEntryFlow = moveEntryFlow,
+            modifier = Modifier.fillMaxHeight(0.7f)
         )
     }
 }

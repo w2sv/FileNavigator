@@ -18,9 +18,11 @@ import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.model.ToastArgs
-import com.w2sv.data.storage.repositories.FileTypeRepository
+import com.w2sv.data.storage.database.InsertMoveEntryUseCase
+import com.w2sv.data.storage.preferences.repositories.FileTypeRepository
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.model.getMoveEntry
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putNavigatableFileExtra
@@ -31,6 +33,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import slimber.log.i
+import java.util.Date
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -45,6 +48,7 @@ class FileMoveActivity : ComponentActivity() {
     internal class ViewModel @Inject constructor(
         savedStateHandle: SavedStateHandle,
         private val fileTypeRepository: FileTypeRepository,
+        private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
         @ApplicationContext context: Context
     ) :
         androidx.lifecycle.ViewModel() {
@@ -65,7 +69,12 @@ class FileMoveActivity : ComponentActivity() {
         // FileTypeRepository
         // ===============
 
-        fun saveLastMoveDestination(destination: Uri): Job =
+        fun launchMoveEntryInsertion(destination: Uri, date: Date): Job =
+            viewModelScope.launch {
+                insertMoveEntryUseCase.invoke(getMoveEntry(moveFile, destination, date))
+            }
+
+        fun launchLastMoveDestinationSaving(destination: Uri): Job =
             viewModelScope.launch {
                 fileTypeRepository.saveLastMoveDestination(
                     moveFile.source,
@@ -132,7 +141,12 @@ class FileMoveActivity : ComponentActivity() {
                     callback = object : FileCallback() {
                         override fun onCompleted(result: Any) {
                             viewModel
-                                .saveLastMoveDestination(targetDirectoryDocumentFile.uri)
+                                .launchLastMoveDestinationSaving(targetDirectoryDocumentFile.uri)
+
+                            viewModel.launchMoveEntryInsertion(
+                                targetDirectoryDocumentFile.uri,
+                                Date()
+                            )
 
                             removeNotificationAndCleanupResources()
 
