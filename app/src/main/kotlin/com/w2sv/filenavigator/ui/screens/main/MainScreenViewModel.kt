@@ -3,7 +3,6 @@ package com.w2sv.filenavigator.ui.screens.main
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.w2sv.data.storage.database.MoveEntryDao
 import com.w2sv.data.storage.preferences.repositories.FileTypeRepository
 import com.w2sv.data.storage.preferences.repositories.PreferencesRepository
 import com.w2sv.filenavigator.ui.states.NavigatorState
@@ -18,7 +17,6 @@ import javax.inject.Inject
 class MainScreenViewModel @Inject constructor(
     @ApplicationContext context: Context,
     fileTypeRepository: FileTypeRepository,
-    moveEntryDao: MoveEntryDao,
     private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
@@ -53,6 +51,4 @@ class MainScreenViewModel @Inject constructor(
             preferencesRepository.postNotificationsPermissionRequested.save(true)
         }
     }
-
-    val moveHistory = moveEntryDao.loadAllInDescendingOrder()
 }

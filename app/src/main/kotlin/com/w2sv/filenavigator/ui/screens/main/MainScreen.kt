@@ -31,7 +31,6 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.common.utils.goToManageExternalStorageSettings
-import com.w2sv.data.model.MoveEntry
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
@@ -49,7 +48,6 @@ import com.w2sv.filenavigator.ui.utils.extensions.closeAnimated
 import com.w2sv.filenavigator.ui.utils.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.ui.utils.extensions.openAnimated
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -142,7 +140,6 @@ fun UI(
                     if (it) {
                         MainScreen(
                             navigatorState = mainScreenVM.navigatorState,
-                            moveEntryFlow = mainScreenVM.moveHistory,
                             modifier = sharedModifier.padding(horizontal = 32.dp)
                         )
                     } else {
@@ -169,7 +166,6 @@ fun UI(
 @Composable
 private fun MainScreen(
     navigatorState: NavigatorState,
-    moveEntryFlow: Flow<List<MoveEntry>>,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -182,7 +178,6 @@ private fun MainScreen(
                 .fillMaxHeight(0.3f)
         )
         MoveHistory(
-            moveEntryFlow = moveEntryFlow,
             modifier = Modifier.fillMaxHeight(0.7f)
         )
     }

@@ -13,4 +13,7 @@ interface MoveEntryDao {
 
     @Insert
     fun insert(entry: MoveEntry)
+
+    @Query("DELETE FROM MoveEntry")
+    fun deleteAll()
 }

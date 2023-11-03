@@ -3,6 +3,7 @@ package com.w2sv.filenavigator.ui.screens.main.components.movehistory
 import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,24 +23,33 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.data.model.MoveEntry
 import com.w2sv.filenavigator.R
@@ -51,14 +61,35 @@ import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.MovedFileMediaUriRetrievalResult
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.getMovedFileMediaUri
+import com.w2sv.filenavigator.ui.screens.MoveHistoryViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 @Composable
-fun MoveHistory(moveEntryFlow: Flow<List<MoveEntry>>, modifier: Modifier = Modifier) {
-    val moveHistory by rememberUpdatedState(newValue = moveEntryFlow.collectAsState(initial = emptyList()))
+fun MoveHistory(
+    modifier: Modifier = Modifier,
+    moveHistoryVM: MoveHistoryViewModel = viewModel()
+) {
+    val moveHistory by rememberUpdatedState(
+        newValue = moveHistoryVM.moveHistory.collectAsState(
+            initial = emptyList()
+        )
+    )
+    val moveHistoryIsEmpty by remember {
+        derivedStateOf { moveHistory.value.isEmpty() }
+    }
+    var showHistoryDeletionConfirmationDialog by remember {
+        mutableStateOf(false)
+    }
+        .apply {
+            if (value) {
+                HistoryDeletionConfirmationDialog(
+                    closeDialog = { value = false },
+                    onConfirmed = moveHistoryVM::launchHistoryDeletion
+                )
+            }
+        }
 
     ElevatedCard(
         modifier = modifier,
@@ -67,16 +98,35 @@ fun MoveHistory(moveEntryFlow: Flow<List<MoveEntry>>, modifier: Modifier = Modif
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(12.dp)
         ) {
-            AppFontText(
-                text = "History",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.weight(0.15f)
-            )
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier
+                    .weight(0.12f)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                AppFontText(
+                    text = "History",
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+
+                AnimatedVisibility(visible = !moveHistoryIsEmpty) {
+                    IconButton(
+                        onClick = { showHistoryDeletionConfirmationDialog = true },
+                        modifier = Modifier.size(38.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_delete_history_24),
+                            contentDescription = "Delete move history?"
+                        )
+                    }
+                }
+            }
 
             AnimatedContent(
-                targetState = moveHistory.value.isEmpty(),
+                targetState = moveHistoryIsEmpty,
                 label = "",
                 modifier = Modifier
                     .weight(0.8f)
@@ -89,6 +139,47 @@ fun MoveHistory(moveEntryFlow: Flow<List<MoveEntry>>, modifier: Modifier = Modif
                 }
             }
         }
+    }
+}
+
+@Composable
+fun HistoryDeletionConfirmationDialog(closeDialog: () -> Unit, onConfirmed: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = closeDialog,
+        confirmButton = {
+            DialogButton(
+                onClick = {
+                    onConfirmed()
+                    closeDialog()
+                },
+                text = "Yes"
+            )
+        },
+        dismissButton = {
+            DialogButton(onClick = closeDialog, text = "No")
+        },
+        text = {
+            AppFontText(
+                text = "Delete move history?",
+                textAlign = TextAlign.Center
+            )
+        },
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_delete_history_24),
+                contentDescription = null
+            )
+        }
+    )
+}
+
+@Composable
+fun DialogButton(onClick: () -> Unit, text: String) {
+    ElevatedButton(
+        onClick = onClick,
+        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 4.dp)
+    ) {
+        AppFontText(text = text)
     }
 }
 
