@@ -140,7 +140,7 @@ fun UI(
                     if (it) {
                         MainScreen(
                             navigatorState = mainScreenVM.navigatorState,
-                            modifier = sharedModifier.padding(horizontal = 32.dp)
+                            modifier = sharedModifier.padding(horizontal = 20.dp)
                         )
                     } else {
                         PermissionScreen(

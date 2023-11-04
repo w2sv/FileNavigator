@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
@@ -191,35 +191,44 @@ fun DialogButton(onClick: () -> Unit, text: String) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MoveEntryColumn(history: List<MoveEntry>, modifier: Modifier = Modifier) {
-    var lastComputedTemporalScope: String? by remember {
+    var lastComputedTemporalScope: Pair<Int, String>? by remember(history.size) {
         mutableStateOf(null)
     }
 
-    val moveEntryHashCodeToTemporalScopeTitle = remember {
+    val moveEntryHashCodeToTemporalScopeTitle = remember(history.size) {
         mutableStateMapOf<Int, String?>()
     }
 
-    val now = remember {
+    val now = remember(history.size) {
         LocalDateTime.now()
     }
 
     LazyColumn(
         modifier = modifier
     ) {
-        items(history, key = { it.hashCode() }) { moveEntry ->
+        itemsIndexed(history, key = { _, moveEntry -> moveEntry.hashCode() }) { i, moveEntry ->
             Column {
-                moveEntryHashCodeToTemporalScopeTitle.getOrPut(moveEntry.hashCode()) {
-                    determineTemporalScope(
-                        moveEntry.dateTime,
-                        now
-                    )
-                        .run {
-                            if (this != lastComputedTemporalScope) this.also {
-                                lastComputedTemporalScope = this
-                            } else null
-                        }
+                moveEntryHashCodeToTemporalScopeTitle.getOrPut(i) {
+                    if (lastComputedTemporalScope == null || i > lastComputedTemporalScope!!.first) {
+                        determineTemporalScope(
+                            moveEntry.dateTime,
+                            now
+                        )
+                            .let { scopeTitle ->
+                                if (lastComputedTemporalScope == null || scopeTitle != lastComputedTemporalScope!!.second) scopeTitle.also {
+                                    lastComputedTemporalScope = i to scopeTitle
+
+                                    i { "Put ${moveEntry.hashCode()}=$this" }
+                                } else null
+                            }
+                    } else null
+
                 }?.let { scopeTitle ->
-                    AppFontText(text = scopeTitle, fontSize = 14.sp)
+                    AppFontText(
+                        text = scopeTitle,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                 }
                 MoveEntryRow(
