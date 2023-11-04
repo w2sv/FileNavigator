@@ -33,7 +33,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import slimber.log.i
-import java.util.Date
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -69,9 +69,9 @@ class FileMoveActivity : ComponentActivity() {
         // FileTypeRepository
         // ===============
 
-        fun launchMoveEntryInsertion(destination: Uri, date: Date): Job =
+        fun launchMoveEntryInsertion(destination: Uri, dateTime: LocalDateTime): Job =
             viewModelScope.launch {
-                insertMoveEntryUseCase.invoke(getMoveEntry(moveFile, destination, date))
+                insertMoveEntryUseCase.invoke(getMoveEntry(moveFile, destination, dateTime))
             }
 
         fun launchLastMoveDestinationSaving(destination: Uri): Job =
@@ -145,7 +145,7 @@ class FileMoveActivity : ComponentActivity() {
 
                             viewModel.launchMoveEntryInsertion(
                                 targetDirectoryDocumentFile.uri,
-                                Date()
+                                LocalDateTime.now()
                             )
 
                             removeNotificationAndCleanupResources()

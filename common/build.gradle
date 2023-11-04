@@ -22,4 +22,6 @@ dependencies {
     // hilt
     implementation libs.google.hilt
     ksp libs.google.hilt.compiler
+
+    testImplementation libs.bundles.unitTest
 }

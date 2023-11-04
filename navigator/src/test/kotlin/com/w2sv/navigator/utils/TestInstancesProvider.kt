@@ -3,7 +3,7 @@ package com.w2sv.navigator.utils
 import android.net.Uri
 import com.w2sv.navigator.model.MediaStoreColumnData
 import com.w2sv.navigator.model.MediaStoreFile
-import java.util.Date
+import java.time.LocalDateTime
 
 object TestInstancesProvider {
 
@@ -12,7 +12,7 @@ object TestInstancesProvider {
         absPath: String = "",
         name: String = "",
         volumeRelativeDirPath: String = "",
-        dateAdded: Date = Date(),
+        dateTimeAdded: LocalDateTime = LocalDateTime.now(),
         size: Long = 0L,
         isPending: Boolean = false
     ): MediaStoreColumnData =
@@ -21,7 +21,7 @@ object TestInstancesProvider {
             absPath = absPath,
             volumeRelativeDirPath = volumeRelativeDirPath,
             name = name,
-            dateAdded = dateAdded,
+            dateTimeAdded = dateTimeAdded,
             size = size,
             isPending = isPending,
         )

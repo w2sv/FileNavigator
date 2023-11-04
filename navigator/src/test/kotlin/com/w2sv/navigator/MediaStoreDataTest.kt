@@ -6,7 +6,7 @@ import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.Test
 import java.time.Instant
-import java.util.Date
+import java.time.LocalDateTime
 
 class MediaStoreDataTest {
 
@@ -14,7 +14,7 @@ class MediaStoreDataTest {
     fun testExistsForMoreThan() {
         val instance =
             TestInstancesProvider.getMediaStoreColumnData(
-                dateAdded = Date.from(
+                dateTimeAdded = LocalDateTime.from(
                     Instant.now().minusSeconds(10)
                 )
             )

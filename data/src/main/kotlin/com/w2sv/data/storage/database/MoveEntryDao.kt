@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MoveEntryDao {
-    @Query("SELECT * FROM MoveEntry ORDER BY date DESC")
+    @Query("SELECT * FROM MoveEntry ORDER BY dateTime DESC")
     fun loadAllInDescendingOrder(): Flow<List<MoveEntry>>
 
     @Insert

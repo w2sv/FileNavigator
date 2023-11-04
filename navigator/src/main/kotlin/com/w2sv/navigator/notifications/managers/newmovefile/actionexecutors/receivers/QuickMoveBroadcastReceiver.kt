@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import slimber.log.i
-import java.util.Date
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -92,7 +92,7 @@ class QuickMoveBroadcastReceiver : BroadcastReceiver() {
                                 getMoveEntry(
                                     moveFile,
                                     targetDirectoryDocumentFile.uri,
-                                    Date()
+                                    LocalDateTime.now()
                                 )
                             )
                         }

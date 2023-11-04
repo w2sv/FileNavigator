@@ -36,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,9 +63,12 @@ import com.w2sv.filenavigator.ui.model.MovedFileMediaUriRetrievalResult
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.getMovedFileMediaUri
 import com.w2sv.filenavigator.ui.screens.MoveHistoryViewModel
+import com.w2sv.filenavigator.ui.screens.main.components.movehistory.model.determineTemporalScope
 import com.w2sv.filenavigator.ui.theme.AppColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import slimber.log.i
+import java.time.LocalDateTime
 
 @Composable
 fun MoveHistory(
@@ -115,11 +119,12 @@ fun MoveHistory(
                 AnimatedVisibility(visible = !moveHistoryIsEmpty) {
                     IconButton(
                         onClick = { showHistoryDeletionConfirmationDialog = true },
-                        modifier = Modifier.size(38.dp)
+                        modifier = Modifier.size(38.dp),
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_delete_history_24),
-                            contentDescription = "Delete move history?"
+                            contentDescription = "Delete move history?",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
@@ -186,17 +191,45 @@ fun DialogButton(onClick: () -> Unit, text: String) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MoveEntryColumn(history: List<MoveEntry>, modifier: Modifier = Modifier) {
+    var lastComputedTemporalScope: String? by remember {
+        mutableStateOf(null)
+    }
+
+    val moveEntryHashCodeToTemporalScopeTitle = remember {
+        mutableStateMapOf<Int, String?>()
+    }
+
+    val now = remember {
+        LocalDateTime.now()
+    }
+
     LazyColumn(
         modifier = modifier
     ) {
-        items(history, key = { it.hashCode() }) {
-            MoveEntryRow(
-                moveEntry = it,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateItemPlacement()
-                    .padding(bottom = 8.dp)
-            )
+        items(history, key = { it.hashCode() }) { moveEntry ->
+            Column {
+                moveEntryHashCodeToTemporalScopeTitle.getOrPut(moveEntry.hashCode()) {
+                    determineTemporalScope(
+                        moveEntry.dateTime,
+                        now
+                    )
+                        .run {
+                            if (this != lastComputedTemporalScope) this.also {
+                                lastComputedTemporalScope = this
+                            } else null
+                        }
+                }?.let { scopeTitle ->
+                    AppFontText(text = scopeTitle, fontSize = 14.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                MoveEntryRow(
+                    moveEntry = moveEntry,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItemPlacement()
+                        .padding(bottom = 8.dp)
+                )
+            }
         }
     }
 }

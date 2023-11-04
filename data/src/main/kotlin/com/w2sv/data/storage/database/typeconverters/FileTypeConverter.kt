@@ -5,7 +5,7 @@ import com.w2sv.data.model.FileType
 
 object FileTypeConverter {
     @TypeConverter
-    fun fromDate(fileType: FileType): String =
+    fun fromFileType(fileType: FileType): String =
         when (fileType) {
             FileType.Media.Image -> "Image"
             FileType.Media.Audio -> "Audio"

@@ -12,7 +12,7 @@ import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.model.MediaStoreFileProvider
 import slimber.log.i
-import java.util.Date
+import java.time.LocalDateTime
 
 internal abstract class FileObserver(
     val contentObserverUri: Uri,
@@ -34,14 +34,14 @@ internal abstract class FileObserver(
 
         uri ?: return
 
-        val changeObservationTime = Date()
+        val changeObservationDateTime = LocalDateTime.now()
 
         when (val result =
             mediaStoreFileProvider.getMediaStoreFileIfNotPending(uri, contentResolver)) {
             is MediaStoreFileProvider.Result.Success -> {
                 when {
                     latestCutCandidate?.matches(
-                        PasteCandidate(uri, changeObservationTime),
+                        PasteCandidate(uri, changeObservationDateTime),
                         500
                     ) == true -> {
                         cache.add(result.mediaStoreFile)
@@ -67,7 +67,7 @@ internal abstract class FileObserver(
 
             else -> {
                 if (result is MediaStoreFileProvider.Result.CouldntFetchMediaStoreColumnData) {
-                    latestCutCandidate = CutCandidate(uri, changeObservationTime)
+                    latestCutCandidate = CutCandidate(uri, changeObservationDateTime)
                 }
             }
         }

@@ -3,7 +3,7 @@ package com.w2sv.data.model
 import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.Date
+import java.time.LocalDateTime
 
 @Entity
 data class MoveEntry(
@@ -12,5 +12,5 @@ data class MoveEntry(
     val fileType: FileType,
     val fileSourceKind: FileType.Source.Kind,
     val destination: Uri,
-    @PrimaryKey val date: Date
+    @PrimaryKey val dateTime: LocalDateTime
 )

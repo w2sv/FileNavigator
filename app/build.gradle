@@ -95,20 +95,14 @@ dependencies {
     implementation libs.androidutils
     implementation libs.kotlinutils
 
-    // androidx
+    // Androidx
     implementation libs.androidx.core
     implementation libs.androidx.appcompat
     implementation libs.androidx.lifecycle.runtime
     implementation libs.androidx.splashscreen
     implementation libs.androidx.datastore.preferences
 
-    // Room
-    implementation libs.androidx.room.runtime
-    implementation libs.androidx.room.ktx
-    annotationProcessor libs.androidx.room.compiler
-    ksp libs.androidx.room.compiler
-
-    // .compose
+    // .Compose
     implementation platform(libs.androidx.compose.bom)
     implementation libs.androidx.compose.material3
     implementation libs.androidx.compose.ui
@@ -118,13 +112,22 @@ dependencies {
     implementation libs.androidx.compose.activity
     implementation libs.androidx.compose.viewmodel
 
-    // hilt
+    // Room
+    implementation libs.androidx.room.runtime
+    implementation libs.androidx.room.ktx
+    annotationProcessor libs.androidx.room.compiler
+    ksp libs.androidx.room.compiler
+
+    // Hilt
     implementation libs.google.hilt
     ksp libs.google.hilt.compiler
 
-    // other
+    // Other
     implementation libs.slimber
     implementation libs.accompanist.permissions
     implementation libs.google.guava
     implementation libs.simplestorage
+
+    // Unit Test
+    testImplementation libs.bundles.unitTest
 }
