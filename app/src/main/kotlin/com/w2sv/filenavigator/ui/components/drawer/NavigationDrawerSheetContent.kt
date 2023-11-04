@@ -17,7 +17,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,9 +33,7 @@ import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.components.RightAlignedAppCheckbox
 import com.w2sv.filenavigator.ui.components.RightAlignedSwitch
-import com.w2sv.filenavigator.ui.screens.main.components.statusdisplay.RunTimeDisplay
 import com.w2sv.filenavigator.ui.components.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.components.dynamicColorsSupported
 import com.w2sv.filenavigator.ui.screens.AppViewModel
@@ -46,34 +43,10 @@ import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
 internal fun ColumnScope.SheetContent(
     closeDrawer: () -> Unit,
     context: Context = LocalContext.current,
-    mainScreenVM: MainScreenViewModel = viewModel(),
     appVM: AppViewModel = viewModel()
 ) {
     remember {
         buildList {
-            add(Element.Header(R.string.navigator))
-            add(Element.Custom {
-                with(mainScreenVM.navigatorState) {
-                    val isRunning by isRunning.collectAsState()
-                    val startDateTime by startDateTime.collectAsState()
-
-                    if (isRunning && startDateTime != null) {
-                        RunTimeDisplay(
-                            startDateTime = startDateTime!!,
-                            modifier = Modifier.padding(top = 14.dp)
-                        )
-                    }
-                }
-            })
-            add(Element.LabelledItem.Custom(
-                iconRes = R.drawable.ic_battery_low_24,
-                labelRes = R.string.disable_navigator_on_low_battery,
-            ) {
-                RightAlignedAppCheckbox(
-                    checked = mainScreenVM.navigatorState.disableOnLowBattery.collectAsState().value,
-                    onCheckedChange = mainScreenVM.navigatorState::saveDisableOnLowBattery
-                )
-            })
             add(Element.Header(R.string.appearance))
             add(Element.LabelledItem.Custom(R.drawable.ic_nightlight_24, R.string.theme) {
                 ThemeSelectionRow(

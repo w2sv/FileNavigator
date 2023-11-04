@@ -14,10 +14,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import com.w2sv.androidutils.generic.timeDeltaFromNow
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.utils.DoOnStart
+import com.w2sv.filenavigator.ui.utils.DoOnLifecycleEvent
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.LocalDateTime
@@ -39,7 +40,10 @@ fun RunTimeDisplay(
         runDuration = runDuration.plusSeconds(1L)
     }
 
-    DoOnStart(callback = { runDuration = startDateTime.timeDeltaFromNow() })
+    DoOnLifecycleEvent(
+        callback = { runDuration = startDateTime.timeDeltaFromNow() },
+        lifecycleEvent = Lifecycle.Event.ON_START
+    )
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -57,6 +61,7 @@ fun RunTimeDisplay(
     }
 }
 
+// TODO: test
 fun Duration.formatted(): String =
     String
         .format("%02d:%02d:%02d:%02d", toDays(), toHours() % 24, toMinutes() % 60, seconds % 60)

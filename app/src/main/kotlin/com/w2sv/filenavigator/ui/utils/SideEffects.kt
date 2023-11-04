@@ -8,10 +8,14 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 
 @Composable
-fun DoOnStart(callback: () -> Unit, lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current) {
+fun DoOnLifecycleEvent(
+    callback: () -> Unit,
+    lifecycleEvent: Lifecycle.Event,
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+) {
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_START) {
+            if (event == lifecycleEvent) {
                 callback()
             }
         }
