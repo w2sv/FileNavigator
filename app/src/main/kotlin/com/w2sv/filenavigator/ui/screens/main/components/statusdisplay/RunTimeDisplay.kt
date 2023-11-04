@@ -15,7 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.w2sv.androidutils.generic.timeDeltaFromNow
-import com.w2sv.androidutils.generic.toSecondsCompat
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.utils.DoOnStart
@@ -29,18 +28,18 @@ fun RunTimeDisplay(
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 18.sp
 ) {
-    var runTime by remember(startDateTime) {
+    var runDuration by remember(startDateTime) {
         mutableStateOf(
             startDateTime.timeDeltaFromNow()
         )
     }
 
-    LaunchedEffect(key1 = runTime) {
+    LaunchedEffect(key1 = runDuration) {
         delay(1000L)
-        runTime = runTime.plusSeconds(1L)
+        runDuration = runDuration.plusSeconds(1L)
     }
 
-    DoOnStart(callback = { runTime = startDateTime.timeDeltaFromNow() })
+    DoOnStart(callback = { runDuration = startDateTime.timeDeltaFromNow() })
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -51,17 +50,14 @@ fun RunTimeDisplay(
             fontSize = fontSize,
         )
         AppFontText(
-            text = runTime.asFormattedString(),
+            text = runDuration.formatted(),
             fontSize = fontSize,
             fontWeight = FontWeight.SemiBold
         )
     }
 }
 
-private fun Duration.asFormattedString(): String =
-    String.format(
-        "${toDays().let { if (it != 0L) "${it}d " else "" }}%02d:%02d:%02d",
-        toHours(),
-        toMinutes(),
-        toSecondsCompat()
-    )
+fun Duration.formatted(): String =
+    String
+        .format("%02d:%02d:%02d:%02d", toDays(), toHours() % 24, toMinutes() % 60, seconds % 60)
+        .removePrefix("00:")

@@ -54,6 +54,9 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    sourceSets {
+        test.java.srcDirs += ['src/test/kotlin']
+    }
     buildFeatures {
         compose true
     }

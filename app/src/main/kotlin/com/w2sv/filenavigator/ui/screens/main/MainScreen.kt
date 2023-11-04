@@ -175,7 +175,7 @@ private fun MainScreen(
         StatusDisplay(
             navigatorState = navigatorState,
             modifier = Modifier
-                .fillMaxHeight(0.3f)
+                .fillMaxHeight(0.25f)
         )
         MoveHistory(
             modifier = Modifier.fillMaxHeight(0.7f)
