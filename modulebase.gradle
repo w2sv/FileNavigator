@@ -1,6 +1,6 @@
 android {
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain(libs.versions.java.get().toInteger())
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
