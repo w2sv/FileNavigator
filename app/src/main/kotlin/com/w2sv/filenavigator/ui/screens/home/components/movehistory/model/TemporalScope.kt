@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main.components.movehistory.model
+package com.w2sv.filenavigator.ui.screens.home.components.movehistory.model
 
 import java.time.LocalDateTime
 import java.time.ZoneId

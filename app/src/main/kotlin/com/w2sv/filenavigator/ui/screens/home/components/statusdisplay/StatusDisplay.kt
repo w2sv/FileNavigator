@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main.components.statusdisplay
+package com.w2sv.filenavigator.ui.screens.home.components.statusdisplay
 
 import android.content.Context
 import androidx.annotation.StringRes
@@ -31,20 +31,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.states.NavigatorState
+import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
+import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
+import com.w2sv.filenavigator.ui.screens.Screen
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.navigator.FileNavigator
 
 @Composable
 fun StatusDisplay(
-    navigatorState: NavigatorState,
     modifier: Modifier = Modifier,
+    navigatorStateVM: NavigatorViewModel = viewModel(),
+    appVM: AppViewModel = viewModel(),
     context: Context = LocalContext.current
 ) {
-    val navigatorIsRunning by navigatorState.isRunning.collectAsState()
-    val startDateTime by navigatorState.startDateTime.collectAsState()
+    val navigatorIsRunning by navigatorStateVM.isRunning.collectAsState()
+    val startDateTime by navigatorStateVM.startDateTime.collectAsState()
 
     val statusTextProperties by remember {
         derivedStateOf {
@@ -115,7 +119,10 @@ fun StatusDisplay(
                         .height(70.dp)
                         .width(160.dp)
                 )
-                FilledTonalIconButton(onClick = { /*TODO*/ }, modifier = Modifier.size(52.dp)) {
+                FilledTonalIconButton(
+                    onClick = { appVM.setScreen(Screen.NavigatorSettings) },
+                    modifier = Modifier.size(52.dp)
+                ) {
                     Icon(
                         painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_settings_24),
                         contentDescription = null

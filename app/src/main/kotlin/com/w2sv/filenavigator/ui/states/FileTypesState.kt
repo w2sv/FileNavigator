@@ -22,7 +22,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class FileTypesState(
     val statusMap: UnconfirmedStateMap<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>,
@@ -126,15 +125,6 @@ class FileTypesState(
 
             else -> FileTypeCheckedChangeResult.ShowSnackbar.AllFilesAccessRequired
         }
-
-    fun setAndApplyStatus(fileTypes: Iterable<FileType>, newStatus: FileType.Status) {
-        fileTypes.forEach {
-            statusMap[it.statusDSE] = newStatus
-        }
-        scope.launch {
-            statusMap.sync()
-        }
-    }
 }
 
 private sealed interface FileTypeCheckedChangeResult {

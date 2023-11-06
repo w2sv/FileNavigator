@@ -1,15 +1,11 @@
-package com.w2sv.filenavigator.ui.screens.main
+package com.w2sv.filenavigator.ui.screens
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
@@ -18,6 +14,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -36,14 +33,13 @@ import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.AppTopBar
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
-import com.w2sv.filenavigator.ui.components.PermissionCardProperties
+import com.w2sv.filenavigator.ui.screens.missingpermissions.PermissionCardProperties
 import com.w2sv.filenavigator.ui.components.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.components.drawer.animateBasedOnDrawerProgression
-import com.w2sv.filenavigator.ui.screens.AppViewModel
-import com.w2sv.filenavigator.ui.screens.main.components.PermissionScreen
-import com.w2sv.filenavigator.ui.screens.main.components.movehistory.MoveHistory
-import com.w2sv.filenavigator.ui.screens.main.components.statusdisplay.StatusDisplay
-import com.w2sv.filenavigator.ui.states.NavigatorState
+import com.w2sv.filenavigator.ui.screens.home.HomeScreen
+import com.w2sv.filenavigator.ui.screens.navigatorsettings.NavigatorSettingsScreen
+import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
+import com.w2sv.filenavigator.ui.screens.missingpermissions.PermissionScreen
 import com.w2sv.filenavigator.ui.utils.extensions.closeAnimated
 import com.w2sv.filenavigator.ui.utils.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.ui.utils.extensions.openAnimated
@@ -53,11 +49,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("NewApi")
 @Composable
-fun UI(
+fun NavigationDrawerScreen(
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     scope: CoroutineScope = rememberCoroutineScope(),
-    mainScreenVM: MainScreenViewModel = viewModel(),
     appVM: AppViewModel = viewModel()
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -66,11 +61,11 @@ fun UI(
         rememberPermissionState(
             permission = Manifest.permission.POST_NOTIFICATIONS,
             onPermissionResult = {
-                mainScreenVM.savePostNotificationsPermissionRequested()
+                appVM.savePostNotificationsPermissionRequested()
             }
         )
 
-    val anyStorageAccessGranted by mainScreenVM.storageAccessState.anyAccessGranted.collectAsState()
+    val anyStorageAccessGranted by appVM.storageAccessState.anyAccessGranted.collectAsState()
 
     val permissionCardProperties = remember(
         key1 = postNotificationsPermissionState.status.isGranted,
@@ -84,7 +79,7 @@ fun UI(
                         textRes = R.string.post_notifications_permission_rational,
                         onGrantButtonClick = {
                             postNotificationsPermissionState.launchPermissionRequest(
-                                launchedBefore = mainScreenVM.postNotificationsPermissionRequested.value,
+                                launchedBefore = appVM.postNotificationsPermissionRequested.value,
                                 onBlocked = {
                                     goToAppSettings(
                                         context
@@ -109,6 +104,17 @@ fun UI(
         }
     }
 
+    LaunchedEffect(permissionCardProperties) {
+        appVM.setScreen(
+            when (permissionCardProperties.size) {
+                0 -> Screen.NavigatorSettings
+                else -> Screen.MissingPermissions
+            }
+        )
+    }
+
+    val screen by appVM.screen.collectAsState()
+
     NavigationDrawer(drawerState) {
         Scaffold(
             snackbarHost = {
@@ -118,6 +124,7 @@ fun UI(
             },
             topBar = {
                 AppTopBar(
+                    title = screen.title,
                     onNavigationIconClick = {
                         scope.launch {
                             drawerState.openAnimated()
@@ -135,18 +142,26 @@ fun UI(
                     Modifier
                         .fillMaxSize()
                         .animateBasedOnDrawerProgression(drawerState)
+                        .padding(20.dp)
 
-                AnimatedContent(targetState = permissionCardProperties.isEmpty(), label = "") {
-                    if (it) {
-                        MainScreen(
-                            navigatorState = mainScreenVM.navigatorState,
-                            modifier = sharedModifier.padding(horizontal = 20.dp)
-                        )
-                    } else {
-                        PermissionScreen(
-                            properties = permissionCardProperties,
-                            modifier = sharedModifier.padding(horizontal = 32.dp)
-                        )
+                AnimatedContent(targetState = screen, label = "") {
+                    when (it) {
+                        Screen.Home -> {
+                            HomeScreen(
+                                modifier = sharedModifier
+                            )
+                        }
+
+                        Screen.MissingPermissions -> {
+                            PermissionScreen(
+                                properties = permissionCardProperties,
+                                modifier = sharedModifier
+                            )
+                        }
+
+                        Screen.NavigatorSettings -> {
+                            NavigatorSettingsScreen(modifier = sharedModifier)
+                        }
                     }
                 }
             }
@@ -160,25 +175,5 @@ fun UI(
                 drawerState.closeAnimated()
             }
         }
-    }
-}
-
-@Composable
-private fun MainScreen(
-    navigatorState: NavigatorState,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-        StatusDisplay(
-            navigatorState = navigatorState,
-            modifier = Modifier
-                .fillMaxHeight(0.25f)
-        )
-        MoveHistory(
-            modifier = Modifier.fillMaxHeight(0.7f)
-        )
     }
 }

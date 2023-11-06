@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.components
+package com.w2sv.filenavigator.ui.components.drawer
 
 import android.os.Build
 import android.view.animation.OvershootInterpolator
@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -39,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.data.model.Theme
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.toEasing

@@ -34,10 +34,7 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.RightAlignedSwitch
-import com.w2sv.filenavigator.ui.components.ThemeSelectionRow
-import com.w2sv.filenavigator.ui.components.dynamicColorsSupported
-import com.w2sv.filenavigator.ui.screens.AppViewModel
-import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
+import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 
 @Composable
 internal fun ColumnScope.SheetContent(

@@ -5,13 +5,13 @@ import android.content.Context
 import com.w2sv.androidutils.permissions.hasPermission
 import com.w2sv.common.utils.isExternalStorageManger
 
-enum class StorageAccessStatus {
+enum class StorageAccess {
     NoAccess,
     MediaFilesOnly,
     AllFiles;
 
     companion object {
-        fun get(context: Context): StorageAccessStatus =
+        fun get(context: Context): StorageAccess =
             when {
                 isExternalStorageManger() -> AllFiles
                 context.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) -> MediaFilesOnly

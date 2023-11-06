@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main.components.filetypeselection
+package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main.components
+package com.w2sv.filenavigator.ui.screens.navigatorsettings.components
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -25,7 +25,8 @@ import com.w2sv.filenavigator.ui.theme.AppColor
 
 @Composable
 internal fun ConfigurationChangeConfirmationButtons(
-    fileTypesState: FileTypesState,
+    onDiscardButtonPress: () -> Unit,
+    onConfirmButtonPress: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
@@ -33,7 +34,7 @@ internal fun ConfigurationChangeConfirmationButtons(
             iconRes = com.w2sv.navigator.R.drawable.ic_cancel_24,
             color = AppColor.error,
             textRes = R.string.discard_changes,
-            onClick = { fileTypesState.reset() }
+            onClick = onDiscardButtonPress
         )
 
         Spacer(modifier = Modifier.width(10.dp))
@@ -42,7 +43,7 @@ internal fun ConfigurationChangeConfirmationButtons(
             iconRes = R.drawable.ic_check_24,
             color = AppColor.success,
             textRes = R.string.confirm_changes,
-            onClick = { fileTypesState.launchSync() }
+            onClick = onConfirmButtonPress
         )
     }
 }

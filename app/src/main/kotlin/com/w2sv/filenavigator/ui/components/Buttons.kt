@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DialogButton(
+    text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    content: @Composable (RowScope.() -> Unit)
 ) {
     ElevatedButton(
         onClick = onClick,
@@ -38,9 +38,10 @@ fun DialogButton(
         elevation = ButtonDefaults.elevatedButtonElevation(8.dp),
         colors = ButtonDefaults.elevatedButtonColors(
             contentColor = MaterialTheme.colorScheme.secondary
-        ),
-        content = content
-    )
+        )
+    ) {
+        AppFontText(text = text)
+    }
 }
 
 fun Modifier.bounceOnClickAnimation(minScale: Float = 0.8f) = composed {

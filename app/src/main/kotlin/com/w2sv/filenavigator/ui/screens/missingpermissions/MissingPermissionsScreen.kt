@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main.components
+package com.w2sv.filenavigator.ui.screens.missingpermissions
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -16,8 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.components.PermissionCard
-import com.w2sv.filenavigator.ui.components.PermissionCardProperties
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 
 @OptIn(ExperimentalFoundationApi::class)

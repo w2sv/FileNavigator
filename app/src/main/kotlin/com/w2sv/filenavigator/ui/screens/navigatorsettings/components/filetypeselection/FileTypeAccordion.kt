@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main.components.filetypeselection
+package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
@@ -16,12 +16,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,7 +33,6 @@ import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.states.FileTypesState
 import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.utils.CascadeAnimationState
 import com.w2sv.filenavigator.ui.utils.extensions.orDisabledIf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -45,20 +42,13 @@ fun FileTypeAccordion(
     fileType: FileType,
     isFirstDisabled: () -> Boolean,
     fileTypesState: FileTypesState,
-    cascadeAnimationState: CascadeAnimationState<FileType>,
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
-    val animatedAlpha by cascadeAnimationState.getAlpha(element = fileType)
-
     Column(
-        modifier = modifier.graphicsLayer(
-            alpha = animatedAlpha,
-            scaleX = animatedAlpha,
-            scaleY = animatedAlpha
-        )
+        modifier = modifier
     ) {
         if (isFirstDisabled()) {
             DisabledText(modifier = Modifier.padding(bottom = 8.dp))

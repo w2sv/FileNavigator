@@ -16,9 +16,9 @@ import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.data.model.Theme
-import com.w2sv.filenavigator.ui.screens.AppViewModel
-import com.w2sv.filenavigator.ui.screens.main.MainScreenViewModel
-import com.w2sv.filenavigator.ui.screens.main.UI
+import com.w2sv.filenavigator.ui.screens.NavigationDrawerScreen
+import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
+import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.PowerSaveModeChangedReceiver
@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
     lateinit var fileNavigatorStatusChanged: FileNavigator.StatusChanged
 
     private val appVM by viewModels<AppViewModel>()
-    private val mainScreenVM by viewModels<MainScreenViewModel>()
+    private val navigatorVM by viewModels<NavigatorViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setOnExitAnimationListener(SwipeRightSplashScreenExitAnimation())
@@ -52,21 +52,21 @@ class MainActivity : ComponentActivity() {
                     Theme.DeviceDefault -> isSystemInDarkTheme()
                 }
             ) {
-                UI()
+                NavigationDrawerScreen()
             }
         }
     }
 
     private fun CoroutineScope.collectFromFlows() {
         collectFromFlow(fileNavigatorStatusChanged.isRunning) {
-            mainScreenVM.navigatorState.setIsRunning(it)
+            navigatorVM.setIsRunning(it)
         }
 
         collectFromFlow(appVM.exitApplication) {
             finishAffinity()
         }
 
-        collectFromFlow(mainScreenVM.navigatorState.disableOnLowBattery) {
+        collectFromFlow(navigatorVM.disableOnLowBattery) {
             val intent = PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity)
 
             i { "Collected disableListenerOnLowBattery=$it" }
@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        mainScreenVM.storageAccessState.updateStatus(this)
+        appVM.storageAccessState.updateStatus(this)
     }
 }
 

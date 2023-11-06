@@ -19,6 +19,12 @@ class FileTypeRepository @Inject constructor(
     val fileTypeStatus: Map<DataStoreEntry.EnumValued<FileType.Status>, Flow<FileType.Status>> =
         getEnumValuedFlowMap(FileType.getValues().map { it.statusDSE })
 
+    suspend fun setFileTypeStatuses(fileTypes: Iterable<FileType>, status: FileType.Status) {
+        fileTypes.forEach {
+            save(it.statusDSE.preferencesKey, status)
+        }
+    }
+
     val mediaFileSourceEnabled: Map<DataStoreEntry.UniType<Boolean>, Flow<Boolean>> =
         getFlowMap(
             FileType.Media.getValues()

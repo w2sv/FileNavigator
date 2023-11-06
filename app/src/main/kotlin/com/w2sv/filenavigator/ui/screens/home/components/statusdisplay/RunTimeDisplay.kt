@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main.components.statusdisplay
+package com.w2sv.filenavigator.ui.screens.home.components.statusdisplay
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

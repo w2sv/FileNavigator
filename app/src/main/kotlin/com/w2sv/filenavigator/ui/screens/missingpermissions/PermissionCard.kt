@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.components
+package com.w2sv.filenavigator.ui.screens.missingpermissions
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -22,6 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.components.AppFontText
+import com.w2sv.filenavigator.ui.components.DialogButton
+import com.w2sv.filenavigator.ui.components.styledTextResource
 import com.w2sv.filenavigator.ui.theme.AppTheme
 
 @Preview
@@ -73,10 +76,9 @@ fun PermissionCard(
             )
             Spacer(modifier = Modifier.height(16.dp))
             DialogButton(
+                text = stringResource(id = R.string.grant),
                 onClick = properties.onGrantButtonClick,
-            ) {
-                AppFontText(text = stringResource(id = R.string.grant))
-            }
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.main.components.movehistory
+package com.w2sv.filenavigator.ui.screens.home.components.movehistory
 
 import android.content.Context
 import android.content.Intent
@@ -24,9 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,14 +54,15 @@ import com.w2sv.data.model.MoveEntry
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
+import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.MovedFileMediaUriRetrievalResult
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.getMovedFileMediaUri
-import com.w2sv.filenavigator.ui.screens.MoveHistoryViewModel
-import com.w2sv.filenavigator.ui.screens.main.components.movehistory.model.determineTemporalScope
+import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.determineTemporalScope
+import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -153,15 +152,15 @@ fun HistoryDeletionConfirmationDialog(closeDialog: () -> Unit, onConfirmed: () -
         onDismissRequest = closeDialog,
         confirmButton = {
             DialogButton(
+                text = "Yes",
                 onClick = {
                     onConfirmed()
                     closeDialog()
-                },
-                text = "Yes"
+                }
             )
         },
         dismissButton = {
-            DialogButton(onClick = closeDialog, text = "No")
+            DialogButton(text = "No", onClick = closeDialog)
         },
         text = {
             AppFontText(
@@ -176,16 +175,6 @@ fun HistoryDeletionConfirmationDialog(closeDialog: () -> Unit, onConfirmed: () -
             )
         }
     )
-}
-
-@Composable
-fun DialogButton(onClick: () -> Unit, text: String) {
-    ElevatedButton(
-        onClick = onClick,
-        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 4.dp)
-    ) {
-        AppFontText(text = text)
-    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
