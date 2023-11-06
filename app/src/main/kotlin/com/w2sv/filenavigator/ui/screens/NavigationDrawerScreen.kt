@@ -33,16 +33,14 @@ import com.w2sv.filenavigator.ui.components.AppSnackbar
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.AppTopBar
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
-import com.w2sv.filenavigator.ui.screens.missingpermissions.PermissionCardProperties
 import com.w2sv.filenavigator.ui.components.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.components.drawer.animateBasedOnDrawerProgression
 import com.w2sv.filenavigator.ui.screens.home.HomeScreen
+import com.w2sv.filenavigator.ui.screens.missingpermissions.PermissionCardProperties
+import com.w2sv.filenavigator.ui.screens.missingpermissions.PermissionScreen
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.NavigatorSettingsScreen
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
-import com.w2sv.filenavigator.ui.screens.missingpermissions.PermissionScreen
-import com.w2sv.filenavigator.ui.utils.extensions.closeAnimated
 import com.w2sv.filenavigator.ui.utils.extensions.launchPermissionRequest
-import com.w2sv.filenavigator.ui.utils.extensions.openAnimated
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -127,7 +125,7 @@ fun NavigationDrawerScreen(
                     title = screen.title,
                     onNavigationIconClick = {
                         scope.launch {
-                            drawerState.openAnimated()
+                            drawerState.open()
                         }
                     }
                 )
@@ -172,7 +170,7 @@ fun NavigationDrawerScreen(
         when (drawerState.currentValue) {
             DrawerValue.Closed -> appVM.onBackPress(context)
             DrawerValue.Open -> scope.launch {
-                drawerState.closeAnimated()
+                drawerState.close()
             }
         }
     }

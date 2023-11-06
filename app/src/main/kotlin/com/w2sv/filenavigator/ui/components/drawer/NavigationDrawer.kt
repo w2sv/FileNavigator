@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.utils.extensions.closeAnimated
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -41,7 +40,7 @@ fun NavigationDrawer(
         modifier = modifier,
         drawerContent = {
             Sheet {
-                SheetContent(closeDrawer = { scope.launch { state.closeAnimated() } })
+                SheetContent(closeDrawer = { scope.launch { state.close() } })
             }
         },
         drawerState = state

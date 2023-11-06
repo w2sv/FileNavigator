@@ -23,9 +23,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.RightAlignedSwitch
-import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.ConfigurationChangeConfirmationButtons
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeSelectionColumn
+import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 
 @Composable
 fun NavigatorSettingsScreen(
@@ -46,7 +46,10 @@ fun NavigatorSettingsScreen(
                 .fillMaxWidth()
                 .padding(4.dp)
         )
-        AnimatedVisibility(visible = navigatorVM.fileTypesState.statesDissimilar.collectAsState().value) {
+        AnimatedVisibility(
+            visible = navigatorVM.fileTypesState.statesDissimilar.collectAsState().value,
+            modifier = Modifier.fillMaxHeight(0.2f)
+        ) {
             ConfigurationChangeConfirmationButtons(
                 navigatorVM.fileTypesState::reset,
                 navigatorVM.fileTypesState::launchSync
@@ -56,7 +59,7 @@ fun NavigatorSettingsScreen(
 }
 
 @Composable
-fun SwitchItemRow(
+private fun SwitchItemRow(
     @DrawableRes iconRes: Int,
     @StringRes textRes: Int,
     checked: Boolean,
