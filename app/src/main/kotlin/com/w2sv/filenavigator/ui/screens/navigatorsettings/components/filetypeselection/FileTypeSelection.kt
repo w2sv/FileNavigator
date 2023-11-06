@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.states.FileTypesState
+import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import slimber.log.i
 
@@ -26,7 +26,7 @@ import slimber.log.i
 @Composable
 fun FileTypeSelectionColumn(
     modifier: Modifier = Modifier,
-    fileTypesState: FileTypesState,
+    navigatorConfiguration: NavigatorConfiguration,
 ) {
     Column(
         modifier = modifier
@@ -38,11 +38,11 @@ fun FileTypeSelectionColumn(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val firstDisabledFileType by fileTypesState.firstDisabledFileType.collectAsState()
+        val firstDisabledFileType by navigatorConfiguration.firstDisabledFileType.collectAsState()
 
         LazyColumn(state = rememberLazyListState()) {
             items(
-                items = fileTypesState.sortedFileTypes,
+                items = navigatorConfiguration.sortedFileTypes,
                 key = { it }
             ) { fileType ->
                 i { "Laying out ${fileType.name}" }
@@ -50,7 +50,7 @@ fun FileTypeSelectionColumn(
                 FileTypeAccordion(
                     fileType = fileType,
                     isFirstDisabled = { fileType == firstDisabledFileType },
-                    fileTypesState = fileTypesState,
+                    navigatorConfiguration = navigatorConfiguration,
                     modifier = Modifier
                         .padding(vertical = 4.dp)
                         .animateItemPlacement(tween(DefaultAnimationDuration))  // Animate upon reordering

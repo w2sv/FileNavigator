@@ -31,7 +31,7 @@ import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.states.FileTypesState
+import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.utils.extensions.orDisabledIf
 import kotlinx.coroutines.CoroutineScope
@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
 fun FileTypeAccordion(
     fileType: FileType,
     isFirstDisabled: () -> Boolean,
-    fileTypesState: FileTypesState,
+    navigatorConfiguration: NavigatorConfiguration,
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current,
@@ -55,13 +55,13 @@ fun FileTypeAccordion(
         }
 
         val fileTypeStatus =
-            fileTypesState.statusMap.getValue(fileType.statusDSE)
+            navigatorConfiguration.statusMap.getValue(fileType.statusDSE)
 
         Header(
             fileType = fileType,
             status = fileTypeStatus,
             onCheckedChange = { checkedNew ->
-                fileTypesState.onFileTypeCheckedChange(
+                navigatorConfiguration.onFileTypeCheckedChange(
                     fileType = fileType,
                     checkedNew = checkedNew,
                     showSnackbar = { visuals ->
@@ -80,7 +80,7 @@ fun FileTypeAccordion(
         ) {
             FileTypeSourcesSurface(
                 fileType = fileType,
-                fileTypesState = fileTypesState
+                navigatorConfiguration = navigatorConfiguration
             )
         }
     }

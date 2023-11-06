@@ -29,7 +29,7 @@ import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.states.FileTypesState
+import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
 import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
 import com.w2sv.filenavigator.ui.utils.extensions.orDisabledIf
@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun FileTypeSourcesSurface(
     fileType: FileType,
-    fileTypesState: FileTypesState,
+    navigatorConfiguration: NavigatorConfiguration,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -53,11 +53,11 @@ fun FileTypeSourcesSurface(
                 makeElement = {
                     SourceRow(
                         source = it,
-                        isEnabled = fileTypesState.mediaFileSourceEnabledMap.getOrDefault(
+                        isEnabled = navigatorConfiguration.mediaFileSourceEnabledMap.getOrDefault(
                             key = it.isEnabledDSE,
                             defaultValue = true
                         ),
-                        fileTypesState = fileTypesState,
+                        navigatorConfiguration = navigatorConfiguration,
                         modifier = Modifier.height(44.dp)
                     )
                 }
@@ -70,7 +70,7 @@ fun FileTypeSourcesSurface(
 private fun SourceRow(
     source: FileType.Source,
     isEnabled: Boolean,
-    fileTypesState: FileTypesState,
+    navigatorConfiguration: NavigatorConfiguration,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     context: Context = LocalContext.current,
@@ -105,13 +105,13 @@ private fun SourceRow(
                     checked = isEnabled,
                     onCheckedChange = { checkedNew ->
                         if (!source.fileType.sources.map {
-                                fileTypesState.mediaFileSourceEnabledMap.getValue(
+                                navigatorConfiguration.mediaFileSourceEnabledMap.getValue(
                                     it.isEnabledDSE
                                 )
                             }
                                 .allFalseAfterEnteringValue(checkedNew)
                         ) {
-                            fileTypesState.mediaFileSourceEnabledMap[source.isEnabledDSE] =
+                            navigatorConfiguration.mediaFileSourceEnabledMap[source.isEnabledDSE] =
                                 checkedNew
                         } else {
                             scope.launch {

@@ -5,6 +5,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
+import com.w2sv.androidutils.datastorage.datastore.preferences.PersistedValue
+import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlow
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
 import com.w2sv.common.utils.goToManageExternalStorageSettings
@@ -21,11 +23,13 @@ import com.w2sv.filenavigator.ui.utils.extensions.getSynchronousMutableStateMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 
-class FileTypesState(
+class NavigatorConfiguration(
     val statusMap: UnconfirmedStateMap<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>,
     val mediaFileSourceEnabledMap: UnconfirmedStateMap<DataStoreEntry.UniType<Boolean>, Boolean>,
+    val disableOnLowBattery: UnconfirmedStateFlow<Boolean>,
     onStateSynced: () -> Unit,
     private val scope: CoroutineScope,
     statusMapChanged: MutableSharedFlow<Unit>
@@ -33,6 +37,7 @@ class FileTypesState(
     unconfirmedStates = listOf(
         statusMap,
         mediaFileSourceEnabledMap,
+        disableOnLowBattery
     ),
     coroutineScope = scope,
     onStateSynced = onStateSynced
@@ -40,6 +45,7 @@ class FileTypesState(
     constructor(
         scope: CoroutineScope,
         fileTypeRepository: FileTypeRepository,
+        disableOnLowBattery: PersistedValue.UniTyped<Boolean>,
         onStateSynced: () -> Unit,
         statusMapChanged: MutableSharedFlow<Unit> = MutableSharedFlow(),
     ) : this(
@@ -68,6 +74,7 @@ class FileTypesState(
             makeMap = { it.getSynchronousMutableStateMap() },
             syncState = { fileTypeRepository.saveMap(it) }
         ),
+        disableOnLowBattery = UnconfirmedStateFlow(scope, disableOnLowBattery, SharingStarted.Eagerly),
         onStateSynced = onStateSynced
     )
 

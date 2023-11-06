@@ -158,7 +158,10 @@ fun NavigationDrawerScreen(
                         }
 
                         Screen.NavigatorSettings -> {
-                            NavigatorSettingsScreen(modifier = sharedModifier)
+                            NavigatorSettingsScreen(
+                                returnToHomeScreen = { appVM.setScreen(Screen.Home) },
+                                modifier = sharedModifier,
+                            )
                         }
                     }
                 }

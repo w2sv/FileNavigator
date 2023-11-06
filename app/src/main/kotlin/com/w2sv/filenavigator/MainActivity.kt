@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
             finishAffinity()
         }
 
-        collectFromFlow(navigatorVM.disableOnLowBattery) {
+        collectFromFlow(navigatorVM.configuration.disableOnLowBattery.appliedStateFlow) {
             val intent = PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity)
 
             i { "Collected disableListenerOnLowBattery=$it" }
