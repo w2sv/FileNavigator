@@ -17,7 +17,9 @@ class FileNavigatorIsRunningNotificationManager(
     context: Context,
     notificationManager: NotificationManager
 ) : AppNotificationManager<AppNotificationManager.BuilderArgs.Empty>(
-    notificationChannel = AppNotificationChannel.FileNavigatorIsRunning.getNotificationChannel(context),
+    notificationChannel = AppNotificationChannel.FileNavigatorIsRunning.getNotificationChannel(
+        context
+    ),
     notificationManager = notificationManager,
     context = context
 ) {

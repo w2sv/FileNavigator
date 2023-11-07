@@ -74,7 +74,11 @@ class NavigatorConfiguration(
             makeMap = { it.getSynchronousMutableStateMap() },
             syncState = { fileTypeRepository.saveMap(it) }
         ),
-        disableOnLowBattery = UnconfirmedStateFlow(scope, disableOnLowBattery, SharingStarted.Eagerly),
+        disableOnLowBattery = UnconfirmedStateFlow(
+            scope,
+            disableOnLowBattery,
+            SharingStarted.Eagerly
+        ),
         onStateSynced = onStateSynced
     )
 

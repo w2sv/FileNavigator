@@ -8,7 +8,7 @@ import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
 import com.w2sv.navigator.R
 
-abstract class AppNotificationManager<A: AppNotificationManager.BuilderArgs>(
+abstract class AppNotificationManager<A : AppNotificationManager.BuilderArgs>(
     protected val notificationChannel: NotificationChannel,
     protected val notificationManager: NotificationManager,
     protected val context: Context
@@ -17,7 +17,7 @@ abstract class AppNotificationManager<A: AppNotificationManager.BuilderArgs>(
         notificationManager.createNotificationChannel(notificationChannel)
     }
 
-    open inner class Builder: NotificationCompat.Builder(context, notificationChannel.id) {
+    open inner class Builder : NotificationCompat.Builder(context, notificationChannel.id) {
 
         @CallSuper
         override fun build(): Notification {
@@ -30,7 +30,7 @@ abstract class AppNotificationManager<A: AppNotificationManager.BuilderArgs>(
     }
 
     interface BuilderArgs {
-        data object Empty: BuilderArgs
+        data object Empty : BuilderArgs
     }
 
     fun buildAndEmit(id: Int, args: A) {

@@ -1,17 +1,8 @@
 <resources>
-    <string name="configure">Configure</string>
-    <string name="file_deletion_requires_access_to_manage_all_files">File deletion requires access to manage all files</string>
-    <string name="delete">Delete</string>
-    <string name="move_to_default_destination">Move 2 default</string>
-    <string name="successfully_deleted_file">Successfully deleted file</string>
-    <string name="couldn_t_delete_file">Couldn\'t delete file</string>
     <string name="moved_file_to">Moved file to %1$s</string>
-    <string name="couldn_t_move_file">Couldn\'t move file</string>
     <string name="move">Move</string>
-    <string name="view">View</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
     <string name="stop">Stop</string>
-    <string name="waiting_for_new_files_to_be_navigated">Waiting for new files to be navigated</string>
     <string name="found_at">found at</string>
     <string name="start_navigator">Start Navigator</string>
     <string name="stop_navigator">Stop Navigator</string>

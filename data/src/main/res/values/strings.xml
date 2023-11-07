@@ -1,24 +1,18 @@
 <resources>
     <string name="app_name">File Navigator</string>
     <string name="moved_file_to">Moved file to %1$s</string>
-    <string name="couldn_t_move_file">Couldn\'t move file</string>
     <string name="move">Move</string>
-    <string name="view">View</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
-    <string name="new_file_detected_template">%1s Detected</string>
     <string name="stop">Stop</string>
-    <string name="waiting_for_new_files_to_be_navigated">Waiting for new files to be navigated</string>
     <string name="start_navigator">Start Navigator</string>
     <string name="stop_navigator">Stop Navigator</string>
     <string name="image">Image</string>
     <string name="video">Video</string>
     <string name="audio">Audio</string>
-    <string name="audio_file">Audio File</string>
     <string name="pdf">PDF</string>
     <string name="archive">Archive</string>
     <string name="apk">APK</string>
     <string name="text">Text</string>
-    <string name="gif">GIF</string>
 
     <string name="download">Download</string>
     <string name="third_party_app">Other Apps</string>

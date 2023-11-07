@@ -9,8 +9,8 @@ import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.data.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
-import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.model.MediaStoreFileProvider
+import com.w2sv.navigator.model.MoveFile
 import slimber.log.i
 import java.time.LocalDateTime
 

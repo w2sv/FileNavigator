@@ -38,7 +38,10 @@ class StorageAccessState(
                             )
 
                             if (priorStatus.value == StorageAccess.NoAccess) {
-                                setFileTypeStatuses(FileType.Media.getValues(), FileType.Status.Enabled)
+                                setFileTypeStatuses(
+                                    FileType.Media.getValues(),
+                                    FileType.Status.Enabled
+                                )
                             }
                         }
 

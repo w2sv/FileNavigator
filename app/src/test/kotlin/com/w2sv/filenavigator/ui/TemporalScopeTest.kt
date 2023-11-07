@@ -3,8 +3,8 @@ package com.w2sv.filenavigator.ui
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class TemporalScopeTest {
 

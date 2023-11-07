@@ -27,7 +27,7 @@ abstract class MultiInstanceAppNotificationManager<A : MultiInstanceAppNotificat
     // Building
     // =============
 
-    open inner class Builder: AppNotificationManager<A>.Builder() {
+    open inner class Builder : AppNotificationManager<A>.Builder() {
 
         @CallSuper
         override fun build(): Notification {

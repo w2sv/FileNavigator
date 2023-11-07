@@ -13,13 +13,13 @@ import androidx.compose.ui.Modifier
 import com.w2sv.filenavigator.ui.theme.Epsilon
 
 sealed interface AnimatedRowElement {
-    sealed interface ContentHolder: AnimatedRowElement {
+    sealed interface ContentHolder : AnimatedRowElement {
         val content: @Composable () -> Unit
     }
 
     data class Static(override val content: @Composable () -> Unit) : ContentHolder
     data class Conditional(override val content: @Composable () -> Unit) : ContentHolder
-    data object CounterWeight: AnimatedRowElement
+    data object CounterWeight : AnimatedRowElement
 }
 
 @Composable
@@ -38,7 +38,12 @@ fun RowScope.AnimatedElements(
 
     elements.forEach { element ->
         when (element) {
-            is AnimatedRowElement.CounterWeight -> Spacer(modifier = Modifier.weight(counterElementWeight))
+            is AnimatedRowElement.CounterWeight -> Spacer(
+                modifier = Modifier.weight(
+                    counterElementWeight
+                )
+            )
+
             is AnimatedRowElement.ContentHolder -> Box(
                 modifier = Modifier.weight(if (element is AnimatedRowElement.Static) elementWeight else conditionalElementWeight),
                 contentAlignment = Alignment.Center
