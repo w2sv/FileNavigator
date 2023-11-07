@@ -125,7 +125,7 @@ private fun MoveEntryRow(
     ) {
         WeightedBox(weight = 0.15f) {
             Icon(
-                painter = painterResource(id = moveEntry.fileType.iconRes),
+                painter = painterResource(id = moveEntry.source.getIconRes()),
                 contentDescription = null,
                 tint = moveEntry.fileType.color
             )

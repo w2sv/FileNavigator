@@ -28,7 +28,6 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 
 @Composable
 fun NavigationDrawer(

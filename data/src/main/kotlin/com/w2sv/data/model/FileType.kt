@@ -234,6 +234,13 @@ sealed class FileType(
             null
         )
 
+        @DrawableRes
+        fun getIconRes(): Int =
+            when (kind) {
+                Kind.Screenshot, Kind.Camera -> kind.iconRes
+                else -> fileType.iconRes
+            }
+
         enum class Kind(
             @StringRes val labelRes: Int,
             @DrawableRes val iconRes: Int

@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.text.SpannedString
-import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -53,7 +52,7 @@ class NewMoveFileNotificationManager(
                 )
                 // Set icons
                 setLargeIcon(
-                    AppCompatResources.getDrawable(context, getLargeIconDrawableRes())
+                    AppCompatResources.getDrawable(context, args.moveFile.source.getIconRes())
                         ?.apply { setTint(args.moveFile.source.fileType.colorInt) }
                         ?.toBitmap()
                 )
@@ -136,13 +135,6 @@ class NewMoveFileNotificationManager(
                             }"
                         )
                     }
-                }
-
-            @DrawableRes
-            private fun getLargeIconDrawableRes(): Int =
-                when (args.moveFile.source.kind) {
-                    FileType.Source.Kind.Screenshot, FileType.Source.Kind.Camera -> args.moveFile.source.kind.iconRes
-                    else -> args.moveFile.source.fileType.iconRes
                 }
 
             private fun getViewFilePendingIntent(requestCode: Int)
