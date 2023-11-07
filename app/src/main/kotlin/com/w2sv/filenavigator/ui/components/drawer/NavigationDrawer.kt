@@ -28,6 +28,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 @Composable
 fun NavigationDrawer(
@@ -71,8 +72,10 @@ private fun Sheet(
 @Composable
 private fun Header() {
     AppLogoWCircularBackground()
-    Spacer(modifier = Modifier.height(26.dp))
-    VersionText()
+    Spacer(modifier = Modifier.height(18.dp))
+    AppFontText(text = stringResource(id = R.string.version).format(BuildConfig.VERSION_NAME))
+    Spacer(modifier = Modifier.height(12.dp))
+    AppFontText(text = "© 2023 | w2sv")
 }
 
 @Composable
@@ -84,13 +87,5 @@ fun AppLogoWCircularBackground(modifier: Modifier = Modifier) {
         modifier = modifier
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.primary)
-    )
-}
-
-@Composable
-fun VersionText(modifier: Modifier = Modifier) {
-    AppFontText(
-        text = stringResource(id = R.string.version).format(BuildConfig.VERSION_NAME),
-        modifier = modifier
     )
 }

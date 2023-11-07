@@ -161,6 +161,7 @@ fun NavigationDrawerScreen(
                             NavigatorSettingsScreen(
                                 returnToHomeScreen = { appVM.setScreen(Screen.Home) },
                                 modifier = sharedModifier,
+                                snackbarLaunchScope = scope
                             )
                         }
                     }

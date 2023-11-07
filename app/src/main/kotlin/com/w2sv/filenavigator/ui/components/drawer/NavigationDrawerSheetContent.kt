@@ -173,7 +173,7 @@ private fun Item(
                 else
                     Modifier
             )
-            .padding(vertical = 14.dp),
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(

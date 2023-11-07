@@ -76,6 +76,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    hilt {  // Fix "warning: The following options were not recognized by any processor: '[dagger.fastInit, dagger.hilt.android.internal.disableAndroidSuperclassValidation, dagger.hilt.android.internal.projectType, dagger.hilt.internal.useAggregatingRootProcessor]'"
+        enableAggregatingTask = true
+    }
     // Store .apk's as "{versionName}.apk"
     applicationVariants.configureEach { variant ->
         variant.outputs.configureEach {

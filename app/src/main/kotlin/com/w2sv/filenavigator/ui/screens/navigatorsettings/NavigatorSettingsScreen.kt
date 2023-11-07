@@ -62,7 +62,7 @@ fun NavigatorSettingsScreen(
     returnToHomeScreen: () -> Unit,
     navigatorVM: NavigatorViewModel = viewModel(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
-    scope: CoroutineScope = rememberCoroutineScope()
+    snackbarLaunchScope: CoroutineScope = rememberCoroutineScope()
 ) {
     DisposableEffect(Unit) {
         onDispose {
@@ -76,7 +76,7 @@ fun NavigatorSettingsScreen(
             resetConfiguration = navigatorVM.configuration::reset,
             syncConfiguration = {
                 navigatorVM.configuration.launchSync().invokeOnCompletion {
-                    scope.launch {
+                    snackbarLaunchScope.launch {
                         snackbarHostState.showSnackbarAndDismissCurrent(
                             AppSnackbarVisuals(
                                 message = "Applied navigator settings.",
