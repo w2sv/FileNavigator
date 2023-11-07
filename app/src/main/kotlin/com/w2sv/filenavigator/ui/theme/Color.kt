@@ -20,7 +20,7 @@ object AppColor {
         val onPrimaryContainer = Color(0xFF002021)
         val secondary = Color(0xFF006B5C)
         val onSecondary = Color(0xFFFFFFFF)
-        val secondaryContainer = Color(0xFF09FEDD)
+        val secondaryContainer = Color(0xFFABEBD2)
         val onSecondaryContainer = Color(0xFF00201B)
         val tertiary = Color(0xFF8C4381)
         val onTertiary = Color(0xFFFFFFFF)
