@@ -13,4 +13,4 @@ fun determineTemporalScope(
     else -> dateTime.format(formatter.withZone(ZoneId.systemDefault()))
 }
 
-private val formatter = DateTimeFormatter.ofPattern("dd:MM:yyyy")
+private val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")

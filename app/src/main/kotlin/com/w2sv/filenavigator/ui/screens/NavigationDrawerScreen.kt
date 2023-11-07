@@ -105,7 +105,7 @@ fun NavigationDrawerScreen(
     LaunchedEffect(permissionCardProperties) {
         appVM.setScreen(
             when (permissionCardProperties.size) {
-                0 -> Screen.NavigatorSettings
+                0 -> Screen.Home
                 else -> Screen.MissingPermissions
             }
         )

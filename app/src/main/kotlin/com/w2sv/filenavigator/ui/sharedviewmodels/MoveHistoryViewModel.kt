@@ -6,6 +6,8 @@ import com.w2sv.data.storage.database.MoveEntryDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,7 +15,9 @@ import javax.inject.Inject
 class MoveHistoryViewModel @Inject constructor(private val moveEntryDao: MoveEntryDao) :
     ViewModel() {
 
-    val moveHistory = moveEntryDao.loadAllInDescendingOrder()
+    val moveHistory = moveEntryDao
+        .loadAllInDescendingOrder()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun launchHistoryDeletion(): Job =
         viewModelScope.launch(Dispatchers.IO) {

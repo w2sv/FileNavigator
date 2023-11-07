@@ -19,10 +19,10 @@ fun HomeScreen(
     ) {
         StatusDisplay(
             modifier = Modifier
-                .fillMaxHeight(0.25f)
+                .fillMaxHeight(0.28f)
         )
         MoveHistory(
-            modifier = Modifier.fillMaxHeight(0.7f)
+            modifier = Modifier.fillMaxHeight(0.8f)
         )
     }
 }

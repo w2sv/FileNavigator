@@ -65,7 +65,7 @@ class AppViewModel @Inject constructor(
     // ==============
 
     val screen get() = _screen.asStateFlow()
-    private val _screen = MutableStateFlow(Screen.NavigatorSettings)
+    private val _screen = MutableStateFlow(Screen.Home)
 
     fun setScreen(screen: Screen) {
         _screen.value = screen

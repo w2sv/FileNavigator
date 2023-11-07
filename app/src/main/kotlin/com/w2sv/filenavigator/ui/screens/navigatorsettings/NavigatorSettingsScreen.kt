@@ -27,6 +27,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +54,11 @@ fun NavigatorSettingsScreen(
     returnToHomeScreen: () -> Unit,
     navigatorVM: NavigatorViewModel = viewModel(),
 ) {
+    DisposableEffect(Unit) {
+        onDispose {
+            navigatorVM.configuration.reset()
+        }
+    }
     Column(modifier = modifier) {
         ButtonRow(
             returnToHomeScreen = returnToHomeScreen,
@@ -63,7 +69,7 @@ fun NavigatorSettingsScreen(
                 .fillMaxWidth()
                 .fillMaxHeight(0.1f)
         )
-        Spacer(modifier = Modifier.fillMaxHeight(0.08f))
+        Spacer(modifier = Modifier.fillMaxHeight(0.02f))
         FileTypeSelectionColumn(
             navigatorConfiguration = navigatorVM.configuration,
             modifier = Modifier.fillMaxHeight(0.7f)

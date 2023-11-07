@@ -74,13 +74,10 @@ fun MoveHistory(
     modifier: Modifier = Modifier,
     moveHistoryVM: MoveHistoryViewModel = viewModel()
 ) {
-    val moveHistory by rememberUpdatedState(
-        newValue = moveHistoryVM.moveHistory.collectAsState(
-            initial = emptyList()
-        )
-    )
+    val moveHistory by moveHistoryVM.moveHistory.collectAsState()
+
     val moveHistoryIsEmpty by remember {
-        derivedStateOf { moveHistory.value.isEmpty() }
+        derivedStateOf { moveHistory.isEmpty() }
     }
     var showHistoryDeletionConfirmationDialog by remember {
         mutableStateOf(false)
@@ -139,7 +136,7 @@ fun MoveHistory(
                 if (it) {
                     NoHistoryPlaceHolder()
                 } else {
-                    MoveEntryColumn(history = moveHistory.value)
+                    MoveEntryColumn(history = moveHistory)
                 }
             }
         }
@@ -195,7 +192,7 @@ private fun MoveEntryColumn(history: List<MoveEntry>, modifier: Modifier = Modif
     LazyColumn(
         modifier = modifier
     ) {
-        itemsIndexed(history, key = { _, moveEntry -> moveEntry.hashCode() }) { i, moveEntry ->
+        itemsIndexed(history, key = { i, moveEntry -> i }) { i, moveEntry ->
             Column {
                 moveEntryHashCodeToTemporalScopeTitle.getOrPut(i) {
                     if (lastComputedTemporalScope == null || i > lastComputedTemporalScope!!.first) {
