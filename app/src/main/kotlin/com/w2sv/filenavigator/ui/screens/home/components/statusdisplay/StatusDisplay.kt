@@ -116,7 +116,7 @@ fun StatusDisplay(
                 ToggleNavigatorButton(
                     properties = toggleNavigatorButtonProperties,
                     modifier = Modifier
-                        .height(70.dp)
+                        .height(65.dp)
                         .width(160.dp)
                 )
                 FilledTonalIconButton(
