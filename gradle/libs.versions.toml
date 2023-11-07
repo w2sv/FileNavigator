@@ -56,7 +56,6 @@ junit = { module = 'junit:junit', version.ref = 'junit' }
 androidx-junit = 'androidx.test.ext:junit:1.1.5'
 roboelectric = "org.robolectric:robolectric:4.10.3"
 
-
 [bundles]
 unitTest = ["junit", "androidx-junit", "roboelectric"]
 
