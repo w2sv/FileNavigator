@@ -26,9 +26,11 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,19 +42,27 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
+import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
+import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.RightAlignedSwitch
+import com.w2sv.filenavigator.ui.components.SnackbarKind
+import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeSelectionColumn
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.utils.toEasing
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 @Composable
 fun NavigatorSettingsScreen(
     modifier: Modifier = Modifier,
     returnToHomeScreen: () -> Unit,
     navigatorVM: NavigatorViewModel = viewModel(),
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
+    scope: CoroutineScope = rememberCoroutineScope()
 ) {
     DisposableEffect(Unit) {
         onDispose {
@@ -64,7 +74,18 @@ fun NavigatorSettingsScreen(
             returnToHomeScreen = returnToHomeScreen,
             configurationHasChanged = navigatorVM.configuration.statesDissimilar.collectAsState().value,
             resetConfiguration = navigatorVM.configuration::reset,
-            syncConfiguration = navigatorVM.configuration::launchSync,
+            syncConfiguration = {
+                navigatorVM.configuration.launchSync().invokeOnCompletion {
+                    scope.launch {
+                        snackbarHostState.showSnackbarAndDismissCurrent(
+                            AppSnackbarVisuals(
+                                message = "Applied navigator settings.",
+                                kind = SnackbarKind.Success
+                            )
+                        )
+                    }
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.1f)
