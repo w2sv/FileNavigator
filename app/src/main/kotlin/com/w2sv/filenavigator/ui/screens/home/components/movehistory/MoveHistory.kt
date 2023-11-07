@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,6 +35,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
+import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
 
 @Composable
 fun MoveHistory(
@@ -59,7 +61,7 @@ fun MoveHistory(
 
     ElevatedCard(
         modifier = modifier,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = DefaultElevatedCardElevation)
     ) {
         Column(
             modifier = Modifier
@@ -74,7 +76,7 @@ fun MoveHistory(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 AppFontText(
-                    text = "History",
+                    text = stringResource(R.string.history),
                     style = MaterialTheme.typography.headlineMedium,
                 )
 
@@ -85,7 +87,7 @@ fun MoveHistory(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_delete_history_24),
-                            contentDescription = "Delete move history?",
+                            contentDescription = stringResource(R.string.delete_move_history),
                             tint = MaterialTheme.colorScheme.secondary
                         )
                     }
@@ -115,7 +117,7 @@ private fun HistoryDeletionConfirmationDialog(closeDialog: () -> Unit, onConfirm
         onDismissRequest = closeDialog,
         confirmButton = {
             DialogButton(
-                text = "Yes",
+                text = stringResource(id = R.string.yes),
                 onClick = {
                     onConfirmed()
                     closeDialog()
@@ -123,11 +125,11 @@ private fun HistoryDeletionConfirmationDialog(closeDialog: () -> Unit, onConfirm
             )
         },
         dismissButton = {
-            DialogButton(text = "No", onClick = closeDialog)
+            DialogButton(text = stringResource(id = R.string.no), onClick = closeDialog)
         },
         text = {
             AppFontText(
-                text = "Delete move history?",
+                text = stringResource(R.string.delete_move_history),
                 textAlign = TextAlign.Center
             )
         },
@@ -155,7 +157,7 @@ private fun NoHistoryPlaceHolder(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(12.dp))
         AppFontText(
-            text = "Navigated files will appear here",
+            text = stringResource(R.string.navigated_files_will_appear_here),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }

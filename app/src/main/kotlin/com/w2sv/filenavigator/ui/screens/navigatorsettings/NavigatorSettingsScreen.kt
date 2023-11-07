@@ -116,7 +116,7 @@ fun ButtonRow(
         FilledTonalIconButton(onClick = returnToHomeScreen) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Return to home screen"
+                contentDescription = stringResource(R.string.return_to_home_screen)
             )
         }
         AnimatedVisibility(
@@ -133,14 +133,14 @@ fun ButtonRow(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ConfigurationChangeButton(
                     imageVector = Icons.Default.Clear,
-                    text = "Discard",
+                    text = stringResource(R.string.discard),
                     color = AppColor.error,
                     onClick = resetConfiguration
                 )
                 Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                 ConfigurationChangeButton(
                     imageVector = Icons.Default.Check,
-                    text = "Apply",
+                    text = stringResource(id = R.string.apply),
                     color = AppColor.success,
                     onClick = syncConfiguration
                 )
@@ -175,7 +175,7 @@ fun Prev() {
     AppTheme {
         ConfigurationChangeButton(
             imageVector = Icons.Default.Clear,
-            text = "Discard",
+            text = stringResource(id = R.string.discard),
             color = AppColor.error,
             onClick = { /*TODO*/ })
     }
@@ -184,7 +184,10 @@ fun Prev() {
 @Composable
 fun MoreColumn(modifier: Modifier = Modifier, disableOnLowBattery: MutableStateFlow<Boolean>) {
     Column(modifier = modifier) {
-        AppFontText(text = "More", style = MaterialTheme.typography.headlineMedium)
+        AppFontText(
+            text = stringResource(id = R.string.more),
+            style = MaterialTheme.typography.headlineMedium
+        )
         Spacer(modifier = Modifier.height(8.dp))
         SwitchItemRow(
             iconRes = R.drawable.ic_battery_low_24,

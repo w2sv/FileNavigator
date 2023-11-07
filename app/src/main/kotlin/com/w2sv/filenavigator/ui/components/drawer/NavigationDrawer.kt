@@ -74,7 +74,7 @@ private fun Header() {
     Spacer(modifier = Modifier.height(18.dp))
     AppFontText(text = stringResource(id = R.string.version).format(BuildConfig.VERSION_NAME))
     Spacer(modifier = Modifier.height(12.dp))
-    AppFontText(text = "© 2023 | w2sv")
+    AppFontText(text = stringResource(R.string.copyright))
 }
 
 @Composable

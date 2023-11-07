@@ -38,6 +38,7 @@ import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.screens.Screen
 import com.w2sv.filenavigator.ui.theme.AppColor
+import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
 import com.w2sv.navigator.FileNavigator
 
 @Composable
@@ -79,7 +80,7 @@ fun StatusDisplay(
 
     ElevatedCard(
         modifier = modifier.fillMaxSize(),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = DefaultElevatedCardElevation)
     ) {
         Column(
             modifier = Modifier

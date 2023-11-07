@@ -26,6 +26,7 @@ import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.components.styledTextResource
 import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
 
 @Preview
 @Composable
@@ -54,7 +55,7 @@ fun PermissionCard(
 ) {
     ElevatedCard(
         modifier = modifier,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = DefaultElevatedCardElevation)
     ) {
         Column(
             modifier = Modifier
