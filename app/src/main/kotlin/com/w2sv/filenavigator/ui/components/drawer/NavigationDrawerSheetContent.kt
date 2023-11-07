@@ -68,7 +68,7 @@ internal fun ColumnScope.SheetContent(
                 context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/PRIVACY-POLICY.md")
             })
             add(Element.LabelledItem.Clickable(R.drawable.ic_copyright_24, R.string.license) {
-                context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/LICENSE")
+                context.openUrlWithActivityNotFoundHandling("https://github.com/w2sv/FileNavigator/blob/main/LICENSE.md")
             })
             add(Element.Header(R.string.more))
             add(Element.LabelledItem.Clickable(R.drawable.ic_star_rate_24, R.string.rate) {
