@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.home.components.statusdisplay
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -54,15 +55,15 @@ fun RunTimeDisplay(
             fontSize = fontSize,
         )
         AppFontText(
-            text = runDuration.formatted(),
+            text = runDuration.getDayUntilSecondsRepresentation(),
             fontSize = fontSize,
             fontWeight = FontWeight.SemiBold
         )
     }
 }
 
-// TODO: test
-fun Duration.formatted(): String =
+@VisibleForTesting
+fun Duration.getDayUntilSecondsRepresentation(): String =
     String
         .format("%02d:%02d:%02d:%02d", toDays(), toHours() % 24, toMinutes() % 60, seconds % 60)
         .removePrefix("00:")

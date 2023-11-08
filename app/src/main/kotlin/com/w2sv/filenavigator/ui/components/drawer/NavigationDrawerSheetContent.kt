@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -33,7 +34,7 @@ import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
-import com.w2sv.filenavigator.ui.components.RightAlignedSwitch
+import com.w2sv.filenavigator.ui.components.RightAligned
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 
 @Composable
@@ -57,10 +58,12 @@ internal fun ColumnScope.SheetContent(
                     iconRes = R.drawable.ic_palette_24,
                     labelRes = R.string.use_dynamic_colors,
                 ) {
-                    RightAlignedSwitch(
-                        checked = appVM.useDynamicColors.collectAsState().value,
-                        onCheckedChange = appVM::saveUseDynamicColors
-                    )
+                    RightAligned {
+                        Switch(
+                            checked = appVM.useDynamicColors.collectAsState().value,
+                            onCheckedChange = appVM::saveUseDynamicColors
+                        )
+                    }
                 })
             }
             add(Element.Header(R.string.legal))

@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.home.components.movehistory.model
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -34,7 +35,8 @@ class DateState {
         }
 }
 
-private fun getDateRepresentation(
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+internal fun getDateRepresentation(
     dateTime: LocalDateTime,
     now: LocalDateTime
 ): String = when {

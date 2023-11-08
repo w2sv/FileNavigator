@@ -47,8 +47,9 @@ fun ContentResolver.queryNonNullMediaStoreData(
             .also { close() }
     }
 
-fun parseBoolean(mediaStoreString: String): Boolean = when (mediaStoreString) {
-    "0" -> false
-    "1" -> true
-    else -> throw IllegalStateException()
-}
+fun parseBoolean(mediaStoreString: String): Boolean =
+    when (mediaStoreString) {
+        "0" -> false
+        "1" -> true
+        else -> throw IllegalStateException()
+    }
