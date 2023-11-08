@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.data.model.MoveEntry
+import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
@@ -98,8 +99,8 @@ private fun MoveEntryRow(
                         scope.launch {
                             snackbarHostState.showSnackbarAndDismissCurrent(
                                 AppSnackbarVisuals(
-                                    "Couldn't find file.",
-                                    kind = SnackbarKind.Error
+                                    context.getString(R.string.couldn_t_find_file),
+                                    kind = SnackbarKind.Error,
                                 )
                             )
                         }
@@ -143,9 +144,9 @@ private fun MoveEntryRow(
         }
         WeightedBox(weight = 0.5f) {
             MoveEntryRowText(
-                text = remember(moveEntry.destination) {
+                text = remember(moveEntry.destinationDocumentUri) {
                     getDocumentUriPath(
-                        moveEntry.destination,
+                        moveEntry.destinationDocumentUri,
                         context
                     )!!
                 },

@@ -12,9 +12,10 @@ interface MovedFileMediaUriRetrievalResult {
     data object CouldntFindFile : MovedFileMediaUriRetrievalResult
 }
 
+//TODO: test
 fun MoveEntry.getMovedFileMediaUri(context: Context): MovedFileMediaUriRetrievalResult {
     val documentFile = DocumentFile
-        .fromSingleUri(context, destination)!!
+        .fromSingleUri(context, destinationDocumentUri)!!
         .child(context, fileName, false) ?: return MovedFileMediaUriRetrievalResult.CouldntFindFile
 
     return MovedFileMediaUriRetrievalResult.Success(

@@ -11,7 +11,7 @@ data class MoveEntry(
     val originalLocation: String,
     val fileType: FileType,
     val fileSourceKind: FileType.Source.Kind,
-    val destination: Uri,
+    val destinationDocumentUri: Uri,
     @PrimaryKey val dateTime: LocalDateTime
 ) {
     val source: FileType.Source

@@ -10,4 +10,10 @@ android {
     defaultConfig {
         minSdk libs.versions.minSdk.get().toInteger()
     }
+    // Fixes "no such manifest file ./androidmanifest.xml" when running Robolectric tests
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }

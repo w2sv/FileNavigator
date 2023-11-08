@@ -63,4 +63,5 @@
     <string name="home">Home</string>
     <string name="navigator_settings">Navigator Settings</string>
     <string name="missing_permissions">Missing Permissions</string>
+    <string name="couldn_t_find_file">Couldn\'t find file.</string>
 </resources>

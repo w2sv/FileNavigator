@@ -36,11 +36,13 @@ fun RunTimeDisplay(
         )
     }
 
+    // Increment runDuration every second by one second
     LaunchedEffect(key1 = runDuration) {
         delay(1000L)
         runDuration = runDuration.plusSeconds(1L)
     }
 
+    // Reset runDuration ON_START, i.e. on app reopening from 'Recent' etc.
     DoOnLifecycleEvent(
         callback = { runDuration = startDateTime.timeDeltaFromNow() },
         lifecycleEvent = Lifecycle.Event.ON_START

@@ -22,8 +22,8 @@ class NavigatorViewModel @Inject constructor(
     preferencesRepository: PreferencesRepository,
     @ApplicationContext context: Context
 ) : ViewModel() {
-    val isRunning get() = _isRunning.asStateFlow()
 
+    val isRunning get() = _isRunning.asStateFlow()
     private val _isRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileNavigator>())
 
