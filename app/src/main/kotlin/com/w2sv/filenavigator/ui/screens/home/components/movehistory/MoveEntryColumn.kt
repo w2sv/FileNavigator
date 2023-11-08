@@ -36,6 +36,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
+import com.w2sv.filenavigator.ui.components.SnackbarAction
 import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.WeightedBox
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
@@ -45,12 +46,14 @@ import com.w2sv.filenavigator.ui.model.getMovedFileMediaUri
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.DateState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MoveEntryColumn(
     history: List<MoveEntry>,
+    launchEntryDeletion: (MoveEntry) -> Job,
     modifier: Modifier = Modifier
 ) {
     val dateState: DateState = remember(history.size) {
@@ -72,6 +75,7 @@ fun MoveEntryColumn(
                 }
                 MoveEntryRow(
                     moveEntry = moveEntry,
+                    launchEntryDeletion = launchEntryDeletion,
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateItemPlacement()
@@ -85,6 +89,7 @@ fun MoveEntryColumn(
 @Composable
 private fun MoveEntryRow(
     moveEntry: MoveEntry,
+    launchEntryDeletion: (MoveEntry) -> Job,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
@@ -101,6 +106,12 @@ private fun MoveEntryRow(
                                 AppSnackbarVisuals(
                                     context.getString(R.string.couldn_t_find_file),
                                     kind = SnackbarKind.Error,
+                                    action = SnackbarAction(
+                                        context.getString(R.string.delete_entry)
+                                    ) {
+                                        launchEntryDeletion(moveEntry)
+                                        snackbarHostState.currentSnackbarData?.dismiss()
+                                    }
                                 )
                             )
                         }

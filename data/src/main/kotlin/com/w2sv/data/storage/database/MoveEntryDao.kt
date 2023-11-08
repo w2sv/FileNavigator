@@ -1,6 +1,7 @@
 package com.w2sv.data.storage.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.w2sv.data.model.MoveEntry
@@ -16,4 +17,7 @@ interface MoveEntryDao {
 
     @Query("DELETE FROM MoveEntry")
     fun deleteAll()
+
+    @Delete
+    fun delete(entry: MoveEntry)
 }

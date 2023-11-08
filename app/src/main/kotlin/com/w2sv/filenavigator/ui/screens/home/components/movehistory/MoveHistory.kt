@@ -104,7 +104,10 @@ fun MoveHistory(
                 if (it) {
                     NoHistoryPlaceHolder()
                 } else {
-                    MoveEntryColumn(history = moveHistory)
+                    MoveEntryColumn(
+                        history = moveHistory,
+                        launchEntryDeletion = moveHistoryVM::launchEntryDeletion
+                    )
                 }
             }
         }
