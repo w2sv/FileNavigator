@@ -41,7 +41,7 @@
     <string name="share_action_text">Check out File Navigator!\\nhttps://play.google.com/store/apps/details?id=com.w2sv.filenavigator</string>
     <string name="you_re_not_signed_into_the_play_store">You\'re not signed into the Play Store</string>
     <string name="version">Version: %s</string>
-    <string name="non_media_files_require_all_files_access">Navigation of non-media files requires permission to manage all files.</string>
+    <string name="non_media_files_require_all_files_access">Navigation of non-media files requires access to manage all files.</string>
     <string name="appearance">Appearance</string>
     <string name="legal">Legal</string>
     <string name="more">More</string>
