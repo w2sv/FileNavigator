@@ -65,4 +65,5 @@
     <string name="missing_permissions">Missing Permissions</string>
     <string name="couldn_t_find_file">Couldn\'t find file.</string>
     <string name="delete_entry">Delete entry</string>
+    <string name="applied_navigator_settings">Applied navigator settings.</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.navigatorsettings
 
+import android.content.Context
 import android.view.animation.AnticipateInterpolator
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,9 +64,11 @@ fun NavigatorSettingsScreen(
     modifier: Modifier = Modifier,
     returnToHomeScreen: () -> Unit,
     navigatorVM: NavigatorViewModel = viewModel(),
+    context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     snackbarLaunchScope: CoroutineScope = rememberCoroutineScope()
 ) {
+    // Reset configuration on removal from composition
     DisposableEffect(Unit) {
         onDispose {
             navigatorVM.configuration.reset()
@@ -80,7 +84,7 @@ fun NavigatorSettingsScreen(
                     snackbarLaunchScope.launch {
                         snackbarHostState.showSnackbarAndDismissCurrent(
                             AppSnackbarVisuals(
-                                message = "Applied navigator settings.",
+                                message = context.getString(R.string.applied_navigator_settings),
                                 kind = SnackbarKind.Success
                             )
                         )
@@ -102,7 +106,7 @@ fun NavigatorSettingsScreen(
 }
 
 @Composable
-fun ButtonRow(
+private fun ButtonRow(
     returnToHomeScreen: () -> Unit,
     configurationHasChanged: Boolean,
     resetConfiguration: () -> Unit,
@@ -172,18 +176,21 @@ private fun ConfigurationChangeButton(
 
 @Preview
 @Composable
-fun Prev() {
+private fun Prev() {
     AppTheme {
         ConfigurationChangeButton(
             imageVector = Icons.Default.Clear,
             text = stringResource(id = R.string.discard),
             color = AppColor.error,
-            onClick = { /*TODO*/ })
+            onClick = { })
     }
 }
 
 @Composable
-fun MoreColumn(modifier: Modifier = Modifier, disableOnLowBattery: MutableStateFlow<Boolean>) {
+private fun MoreColumn(
+    modifier: Modifier = Modifier,
+    disableOnLowBattery: MutableStateFlow<Boolean>
+) {
     Column(modifier = modifier) {
         AppFontText(
             text = stringResource(id = R.string.more),
