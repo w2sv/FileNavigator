@@ -138,4 +138,8 @@ dependencies {
 
     // Unit Test
     testImplementation libs.bundles.unitTest
+
+    // Android Test
+    androidTestImplementation libs.androidx.compose.ui.test
+    androidTestImplementation libs.rules
 }

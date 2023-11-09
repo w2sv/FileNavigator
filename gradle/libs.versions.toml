@@ -39,6 +39,7 @@ androidx-datastore-preferences = 'androidx.datastore:datastore-preferences:1.0.0
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose-tooling"}
 
 # Google
 google-material = 'com.google.android.material:material:1.10.0'
@@ -51,10 +52,11 @@ accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.32.0
 slimber = 'com.github.PaulWoitaschek:Slimber:2.0.0'
 simplestorage = "com.anggrayudi:storage:1.5.5"
 
-# Test
+# Testing
 junit = { module = 'junit:junit', version.ref = 'junit' }
 androidx-junit = 'androidx.test.ext:junit:1.1.5'
 roboelectric = "org.robolectric:robolectric:4.10.3"
+rules = 'androidx.test:rules:1.5.0'
 
 [bundles]
 unitTest = ["junit", "androidx-junit", "roboelectric"]
