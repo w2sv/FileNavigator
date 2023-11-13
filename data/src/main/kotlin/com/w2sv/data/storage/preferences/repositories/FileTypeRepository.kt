@@ -16,16 +16,16 @@ class FileTypeRepository @Inject constructor(
 ) :
     PreferencesDataStoreRepository(dataStore) {
 
-    val fileTypeStatus: Map<DataStoreEntry.EnumValued<FileType.Status>, Flow<FileType.Status>> =
+    fun getFileTypeStatusMap(): Map<DataStoreEntry.EnumValued<FileType.Status>, Flow<FileType.Status>> =
         getEnumValuedFlowMap(FileType.getValues().map { it.statusDSE })
 
-    suspend fun setFileTypeStatuses(fileTypes: Iterable<FileType>, status: FileType.Status) {
+    suspend fun saveFileTypeStatuses(fileTypes: Iterable<FileType>, status: FileType.Status) {
         fileTypes.forEach {
             save(it.statusDSE.preferencesKey, status)
         }
     }
 
-    val mediaFileSourceEnabled: Map<DataStoreEntry.UniType<Boolean>, Flow<Boolean>> =
+    fun getMediaFileSourceEnabledMap(): Map<DataStoreEntry.UniType<Boolean>, Flow<Boolean>> =
         getFlowMap(
             FileType.Media.getValues()
                 .flatMap { it.sources }

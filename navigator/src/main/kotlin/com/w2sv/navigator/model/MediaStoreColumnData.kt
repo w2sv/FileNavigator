@@ -7,8 +7,8 @@ import android.os.Build
 import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore
-import com.w2sv.common.utils.localDateTimeFromUnixTimeStamp
-import com.w2sv.common.utils.milliSecondsToNow
+import com.w2sv.androidutils.generic.localDateTimeFromUnixTimeStamp
+import com.w2sv.androidutils.generic.milliSecondsToNow
 import com.w2sv.common.utils.parseBoolean
 import com.w2sv.common.utils.queryNonNullMediaStoreData
 import com.w2sv.data.model.FileType

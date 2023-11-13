@@ -17,7 +17,7 @@ import com.anggrayudi.storage.file.getSimplePath
 import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.showToast
-import com.w2sv.common.model.ToastArgs
+import com.w2sv.common.utils.ToastArgs
 import com.w2sv.data.storage.database.InsertMoveEntryUseCase
 import com.w2sv.data.storage.preferences.repositories.FileTypeRepository
 import com.w2sv.navigator.R

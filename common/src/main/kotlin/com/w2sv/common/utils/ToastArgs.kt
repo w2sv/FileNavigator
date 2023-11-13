@@ -1,4 +1,4 @@
-package com.w2sv.common.model
+package com.w2sv.common.utils
 
 import android.widget.Toast
 import androidx.annotation.IntDef

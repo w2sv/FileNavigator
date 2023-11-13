@@ -45,8 +45,8 @@ class FileNavigator : UnboundService() {
 
     private fun getRegisteredFileObservers(): List<FileObserver> =
         getFileObservers(
-            statusMap = fileTypeRepository.fileTypeStatus.getSynchronousMap(),
-            mediaFileSourceEnabled = fileTypeRepository.mediaFileSourceEnabled.getSynchronousMap(),
+            statusMap = fileTypeRepository.getFileTypeStatusMap().getSynchronousMap(),
+            mediaFileSourceEnabled = fileTypeRepository.getMediaFileSourceEnabledMap().getSynchronousMap(),
             contentResolver = contentResolver,
             onNewNavigatableFileListener = { moveFile ->
                 with(appNotificationsManager.newMoveFileNotificationManager) {

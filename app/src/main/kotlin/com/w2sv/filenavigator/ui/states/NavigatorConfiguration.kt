@@ -3,7 +3,6 @@ package com.w2sv.filenavigator.ui.states
 import android.content.Context
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.w2sv.androidutils.coroutines.collectFromFlow
-import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.androidutils.datastorage.datastore.preferences.PersistedValue
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlow
@@ -12,6 +11,7 @@ import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.common.utils.manageExternalStoragePermissionRequired
 import com.w2sv.data.model.FileType
+import com.w2sv.data.model.StorageAccessStatus
 import com.w2sv.data.storage.preferences.repositories.FileTypeRepository
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
@@ -19,12 +19,13 @@ import com.w2sv.filenavigator.ui.components.SnackbarAction
 import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
 import com.w2sv.filenavigator.ui.utils.extensions.getMutableStateList
-import com.w2sv.filenavigator.ui.utils.extensions.getSynchronousMutableStateMap
+import com.w2sv.filenavigator.ui.utils.extensions.toMutableStateMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class NavigatorConfiguration(
     val statusMap: UnconfirmedStateMap<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>,
@@ -49,15 +50,11 @@ class NavigatorConfiguration(
         onStateSynced: () -> Unit,
         statusMapChanged: MutableSharedFlow<Unit> = MutableSharedFlow(),
     ) : this(
-        scope = scope,
         statusMapChanged = statusMapChanged,
-        statusMap = UnconfirmedStateMap(
-            coroutineScope = scope,
-            appliedFlowMap = fileTypeRepository.fileTypeStatus,
-            getDefaultValue = {
-                fileTypeRepository.fileTypeStatus.getValue(it).getValueSynchronously()
-            },
-            makeMap = { it.getSynchronousMutableStateMap() },
+        statusMap = UnconfirmedStateMap.fromPersistedFlowMapWithSynchronousInitial(
+            persistedFlowMap = fileTypeRepository.getFileTypeStatusMap(),
+            scope = scope,
+            makeMap = { it.toMutableStateMap() },
             syncState = {
                 fileTypeRepository.saveEnumValuedMap(it)
             },
@@ -65,13 +62,10 @@ class NavigatorConfiguration(
                 statusMapChanged.emit(Unit)
             }
         ),
-        mediaFileSourceEnabledMap = UnconfirmedStateMap(
-            coroutineScope = scope,
-            appliedFlowMap = fileTypeRepository.mediaFileSourceEnabled,
-            getDefaultValue = {
-                fileTypeRepository.mediaFileSourceEnabled.getValue(it).getValueSynchronously()
-            },
-            makeMap = { it.getSynchronousMutableStateMap() },
+        mediaFileSourceEnabledMap = UnconfirmedStateMap.fromPersistedFlowMapWithSynchronousInitial(
+            persistedFlowMap = fileTypeRepository.getMediaFileSourceEnabledMap(),
+            scope = scope,
+            makeMap = { it.toMutableStateMap() },
             syncState = { fileTypeRepository.saveMap(it) }
         ),
         disableOnLowBattery = UnconfirmedStateFlow(
@@ -79,7 +73,8 @@ class NavigatorConfiguration(
             disableOnLowBattery,
             SharingStarted.Eagerly
         ),
-        onStateSynced = onStateSynced
+        onStateSynced = onStateSynced,
+        scope = scope,
     )
 
     val sortedFileTypes: SnapshotStateList<FileType> =
@@ -136,6 +131,42 @@ class NavigatorConfiguration(
 
             else -> FileTypeCheckedChangeResult.ShowSnackbar.AllFilesAccessRequired
         }
+
+    fun onStorageAccessStatusChanged(newStatus: StorageAccessStatus) {
+        when (newStatus) {
+            StorageAccessStatus.NoAccess -> setFileTypeStatuses(
+                FileType.getValues(),
+                FileType.Status.DisabledDueToNoFileAccess
+            )
+
+            StorageAccessStatus.MediaFilesOnly -> {
+                setFileTypeStatuses(
+                    FileType.NonMedia.getValues(),
+                    FileType.Status.DisabledDueToMediaAccessOnly
+                )
+
+                setFileTypeStatuses(
+                    FileType.Media.getValues(),
+                    FileType.Status.Enabled
+                )
+            }
+
+            StorageAccessStatus.AllFiles -> setFileTypeStatuses(
+                FileType.getValues(),
+                FileType.Status.Enabled
+            )
+        }
+
+        scope.launch {
+            statusMap.sync()
+        }
+    }
+
+    private fun setFileTypeStatuses(fileTypes: List<FileType>, status: FileType.Status) {
+        fileTypes.forEach {
+            statusMap[it.statusDSE] = status
+        }
+    }
 }
 
 private sealed interface FileTypeCheckedChangeResult {

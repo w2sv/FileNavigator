@@ -86,7 +86,9 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        appVM.storageAccessState.updateStatus(this)
+        appVM.storageAccessState.updateStatus(this)?.let { newStatus ->
+            navigatorVM.configuration.onStorageAccessStatusChanged(newStatus)
+        }
     }
 }
 

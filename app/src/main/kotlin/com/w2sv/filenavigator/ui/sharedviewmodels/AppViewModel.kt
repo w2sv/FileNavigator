@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.data.model.Theme
-import com.w2sv.data.storage.preferences.repositories.FileTypeRepository
 import com.w2sv.data.storage.preferences.repositories.PreferencesRepository
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.screens.Screen
@@ -23,7 +22,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
-    fileTypeRepository: FileTypeRepository
 ) :
     ViewModel() {
 
@@ -32,20 +30,8 @@ class AppViewModel @Inject constructor(
     // ==============
 
     val storageAccessState = StorageAccessState(
-        priorStatus = preferencesRepository.priorStorageAccess.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly
-        ),
-        setFileTypeStatuses = { fileTypes, status ->
-            viewModelScope.launch {
-                fileTypeRepository.setFileTypeStatuses(fileTypes, status)
-            }
-        },
-        saveStorageAccessStatus = {
-            viewModelScope.launch {
-                preferencesRepository.priorStorageAccess.save(it)
-            }
-        }
+        priorStorageAccessStatus = preferencesRepository.priorStorageAccessStatus,
+        scope = viewModelScope
     )
 
     val postNotificationsPermissionRequested =
