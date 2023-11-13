@@ -213,7 +213,7 @@ class NewMoveFileNotificationManager(
     override fun buildSummaryNotification(): Notification =
         Builder()
             .setGroupSummary(true)
-            .setContentTitle("$nActiveNotifications new navigatable files")
+            .setContentTitle(context.getString(R.string.new_navigatable_files, nActiveNotifications))
             .build()
 
     @AndroidEntryPoint

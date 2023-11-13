@@ -134,11 +134,6 @@ class NavigatorConfiguration(
 
     fun onStorageAccessStatusChanged(newStatus: StorageAccessStatus) {
         when (newStatus) {
-            StorageAccessStatus.NoAccess -> setFileTypeStatuses(
-                FileType.getValues(),
-                FileType.Status.DisabledDueToNoFileAccess
-            )
-
             StorageAccessStatus.MediaFilesOnly -> {
                 setFileTypeStatuses(
                     FileType.NonMedia.getValues(),
@@ -155,6 +150,8 @@ class NavigatorConfiguration(
                 FileType.getValues(),
                 FileType.Status.Enabled
             )
+
+            else -> return
         }
 
         scope.launch {

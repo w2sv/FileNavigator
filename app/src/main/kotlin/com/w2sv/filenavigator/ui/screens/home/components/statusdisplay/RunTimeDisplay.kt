@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
-import com.w2sv.androidutils.generic.timeDeltaFromNow
+import com.w2sv.androidutils.generic.timeDeltaToNow
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.utils.DoOnLifecycleEvent
@@ -32,7 +32,7 @@ fun RunTimeDisplay(
 ) {
     var runDuration by remember(startDateTime) {
         mutableStateOf(
-            startDateTime.timeDeltaFromNow()
+            startDateTime.timeDeltaToNow()
         )
     }
 
@@ -44,7 +44,7 @@ fun RunTimeDisplay(
 
     // Reset runDuration ON_START, i.e. on app reopening from 'Recent' etc.
     DoOnLifecycleEvent(
-        callback = { runDuration = startDateTime.timeDeltaFromNow() },
+        callback = { runDuration = startDateTime.timeDeltaToNow() },
         lifecycleEvent = Lifecycle.Event.ON_START
     )
 
