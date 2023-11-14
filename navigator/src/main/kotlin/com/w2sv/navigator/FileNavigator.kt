@@ -45,7 +45,8 @@ class FileNavigator : UnboundService() {
 
     private fun getRegisteredFileObservers(): List<FileObserver> =
         getFileObservers(
-            fileTypeEnablementMap = fileTypeRepository.getFileTypeEnablementMap().getSynchronousMap(),
+            fileTypeEnablementMap = fileTypeRepository.getFileTypeEnablementMap()
+                .getSynchronousMap(),
             mediaFileSourceEnablementMap = fileTypeRepository.getMediaFileSourceEnablementMap()
                 .getSynchronousMap(),
             contentResolver = contentResolver,

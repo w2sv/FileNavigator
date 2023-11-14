@@ -112,9 +112,9 @@ fun NavigationDrawerScreen(
         )
     }
 
-    val screen by appVM.screen.collectAsState()
-
     NavigationDrawer(drawerState) {
+        val screen by appVM.screen.collectAsState()
+
         Scaffold(
             snackbarHost = {
                 SnackbarHost(snackbarHostState) { snackbarData ->
