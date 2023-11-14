@@ -83,51 +83,47 @@ internal abstract class FileObserver(
     ): MoveFile?
 }
 
-fun emitDiscardedLog(reason: () -> String) {
+internal fun emitDiscardedLog(reason: () -> String) {
     i { "DISCARDED: ${reason()}" }
 }
 
 internal fun getFileObservers(
-    statusMap: Map<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>,
-    mediaFileSourceEnabled: Map<DataStoreEntry.UniType<Boolean>, Boolean>,
+    fileTypeEnablementMap: Map<DataStoreEntry.UniType<Boolean>, Boolean>,
+    mediaFileSourceEnablementMap: Map<DataStoreEntry.UniType<Boolean>, Boolean>,
     contentResolver: ContentResolver,
     onNewNavigatableFileListener: (MoveFile) -> Unit
-): List<FileObserver> {
-    val mediaFileObservers = FileType.Media.getValues()
-        .filterEnabled(statusMap)
-        .map { mediaType ->
-            MediaFileObserver(
-                fileType = mediaType,
-                sourceKinds = mediaType
-                    .sources
-                    .filter { source -> mediaFileSourceEnabled.getValue(source.isEnabledDSE) }
-                    .map { source -> source.kind }
-                    .toSet(),
-                contentResolver = contentResolver,
-                onNewMoveFile = onNewNavigatableFileListener
-            )
-        }
-
-    val nonMediaFileObserver =
-        FileType.NonMedia.getValues()
-            .filterEnabled(statusMap)
-            .run {
-                if (isNotEmpty()) {
-                    NonMediaFileObserver(
-                        fileTypes = this,
+): List<FileObserver> =
+    buildList {
+        addAll(
+            FileType.Media.getValues()
+                .filterEnabled(fileTypeEnablementMap)
+                .map { mediaType ->
+                    MediaFileObserver(
+                        fileType = mediaType,
+                        sourceKinds = mediaType
+                            .sources
+                            .filter { source -> mediaFileSourceEnablementMap.getValue(source.isEnabledDSE) }
+                            .map { source -> source.kind }
+                            .toSet(),
                         contentResolver = contentResolver,
                         onNewMoveFile = onNewNavigatableFileListener
                     )
-                } else {
-                    null
+                }
+        )
+        FileType.NonMedia.getValues()
+            .filterEnabled(fileTypeEnablementMap)
+            .run {
+                if (isNotEmpty()) {
+                    add(
+                        NonMediaFileObserver(
+                            fileTypes = this,
+                            contentResolver = contentResolver,
+                            onNewMoveFile = onNewNavigatableFileListener
+                        )
+                    )
                 }
             }
-
-    return buildList {
-        addAll(mediaFileObservers)
-        nonMediaFileObserver?.let(::add)
     }
-}
 
-fun <FT : FileType> Iterable<FT>.filterEnabled(statusMap: Map<DataStoreEntry.EnumValued<FileType.Status>, FileType.Status>): List<FT> =
-    filter { statusMap.getValue(it.statusDSE).isEnabled }
+private fun <FT : FileType> Iterable<FT>.filterEnabled(statusMap: Map<DataStoreEntry.UniType<Boolean>, Boolean>): List<FT> =
+    filter { statusMap.getValue(it.isEnabledDSE) }

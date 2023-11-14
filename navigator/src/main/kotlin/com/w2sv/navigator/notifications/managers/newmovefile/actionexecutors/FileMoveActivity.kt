@@ -18,6 +18,7 @@ import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.ToastArgs
+import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.data.storage.database.InsertMoveEntryUseCase
 import com.w2sv.data.storage.preferences.repositories.FileTypeRepository
 import com.w2sv.navigator.R
@@ -40,6 +41,7 @@ import javax.inject.Inject
 class FileMoveActivity : ComponentActivity() {
 
     internal enum class PreemptiveExitReason {
+        MissingManageAllFilesPermission,
         MoveMediaFileNull,
         MoveFileNotFound
     }
@@ -60,6 +62,7 @@ class FileMoveActivity : ComponentActivity() {
 
         fun preemptiveExitReason(): PreemptiveExitReason? =
             when {
+                !isExternalStorageManger() -> PreemptiveExitReason.MissingManageAllFilesPermission
                 !moveFile.mediaStoreFile.columnData.fileExists -> PreemptiveExitReason.MoveFileNotFound
                 moveMediaFile == null -> PreemptiveExitReason.MoveMediaFileNull
                 else -> null
@@ -89,7 +92,13 @@ class FileMoveActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        when (viewModel.preemptiveExitReason()) {
+        when (viewModel.preemptiveExitReason().also { i { "Preemptive exit reason: $it" } }) {
+            PreemptiveExitReason.MissingManageAllFilesPermission -> showResultToastAndFinishActivity(
+                ToastArgs(
+                    getString(R.string.couldnt_move_manage_all_files_permission_missing)
+                )
+            )
+
             PreemptiveExitReason.MoveMediaFileNull -> showResultToastAndFinishActivity(
                 ToastArgs(
                     getString(R.string.couldnt_move_file_internal_error)
@@ -140,6 +149,7 @@ class FileMoveActivity : ComponentActivity() {
                     targetFolder = targetDirectoryDocumentFile,
                     callback = object : FileCallback() {
                         override fun onCompleted(result: Any) {
+                            i { "onCompleted" }
                             viewModel
                                 .launchLastMoveDestinationSaving(targetDirectoryDocumentFile.uri)
 

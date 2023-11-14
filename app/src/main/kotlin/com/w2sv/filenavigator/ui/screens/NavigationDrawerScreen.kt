@@ -64,11 +64,11 @@ fun NavigationDrawerScreen(
             }
         )
 
-    val anyStorageAccessGranted by appVM.storageAccessState.anyAccessGranted.collectAsState()
+    val manageAllFilesPermissionGranted by appVM.manageAllFilesPermissionGranted.collectAsState()
 
     val permissionCardProperties = remember(
         key1 = postNotificationsPermissionState.status.isGranted,
-        key2 = anyStorageAccessGranted
+        key2 = manageAllFilesPermissionGranted
     ) {
         buildList {
             if (!postNotificationsPermissionState.status.isGranted) {
@@ -89,7 +89,7 @@ fun NavigationDrawerScreen(
                     )
                 )
             }
-            if (!anyStorageAccessGranted) {
+            if (!manageAllFilesPermissionGranted) {
                 add(
                     PermissionCardProperties(
                         iconRes = R.drawable.ic_folder_open_24,

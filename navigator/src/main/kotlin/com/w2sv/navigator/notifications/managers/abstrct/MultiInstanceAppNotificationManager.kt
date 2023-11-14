@@ -31,7 +31,7 @@ abstract class MultiInstanceAppNotificationManager<A : MultiInstanceAppNotificat
 
         @CallSuper
         override fun build(): Notification {
-            setGroup(notificationChannel.group)
+            setGroup(notificationChannel.id)
 
             return super.build()
         }

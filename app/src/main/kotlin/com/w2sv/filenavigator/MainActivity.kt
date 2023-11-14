@@ -15,7 +15,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.coroutines.collectFromFlow
-import com.w2sv.data.model.StorageAccessStatus
 import com.w2sv.data.model.Theme
 import com.w2sv.filenavigator.ui.screens.NavigationDrawerScreen
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
@@ -87,10 +86,8 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        appVM.storageAccessState.updateStatus(this)?.let { newStatus ->
-            navigatorVM.configuration.onStorageAccessStatusChanged(newStatus)
-
-            if (newStatus == StorageAccessStatus.NoAccess && navigatorVM.isRunning.value) {
+        appVM.updateManageAllFilesPermissionGranted().let { isGranted ->
+            if (!isGranted && navigatorVM.isRunning.value) {
                 FileNavigator.stop(this)
             }
         }

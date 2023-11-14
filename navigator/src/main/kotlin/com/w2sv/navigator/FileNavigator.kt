@@ -45,10 +45,12 @@ class FileNavigator : UnboundService() {
 
     private fun getRegisteredFileObservers(): List<FileObserver> =
         getFileObservers(
-            statusMap = fileTypeRepository.getFileTypeStatusMap().getSynchronousMap(),
-            mediaFileSourceEnabled = fileTypeRepository.getMediaFileSourceEnabledMap().getSynchronousMap(),
+            fileTypeEnablementMap = fileTypeRepository.getFileTypeEnablementMap().getSynchronousMap(),
+            mediaFileSourceEnablementMap = fileTypeRepository.getMediaFileSourceEnablementMap()
+                .getSynchronousMap(),
             contentResolver = contentResolver,
             onNewNavigatableFileListener = { moveFile ->
+                // with scope because construction of inner class BuilderArgs requires inner class scope
                 with(appNotificationsManager.newMoveFileNotificationManager) {
                     buildAndEmit(
                         BuilderArgs(

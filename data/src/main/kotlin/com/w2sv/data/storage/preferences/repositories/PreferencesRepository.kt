@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.w2sv.androidutils.datastorage.datastore.preferences.PreferencesDataStoreRepository
-import com.w2sv.data.model.StorageAccessStatus
 import com.w2sv.data.model.Theme
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
@@ -52,11 +51,6 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
     val postNotificationsPermissionRequested = getPersistedValue(
         booleanPreferencesKey("postNotificationsPermissionRequested"),
         false
-    )
-
-    val priorStorageAccessStatus = getPersistedValue(
-        intPreferencesKey("priorStorageAccessStatus"),
-        StorageAccessStatus.NoAccess
     )
 
     private object Key {

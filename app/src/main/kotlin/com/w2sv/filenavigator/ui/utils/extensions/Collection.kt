@@ -12,6 +12,10 @@ fun <K, V> Map<K, V>.toMutableStateMap(): SnapshotStateMap<K, V> =
     mutableStateMapOf<K, V>()
         .apply { putAll(this@toMutableStateMap) }
 
+fun <T> MutableMap<T, Boolean>.toggle(key: T) {
+    put(key, !getValue(key))
+}
+
 // =============
 // Iterable
 // =============

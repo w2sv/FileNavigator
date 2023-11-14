@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.data.model.Theme
 import com.w2sv.data.storage.preferences.repositories.PreferencesRepository
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.screens.Screen
-import com.w2sv.filenavigator.ui.states.StorageAccessState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,10 +29,13 @@ class AppViewModel @Inject constructor(
     // Permission-related
     // ==============
 
-    val storageAccessState = StorageAccessState(
-        priorStorageAccessStatus = preferencesRepository.priorStorageAccessStatus,
-        scope = viewModelScope
-    )
+    val manageAllFilesPermissionGranted get() = _manageAllFilesPermissionGranted.asStateFlow()
+    private val _manageAllFilesPermissionGranted = MutableStateFlow(isExternalStorageManger())
+
+    fun updateManageAllFilesPermissionGranted(): Boolean {
+        _manageAllFilesPermissionGranted.value = isExternalStorageManger()
+        return _manageAllFilesPermissionGranted.value
+    }
 
     val postNotificationsPermissionRequested =
         preferencesRepository.postNotificationsPermissionRequested.stateIn(

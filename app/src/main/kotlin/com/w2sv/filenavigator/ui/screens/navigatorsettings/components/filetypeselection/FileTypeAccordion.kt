@@ -54,14 +54,14 @@ fun FileTypeAccordion(
             DisabledText(modifier = Modifier.padding(bottom = 8.dp))
         }
 
-        val fileTypeStatus =
-            navigatorConfiguration.statusMap.getValue(fileType.statusDSE)
+        val isEnabled =
+            navigatorConfiguration.statusMap.getValue(fileType.isEnabledDSE)
 
         Header(
             fileType = fileType,
-            status = fileTypeStatus,
+            isEnabled = isEnabled,
             onCheckedChange = { checkedNew ->
-                navigatorConfiguration.onFileTypeCheckedChange(
+                navigatorConfiguration.onFileTypeCheckedChangeInput(
                     fileType = fileType,
                     checkedNew = checkedNew,
                     showSnackbar = { visuals ->
@@ -76,7 +76,7 @@ fun FileTypeAccordion(
             }
         )
         AnimatedVisibility(
-            visible = fileTypeStatus.isEnabled
+            visible = isEnabled
         ) {
             FileTypeSourcesSurface(
                 fileType = fileType,
@@ -99,7 +99,7 @@ private fun DisabledText(modifier: Modifier = Modifier) {
 @Composable
 private fun Header(
     fileType: FileType,
-    status: FileType.Status,
+    isEnabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -117,14 +117,14 @@ private fun Header(
                     painter = painterResource(id = fileType.iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(34.dp),
-                    tint = fileType.color.orDisabledIf(condition = !status.isEnabled)
+                    tint = fileType.color.orDisabledIf(condition = !isEnabled)
                 )
             }
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
                 AppFontText(
                     text = stringResource(id = fileType.titleRes),
                     fontSize = 18.sp,
-                    color = Color.Unspecified.orDisabledIf(condition = !status.isEnabled)
+                    color = Color.Unspecified.orDisabledIf(condition = !isEnabled)
                 )
             }
             Box(
@@ -135,7 +135,7 @@ private fun Header(
                 Switch(
                     colors = SwitchDefaults.colors(checkedTrackColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier.padding(8.dp),
-                    checked = status.isEnabled,
+                    checked = isEnabled,
                     onCheckedChange = onCheckedChange
                 )
             }

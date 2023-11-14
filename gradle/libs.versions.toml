@@ -1,8 +1,8 @@
 [versions]
-minSdk = '29'  # min for MediaStore.Downloads.EXTERNAL_CONTENT_URI
+minSdk = '30'  # min for MediaStore.Downloads.EXTERNAL_CONTENT_URI
 compileSdk = '34'
 
-agp = "8.2.0-rc02"
+agp = "8.2.0-rc03"
 kotlin = '1.9.10'
 java = '17'
 ksp = "1.9.10-1.0.13"
@@ -10,7 +10,7 @@ triplet-play = '3.8.4'
 
 compose-compiler = '1.5.3'
 compose-tooling = "1.5.4"
-hilt = '2.48'
+hilt = '2.48.1'
 junit = '4.13.2'
 lifecycle = "2.6.2"
 room = "2.6.0"

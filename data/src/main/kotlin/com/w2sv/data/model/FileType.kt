@@ -6,7 +6,6 @@ import androidx.annotation.ColorLong
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
@@ -25,8 +24,10 @@ sealed class FileType(
     val name: String = this::class.java.simpleName
 
     @IgnoredOnParcel
-    val statusDSE
-        get() = Status.getDSE(this)
+    val isEnabledDSE = DataStoreEntry.UniType.Impl(
+        preferencesKey = booleanPreferencesKey(name = name),
+        defaultValue = true
+    )
 
     @IgnoredOnParcel
     val sources: List<Source> = sourceKinds.map { Source(this, it) }
@@ -191,22 +192,6 @@ sealed class FileType(
         companion object {
             @JvmStatic
             fun getValues(): List<NonMedia> = listOf(PDF, Text, Archive, APK)
-        }
-    }
-
-    enum class Status {
-        Enabled,
-        Disabled,
-        DisabledDueToMediaAccessOnly;
-
-        val isEnabled: Boolean get() = this == Enabled
-
-        companion object {
-            fun getDSE(fileType: FileType): DataStoreEntry.EnumValued<Status> =
-                DataStoreEntry.EnumValued.Impl(
-                    preferencesKey = intPreferencesKey(name = fileType.name),
-                    defaultValue = Enabled
-                )
         }
     }
 

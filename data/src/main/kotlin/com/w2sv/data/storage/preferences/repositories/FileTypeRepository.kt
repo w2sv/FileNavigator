@@ -16,16 +16,10 @@ class FileTypeRepository @Inject constructor(
 ) :
     PreferencesDataStoreRepository(dataStore) {
 
-    fun getFileTypeStatusMap(): Map<DataStoreEntry.EnumValued<FileType.Status>, Flow<FileType.Status>> =
-        getEnumValuedFlowMap(FileType.getValues().map { it.statusDSE })
+    fun getFileTypeEnablementMap(): Map<DataStoreEntry.UniType<Boolean>, Flow<Boolean>> =
+        getFlowMap(FileType.getValues().map { it.isEnabledDSE })
 
-    suspend fun saveFileTypeStatuses(fileTypes: Iterable<FileType>, status: FileType.Status) {
-        fileTypes.forEach {
-            save(it.statusDSE.preferencesKey, status)
-        }
-    }
-
-    fun getMediaFileSourceEnabledMap(): Map<DataStoreEntry.UniType<Boolean>, Flow<Boolean>> =
+    fun getMediaFileSourceEnablementMap(): Map<DataStoreEntry.UniType<Boolean>, Flow<Boolean>> =
         getFlowMap(
             FileType.Media.getValues()
                 .flatMap { it.sources }

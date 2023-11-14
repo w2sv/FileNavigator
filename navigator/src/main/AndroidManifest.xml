@@ -9,16 +9,6 @@
     <!-- System Permission -> granted automatically -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <!-- SDK <= 32 -->
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-
-    <!-- SDK >= 33 -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application>
