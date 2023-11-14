@@ -25,3 +25,7 @@ fun manageExternalStoragePermissionRequired(): Boolean =
 
 fun isExternalStorageManger(): Boolean =
     !manageExternalStoragePermissionRequired() || Environment.isExternalStorageManager()
+
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
+fun postNotificationsPermissionRequired(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU

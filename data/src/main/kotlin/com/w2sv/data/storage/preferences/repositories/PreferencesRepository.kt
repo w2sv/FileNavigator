@@ -7,8 +7,6 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.w2sv.androidutils.datastorage.datastore.preferences.PreferencesDataStoreRepository
 import com.w2sv.data.model.Theme
-import kotlinx.coroutines.flow.map
-import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,29 +29,13 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
         false
     )
 
-    val navigatorStartDateTime =
-        getNullableFlow(
-            Key.navigatorStartDateTime,
-            null
-        )
-            .map {
-                it?.let { LocalDateTime.parse(it) }
-            }
-
-    suspend fun saveNavigatorStartDateTime(dateTime: LocalDateTime = LocalDateTime.now()) {
-        save(Key.navigatorStartDateTime, dateTime.toString())
-    }
-
-    // =======================
-    // Other
-    // =======================
+    val navigatorStartDateTime = getPersistedLocalDateTime(
+        stringPreferencesKey("navigatorStartDateTime"),
+        null
+    )
 
     val postNotificationsPermissionRequested = getPersistedValue(
         booleanPreferencesKey("postNotificationsPermissionRequested"),
         false
     )
-
-    private object Key {
-        val navigatorStartDateTime = stringPreferencesKey("navigatorStartDateTime")
-    }
 }

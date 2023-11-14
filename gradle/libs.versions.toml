@@ -18,7 +18,7 @@ room = "2.6.0"
 [libraries]
 
 # Owned
-androidutils = 'com.github.w2sv:AndroidUtils:0.3.24-rc3'
+androidutils = 'com.github.w2sv:AndroidUtils:0.3.25-rc2'
 kotlinutils = 'com.github.w2sv:KotlinUtils:0.0.7-rc2'
 
 # Androidx

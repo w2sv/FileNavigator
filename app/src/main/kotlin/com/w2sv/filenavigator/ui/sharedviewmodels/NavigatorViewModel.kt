@@ -34,7 +34,6 @@ class NavigatorViewModel @Inject constructor(
     val startDateTime = preferencesRepository.navigatorStartDateTime.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(),
-        null
     )
 
     val configuration = NavigatorConfiguration(

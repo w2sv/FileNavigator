@@ -1,16 +1,22 @@
 package com.w2sv.filenavigator.ui.sharedviewmodels
 
+import android.Manifest
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.w2sv.androidutils.coroutines.collectFromFlow
+import com.w2sv.androidutils.coroutines.combineStates
 import com.w2sv.androidutils.eventhandling.BackPressHandler
 import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.androidutils.permissions.hasPermission
 import com.w2sv.common.utils.isExternalStorageManger
+import com.w2sv.common.utils.postNotificationsPermissionRequired
 import com.w2sv.data.model.Theme
 import com.w2sv.data.storage.preferences.repositories.PreferencesRepository
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.screens.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,6 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
+    @ApplicationContext context: Context
 ) :
     ViewModel() {
 
@@ -32,9 +39,19 @@ class AppViewModel @Inject constructor(
     val manageAllFilesPermissionGranted get() = _manageAllFilesPermissionGranted.asStateFlow()
     private val _manageAllFilesPermissionGranted = MutableStateFlow(isExternalStorageManger())
 
-    fun updateManageAllFilesPermissionGranted(): Boolean {
-        _manageAllFilesPermissionGranted.value = isExternalStorageManger()
-        return _manageAllFilesPermissionGranted.value
+    fun updateManageAllFilesPermissionGranted(): Boolean =
+        isExternalStorageManger().also { _manageAllFilesPermissionGranted.value = it }
+
+    private val _postNotificationsPermissionGranted =
+        MutableStateFlow(
+            if (postNotificationsPermissionRequired())
+                context.hasPermission(Manifest.permission.POST_NOTIFICATIONS)
+            else
+                true
+        )
+
+    fun setPostNotificationsPermissionGranted(value: Boolean) {
+        _postNotificationsPermissionGranted.value = value
     }
 
     val postNotificationsPermissionRequested =
@@ -43,21 +60,38 @@ class AppViewModel @Inject constructor(
             SharingStarted.Eagerly,
         )
 
-    fun savePostNotificationsPermissionRequested() {
-        viewModelScope.launch {
-            preferencesRepository.postNotificationsPermissionRequested.save(true)
+    fun savePostNotificationsPermissionRequestedIfRequired() {
+        if (!postNotificationsPermissionRequested.value) {
+            viewModelScope.launch {
+                preferencesRepository.postNotificationsPermissionRequested.save(true)
+            }
         }
     }
+
+    private val allPermissionsGranted =
+        combineStates(
+            _postNotificationsPermissionGranted,
+            manageAllFilesPermissionGranted,
+        ) { f1, f2 ->
+            f1 && f2
+        }
 
     // ==============
     // Screen
     // ==============
 
     val screen get() = _screen.asStateFlow()
-    private val _screen = MutableStateFlow(Screen.Home)
+    private val _screen =
+        MutableStateFlow(if (allPermissionsGranted.value) Screen.Home else Screen.MissingPermissions)
 
     fun setScreen(screen: Screen) {
         _screen.value = screen
+    }
+
+    init {
+        viewModelScope.collectFromFlow(allPermissionsGranted) {
+            setScreen(if (it) Screen.Home else Screen.MissingPermissions)
+        }
     }
 
     // ==============

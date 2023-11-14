@@ -37,6 +37,6 @@ class FileTypeRepository @Inject constructor(
         source: FileType.Source,
         destination: Uri?
     ) {
-        save(source.lastMoveDestinationDSE.preferencesKey, destination)
+        saveStringRepresentation(source.lastMoveDestinationDSE.preferencesKey, destination)
     }
 }
