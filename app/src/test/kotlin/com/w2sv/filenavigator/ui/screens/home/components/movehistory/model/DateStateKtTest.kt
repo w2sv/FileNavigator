@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.home.components.movehistory.model
 
-import org.junit.Assert.*
-
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -29,7 +28,9 @@ class DateStateKtTest {
         val now = LocalDateTime.now()
         val dateTime = now.minusDays(2)
         val result = getDateRepresentation(dateTime, now)
-        val expected = dateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy").withZone(ZoneId.systemDefault()))
+        val expected = dateTime.format(
+            DateTimeFormatter.ofPattern("dd.MM.yyyy").withZone(ZoneId.systemDefault())
+        )
         assertEquals(expected, result)
     }
 }

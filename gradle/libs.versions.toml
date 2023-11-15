@@ -39,7 +39,7 @@ androidx-datastore-preferences = 'androidx.datastore:datastore-preferences:1.0.0
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
-androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose-tooling"}
+androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose-tooling" }
 
 # Google
 google-material = 'com.google.android.material:material:1.10.0'
