@@ -103,9 +103,10 @@ fun NavigationDrawerScreen(
 
                         Screen.NavigatorSettings -> {
                             NavigatorSettingsScreen(
+                                drawerState = drawerState,
                                 returnToHomeScreen = { appVM.setScreen(Screen.Home) },
-                                modifier = sharedModifier,
-                                snackbarLaunchScope = scope
+                                parentScope = scope,
+                                modifier = sharedModifier
                             )
                         }
                     }

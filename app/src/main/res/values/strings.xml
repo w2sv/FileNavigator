@@ -65,4 +65,5 @@
     <string name="couldn_t_find_file">Couldn\'t find file.</string>
     <string name="delete_entry">Delete entry</string>
     <string name="applied_navigator_settings">Applied navigator settings.</string>
+    <string name="changes_won_t_be_saved_if_you_leave_now">Changes won\'t be saved if you leave now.</string>
 </resources>

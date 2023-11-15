@@ -15,6 +15,7 @@ import com.w2sv.data.model.Theme
 import com.w2sv.data.storage.preferences.repositories.PreferencesRepository
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.screens.Screen
+import com.w2sv.filenavigator.ui.utils.BACK_PRESS_WINDOW_DURATION
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -128,24 +129,20 @@ class AppViewModel @Inject constructor(
     private val _exitApplication = MutableSharedFlow<Unit>()
 
     fun onBackPress(context: Context) {
-        if (screen.value == Screen.NavigatorSettings) {
-            _screen.value = Screen.Home
-        } else {
-            backPressHandler.invoke(
-                onFirstPress = {
-                    context.showToast(context.getString(R.string.tap_again_to_exit))
-                },
-                onSecondPress = {
-                    viewModelScope.launch {
-                        _exitApplication.emit(Unit)
-                    }
+        backPressHandler.invoke(
+            onFirstPress = {
+                context.showToast(context.getString(R.string.tap_again_to_exit))
+            },
+            onSecondPress = {
+                viewModelScope.launch {
+                    _exitApplication.emit(Unit)
                 }
-            )
-        }
+            }
+        )
     }
 
     private val backPressHandler = BackPressHandler(
-        viewModelScope,
-        2500L
+        coroutineScope = viewModelScope,
+        confirmationWindowDuration = BACK_PRESS_WINDOW_DURATION
     )
 }
