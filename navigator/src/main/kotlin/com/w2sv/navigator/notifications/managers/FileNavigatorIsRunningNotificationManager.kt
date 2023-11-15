@@ -31,7 +31,7 @@ class FileNavigatorIsRunningNotificationManager(
                 setStyle(
                     NotificationCompat.BigTextStyle()
                         .bigText(
-                            "You will receive a notification when a new file pertaining to your selected file types gets registered."
+                            context.getString(R.string.you_will_receive_a_notification_when_a_new_file_pertaining_to_your_selected_file_types_enters_the_file_system)
                         )
                 )
 

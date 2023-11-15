@@ -66,13 +66,22 @@ class NewMoveFileNotificationManager(
                 val requestCodeIterator = args.resources.actionRequestCodes.iterator()
 
                 addAction(getMoveFileAction(requestCodeIterator.next()))
-                args.getLastMoveDestination(args.moveFile.source)?.let {
-                    addAction(
-                        getQuickMoveAction(
-                            requestCodeIterator.next(),
-                            it
+
+                // Add quickMoveAction if lastMoveDestination present.
+                args.getLastMoveDestination(args.moveFile.source)?.let { lastMoveDestination ->
+                    // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
+                    getDocumentUriFileName(
+                        documentUri = lastMoveDestination,
+                        context = context
+                    )?.let { fileName ->
+                        addAction(
+                            getQuickMoveAction(
+                                requestCode = requestCodeIterator.next(),
+                                lastMoveDestination = lastMoveDestination,
+                                lastMoveDestinationFileName = fileName
+                            )
                         )
-                    )
+                    }
                 }
 
                 setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
@@ -171,23 +180,19 @@ class NewMoveFileNotificationManager(
 
             private fun getQuickMoveAction(
                 requestCode: Int,
-                moveDestination: Uri
+                lastMoveDestination: Uri,
+                lastMoveDestinationFileName: String
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
                     R.drawable.ic_app_logo_24,
-                    "to ${
-                        getDocumentUriFileName(
-                            moveDestination,
-                            context
-                        )?.let { "/$it" }
-                    }",
+                    "to /$lastMoveDestinationFileName",
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,
                         QuickMoveBroadcastReceiver.getIntent(
                             args.moveFile,
                             args.resources,
-                            moveDestination.also {
+                            lastMoveDestination.also {
                                 i { "MoveDestination Extra: $it" }
                             },
                             context
