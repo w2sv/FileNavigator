@@ -3,6 +3,7 @@ package com.w2sv.common.utils
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import com.anggrayudi.storage.file.child
 import com.anggrayudi.storage.file.getSimplePath
 
 /**
@@ -18,3 +19,10 @@ fun getDocumentUriPath(documentUri: Uri, context: Context): String? =
  */
 fun getDocumentUriFileName(documentUri: Uri, context: Context): String? =
     DocumentFile.fromSingleUri(context, documentUri)?.name
+
+fun DocumentFile.hasChild(
+    context: Context,
+    path: String,
+    requiresWriteAccess: Boolean = false
+): Boolean =
+    child(context, path, requiresWriteAccess) != null

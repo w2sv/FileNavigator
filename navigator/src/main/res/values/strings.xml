@@ -17,4 +17,5 @@
     <string name="couldn_t_find_move_file">Couldn\'t find file!</string>
     <string name="new_navigatable_files">%1$d new navigatable files</string>
     <string name="you_will_receive_a_notification_when_a_new_file_pertaining_to_your_selected_file_types_enters_the_file_system">You will receive a notification when a new file pertaining to your selected file types enters the file system.</string>
+    <string name="file_already_at_selected_location">File already at selected location!</string>
 </resources>

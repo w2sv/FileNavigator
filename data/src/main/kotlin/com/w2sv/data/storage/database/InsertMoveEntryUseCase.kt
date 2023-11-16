@@ -8,7 +8,6 @@ import javax.inject.Inject
 class InsertMoveEntryUseCase @Inject constructor(
     private val moveEntryDao: MoveEntryDao
 ) {
-
     suspend operator fun invoke(moveEntry: MoveEntry) {
         withContext(Dispatchers.IO) {
             moveEntryDao.insert(moveEntry)

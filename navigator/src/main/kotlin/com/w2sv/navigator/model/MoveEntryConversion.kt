@@ -11,7 +11,6 @@ fun getMoveEntry(
 ): MoveEntry =
     MoveEntry(
         fileName = moveFile.mediaStoreFile.columnData.name,
-        originalLocation = moveFile.mediaStoreFile.columnData.volumeRelativeDirPath,
         fileType = moveFile.source.fileType,
         fileSourceKind = moveFile.source.kind,
         destinationDocumentUri = destinationDocumentUri,

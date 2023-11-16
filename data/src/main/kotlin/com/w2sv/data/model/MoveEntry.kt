@@ -8,7 +8,6 @@ import java.time.LocalDateTime
 @Entity
 data class MoveEntry(
     val fileName: String,
-    val originalLocation: String,
     val fileType: FileType,
     val fileSourceKind: FileType.Source.Kind,
     val destinationDocumentUri: Uri,

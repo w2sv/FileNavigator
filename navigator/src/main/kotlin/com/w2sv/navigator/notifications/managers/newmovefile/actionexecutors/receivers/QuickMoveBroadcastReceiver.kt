@@ -12,6 +12,7 @@ import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
+import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.data.storage.database.InsertMoveEntryUseCase
 import com.w2sv.navigator.R
@@ -74,6 +75,16 @@ class QuickMoveBroadcastReceiver : BroadcastReceiver() {
 
         val moveMediaFile = moveFile.getSimpleStorageMediaFile(context)
             ?: return context.showToast(R.string.couldnt_move_file_internal_error)
+
+        // Exit if file already at selected location.
+        if (targetDirectoryDocumentFile.hasChild(
+                context = context,
+                path = moveFile.mediaStoreFile.columnData.name,
+                requiresWriteAccess = false
+            )
+        ) {
+            return context.showToast(R.string.file_already_at_selected_location)
+        }
 
         scope.launch {
             moveMediaFile.moveTo(

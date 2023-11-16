@@ -18,6 +18,7 @@ import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.ToastArgs
+import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.data.storage.database.InsertMoveEntryUseCase
 import com.w2sv.data.storage.preferences.repositories.FileTypeRepository
@@ -55,7 +56,7 @@ class FileMoveActivity : ComponentActivity() {
     ) :
         androidx.lifecycle.ViewModel() {
 
-        private val moveFile: MoveFile =
+        val moveFile: MoveFile =
             savedStateHandle[MoveFile.EXTRA]!!
 
         val moveMediaFile: MediaFile? = moveFile.getSimpleStorageMediaFile(context)
@@ -131,16 +132,26 @@ class FileMoveActivity : ComponentActivity() {
         treeUri ?: return showResultToastAndFinishActivity()
 
         // Take persistable read & write permission
-        // Required for quick move by remedying of "Failed query: java.lang.SecurityException: Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider from ProcessRecord{6fc17ee 8097:com.w2sv.filenavigator.debug/u0a753} (pid=8097, uid=10753) requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs"
+        // Required for quick move, as it remedies "Failed query: java.lang.SecurityException: Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider from ProcessRecord{6fc17ee 8097:com.w2sv.filenavigator.debug/u0a753} (pid=8097, uid=10753) requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs"
         contentResolver.takePersistableUriPermission(
             treeUri,
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         )
 
-        // Exit on unsuccessful conversion to DocumentFile
+        // Exit on unsuccessful conversion to DocumentFile.
         val targetDirectoryDocumentFile =
             DocumentFile.fromTreeUri(this, treeUri)
                 ?: return showResultToastAndFinishActivity(ToastArgs(getString(R.string.couldnt_move_file_internal_error)))
+
+        // Exit if file already at selected location.
+        if (targetDirectoryDocumentFile.hasChild(
+                context = this,
+                path = viewModel.moveFile.mediaStoreFile.columnData.name,
+                requiresWriteAccess = false
+            )
+        ) {
+            return showResultToastAndFinishActivity(ToastArgs(getString(R.string.file_already_at_selected_location)))
+        }
 
         // Move file
         viewModel.viewModelScope
