@@ -1,7 +1,9 @@
-package com.w2sv.data.storage.database
+package com.w2sv.data.storage.database.di
 
 import android.content.Context
 import androidx.room.Room
+import com.w2sv.data.storage.database.AppDatabase
+import com.w2sv.data.storage.database.dao.MoveEntryDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

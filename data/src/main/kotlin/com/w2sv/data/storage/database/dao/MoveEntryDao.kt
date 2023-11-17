@@ -1,4 +1,4 @@
-package com.w2sv.data.storage.database
+package com.w2sv.data.storage.database.dao
 
 import androidx.room.Dao
 import androidx.room.Delete

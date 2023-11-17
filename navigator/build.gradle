@@ -15,6 +15,7 @@ android {
 dependencies {
     implementation project(path: ':common')
     implementation project(path: ':data')
+    implementation project(path: ':domain')
 
     implementation libs.androidx.core
     implementation libs.androidx.activity

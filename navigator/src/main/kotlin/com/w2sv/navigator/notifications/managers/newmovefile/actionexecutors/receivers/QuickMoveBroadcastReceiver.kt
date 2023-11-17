@@ -14,7 +14,7 @@ import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
-import com.w2sv.data.storage.database.InsertMoveEntryUseCase
+import com.w2sv.domain.InsertMoveEntryUseCase
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.model.getMoveEntry

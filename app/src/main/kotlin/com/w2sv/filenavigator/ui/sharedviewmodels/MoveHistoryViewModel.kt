@@ -3,7 +3,7 @@ package com.w2sv.filenavigator.ui.sharedviewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.data.model.MoveEntry
-import com.w2sv.data.storage.database.MoveEntryDao
+import com.w2sv.data.storage.database.dao.MoveEntryDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

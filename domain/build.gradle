@@ -1,0 +1,29 @@
+plugins {
+    alias libs.plugins.library
+    alias libs.plugins.kotlin
+    alias libs.plugins.hilt
+    alias libs.plugins.ksp
+    id 'kotlin-parcelize'
+}
+
+apply from: '../modulebase.gradle'
+
+android {
+    namespace 'com.w2sv.domain'
+}
+
+dependencies {
+    implementation project(path: ':data')
+
+    implementation libs.androidutils
+    implementation libs.slimber
+
+    implementation libs.androidx.core
+
+    // Hilt
+    implementation libs.google.hilt
+    ksp libs.google.hilt.compiler
+
+    // Unit tests
+    testImplementation libs.bundles.unitTest
+}

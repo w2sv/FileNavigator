@@ -1,4 +1,4 @@
-package com.w2sv.data.storage.preferences
+package com.w2sv.data.storage.preferences.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
