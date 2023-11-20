@@ -11,7 +11,7 @@ import com.w2sv.androidutils.generic.localDateTimeFromUnixTimeStamp
 import com.w2sv.androidutils.generic.milliSecondsToNow
 import com.w2sv.common.utils.parseBoolean
 import com.w2sv.common.utils.queryNonNullMediaStoreData
-import com.w2sv.data.model.FileType
+import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.fileobservers.emitDiscardedLog
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize

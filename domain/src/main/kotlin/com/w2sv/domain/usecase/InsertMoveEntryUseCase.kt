@@ -1,17 +1,17 @@
-package com.w2sv.domain
+package com.w2sv.domain.usecase
 
-import com.w2sv.data.model.MoveEntry
-import com.w2sv.data.storage.database.dao.MoveEntryDao
+import com.w2sv.domain.interfaces.MoveEntryRepository
+import com.w2sv.domain.model.MoveEntry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class InsertMoveEntryUseCase @Inject constructor(
-    private val moveEntryDao: MoveEntryDao
+    private val moveEntryRepository: MoveEntryRepository
 ) {
     suspend operator fun invoke(moveEntry: MoveEntry) {
         withContext(Dispatchers.IO) {
-            moveEntryDao.insert(moveEntry)
+            moveEntryRepository.insert(moveEntry)
         }
     }
 }

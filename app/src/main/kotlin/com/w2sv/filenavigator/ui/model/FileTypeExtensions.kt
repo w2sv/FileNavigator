@@ -1,7 +1,7 @@
 package com.w2sv.filenavigator.ui.model
 
 import androidx.compose.ui.graphics.Color
-import com.w2sv.data.model.FileType
+import com.w2sv.domain.model.FileType
 
 /**
  * Returns previously cached Color.

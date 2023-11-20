@@ -6,8 +6,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import com.google.common.collect.EvictingQueue
-import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
-import com.w2sv.data.model.FileType
+import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.model.MediaStoreFileProvider
 import com.w2sv.navigator.model.MoveFile
@@ -88,21 +87,21 @@ internal fun emitDiscardedLog(reason: () -> String) {
 }
 
 internal fun getFileObservers(
-    fileTypeEnablementMap: Map<DataStoreEntry.UniType<Boolean>, Boolean>,
-    mediaFileSourceEnablementMap: Map<DataStoreEntry.UniType<Boolean>, Boolean>,
+    fileTypeEnablementMap: Map<FileType, Boolean>,
+    mediaFileSourceEnablementMap: Map<FileType.Source, Boolean>,
     contentResolver: ContentResolver,
     onNewNavigatableFileListener: (MoveFile) -> Unit
 ): List<FileObserver> =
     buildList {
         addAll(
             FileType.Media.getValues()
-                .filterEnabled(fileTypeEnablementMap)
+                .filter { fileTypeEnablementMap.getValue(it) }
                 .map { mediaType ->
                     MediaFileObserver(
                         fileType = mediaType,
                         sourceKinds = mediaType
                             .sources
-                            .filter { source -> mediaFileSourceEnablementMap.getValue(source.isEnabledDSE) }
+                            .filter { source -> mediaFileSourceEnablementMap.getValue(source) }
                             .map { source -> source.kind }
                             .toSet(),
                         contentResolver = contentResolver,
@@ -111,7 +110,7 @@ internal fun getFileObservers(
                 }
         )
         FileType.NonMedia.getValues()
-            .filterEnabled(fileTypeEnablementMap)
+            .filter { fileTypeEnablementMap.getValue(it) }
             .run {
                 if (isNotEmpty()) {
                     add(
@@ -124,6 +123,3 @@ internal fun getFileObservers(
                 }
             }
     }
-
-private fun <FT : FileType> Iterable<FT>.filterEnabled(statusMap: Map<DataStoreEntry.UniType<Boolean>, Boolean>): List<FT> =
-    filter { statusMap.getValue(it.isEnabledDSE) }

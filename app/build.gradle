@@ -54,9 +54,6 @@ android {
             signingConfig signingConfigs.release
         }
     }
-//    sourceSets {
-//        test.java.srcDirs += ['src/test/kotlin']
-//    }
     buildFeatures {
         compose true
         buildConfig true
@@ -80,6 +77,9 @@ android {
         // Doesn't fix "warning: The following options were not recognized by any processor: '[dagger.fastInit, dagger.hilt.android.internal.disableAndroidSuperclassValidation, dagger.hilt.android.internal.projectType, dagger.hilt.internal.useAggregatingRootProcessor]'"
         enableAggregatingTask = true
     }
+    ksp {
+        arg('room.schemaLocation', "$projectDir/schemas")
+    }
     // Store .apk's as "{versionName}.apk"
     applicationVariants.configureEach { variant ->
         variant.outputs.configureEach {
@@ -97,6 +97,7 @@ play {
 
 dependencies {
     implementation project(path: ':data')
+    implementation project(path: ':domain')
     implementation project(path: ':common')
     implementation project(path: ':navigator')
 

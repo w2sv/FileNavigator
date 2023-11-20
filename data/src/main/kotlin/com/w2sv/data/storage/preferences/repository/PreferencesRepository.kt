@@ -1,4 +1,4 @@
-package com.w2sv.data.storage.preferences.repositories
+package com.w2sv.data.storage.preferences.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.w2sv.androidutils.datastorage.datastore.preferences.PreferencesDataStoreRepository
-import com.w2sv.data.model.Theme
+import com.w2sv.domain.model.Theme
 import javax.inject.Inject
 import javax.inject.Singleton
 

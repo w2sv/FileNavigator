@@ -2,7 +2,7 @@ package com.w2sv.navigator.fileobservers
 
 import android.content.ContentResolver
 import com.anggrayudi.storage.media.MediaType
-import com.w2sv.data.model.FileType
+import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.model.MoveFile
 import slimber.log.i

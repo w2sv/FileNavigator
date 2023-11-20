@@ -1,4 +1,4 @@
-package com.w2sv.data.storage.database.typeconverters
+package com.w2sv.data.storage.database.typeconverter
 
 import android.net.Uri
 import androidx.room.TypeConverter

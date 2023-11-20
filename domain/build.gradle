@@ -13,10 +13,9 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':data')
-
     implementation libs.androidutils
     implementation libs.slimber
+    implementation libs.simplestorage
 
     implementation libs.androidx.core
 

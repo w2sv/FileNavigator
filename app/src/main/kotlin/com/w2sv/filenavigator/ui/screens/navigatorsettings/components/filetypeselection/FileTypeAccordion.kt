@@ -25,7 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.w2sv.data.model.FileType
+import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
@@ -55,7 +55,7 @@ fun FileTypeAccordion(
         }
 
         val isEnabled =
-            navigatorConfiguration.statusMap.getValue(fileType.isEnabledDSE)
+            navigatorConfiguration.statusMap.getValue(fileType)
 
         Header(
             fileType = fileType,

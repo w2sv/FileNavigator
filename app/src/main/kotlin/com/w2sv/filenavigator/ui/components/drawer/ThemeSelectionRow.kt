@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.w2sv.data.model.Theme
+import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.theme.AppTheme
@@ -45,8 +45,8 @@ import com.w2sv.filenavigator.ui.utils.toEasing
 
 @Composable
 fun ThemeSelectionRow(
-    selected: Theme,
-    onSelected: (Theme) -> Unit,
+    selected: com.w2sv.domain.model.Theme,
+    onSelected: (com.w2sv.domain.model.Theme) -> Unit,
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween
 ) {
@@ -58,12 +58,12 @@ fun ThemeSelectionRow(
         remember {
             listOf(
                 ThemeIndicatorProperties(
-                    theme = Theme.Light,
+                    theme = com.w2sv.domain.model.Theme.Light,
                     label = R.string.light,
                     buttonColor = ButtonColor.Uniform(Color.White)
                 ),
                 ThemeIndicatorProperties(
-                    theme = Theme.DeviceDefault,
+                    theme = com.w2sv.domain.model.Theme.DeviceDefault,
                     label = R.string._default,
                     buttonColor = ButtonColor.Gradient(
                         Brush.linearGradient(
@@ -73,7 +73,7 @@ fun ThemeSelectionRow(
                     )
                 ),
                 ThemeIndicatorProperties(
-                    theme = Theme.Dark,
+                    theme = com.w2sv.domain.model.Theme.Dark,
                     label = R.string.dark,
                     buttonColor = ButtonColor.Uniform(Color.Black)
                 )
@@ -90,7 +90,7 @@ fun ThemeSelectionRow(
 }
 
 private data class ThemeIndicatorProperties(
-    val theme: Theme,
+    val theme: com.w2sv.domain.model.Theme,
     @StringRes val label: Int,
     val buttonColor: ButtonColor
 )
@@ -201,7 +201,7 @@ private fun ThemeButton(
 fun ThemeButtonPrev() {
     AppTheme {
         val properties = ThemeIndicatorProperties(
-            theme = Theme.Dark,
+            theme = com.w2sv.domain.model.Theme.Dark,
             label = R.string.dark,
             buttonColor = ButtonColor.Uniform(Color.Black)
         )

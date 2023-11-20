@@ -13,7 +13,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.common.utils.getDocumentUriFileName
-import com.w2sv.data.model.FileType
+import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.notifications.AppNotificationChannel
@@ -98,16 +98,13 @@ class NewMoveFileNotificationManager(
             private fun getMoveFileTitle(): String =
                 when (val fileType = args.moveFile.source.fileType) {
                     is FileType.Media -> {
-                        when (args.moveFile.mediaStoreFile.columnData.getSourceKind()) {
-                            FileType.Source.Kind.Recording -> context.getString(com.w2sv.data.R.string.recording)
-                            FileType.Source.Kind.Screenshot -> context.getString(
-                                com.w2sv.data.R.string.screenshot
-                            )
+                        when (val sourceKind = args.moveFile.mediaStoreFile.columnData.getSourceKind()) {
+                            FileType.Source.Kind.Recording, FileType.Source.Kind.Screenshot -> context.getString(sourceKind.labelRes)
 
                             FileType.Source.Kind.Camera -> context.getString(
                                 when (args.moveFile.source.fileType) {
-                                    FileType.Media.Image -> com.w2sv.data.R.string.photo
-                                    FileType.Media.Video -> com.w2sv.data.R.string.video
+                                    FileType.Image -> com.w2sv.domain.R.string.photo
+                                    FileType.Video -> com.w2sv.domain.R.string.video
                                     else -> throw Error()
                                 }
                             )

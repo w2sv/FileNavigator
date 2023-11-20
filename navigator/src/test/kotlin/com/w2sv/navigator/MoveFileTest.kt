@@ -1,6 +1,6 @@
 package com.w2sv.navigator
 
-import com.w2sv.data.model.FileType
+import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.utils.TestInstancesProvider
 import com.w2sv.test.testParceling

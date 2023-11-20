@@ -3,13 +3,12 @@ package com.w2sv.filenavigator.ui.states
 import android.content.Context
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.w2sv.androidutils.coroutines.collectFromFlow
-import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.androidutils.datastorage.datastore.preferences.PersistedValue
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlow
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
-import com.w2sv.data.model.FileType
-import com.w2sv.data.storage.preferences.repositories.FileTypeRepository
+import com.w2sv.data.storage.preferences.repository.FileTypeRepository
+import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.SnackbarKind
@@ -23,11 +22,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 
-typealias BooleanUnconfirmedStateMap = UnconfirmedStateMap<DataStoreEntry.UniType<Boolean>, Boolean>
-
 class NavigatorConfiguration(
-    val statusMap: BooleanUnconfirmedStateMap,
-    val mediaFileSourceEnabledMap: BooleanUnconfirmedStateMap,
+    val statusMap: UnconfirmedStateMap<FileType, Boolean>,
+    val mediaFileSourceEnabledMap: UnconfirmedStateMap<FileType.Source, Boolean>,
     val disableOnLowBattery: UnconfirmedStateFlow<Boolean>,
     onStateSynced: () -> Unit,
     private val scope: CoroutineScope,
@@ -54,7 +51,7 @@ class NavigatorConfiguration(
             scope = scope,
             makeMap = { it.toMutableStateMap() },
             syncState = {
-                fileTypeRepository.saveMap(it)
+                fileTypeRepository.saveFileTypeEnablementMap(it)
             },
             onStateSynced = {
                 statusMapChanged.emit(Unit)
@@ -64,7 +61,7 @@ class NavigatorConfiguration(
             persistedFlowMap = fileTypeRepository.getMediaFileSourceEnablementMap(),
             scope = scope,
             makeMap = { it.toMutableStateMap() },
-            syncState = { fileTypeRepository.saveMap(it) }
+            syncState = { fileTypeRepository.saveMediaFileSourceEnablementMap(it) }
         ),
         disableOnLowBattery = UnconfirmedStateFlow(
             scope,
@@ -83,7 +80,7 @@ class NavigatorConfiguration(
             }
 
     private fun getFirstDisabledFileType(): FileType? =
-        sortedFileTypes.getFirstDisabled { !statusMap.persistedStateFlowMap.getValue(it.isEnabledDSE).value }
+        sortedFileTypes.getFirstDisabled { !statusMap.persistedStateFlowMap.getValue(it).value }
 
     val firstDisabledFileType get() = _firstDisabledFileType.asStateFlow()
     private val _firstDisabledFileType = MutableStateFlow(getFirstDisabledFileType())
@@ -102,7 +99,7 @@ class NavigatorConfiguration(
         context: Context
     ) {
         when (val result = getFileTypeCheckedChangeResult(checkedNew)) {
-            is FileTypeCheckedChangeResult.ToggleStatus -> statusMap.toggle(fileType.isEnabledDSE)
+            is FileTypeCheckedChangeResult.ToggleStatus -> statusMap.toggle(fileType)
             is FileTypeCheckedChangeResult.ShowSnackbar -> showSnackbar(
                 result.getAppSnackbarVisuals(
                     context
@@ -139,11 +136,11 @@ private sealed interface FileTypeCheckedChangeResult {
     }
 }
 
-private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(fileTypeStatuses: Map<DataStoreEntry.UniType<Boolean>, Boolean>) {
+private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(fileTypeStatuses: Map<FileType, Boolean>) {
     sortWith(
         compareByDescending<FileType> {
             fileTypeStatuses.getValue(
-                it.isEnabledDSE
+                it
             )
         }
             .thenBy(FileType.getValues()::indexOf)

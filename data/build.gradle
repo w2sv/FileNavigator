@@ -14,6 +14,7 @@ android {
 
 dependencies {
     implementation project(path: ':common')
+    implementation project(path: ':domain')
 
     implementation libs.androidx.core
     api libs.androidx.datastore.preferences

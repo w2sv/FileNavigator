@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.services.isServiceRunning
-import com.w2sv.data.storage.preferences.repositories.FileTypeRepository
-import com.w2sv.data.storage.preferences.repositories.PreferencesRepository
+import com.w2sv.data.storage.preferences.repository.FileTypeRepository
+import com.w2sv.data.storage.preferences.repository.PreferencesRepository
 import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel

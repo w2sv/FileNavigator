@@ -2,8 +2,7 @@ package com.w2sv.filenavigator.ui.sharedviewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.w2sv.data.model.MoveEntry
-import com.w2sv.data.storage.database.dao.MoveEntryDao
+import com.w2sv.domain.interfaces.MoveEntryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -13,20 +12,20 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MoveHistoryViewModel @Inject constructor(private val moveEntryDao: MoveEntryDao) :
+class MoveHistoryViewModel @Inject constructor(private val moveEntryRepository: MoveEntryRepository) :
     ViewModel() {
 
-    val moveHistory = moveEntryDao
-        .loadAllInDescendingOrder()
+    val moveHistory = moveEntryRepository
+        .getAllInDescendingOrder()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun launchHistoryDeletion(): Job =
         viewModelScope.launch(Dispatchers.IO) {
-            moveEntryDao.deleteAll()
+            moveEntryRepository.deleteAll()
         }
 
-    fun launchEntryDeletion(entry: MoveEntry): Job =
+    fun launchEntryDeletion(entry: com.w2sv.domain.model.MoveEntry): Job =
         viewModelScope.launch(Dispatchers.IO) {
-            moveEntryDao.delete(entry)
+            moveEntryRepository.delete(entry)
         }
 }

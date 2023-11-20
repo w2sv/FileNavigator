@@ -3,15 +3,15 @@ package com.w2sv.data.storage.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.w2sv.data.model.MoveEntry
 import com.w2sv.data.storage.database.dao.MoveEntryDao
-import com.w2sv.data.storage.database.typeconverters.FileTypeConverter
-import com.w2sv.data.storage.database.typeconverters.LocalDateTimeConverter
-import com.w2sv.data.storage.database.typeconverters.UriConverter
+import com.w2sv.data.storage.database.model.MoveEntryEntity
+import com.w2sv.data.storage.database.typeconverter.FileTypeConverter
+import com.w2sv.data.storage.database.typeconverter.LocalDateTimeConverter
+import com.w2sv.data.storage.database.typeconverter.UriConverter
 
 @Database(
-    entities = [MoveEntry::class],
-    version = 1
+    entities = [MoveEntryEntity::class],
+    version = 2
 )
 @TypeConverters(
     LocalDateTimeConverter::class,

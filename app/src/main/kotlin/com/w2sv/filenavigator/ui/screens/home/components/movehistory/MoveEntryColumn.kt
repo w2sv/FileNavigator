@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.common.utils.getDocumentUriPath
-import com.w2sv.data.model.MoveEntry
+import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
@@ -52,8 +52,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MoveEntryColumn(
-    history: List<MoveEntry>,
-    launchEntryDeletion: (MoveEntry) -> Job,
+    history: List<com.w2sv.domain.model.MoveEntry>,
+    launchEntryDeletion: (com.w2sv.domain.model.MoveEntry) -> Job,
     modifier: Modifier = Modifier
 ) {
     val dateState: DateState = remember(history.size) {
@@ -88,8 +88,8 @@ fun MoveEntryColumn(
 
 @Composable
 private fun MoveEntryRow(
-    moveEntry: MoveEntry,
-    launchEntryDeletion: (MoveEntry) -> Job,
+    moveEntry: com.w2sv.domain.model.MoveEntry,
+    launchEntryDeletion: (com.w2sv.domain.model.MoveEntry) -> Job,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,

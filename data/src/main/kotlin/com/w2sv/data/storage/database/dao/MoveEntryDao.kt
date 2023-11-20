@@ -4,20 +4,20 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.w2sv.data.model.MoveEntry
+import com.w2sv.data.storage.database.model.MoveEntryEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MoveEntryDao {
-    @Query("SELECT * FROM MoveEntry ORDER BY dateTime DESC")
-    fun loadAllInDescendingOrder(): Flow<List<MoveEntry>>
+    @Query("SELECT * FROM MoveEntryEntity ORDER BY dateTime DESC")
+    fun loadAllInDescendingOrder(): Flow<List<MoveEntryEntity>>
 
     @Insert
-    fun insert(entry: MoveEntry)
+    fun insert(entry: MoveEntryEntity)
 
-    @Query("DELETE FROM MoveEntry")
+    @Query("DELETE FROM MoveEntryEntity")
     fun deleteAll()
 
     @Delete
-    fun delete(entry: MoveEntry)
+    fun delete(entry: MoveEntryEntity)
 }

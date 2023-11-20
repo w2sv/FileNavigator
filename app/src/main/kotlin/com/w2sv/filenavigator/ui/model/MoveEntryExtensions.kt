@@ -5,7 +5,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.child
-import com.w2sv.data.model.MoveEntry
+import com.w2sv.domain.model.MoveEntry
 
 interface MovedFileMediaUriRetrievalResult {
     class Success(val mediaUri: Uri) : MovedFileMediaUriRetrievalResult
@@ -13,7 +13,7 @@ interface MovedFileMediaUriRetrievalResult {
 }
 
 //TODO: test
-fun MoveEntry.getMovedFileMediaUri(context: Context): MovedFileMediaUriRetrievalResult {
+fun com.w2sv.domain.model.MoveEntry.getMovedFileMediaUri(context: Context): MovedFileMediaUriRetrievalResult {
     val documentFile = DocumentFile
         .fromSingleUri(context, destinationDocumentUri)!!
         .child(context, fileName, false) ?: return MovedFileMediaUriRetrievalResult.CouldntFindFile

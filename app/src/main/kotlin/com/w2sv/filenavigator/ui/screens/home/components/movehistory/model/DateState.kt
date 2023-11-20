@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.w2sv.data.model.MoveEntry
+import com.w2sv.domain.model.MoveEntry
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -17,7 +17,7 @@ class DateState {
     private val indexToDate = mutableStateMapOf<Int, String?>()
     private var lastComputedIndexToDate: Pair<Int, String>? by mutableStateOf(null)
 
-    fun getScopeTitle(i: Int, moveEntry: MoveEntry): String? =
+    fun getScopeTitle(i: Int, moveEntry: com.w2sv.domain.model.MoveEntry): String? =
         indexToDate.getOrPut(i) {
             if (lastComputedIndexToDate == null || i > lastComputedIndexToDate!!.first) {
                 getDateRepresentation(
