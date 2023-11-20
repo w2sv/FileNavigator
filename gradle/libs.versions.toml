@@ -58,6 +58,10 @@ androidx-junit = 'androidx.test.ext:junit:1.1.5'
 roboelectric = "org.robolectric:robolectric:4.10.3"
 rules = 'androidx.test:rules:1.5.0'
 
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
+
 [bundles]
 unitTest = ["junit", "androidx-junit", "roboelectric"]
 
@@ -69,3 +73,5 @@ hilt = { id = 'com.google.dagger.hilt.android', version.ref = 'hilt' }
 play = { id = 'com.github.triplet.play', version.ref = 'triplet-play' }
 ksp = { id = "com.google.devtools.ksp", version.ref = 'ksp' }
 room = {id = "androidx.room", version.ref = 'room'}
+
+filenavigator-library = { id = "filenavigator.library", version = "unspecified" }
