@@ -3,6 +3,7 @@ package com.w2sv.filenavigator.ui.sharedviewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.domain.interfaces.MoveEntryRepository
+import com.w2sv.domain.model.MoveEntry
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,7 +25,7 @@ class MoveHistoryViewModel @Inject constructor(private val moveEntryRepository: 
             moveEntryRepository.deleteAll()
         }
 
-    fun launchEntryDeletion(entry: com.w2sv.domain.model.MoveEntry): Job =
+    fun launchEntryDeletion(entry: MoveEntry): Job =
         viewModelScope.launch(Dispatchers.IO) {
             moveEntryRepository.delete(entry)
         }

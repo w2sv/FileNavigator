@@ -4,9 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.w2sv.data.storage.database.AppDatabase
 import com.w2sv.data.storage.database.dao.MoveEntryDao
-import com.w2sv.data.storage.database.repository.DatabaseMoveEntryRepository
-import com.w2sv.domain.interfaces.MoveEntryRepository
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,11 +18,13 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun appDatabase(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "app-database"
-        )
+        Room
+            .databaseBuilder(
+                context,
+                AppDatabase::class.java,
+                "app-database"
+            )
+            .fallbackToDestructiveMigration()
             .build()
 
     @Provides

@@ -31,8 +31,8 @@ androidx-compose-material3 = 'androidx.compose.material3:material3:1.1.2'
 androidx-compose-ui = { module = 'androidx.compose.ui:ui', version.ref = 'compose-tooling' }
 androidx-compose-ui-tooling-preview = { module = 'androidx.compose.ui:ui-tooling-preview', version.ref = 'compose-tooling' }
 androidx-compose-ui-tooling = { module = 'androidx.compose.ui:ui-tooling', version.ref = 'compose-tooling' }
-androidx-compose-activity = 'androidx.activity:activity-compose:1.8.0'
-androidx-activity = 'androidx.activity:activity-ktx:1.8.0'
+androidx-compose-activity = 'androidx.activity:activity-compose:1.8.1'
+androidx-activity = 'androidx.activity:activity-ktx:1.8.1'
 androidx-compose-viewmodel = { module = 'androidx.lifecycle:lifecycle-viewmodel-compose', version.ref = 'lifecycle' }
 androidx-viewmodel = { module = 'androidx.lifecycle:lifecycle-viewmodel-ktx', version.ref = 'lifecycle' }
 androidx-datastore-preferences = 'androidx.datastore:datastore-preferences:1.0.0'
@@ -68,3 +68,4 @@ kotlin = { id = 'org.jetbrains.kotlin.android', version.ref = 'kotlin' }
 hilt = { id = 'com.google.dagger.hilt.android', version.ref = 'hilt' }
 play = { id = 'com.github.triplet.play', version.ref = 'triplet-play' }
 ksp = { id = "com.google.devtools.ksp", version.ref = 'ksp' }
+room = {id = "androidx.room", version.ref = 'room'}
