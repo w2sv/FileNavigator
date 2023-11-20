@@ -122,9 +122,9 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
-
     implementation(libs.androidx.compose.activity)
     implementation(libs.androidx.compose.viewmodel)
+    implementation(libs.androidx.lifecycle.compose)
 
     // Room
     implementation(libs.androidx.room.runtime)

@@ -8,11 +8,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.collectAsState
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.domain.model.Theme
@@ -45,11 +45,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme(
-                useDynamicTheme = appVM.useDynamicColors.collectAsState().value,
-                useDarkTheme = when (appVM.theme.collectAsState().value) {
-                    com.w2sv.domain.model.Theme.Dark -> true
-                    com.w2sv.domain.model.Theme.Light -> false
-                    com.w2sv.domain.model.Theme.DeviceDefault -> isSystemInDarkTheme()
+                useDynamicTheme = appVM.useDynamicColors.collectAsStateWithLifecycle().value,
+                useDarkTheme = when (appVM.theme.collectAsStateWithLifecycle().value) {
+                    Theme.Dark -> true
+                    Theme.Light -> false
+                    Theme.DeviceDefault -> isSystemInDarkTheme()
                 }
             ) {
                 NavigationDrawerScreen()

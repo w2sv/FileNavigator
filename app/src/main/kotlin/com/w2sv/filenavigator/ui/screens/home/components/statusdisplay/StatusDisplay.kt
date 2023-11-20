@@ -19,7 +19,6 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -31,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
@@ -48,8 +48,8 @@ fun StatusDisplay(
     appVM: AppViewModel = viewModel(),
     context: Context = LocalContext.current
 ) {
-    val navigatorIsRunning by navigatorStateVM.isRunning.collectAsState()
-    val startDateTime by navigatorStateVM.startDateTime.collectAsState()
+    val navigatorIsRunning by navigatorStateVM.isRunning.collectAsStateWithLifecycle()
+    val startDateTime by navigatorStateVM.startDateTime.collectAsStateWithLifecycle()
 
     val statusTextProperties by remember {
         derivedStateOf {

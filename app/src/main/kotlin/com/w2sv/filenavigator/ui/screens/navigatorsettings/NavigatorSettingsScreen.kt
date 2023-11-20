@@ -33,7 +33,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -45,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
@@ -82,7 +82,7 @@ fun NavigatorSettingsScreen(
         }
     }
 
-    val configurationHasChanged by navigatorVM.configuration.statesDissimilar.collectAsState()
+    val configurationHasChanged by navigatorVM.configuration.statesDissimilar.collectAsStateWithLifecycle()
 
     val backPressHandler = rememberBackPressHandler(scope)
 
@@ -242,7 +242,7 @@ private fun MoreColumn(
         SwitchItemRow(
             iconRes = R.drawable.ic_battery_low_24,
             textRes = R.string.disable_on_low_battery,
-            checked = disableOnLowBattery.collectAsState().value,
+            checked = disableOnLowBattery.collectAsStateWithLifecycle().value,
             onCheckedChange = { disableOnLowBattery.value = it },
             modifier = Modifier
                 .fillMaxWidth()

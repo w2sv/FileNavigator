@@ -11,11 +11,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
@@ -38,7 +38,7 @@ fun FileTypeSelectionColumn(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val firstDisabledFileType by navigatorConfiguration.firstDisabledFileType.collectAsState()
+        val firstDisabledFileType by navigatorConfiguration.firstDisabledFileType.collectAsStateWithLifecycle()
 
         LazyColumn(state = rememberLazyListState()) {
             items(
