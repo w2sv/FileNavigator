@@ -15,7 +15,7 @@
 
   <br>
 
-  <img src="https://img.shields.io/github/license/w2sv/FileNavigator">
+  <img src="https://img.shields.io/github/license/w2sv/WiFi-Widget">
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/w2sv/FileNavigator">
   <a href="https://github.com/w2sv/FileNavigator/actions/workflows/workflow.yaml"><img alt="Check & Assemble Debug" src="https://github.com/w2sv/FileNavigator/actions/workflows/workflow.yaml/badge.svg"></a>
 
@@ -24,7 +24,7 @@
 ------
 
 <p align="center">
-<b> Android FOSS app providing a configurable widget for the monitoring of your WiFi connection details. Built with Jetpack Compose.</b>
+<b>The missing link between Android and a well-structured file system.</b>
 </p>
 
 ------
@@ -33,14 +33,18 @@
 
 <p align="center">
 <a href="https://play.google.com/store/apps/details?id=com.w2sv.filenavigator"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" height="80"/></a>
-
-[//]: # (<a href="https://f-droid.org/packages/com.w2sv.filenavigator/"><img alt="Download from F-Droid" src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="80"/></a>)
 <a href="https://github.com/w2sv/FileNavigator/releases/latest"><img alt="Get it on GitHub" src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" height="80"/></a>
 </p>
 
 <h2 align="center">Screenshots</h2>
 
-| ![](https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/1.jpg) | ![](https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/2.jpg) | ![](https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/3.jpg) |
+<table>
+  <tr>
+    <td><img src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/1.jpg" alt="Screenshot 1"></td>
+    <td><img src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/2.jpg" alt="Screenshot 2"></td>
+    <td><img src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/3.jpg" alt="Screenshot 3"></td>
+  </tr>
+</table>
 
 <h2 align="center">Donations</h2>
 <br>
@@ -51,5 +55,5 @@
 <h2 align="center">License</h2>
 
 <p align="center">
-<a href="https://github.com/w2sv/FileNavigator/blob/main/LICENSE">GPL-3.0 License</a> © <a href="https://github.com/w2sv">w2sv</a> [2022 - Present]
+<a href="https://github.com/w2sv/FileNavigator/blob/main/LICENSE.md">GPL-3.0 License</a> © <a href="https://github.com/w2sv">w2sv</a> [2023 - Present]
 </p>
