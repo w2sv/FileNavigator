@@ -1,11 +1,13 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.application)
     alias(libs.plugins.play)
     alias(libs.plugins.kotlin)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.filenavigator.hilt)
+    alias(libs.plugins.filenavigator.room)
     id("kotlin-parcelize")
 }
 
@@ -28,23 +30,21 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-//    signingConfigs {
-//        create("release") {
-//            rootProject.file("keystore.properties").let { file ->
-//                if (file.exists()) {
-//                    val keystoreProperties = Properties()
-//                    keystoreProperties.load(FileInputStream(file))
-//
-//                    storeFile = rootProject.file("keys.jks")
-//                    storePassword = keystoreProperties["storePassword"] as String
-//                    keyAlias = keystoreProperties["keyAlias"] as String
-//                    keyPassword = keystoreProperties["keyPassword"] as String
-//                } else {
-//                    println("WARNING: Failed to create release signing configuration; ${file.path} not present")
-//                }
-//            }
-//        }
-//    }
+    signingConfigs {
+        create("release") {
+            rootProject.file("keystore.properties").let { file ->
+                if (file.exists()) {
+                    val keystoreProperties = Properties()
+                    keystoreProperties.load(FileInputStream(file))
+
+                    storeFile = rootProject.file("keys.jks")
+                    storePassword = keystoreProperties["storePassword"] as String
+                    keyAlias = keystoreProperties["keyAlias"] as String
+                    keyPassword = keystoreProperties["keyPassword"] as String
+                }
+            }
+        }
+    }
 
     buildTypes {
         getByName("debug") {
@@ -54,7 +54,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-//            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -74,7 +74,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = libs.versions.java.get().toString()
+        jvmTarget = libs.versions.java.get()
     }
 
     compileOptions {
@@ -94,17 +94,17 @@ android {
 }
 
 // https://github.com/Triple-T/gradle-play-publisher
-//configure<PlayExtension> {
-//    serviceAccountCredentials.set(file("../service-account-key.json"))
-//    defaultToAppBundles.set(true)
-//    artifactDir.set(file("build/outputs/bundle/release"))
-//}
+play {
+    serviceAccountCredentials.set(file("../service-account-key.json"))
+    defaultToAppBundles.set(true)
+    artifactDir.set(file("build/outputs/bundle/release"))
+}
 
 dependencies {
-    implementation(project(":data"))
-    implementation(project(":domain"))
-    implementation(project(":common"))
-    implementation(project(":navigator"))
+    implementation(projects.data)
+    implementation(projects.domain)
+    implementation(projects.common)
+    implementation(projects.navigator)
 
     implementation(libs.androidutils)
     implementation(libs.kotlinutils)
@@ -125,15 +125,6 @@ dependencies {
     implementation(libs.androidx.compose.activity)
     implementation(libs.androidx.compose.viewmodel)
     implementation(libs.androidx.lifecycle.compose)
-
-    // Room
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
-
-    // Hilt
-    implementation(libs.google.hilt)
-    ksp(libs.google.hilt.compiler)
 
     // Other
     implementation(libs.slimber)

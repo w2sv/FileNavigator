@@ -3,9 +3,10 @@ package com.w2sv.data.storage.preferences.repository
 import android.net.Uri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
 import com.w2sv.androidutils.datastorage.datastore.preferences.PreferencesDataStoreRepository
-import com.w2sv.data.storage.preferences.model.isEnabledDSE
-import com.w2sv.data.storage.preferences.model.lastMoveDestinationDSE
 import com.w2sv.domain.model.FileType
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -55,3 +56,24 @@ class FileTypeRepository @Inject constructor(
         saveStringRepresentation(source.lastMoveDestinationDSE.preferencesKey, destination)
     }
 }
+
+private val FileType.isEnabledDSE
+    get() = DataStoreEntry.UniType.Impl(
+        preferencesKey = booleanPreferencesKey(name = name),
+        defaultValue = true
+    )
+
+private val FileType.Source.isEnabledDSE
+    get() = DataStoreEntry.UniType.Impl(  // TODO: Remove for NonMedia
+        booleanPreferencesKey(getPreferencesKeyContent("IS_ENABLED")),
+        true
+    )
+
+private val FileType.Source.lastMoveDestinationDSE
+    get() = DataStoreEntry.UriValued.Impl(
+        stringPreferencesKey(getPreferencesKeyContent("LAST_MOVE_DESTINATION")),
+        null
+    )
+
+private fun FileType.Source.getPreferencesKeyContent(keySuffix: String): String =
+    "${fileType.name}.$kind.$keySuffix"

@@ -22,6 +22,7 @@ kotlin {
 dependencies {
     implementation(libs.android.gradlePlugin)
     implementation(libs.kotlin.gradlePlugin)
+    implementation(libs.ksp.gradlePlugin)
 }
 
 gradlePlugin {
@@ -29,6 +30,16 @@ gradlePlugin {
         register("library") {
             id = "filenavigator.library"
             implementationClass = "LibraryPlugin"
+        }
+
+        register("hilt") {
+            id = "filenavigator.hilt"
+            implementationClass = "HiltPlugin"
+        }
+
+        register("room") {
+            id = "filenavigator.room"
+            implementationClass = "RoomPlugin"
         }
     }
 }

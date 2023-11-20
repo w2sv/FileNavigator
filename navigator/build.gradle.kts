@@ -1,14 +1,13 @@
 plugins {
     alias(libs.plugins.filenavigator.library)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.filenavigator.hilt)
     id("kotlin-parcelize")
 }
 
 dependencies {
-    implementation(project(":common"))
-    implementation(project(":data"))
-    implementation(project(":domain"))
+    implementation(projects.data)
+    implementation(projects.domain)
+    implementation(projects.common)
 
     implementation(libs.androidx.core)
     implementation(libs.androidx.activity)
@@ -20,13 +19,10 @@ dependencies {
 
     implementation(libs.google.guava)
 
-    implementation(libs.google.hilt)
-    ksp(libs.google.hilt.compiler)
-
     implementation(libs.simplestorage)
 
     // ---------------
     // Test
 
-    testImplementation(project(":test"))
+    testImplementation(projects.test)
 }
