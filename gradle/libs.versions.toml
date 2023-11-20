@@ -60,7 +60,6 @@ rules = 'androidx.test:rules:1.5.0'
 
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 
 [bundles]
 unitTest = ["junit", "androidx-junit", "roboelectric"]

@@ -1,0 +1,64 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "1f8c0a3376f24d6de466a84a83d6a565",
+    "entities": [
+      {
+        "tableName": "MoveEntry",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fileName` TEXT NOT NULL, `originalLocation` TEXT NOT NULL, `fileType` TEXT NOT NULL, `fileSourceKind` TEXT NOT NULL, `destinationDocumentUri` TEXT NOT NULL, `dateTime` TEXT NOT NULL, PRIMARY KEY(`dateTime`))",
+        "fields": [
+          {
+            "fieldPath": "fileName",
+            "columnName": "fileName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originalLocation",
+            "columnName": "originalLocation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fileType",
+            "columnName": "fileType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fileSourceKind",
+            "columnName": "fileSourceKind",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "destinationDocumentUri",
+            "columnName": "destinationDocumentUri",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dateTime",
+            "columnName": "dateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "dateTime"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1f8c0a3376f24d6de466a84a83d6a565')"
+    ]
+  }
+}
