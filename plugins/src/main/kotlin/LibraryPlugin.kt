@@ -28,7 +28,7 @@ class LibraryPlugin : Plugin<Project> {
             }
             extensions.configure<KotlinProjectExtension> {
                 jvmToolchain {
-                    languageVersion.set(JavaLanguageVersion.of(libs.findConvertedVersion("java")))
+                    languageVersion.set(JavaLanguageVersion.of(libs.findVersionInt("java")))
                 }
             }
             extensions.configure<BaseExtension> {
@@ -38,30 +38,16 @@ class LibraryPlugin : Plugin<Project> {
                     targetCompatibility = JavaVersion.VERSION_17
                 }
                 defaultConfig {
-                    multiDexEnabled = true
-                    minSdk = libs.findConvertedVersion("minSdk")
-                    targetSdk = libs.findConvertedVersion("compileSdk")
+                    minSdk = libs.findVersionInt("minSdk")
+                    targetSdk = libs.findVersionInt("compileSdk")
                 }
-                compileSdkVersion(libs.findConvertedVersion("compileSdk"))
+                compileSdkVersion(libs.findVersionInt("compileSdk"))
                 testOptions {
                     unitTests.isReturnDefaultValues = true
                     animationsDisabled = true
                     unitTests.isIncludeAndroidResources = true
                 }
             }
-
-//            dependencies {
-//                add("testImplementation", kotlin("test"))
-//                add("testImplementation", project(":core:testing"))
-//                add("androidTestImplementation", kotlin("test"))
-//                add("androidTestImplementation", project(":core:testing"))
-//            }
         }
     }
 }
-
-private fun VersionCatalog.findConvertedVersion(alias: String): Int =
-    findVersion(alias).get().requiredVersion.toInt()
-
-private fun Project.getVersionCatalog(catalogName: String = "libs"): VersionCatalog =
-    extensions.getByType(VersionCatalogsExtension::class.java).named(catalogName)
