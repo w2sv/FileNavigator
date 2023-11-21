@@ -13,7 +13,7 @@ interface MovedFileMediaUriRetrievalResult {
 }
 
 //TODO: test
-fun com.w2sv.domain.model.MoveEntry.getMovedFileMediaUri(context: Context): MovedFileMediaUriRetrievalResult {
+fun MoveEntry.getMovedFileMediaUri(context: Context): MovedFileMediaUriRetrievalResult {
     val documentFile = DocumentFile
         .fromSingleUri(context, destinationDocumentUri)!!
         .child(context, fileName, false) ?: return MovedFileMediaUriRetrievalResult.CouldntFindFile
