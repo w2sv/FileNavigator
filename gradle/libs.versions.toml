@@ -60,7 +60,7 @@ simplestorage = "com.anggrayudi:storage:1.5.5"
 # Testing
 junit = { module = 'junit:junit', version.ref = 'junit' }
 androidx-junit = 'androidx.test.ext:junit:1.1.5'
-roboelectric = "org.robolectric:robolectric:4.10.3"
+roboelectric = "org.robolectric:robolectric:4.11.1"
 rules = 'androidx.test:rules:1.5.0'
 
 # Plugins
