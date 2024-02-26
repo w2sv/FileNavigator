@@ -11,7 +11,7 @@ class FileTypeTest {
 
     @Test
     fun testParceling() {
-        com.w2sv.domain.model.FileType.Media.Image.testParceling()
-        com.w2sv.domain.model.FileType.NonMedia.PDF.testParceling()
+        FileType.Image.testParceling()
+        FileType.PDF.testParceling()
     }
 }

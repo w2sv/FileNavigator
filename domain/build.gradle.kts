@@ -13,4 +13,5 @@ dependencies {
 
     // Unit tests
     testImplementation(libs.bundles.unitTest)
+    testImplementation(projects.test)
 }

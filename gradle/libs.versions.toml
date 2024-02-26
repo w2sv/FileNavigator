@@ -38,7 +38,7 @@ androidx-compose-viewmodel = { module = 'androidx.lifecycle:lifecycle-viewmodel-
 androidx-viewmodel = { module = 'androidx.lifecycle:lifecycle-viewmodel-ktx', version.ref = 'lifecycle' }
 androidx-datastore-preferences = 'androidx.datastore:datastore-preferences:1.0.0'
 androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose-tooling" }
-androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle"}
+androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 
 #.Room
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }

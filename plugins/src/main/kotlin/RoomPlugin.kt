@@ -9,7 +9,7 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.process.CommandLineArgumentProvider
 import java.io.File
 
-class RoomPlugin: Plugin<Project> {
+class RoomPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply(libs.findPluginId("ksp"))

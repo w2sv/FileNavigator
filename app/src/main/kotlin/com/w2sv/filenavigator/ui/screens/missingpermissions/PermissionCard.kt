@@ -36,7 +36,7 @@ private fun PermissionCardPrev() {
             PermissionCardProperties(
                 iconRes = R.drawable.ic_notifications_24,
                 textRes = R.string.post_notifications_permission_rational,
-                onGrantButtonClick = {  }
+                onGrantButtonClick = { }
             )
         )
     }

@@ -98,8 +98,11 @@ class NewMoveFileNotificationManager(
             private fun getMoveFileTitle(): String =
                 when (val fileType = args.moveFile.source.fileType) {
                     is FileType.Media -> {
-                        when (val sourceKind = args.moveFile.mediaStoreFile.columnData.getSourceKind()) {
-                            FileType.Source.Kind.Recording, FileType.Source.Kind.Screenshot -> context.getString(sourceKind.labelRes)
+                        when (val sourceKind =
+                            args.moveFile.mediaStoreFile.columnData.getSourceKind()) {
+                            FileType.Source.Kind.Recording, FileType.Source.Kind.Screenshot -> context.getString(
+                                sourceKind.labelRes
+                            )
 
                             FileType.Source.Kind.Camera -> context.getString(
                                 when (args.moveFile.source.fileType) {
