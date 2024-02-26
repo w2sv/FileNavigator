@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.components
+package com.w2sv.filenavigator.ui.designsystem
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -45,6 +45,7 @@ data class AppSnackbarVisuals(
 sealed class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
     @Immutable
     data object Success : SnackbarKind(Icons.Outlined.Check, AppColor.success)
+
     @Immutable
     data object Error : SnackbarKind(Icons.Outlined.Warning, AppColor.error)
 }

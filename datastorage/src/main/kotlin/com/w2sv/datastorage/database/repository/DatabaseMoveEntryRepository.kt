@@ -2,8 +2,8 @@ package com.w2sv.datastorage.database.repository
 
 import com.w2sv.datastorage.database.dao.MoveEntryDao
 import com.w2sv.datastorage.database.model.MoveEntryEntity
-import com.w2sv.domain.repository.MoveEntryRepository
 import com.w2sv.domain.model.MoveEntry
+import com.w2sv.domain.repository.MoveEntryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

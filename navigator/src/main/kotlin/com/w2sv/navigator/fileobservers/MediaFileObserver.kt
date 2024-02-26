@@ -22,8 +22,8 @@ internal class MediaFileObserver(
         i { "Initialized ${fileType.name} MediaFileObserver with sourceKinds: ${sourceKinds.map { it.name }}" }
     }
 
-    override val logIdentifier: String
-        get() = "${this.javaClass.simpleName}.${fileType.name}"
+    override fun getLogIdentifier(): String =
+        "${this.javaClass.simpleName}.${fileType.name}"
 
     override fun getMoveFileIfMatching(
         mediaStoreFile: MediaStoreFile

@@ -5,9 +5,6 @@ VERSION := $(shell ./get-version.sh)
 ktlint:
 	@ktlint --color
 
-ktlint-format:
-	@ktlint --format --color
-
 clean:
 	@echo "Clean"
 	@./gradlew clean
@@ -38,7 +35,7 @@ build-and-publish-to-test-track:
 	@./gradlew publishBundle --track internal --console verbose
 
 build-and-publish:
-	@echo -e "Retrieved Version: ${VERSION}\n\n Hit enter if you have\n 1. Incremented the version\n 2. Updated the release notes\n 3. Pushed the latest changes\n\n Otherwise cancel target now."
+	@echo -e "Retrieved Version: ${VERSION}\n\n Hit enter if you have\n 1. Incremented the version\n 2. Updated the release notes\n\n Otherwise cancel target now."
 	@read
 
 	@$(MAKE) clean  # Required as 'publishBundle' publishes all .aab's in specified archive dir
@@ -46,10 +43,15 @@ build-and-publish:
 	@$(MAKE) build-aab
 	@$(MAKE) build-apk
 
+	@git add .; git commit -m '${VERSION}'; git push;
+
 	@$(MAKE) create-gh-release
-	@echo "Publish Bundle"
-	@./gradlew publishBundle --track production --console verbose --no-configuration-cache  # usage of configuration cache throws error for task
+	@$(MAKE) publish-bundle
 
 create-gh-release:
 	@echo "Create GitHub Release"
 	@gh release create $(VERSION) app/build/outputs/apk/release/$(VERSION).apk -F app/src/main/play/release-notes/en-US/production.txt
+
+publish-bundle:
+	@echo "Publish Bundle"
+	@./gradlew publishBundle --track production --console verbose

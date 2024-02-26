@@ -1,7 +1,7 @@
 package com.w2sv.domain.usecase
 
-import com.w2sv.domain.repository.MoveEntryRepository
 import com.w2sv.domain.model.MoveEntry
+import com.w2sv.domain.repository.MoveEntryRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

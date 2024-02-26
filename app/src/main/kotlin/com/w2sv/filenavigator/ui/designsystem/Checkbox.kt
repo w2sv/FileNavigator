@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.components
+package com.w2sv.filenavigator.ui.designsystem
 
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors

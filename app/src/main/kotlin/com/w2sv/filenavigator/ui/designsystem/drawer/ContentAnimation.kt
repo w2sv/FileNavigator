@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.components.drawer
+package com.w2sv.filenavigator.ui.designsystem.drawer
 
 import android.annotation.SuppressLint
 import androidx.compose.material3.DrawerDefaults

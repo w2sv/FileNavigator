@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.components.drawer
+package com.w2sv.filenavigator.ui.designsystem.drawer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import com.google.common.collect.EvictingQueue
+import com.w2sv.androidutils.generic.milliSecondsTo
 import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.model.MediaStoreFileProvider
@@ -22,14 +23,14 @@ internal abstract class FileObserver(
 
     private val mediaStoreFileProvider: MediaStoreFileProvider = MediaStoreFileProvider()
 
-    protected abstract val logIdentifier: String
+    protected abstract fun getLogIdentifier(): String
 
     override fun deliverSelfNotifications(): Boolean = false
 
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
 
-        i { "$logIdentifier onChange | Uri: $uri" }
+        i { "${getLogIdentifier()} onChange | Uri: $uri" }
 
         uri ?: return
 
@@ -40,7 +41,7 @@ internal abstract class FileObserver(
             is MediaStoreFileProvider.Result.Success -> {
                 when {
                     latestCutCandidate?.matches(
-                        PasteCandidate(uri, changeObservationDateTime),
+                        CutPasteCandidate(uri, changeObservationDateTime),
                         500
                     ) == true -> {
                         cache.add(result.mediaStoreFile)
@@ -66,7 +67,7 @@ internal abstract class FileObserver(
 
             else -> {
                 if (result is MediaStoreFileProvider.Result.CouldntFetchMediaStoreColumnData) {
-                    latestCutCandidate = CutCandidate(uri, changeObservationDateTime)
+                    latestCutCandidate = CutPasteCandidate(uri, changeObservationDateTime)
                 }
             }
         }
@@ -75,11 +76,17 @@ internal abstract class FileObserver(
     private val cache =
         EvictingQueue.create<MediaStoreFile>(5)
 
-    private var latestCutCandidate: CutCandidate? = null
+    private var latestCutCandidate: CutPasteCandidate? = null
 
     protected abstract fun getMoveFileIfMatching(
         mediaStoreFile: MediaStoreFile
     ): MoveFile?
+}
+
+private data class CutPasteCandidate(val uri: Uri, val changeObservationDateTime: LocalDateTime) {
+
+    fun matches(other: CutPasteCandidate, timeThreshold: Int): Boolean =
+        uri != other.uri && changeObservationDateTime.milliSecondsTo(other.changeObservationDateTime) < timeThreshold
 }
 
 internal fun emitDiscardedLog(reason: () -> String) {

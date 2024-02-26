@@ -5,17 +5,22 @@
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-
-    <!-- System Permission -> granted automatically -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- System Permissions -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <application>
         <service
             android:name="com.w2sv.navigator.FileNavigator"
-            android:foregroundServiceType="specialUse" />
+            android:foregroundServiceType="specialUse">
+
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="A service that registers new files entering the file system and emits respective notifications, via which the user can move those new files to a chosen location." />
+        </service>
 
         <receiver
             android:name="com.w2sv.navigator.PowerSaveModeChangedReceiver"

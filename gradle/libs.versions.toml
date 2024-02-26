@@ -1,17 +1,17 @@
 [versions]
-minSdk = '30'  # min for MediaStore.Downloads.EXTERNAL_CONTENT_URI
-compileSdk = '34'
+minSdk = "30"  # min for MediaStore.Downloads.EXTERNAL_CONTENT_URI
+compileSdk = "34"
 
 agp = "8.3.0-beta02"
-kotlin = '1.9.22'
-java = '17'
+kotlin = "1.9.22"
+java = "17"
 ksp = "1.9.22-1.0.17"
-triplet-play = '3.9.0'
+triplet-play = "3.9.0"
 
-compose-compiler = '1.5.8'
+compose-compiler = "1.5.8"
 compose-tooling = "1.6.2"
-hilt = '2.50'
-junit = '4.13.2'
+hilt = "2.50"
+junit = "4.13.2"
 lifecycle = "2.7.0"
 room = "2.6.1"
 compose-lint-checks = "1.3.1"
@@ -20,23 +20,23 @@ kotlinxCollectionsImmutable = "0.3.7"
 [libraries]
 
 # Owned
-androidutils = 'com.github.w2sv:AndroidUtils:0.3.27-rc5'
-kotlinutils = 'com.github.w2sv:KotlinUtils:0.0.7-rc2'
+androidutils = "com.github.w2sv:AndroidUtils:0.3.27-rc5"
+kotlinutils = "com.github.w2sv:KotlinUtils:0.0.7-rc2"
 
 # Androidx
-androidx-appcompat = 'androidx.appcompat:appcompat:1.6.1'
+androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
 androidx-core = "androidx.core:core-ktx:1.12.0"
-androidx-splashscreen = 'androidx.core:core-splashscreen:1.0.1'
-androidx-lifecycle-runtime = { module = 'androidx.lifecycle:lifecycle-runtime-ktx', version.ref = 'lifecycle' }
-androidx-compose-material3 = 'androidx.compose.material3:material3:1.2.0'
-androidx-compose-ui = { module = 'androidx.compose.ui:ui', version.ref = 'compose-tooling' }
-androidx-compose-ui-tooling-preview = { module = 'androidx.compose.ui:ui-tooling-preview', version.ref = 'compose-tooling' }
-androidx-compose-ui-tooling = { module = 'androidx.compose.ui:ui-tooling', version.ref = 'compose-tooling' }
-androidx-compose-activity = 'androidx.activity:activity-compose:1.8.2'
-androidx-activity = 'androidx.activity:activity-ktx:1.8.2'
-androidx-compose-viewmodel = { module = 'androidx.lifecycle:lifecycle-viewmodel-compose', version.ref = 'lifecycle' }
-androidx-viewmodel = { module = 'androidx.lifecycle:lifecycle-viewmodel-ktx', version.ref = 'lifecycle' }
-androidx-datastore-preferences = 'androidx.datastore:datastore-preferences:1.0.0'
+androidx-splashscreen = "androidx.core:core-splashscreen:1.0.1"
+androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-compose-material3 = "androidx.compose.material3:material3:1.2.0"
+androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose-tooling" }
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-tooling" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-tooling" }
+androidx-compose-activity = "androidx.activity:activity-compose:1.8.2"
+androidx-activity = "androidx.activity:activity-ktx:1.8.2"
+androidx-compose-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+androidx-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-datastore-preferences = "androidx.datastore:datastore-preferences:1.0.0"
 androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose-tooling" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 
@@ -46,25 +46,24 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 # Google
-google-material = 'com.google.android.material:material:1.11.0'
-google-guava = "com.google.guava:guava:32.0.1-jre"
+google-guava = "com.google.guava:guava:32.1.3-jre"
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.34.0"
 
 # .Hilt
-google-hilt = { module = 'com.google.dagger:hilt-android', version.ref = 'hilt' }
-google-hilt-compiler = { module = 'com.google.dagger:hilt-android-compiler', version.ref = 'hilt' }
+google-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+google-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 
 # Other
-slimber = 'com.github.PaulWoitaschek:Slimber:2.0.0'
+slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
 simplestorage = "com.anggrayudi:storage:1.5.5"
 compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "compose-lint-checks" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 
 # Testing
-junit = { module = 'junit:junit', version.ref = 'junit' }
-androidx-junit = 'androidx.test.ext:junit:1.1.5'
-roboelectric = "org.robolectric:robolectric:4.10.3"
-rules = 'androidx.test:rules:1.5.0'
+junit = { module = "junit:junit", version.ref = "junit" }
+androidx-junit = "androidx.test.ext:junit:1.1.5"
+roboelectric = "org.robolectric:robolectric:4.11.1"
+rules = "androidx.test:rules:1.5.0"
 
 # Plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -75,13 +74,12 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 unitTest = ["junit", "androidx-junit", "roboelectric"]
 
 [plugins]
-application = { id = 'com.android.application', version.ref = 'agp' }
-library = { id = 'com.android.library', version.ref = 'agp' }
-kotlin = { id = 'org.jetbrains.kotlin.android', version.ref = 'kotlin' }
-hilt = { id = 'com.google.dagger.hilt.android', version.ref = 'hilt' }
-play = { id = 'com.github.triplet.play', version.ref = 'triplet-play' }
-ksp = { id = "com.google.devtools.ksp", version.ref = 'ksp' }
-#room = {id = "androidx.room", version.ref = 'room'}
+application = { id = "com.android.application", version.ref = "agp" }
+library = { id = "com.android.library", version.ref = "agp" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+play = { id = "com.github.triplet.play", version.ref = "triplet-play" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 # Plugins defined by the project
 filenavigator-library = { id = "filenavigator.library", version = "unspecified" }

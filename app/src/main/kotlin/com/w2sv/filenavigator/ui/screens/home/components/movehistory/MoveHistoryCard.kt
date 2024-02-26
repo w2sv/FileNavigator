@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.DialogButton
+import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
 import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
 import kotlinx.collections.immutable.toImmutableList

@@ -2,8 +2,8 @@ package com.w2sv.filenavigator.ui.sharedviewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.w2sv.domain.repository.MoveEntryRepository
 import com.w2sv.domain.model.MoveEntry
+import com.w2sv.domain.repository.MoveEntryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

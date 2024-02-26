@@ -1,8 +1,6 @@
-package com.w2sv.filenavigator.ui.components.drawer
+package com.w2sv.filenavigator.ui.designsystem.drawer
 
-import android.os.Build
 import android.view.animation.OvershootInterpolator
-import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateDp

@@ -49,11 +49,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
-import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
-import com.w2sv.filenavigator.ui.components.RightAligned
-import com.w2sv.filenavigator.ui.components.SnackbarKind
-import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
+import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
+import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
+import com.w2sv.filenavigator.ui.designsystem.RightAligned
+import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
+import com.w2sv.filenavigator.ui.designsystem.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeSelectionColumn
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor

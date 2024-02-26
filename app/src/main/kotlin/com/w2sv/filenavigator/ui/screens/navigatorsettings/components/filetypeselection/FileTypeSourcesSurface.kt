@@ -25,11 +25,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppCheckbox
-import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
-import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
-import com.w2sv.filenavigator.ui.components.SnackbarKind
-import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
+import com.w2sv.filenavigator.ui.designsystem.AppCheckbox
+import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
+import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
+import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
+import com.w2sv.filenavigator.ui.designsystem.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue

@@ -1,1 +1,3 @@
-Initial release 🚀
+- Performance improvements
+- UI improvements
+- Fix lagging upon move history entry click

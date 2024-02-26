@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.components.drawer
+package com.w2sv.filenavigator.ui.designsystem.drawer
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -36,7 +36,7 @@ import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.dynamicColorsSupported
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.RightAligned
+import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 
 private object AppUrl {

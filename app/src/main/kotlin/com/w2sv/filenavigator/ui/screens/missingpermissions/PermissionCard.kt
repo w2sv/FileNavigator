@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.DialogButton
+import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
 import com.w2sv.filenavigator.ui.utils.styledTextResource
