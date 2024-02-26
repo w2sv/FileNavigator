@@ -20,7 +20,7 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.ToastArgs
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
-import com.w2sv.data.storage.preferences.repository.NavigatorRepository
+import com.w2sv.domain.repository.NavigatorRepository
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile

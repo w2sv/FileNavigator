@@ -103,7 +103,7 @@ play {
 }
 
 dependencies {
-    implementation(projects.data)
+    implementation(projects.datastorage)
     implementation(projects.domain)
     implementation(projects.common)
     implementation(projects.navigator)

@@ -6,8 +6,8 @@ import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlow
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
-import com.w2sv.data.storage.preferences.repository.NavigatorRepository
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.repository.NavigatorRepository
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.SnackbarKind

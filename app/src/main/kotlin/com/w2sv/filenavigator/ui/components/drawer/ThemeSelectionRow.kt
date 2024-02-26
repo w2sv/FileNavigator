@@ -206,6 +206,3 @@ private fun ThemeButton(
 }
 
 private const val BORDER_ANIMATION_DURATION = 500
-
-@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
-val dynamicColorsSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S

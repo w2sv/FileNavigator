@@ -11,7 +11,7 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.androidutils.permissions.hasPermission
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.postNotificationsPermissionRequired
-import com.w2sv.data.storage.preferences.repository.PreferencesRepository
+import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.screens.Screen
 import com.w2sv.filenavigator.ui.utils.BACK_PRESS_WINDOW_DURATION

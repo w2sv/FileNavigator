@@ -7,7 +7,7 @@ import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.data.storage.preferences.repository.NavigatorRepository
+import com.w2sv.domain.repository.NavigatorRepository
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
 import com.w2sv.navigator.notifications.managers.AppNotificationsManager

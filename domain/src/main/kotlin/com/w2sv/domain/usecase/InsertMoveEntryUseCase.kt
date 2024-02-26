@@ -1,6 +1,6 @@
 package com.w2sv.domain.usecase
 
-import com.w2sv.domain.interfaces.MoveEntryRepository
+import com.w2sv.domain.repository.MoveEntryRepository
 import com.w2sv.domain.model.MoveEntry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
