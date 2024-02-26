@@ -13,6 +13,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,11 +23,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
-import com.w2sv.filenavigator.ui.components.styledTextResource
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
+import com.w2sv.filenavigator.ui.utils.styledTextResource
 
 @Preview
 @Composable
@@ -36,7 +36,7 @@ private fun PermissionCardPrev() {
             PermissionCardProperties(
                 iconRes = R.drawable.ic_notifications_24,
                 textRes = R.string.post_notifications_permission_rational,
-                onGrantButtonClick = { /*TODO*/ }
+                onGrantButtonClick = {  }
             )
         )
     }
@@ -71,7 +71,7 @@ fun PermissionCard(
                 modifier = Modifier.size(28.dp)
             )
             Spacer(modifier = Modifier.height(12.dp))
-            AppFontText(
+            Text(
                 text = styledTextResource(id = properties.textRes),
                 textAlign = TextAlign.Center
             )

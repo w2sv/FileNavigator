@@ -3,6 +3,7 @@ package com.w2sv.filenavigator.ui.screens.home.components.statusdisplay
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import com.w2sv.androidutils.generic.timeDeltaToNow
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.utils.DoOnLifecycleEvent
 import kotlinx.coroutines.delay
 import java.time.Duration
@@ -52,11 +52,11 @@ fun RunTimeDisplay(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AppFontText(
+        Text(
             text = stringResource(R.string.running_for),
             fontSize = fontSize,
         )
-        AppFontText(
+        Text(
             text = runDuration.getDayUntilSecondsRepresentation(),
             fontSize = fontSize,
             fontWeight = FontWeight.SemiBold

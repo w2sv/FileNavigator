@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -17,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import slimber.log.i
@@ -31,7 +31,7 @@ fun FileTypeSelectionColumn(
     Column(
         modifier = modifier
     ) {
-        AppFontText(
+        Text(
             text = stringResource(id = R.string.file_types),
             style = MaterialTheme.typography.headlineMedium
         )

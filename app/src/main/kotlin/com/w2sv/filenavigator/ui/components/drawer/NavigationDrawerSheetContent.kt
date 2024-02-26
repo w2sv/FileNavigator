@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,7 +34,6 @@ import com.w2sv.androidutils.generic.appPlayStoreUrl
 import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.RightAligned
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 
@@ -147,7 +147,7 @@ private fun ColumnScope.SubHeader(
     @StringRes titleRes: Int,
     modifier: Modifier = Modifier,
 ) {
-    AppFontText(
+    Text(
         text = stringResource(id = titleRes),
         modifier = modifier
             .padding(vertical = 4.dp)
@@ -187,7 +187,7 @@ private fun Item(
             tint = MaterialTheme.colorScheme.primary,
         )
 
-        AppFontText(
+        Text(
             text = stringResource(id = item.labelRes),
             modifier = Modifier.padding(start = 16.dp),
             fontSize = 16.sp,

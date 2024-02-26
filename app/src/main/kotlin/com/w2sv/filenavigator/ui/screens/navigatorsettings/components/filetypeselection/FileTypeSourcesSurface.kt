@@ -13,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -25,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppCheckbox
-import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.SnackbarKind
@@ -93,7 +93,7 @@ private fun SourceRow(
         }
         // Label
         Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
-            AppFontText(
+            Text(
                 text = stringResource(id = source.kind.labelRes),
                 color = MaterialTheme.colorScheme.onSurface
                     .orDisabledIf(condition = !isEnabled)

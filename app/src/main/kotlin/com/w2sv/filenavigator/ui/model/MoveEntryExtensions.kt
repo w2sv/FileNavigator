@@ -8,7 +8,7 @@ import com.anggrayudi.storage.file.child
 import com.w2sv.domain.model.MoveEntry
 
 interface MovedFileMediaUriRetrievalResult {
-    class Success(val mediaUri: Uri) : MovedFileMediaUriRetrievalResult
+    data class Success(val mediaUri: Uri) : MovedFileMediaUriRetrievalResult
     data object CouldntFindFile : MovedFileMediaUriRetrievalResult
 }
 

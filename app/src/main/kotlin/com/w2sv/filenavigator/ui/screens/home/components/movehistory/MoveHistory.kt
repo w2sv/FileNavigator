@@ -17,6 +17,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -32,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
 import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
@@ -76,7 +76,7 @@ fun MoveHistory(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                AppFontText(
+                Text(
                     text = stringResource(R.string.history),
                     style = MaterialTheme.typography.headlineMedium,
                 )
@@ -132,7 +132,7 @@ private fun HistoryDeletionConfirmationDialog(closeDialog: () -> Unit, onConfirm
             DialogButton(text = stringResource(id = R.string.no), onClick = closeDialog)
         },
         text = {
-            AppFontText(
+            Text(
                 text = stringResource(R.string.delete_move_history),
                 textAlign = TextAlign.Center
             )
@@ -160,7 +160,7 @@ private fun NoHistoryPlaceHolder(modifier: Modifier = Modifier) {
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(12.dp))
-        AppFontText(
+        Text(
             text = stringResource(R.string.navigated_files_will_appear_here),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

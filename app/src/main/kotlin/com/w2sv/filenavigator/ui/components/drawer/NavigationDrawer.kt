@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -25,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppFontText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -64,9 +64,9 @@ private fun Sheet(
         ) {
             AppLogoWCircularBackground()
             Spacer(modifier = Modifier.height(18.dp))
-            AppFontText(text = stringResource(id = R.string.version).format(BuildConfig.VERSION_NAME))
+            Text(text = stringResource(id = R.string.version).format(BuildConfig.VERSION_NAME))
             Spacer(modifier = Modifier.height(12.dp))
-            AppFontText(text = stringResource(R.string.copyright, LocalDate.now().year))
+            Text(text = stringResource(R.string.copyright, LocalDate.now().year))
             HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 12.dp))
             content()
         }

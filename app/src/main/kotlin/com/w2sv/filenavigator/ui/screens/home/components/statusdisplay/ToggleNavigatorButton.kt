@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
@@ -24,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.bounceOnClickAnimation
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.toEasing
@@ -77,7 +77,7 @@ internal fun ToggleNavigatorButton(
                     modifier = Modifier.size(32.dp),
                     tint = it.color
                 )
-                AppFontText(
+                Text(
                     text = stringResource(id = it.labelRes),
                     fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.onBackground

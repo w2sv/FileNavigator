@@ -12,6 +12,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarVisuals
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -58,7 +59,7 @@ fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
                 TextButton(
                     onClick = action.callback,
                 ) {
-                    AppFontText(text = action.label, color = MaterialTheme.colorScheme.primary)
+                    Text(text = action.label, color = MaterialTheme.colorScheme.primary)
                 }
             }
         },
@@ -69,7 +70,7 @@ fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
                 Icon(imageVector = kind.icon, contentDescription = null, tint = kind.iconTint)
                 Spacer(modifier = Modifier.width(10.dp))
             }
-            AppFontText(text = visuals.message)
+            Text(text = visuals.message)
         }
     }
 }

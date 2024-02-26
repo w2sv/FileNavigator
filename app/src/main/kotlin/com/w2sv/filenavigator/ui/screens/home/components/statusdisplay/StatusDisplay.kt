@@ -18,6 +18,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -33,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.screens.Screen
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
@@ -89,12 +89,12 @@ fun StatusDisplay(
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                AppFontText(
+                Text(
                     text = stringResource(R.string.navigator_status),
                     style = MaterialTheme.typography.headlineMedium
                 )
                 Spacer(modifier = Modifier.width(14.dp))
-                AppFontText(
+                Text(
                     text = stringResource(id = statusTextProperties.textRes),
                     fontSize = 20.sp,
                     color = statusTextProperties.color

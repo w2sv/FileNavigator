@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.SnackbarAction
@@ -67,7 +67,7 @@ fun MoveEntryColumn(
         itemsIndexed(history, key = { i, _ -> i }) { i, moveEntry ->
             Column {
                 dateState.getScopeTitle(i, moveEntry)?.let { scopeTitle ->
-                    AppFontText(
+                    Text(
                         text = scopeTitle,
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -169,7 +169,7 @@ private fun MoveEntryRow(
 
 @Composable
 private fun MoveEntryRowText(text: String, modifier: Modifier = Modifier) {
-    AppFontText(
+    Text(
         text = text,
         overflow = TextOverflow.Ellipsis,
         fontSize = 14.sp,

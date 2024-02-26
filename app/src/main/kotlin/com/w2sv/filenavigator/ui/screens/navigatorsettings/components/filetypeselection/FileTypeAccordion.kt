@@ -15,6 +15,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -27,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
@@ -88,7 +88,7 @@ fun FileTypeAccordion(
 
 @Composable
 private fun DisabledText(modifier: Modifier = Modifier) {
-    AppFontText(
+    Text(
         text = stringResource(R.string.disabled),
         fontSize = 16.sp,
         color = AppColor.disabled,
@@ -121,7 +121,7 @@ private fun Header(
                 )
             }
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
-                AppFontText(
+                Text(
                     text = stringResource(id = fileType.titleRes),
                     fontSize = 18.sp,
                     color = Color.Unspecified.orDisabledIf(condition = !isEnabled)
