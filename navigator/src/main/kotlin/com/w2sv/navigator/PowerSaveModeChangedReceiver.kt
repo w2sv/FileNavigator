@@ -6,10 +6,15 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.PowerManager
 import com.w2sv.androidutils.services.UnboundService
-import com.w2sv.common.utils.powerSaveModeActivated
+import dagger.hilt.android.AndroidEntryPoint
 import slimber.log.i
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PowerSaveModeChangedReceiver : BroadcastReceiver() {
+
+    @Inject
+    lateinit var powerManager: PowerManager
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action != PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) return
@@ -17,10 +22,9 @@ class PowerSaveModeChangedReceiver : BroadcastReceiver() {
         i { "Received intent $intent" }
 
         context?.run {
-            when (powerSaveModeActivated) {
+            when (powerManager.isPowerSaveMode) {
                 true -> FileNavigator.stop(applicationContext)
                 false -> FileNavigator.start(applicationContext)
-                else -> Unit
             }
         }
     }

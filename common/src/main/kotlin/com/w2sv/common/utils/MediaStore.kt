@@ -1,55 +1,32 @@
 package com.w2sv.common.utils
 
 import android.content.ContentResolver
+import android.database.Cursor
 import android.net.Uri
+import androidx.annotation.IntRange
 
-/**
- * @see
- *      https://stackoverflow.com/a/16511111/12083276
- */
-fun ContentResolver.queryMediaStoreData(
+fun <R> ContentResolver.query(
     uri: Uri,
     columns: Array<String>,
     selection: String? = null,
-    selectionArgs: Array<String>? = null
-): List<String?>? =
+    selectionArgs: Array<String>? = null,
+    onCursor: (Cursor) -> R
+): R? =
     query(
         uri,
         columns,
         selection,
         selectionArgs,
         null
-    )?.run {
-        moveToFirst()
-        columns.map { getString(getColumnIndexOrThrow(it)) }
-            .also { close() }
-    }
+    )
+        ?.use {
+            it.moveToFirst()
+            onCursor(it)
+        }
 
-fun ContentResolver.queryNonNullMediaStoreData(
-    uri: Uri,
-    columns: Array<String>,
-    selection: String? = null,
-    selectionArgs: Array<String>? = null
-): List<String>? =
-    query(
-        uri,
-        columns,
-        selection,
-        selectionArgs,
-        null
-    )?.run {
-        moveToFirst()
-        columns
-            .map { columnIndex ->
-                getString(getColumnIndexOrThrow(columnIndex))
-                    .also { if (it == null) return@run null }
-            }
-            .also { close() }
-    }
-
-fun parseBoolean(mediaStoreString: String): Boolean =
-    when (mediaStoreString) {
+fun Cursor.getBoolean(@IntRange(from = 0) i: Int): Boolean =
+    when (getString(i)) {
         "0" -> false
         "1" -> true
-        else -> throw IllegalStateException()
+        else -> throw IllegalStateException("Invalid string for boolean conversion")
     }

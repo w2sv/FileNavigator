@@ -1,7 +1,6 @@
 package com.w2sv.navigator.model
 
 import android.content.ContentResolver
-import android.database.CursorIndexOutOfBoundsException
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -9,8 +8,8 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import com.w2sv.androidutils.generic.localDateTimeFromUnixTimeStamp
 import com.w2sv.androidutils.generic.milliSecondsToNow
-import com.w2sv.common.utils.parseBoolean
-import com.w2sv.common.utils.queryNonNullMediaStoreData
+import com.w2sv.common.utils.getBoolean
+import com.w2sv.common.utils.query
 import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.fileobservers.emitDiscardedLog
 import kotlinx.parcelize.IgnoredOnParcel
@@ -18,6 +17,8 @@ import kotlinx.parcelize.Parcelize
 import slimber.log.i
 import java.io.File
 import java.time.LocalDateTime
+
+private const val RECENTLY_ADDED_MS_THRESHOLD = 5_000L
 
 /**
  * @param volumeRelativeDirPath Relative dir path from the storage volume, e.g. "Documents/", "DCIM/Camera/".
@@ -34,7 +35,7 @@ data class MediaStoreColumnData(
 ) : Parcelable {
 
     @IgnoredOnParcel
-    val recentlyAdded = !addedBeforeForMoreThan(5_000)
+    val recentlyAdded = !addedBeforeForMoreThan(RECENTLY_ADDED_MS_THRESHOLD)
 
     fun addedBeforeForMoreThan(ms: Long): Boolean =
         dateTimeAdded.milliSecondsToNow() > ms
@@ -89,9 +90,9 @@ data class MediaStoreColumnData(
             contentResolver: ContentResolver
         ): MediaStoreColumnData? =
             try {
-                contentResolver.queryNonNullMediaStoreData(
-                    uri,
-                    arrayOf(
+                contentResolver.query(
+                    uri = uri,
+                    columns = arrayOf(
                         MediaStore.MediaColumns._ID,
                         MediaStore.MediaColumns.DATA,
                         MediaStore.MediaColumns.RELATIVE_PATH,
@@ -100,22 +101,27 @@ data class MediaStoreColumnData(
                         MediaStore.MediaColumns.SIZE,
                         MediaStore.MediaColumns.IS_PENDING,
                     )
-                )
-                    ?.run {
-                        MediaStoreColumnData(
-                            rowId = get(0),
-                            absPath = get(1),
-                            volumeRelativeDirPath = get(2),
-                            name = get(3),
-                            dateTimeAdded = localDateTimeFromUnixTimeStamp(get(4).toLong()),
-                            size = get(5).toLong(),
-                            isPending = parseBoolean(get(6))
-                        )
-                            .also {
-                                i { it.toString() }
-                            }
-                    }
-            } catch (e: CursorIndexOutOfBoundsException) {
+                ) {
+                    MediaStoreColumnData(
+                        rowId = it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)),
+                        absPath = it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)),
+                        volumeRelativeDirPath = it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.RELATIVE_PATH)),
+                        name = it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)),
+                        dateTimeAdded = localDateTimeFromUnixTimeStamp(
+                            it.getLong(
+                                it.getColumnIndexOrThrow(
+                                    MediaStore.MediaColumns.DATE_ADDED
+                                )
+                            )
+                        ),
+                        size = it.getLong(it.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE)),
+                        isPending = it.getBoolean(it.getColumnIndexOrThrow(MediaStore.MediaColumns.IS_PENDING))
+                    )
+                        .also {
+                            i { it.toString() }
+                        }
+                }
+            } catch (e: Exception) {
                 emitDiscardedLog(e::toString)
                 null
             }
