@@ -5,15 +5,15 @@ import android.view.animation.OvershootInterpolator
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -22,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,14 +33,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.toEasing
 
 @Composable
@@ -47,86 +45,96 @@ fun ThemeSelectionRow(
     selected: Theme,
     onSelected: (Theme) -> Unit,
     modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween
+    buttonSize: Dp = 44.dp,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = horizontalArrangement,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         themeIndicatorProperties
             .forEach { properties ->
-                ThemeColumn(
+                ThemeIndicator(
                     properties = properties,
                     isSelected = { properties.theme == selected },
-                    onClick = { onSelected(properties.theme) }
+                    onClick = { onSelected(properties.theme) },
+                    buttonModifier = Modifier.size(buttonSize)
                 )
             }
     }
 }
 
-private val themeIndicatorProperties = listOf(
-    ThemeIndicatorProperties(
-        theme = Theme.Light,
-        label = R.string.light,
-        buttonColor = ButtonColor.Uniform(Color.White)
-    ),
-    ThemeIndicatorProperties(
-        theme = Theme.DeviceDefault,
-        label = R.string._default,
-        buttonColor = ButtonColor.Gradient(
-            Brush.linearGradient(
-                0.5f to Color.White,
-                0.5f to Color.Black
-            )
-        )
-    ),
-    ThemeIndicatorProperties(
-        theme = Theme.Dark,
-        label = R.string.dark,
-        buttonColor = ButtonColor.Uniform(Color.Black)
+private val themeIndicatorProperties =
+    listOf(
+        ThemeIndicatorProperties(
+            theme = Theme.Light,
+            labelRes = R.string.light,
+            buttonColoring = ButtonColor.Uniform(Color.White),
+        ),
+        ThemeIndicatorProperties(
+            theme = Theme.Default,
+            labelRes = R.string._default,
+            buttonColoring = ButtonColor.Gradient(
+                Brush.linearGradient(
+                    0.5f to Color.White,
+                    0.5f to Color.Black,
+                ),
+            ),
+        ),
+        ThemeIndicatorProperties(
+            theme = Theme.Dark,
+            labelRes = R.string.dark,
+            buttonColoring = ButtonColor.Uniform(Color.Black),
+        ),
     )
-)
 
+@Immutable
 private data class ThemeIndicatorProperties(
     val theme: Theme,
-    @StringRes val label: Int,
-    val buttonColor: ButtonColor
+    @StringRes val labelRes: Int,
+    val buttonColoring: ButtonColor,
 )
 
+@Immutable
 private sealed interface ButtonColor {
     val containerColor: Color
 
+    @Immutable
     data class Uniform(override val containerColor: Color) : ButtonColor
-    data class Gradient(val brush: Brush, override val containerColor: Color = Color.Transparent) :
-        ButtonColor
+
+    @Immutable
+    data class Gradient(val brush: Brush) : ButtonColor {
+        override val containerColor: Color = Color.Transparent
+    }
 }
 
 @Composable
-private fun ThemeColumn(
+private fun ThemeIndicator(
     properties: ThemeIndicatorProperties,
     isSelected: () -> Boolean,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    buttonModifier: Modifier = Modifier,
+    onClick: () -> Unit,
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = stringResource(id = properties.label),
+            text = stringResource(id = properties.labelRes),
             fontSize = 12.sp,
             color = MaterialTheme.colorScheme.onSurface,
         )
         Spacer(modifier = Modifier.height(8.dp))
         ThemeButton(
-            buttonColor = properties.buttonColor,
+            buttonColor = properties.buttonColoring,
             contentDescription = stringResource(id = R.string.theme_button_cd).format(
-                stringResource(id = properties.label)
+                stringResource(id = properties.labelRes),
             ),
             onClick = onClick,
-            isSelected = isSelected
+            isSelected = isSelected,
+            modifier = buttonModifier,
         )
     }
 }
@@ -138,79 +146,66 @@ private fun ThemeButton(
     onClick: () -> Unit,
     isSelected: () -> Boolean,
     modifier: Modifier = Modifier,
-    size: Dp = 40.dp
 ) {
-    val radius = with(LocalDensity.current) { (size / 2).toPx() }
-
     val transition = updateTransition(targetState = isSelected(), label = "")
 
-    val borderWidth by transition.animateFloat(
+    val borderWidth by transition.animateDp(
         transitionSpec = {
             if (targetState) {
                 tween(
-                    durationMillis = DefaultAnimationDuration,
-                    easing = OvershootInterpolator().toEasing()
+                    durationMillis = BORDER_ANIMATION_DURATION,
+                    easing = OvershootInterpolator().toEasing(),
                 )
             } else {
-                tween(durationMillis = DefaultAnimationDuration)
+                tween(durationMillis = BORDER_ANIMATION_DURATION)
             }
-        }, label = ""
+        },
+        label = "",
     ) { state ->
-        if (state) 3f else 0f
+        if (state) 3.dp else 0.dp
     }
 
     val borderColor by transition.animateColor(
         transitionSpec = {
             if (targetState) {
                 tween(
-                    durationMillis = DefaultAnimationDuration,
-                    easing = OvershootInterpolator().toEasing()
+                    durationMillis = BORDER_ANIMATION_DURATION,
+                    easing = OvershootInterpolator().toEasing(),
                 )
             } else {
-                tween(durationMillis = DefaultAnimationDuration)
+                tween(durationMillis = BORDER_ANIMATION_DURATION)
             }
-        }, label = ""
+        },
+        label = "",
     ) { state ->
         if (state) MaterialTheme.colorScheme.primary else Color.Transparent
     }
 
-    Button(
-        modifier = modifier
-            .semantics {
-                this.contentDescription = contentDescription
-            }
-            .size(size)
-            .drawBehind {
-                if (buttonColor is ButtonColor.Gradient) {
-                    drawCircle(
-                        buttonColor.brush,
-                        radius = radius
-                    )
+    BoxWithConstraints(contentAlignment = Alignment.Center, modifier = modifier) {
+        val size = with(LocalDensity.current) { constraints.maxWidth.toDp() }
+        Button(
+            modifier = Modifier
+                .semantics {
+                    this.contentDescription = contentDescription
                 }
-            },
-        colors = ButtonDefaults.buttonColors(containerColor = buttonColor.containerColor),
-        onClick = onClick,
-        shape = CircleShape,
-        border = BorderStroke(borderWidth.dp, borderColor)
-    ) {}
-}
-
-@Preview
-@Composable
-private fun ThemeButtonPrev() {
-    AppTheme {
-        val properties = ThemeIndicatorProperties(
-            theme = Theme.Dark,
-            label = R.string.dark,
-            buttonColor = ButtonColor.Uniform(Color.Black)
-        )
-        ThemeButton(
-            buttonColor = properties.buttonColor,
-            contentDescription = "",
-            onClick = { /*TODO*/ },
-            isSelected = { true })
+                .size(size)
+                .drawBehind {
+                    if (buttonColor is ButtonColor.Gradient) {
+                        drawCircle(
+                            brush = buttonColor.brush,
+                            radius = (constraints.maxWidth / 2).toFloat(),
+                        )
+                    }
+                },
+            colors = ButtonDefaults.buttonColors(containerColor = buttonColor.containerColor),
+            onClick = onClick,
+            shape = CircleShape,
+            border = BorderStroke(borderWidth, borderColor),
+        ) {}
     }
 }
+
+private const val BORDER_ANIMATION_DURATION = 500
 
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
 val dynamicColorsSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S

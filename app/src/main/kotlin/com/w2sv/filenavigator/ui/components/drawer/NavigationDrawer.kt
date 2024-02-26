@@ -41,7 +41,7 @@ fun NavigationDrawer(
         modifier = modifier,
         drawerContent = {
             Sheet {
-                SheetContent(closeDrawer = { scope.launch { state.close() } })
+                NavigationDrawerSheetContent(closeDrawer = { scope.launch { state.close() } })
             }
         },
         drawerState = state

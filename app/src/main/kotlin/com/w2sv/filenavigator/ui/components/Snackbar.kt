@@ -41,8 +41,11 @@ data class AppSnackbarVisuals(
         get() = action?.label
 }
 
+@Immutable
 sealed class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
+    @Immutable
     data object Success : SnackbarKind(Icons.Outlined.Check, AppColor.success)
+    @Immutable
     data object Error : SnackbarKind(Icons.Outlined.Warning, AppColor.error)
 }
 

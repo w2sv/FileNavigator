@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                 useDarkTheme = when (appVM.theme.collectAsStateWithLifecycle().value) {
                     Theme.Dark -> true
                     Theme.Light -> false
-                    Theme.DeviceDefault -> isSystemInDarkTheme()
+                    Theme.Default -> isSystemInDarkTheme()
                 }
             ) {
                 NavigationDrawerScreen()

@@ -65,4 +65,7 @@
     <string name="delete_entry">Delete entry</string>
     <string name="applied_navigator_settings">Applied navigator settings.</string>
     <string name="changes_won_t_be_saved_if_you_leave_now">Changes won\'t be saved if you leave now.</string>
+    <string name="support_the_app">Support the app</string>
+    <string name="report_a_bug">Report a bug / request a feature</string>
+    <string name="source">Source</string>
 </resources>

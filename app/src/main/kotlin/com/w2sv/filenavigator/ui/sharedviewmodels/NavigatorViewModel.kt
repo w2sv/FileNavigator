@@ -10,7 +10,6 @@ import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
@@ -27,11 +26,6 @@ class NavigatorViewModel @Inject constructor(
     fun setIsRunning(value: Boolean) {
         _isRunning.value = value
     }
-
-    val startDateTime = navigatorRepository.startDateTime.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-    )
 
     val configuration = NavigatorConfiguration(
         scope = viewModelScope,

@@ -3,11 +3,10 @@ package com.w2sv.filenavigator.ui.screens.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.w2sv.filenavigator.ui.screens.home.components.movehistory.MoveHistory
-import com.w2sv.filenavigator.ui.screens.home.components.statusdisplay.StatusDisplay
+import com.w2sv.filenavigator.ui.screens.home.components.movehistory.MoveHistoryCard
+import com.w2sv.filenavigator.ui.screens.home.components.statusdisplay.StatusDisplayCard
 
 @Composable
 fun HomeScreen(
@@ -17,11 +16,11 @@ fun HomeScreen(
         modifier = modifier,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        StatusDisplay(
+        StatusDisplayCard(
             modifier = Modifier
                 .fillMaxHeight(0.28f)
         )
-        MoveHistory(
+        MoveHistoryCard(
             modifier = Modifier.fillMaxHeight(0.8f)
         )
     }

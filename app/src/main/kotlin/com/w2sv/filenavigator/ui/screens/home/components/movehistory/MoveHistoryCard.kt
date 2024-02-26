@@ -39,7 +39,7 @@ import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun MoveHistory(
+fun MoveHistoryCard(
     modifier: Modifier = Modifier,
     moveHistoryVM: MoveHistoryViewModel = viewModel()
 ) {

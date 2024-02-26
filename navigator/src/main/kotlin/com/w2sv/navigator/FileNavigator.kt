@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import slimber.log.i
-import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -105,7 +104,6 @@ class FileNavigator : UnboundService() {
 
         fileObservers = getRegisteredFileObservers()
         statusChanged.emitNewStatus(true)
-        ioScope.launch { navigatorRepository.startDateTime.save(LocalDateTime.now()) }
     }
 
     private fun stop() {

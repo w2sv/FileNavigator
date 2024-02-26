@@ -16,11 +16,6 @@ import javax.inject.Singleton
 class NavigatorRepository @Inject constructor(dataStore: DataStore<Preferences>) :
     DataStoreRepository(dataStore) {
 
-    val startDateTime = dataStoreLocalDateTimeFlow(
-        stringPreferencesKey("navigatorStartDateTime"),
-        null
-    )
-
     val disableOnLowBattery = dataStoreFlow(
         booleanPreferencesKey("disableNavigatorOnLowBattery"),
         true

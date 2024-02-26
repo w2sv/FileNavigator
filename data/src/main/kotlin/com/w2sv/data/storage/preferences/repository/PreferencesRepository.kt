@@ -15,7 +15,7 @@ class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences
 
     val theme = dataStoreFlow(
         intPreferencesKey("theme"),
-        Theme.DeviceDefault
+        Theme.Default
     )
 
     val useDynamicColors = dataStoreFlow(
