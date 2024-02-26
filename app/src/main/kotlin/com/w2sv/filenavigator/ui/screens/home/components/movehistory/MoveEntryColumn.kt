@@ -61,6 +61,9 @@ fun MoveEntryColumn(
         DateState()
     }
 
+    val onRowClick: (MoveEntry) -> Unit =
+        rememberOnRowClick(launchEntryDeletion = launchEntryDeletion)
+
     LazyColumn(
         modifier = modifier
     ) {
@@ -76,7 +79,7 @@ fun MoveEntryColumn(
                 }
                 MoveEntryRow(
                     moveEntry = moveEntry,
-                    launchEntryDeletion = launchEntryDeletion,
+                    onClick = remember(moveEntry) { { onRowClick(moveEntry) } },
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateItemPlacement()
@@ -88,34 +91,29 @@ fun MoveEntryColumn(
 }
 
 @Composable
-private fun MoveEntryRow(
-    moveEntry: MoveEntry,
+private fun rememberOnRowClick(
     launchEntryDeletion: (MoveEntry) -> Job,
-    modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     scope: CoroutineScope = rememberCoroutineScope()
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .clickable {
-                when (val result = moveEntry.getMovedFileMediaUri(context)) {
+): (MoveEntry) -> Unit {
+    return remember {
+        {
+            scope.launch {
+                when (val result = it.getMovedFileMediaUri(context)) {
                     is MovedFileMediaUriRetrievalResult.CouldntFindFile -> {
-                        scope.launch {
-                            snackbarHostState.showSnackbarAndDismissCurrent(
-                                AppSnackbarVisuals(
-                                    context.getString(R.string.couldn_t_find_file),
-                                    kind = SnackbarKind.Error,
-                                    action = SnackbarAction(
-                                        context.getString(R.string.delete_entry)
-                                    ) {
-                                        launchEntryDeletion(moveEntry)
-                                        snackbarHostState.currentSnackbarData?.dismiss()
-                                    }
-                                )
+                        snackbarHostState.showSnackbarAndDismissCurrent(
+                            AppSnackbarVisuals(
+                                context.getString(R.string.couldn_t_find_file),
+                                kind = SnackbarKind.Error,
+                                action = SnackbarAction(
+                                    context.getString(R.string.delete_entry)
+                                ) {
+                                    launchEntryDeletion(it)
+                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                }
                             )
-                        }
+                        )
                     }
 
                     is MovedFileMediaUriRetrievalResult.Success -> {
@@ -124,14 +122,29 @@ private fun MoveEntryRow(
                                 .setAction(Intent.ACTION_VIEW)
                                 .setDataAndType(
                                     result.mediaUri,
-                                    moveEntry.fileType.simpleStorageMediaType.mimeType
+                                    it.fileType.simpleStorageMediaType.mimeType
                                 )
                         )
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun MoveEntryRow(
+    moveEntry: MoveEntry,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .clickable { onClick() }
             .background(
-                MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
+                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(8.dp)
