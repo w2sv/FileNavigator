@@ -22,7 +22,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -45,8 +44,8 @@ import com.w2sv.filenavigator.ui.utils.toEasing
 
 @Composable
 fun ThemeSelectionRow(
-    selected: com.w2sv.domain.model.Theme,
-    onSelected: (com.w2sv.domain.model.Theme) -> Unit,
+    selected: Theme,
+    onSelected: (Theme) -> Unit,
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween
 ) {
@@ -55,30 +54,7 @@ fun ThemeSelectionRow(
         horizontalArrangement = horizontalArrangement,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        remember {
-            listOf(
-                ThemeIndicatorProperties(
-                    theme = com.w2sv.domain.model.Theme.Light,
-                    label = R.string.light,
-                    buttonColor = ButtonColor.Uniform(Color.White)
-                ),
-                ThemeIndicatorProperties(
-                    theme = com.w2sv.domain.model.Theme.DeviceDefault,
-                    label = R.string._default,
-                    buttonColor = ButtonColor.Gradient(
-                        Brush.linearGradient(
-                            0.5f to Color.White,
-                            0.5f to Color.Black
-                        )
-                    )
-                ),
-                ThemeIndicatorProperties(
-                    theme = com.w2sv.domain.model.Theme.Dark,
-                    label = R.string.dark,
-                    buttonColor = ButtonColor.Uniform(Color.Black)
-                )
-            )
-        }
+        themeIndicatorProperties
             .forEach { properties ->
                 ThemeColumn(
                     properties = properties,
@@ -89,8 +65,31 @@ fun ThemeSelectionRow(
     }
 }
 
+private val themeIndicatorProperties = listOf(
+    ThemeIndicatorProperties(
+        theme = Theme.Light,
+        label = R.string.light,
+        buttonColor = ButtonColor.Uniform(Color.White)
+    ),
+    ThemeIndicatorProperties(
+        theme = Theme.DeviceDefault,
+        label = R.string._default,
+        buttonColor = ButtonColor.Gradient(
+            Brush.linearGradient(
+                0.5f to Color.White,
+                0.5f to Color.Black
+            )
+        )
+    ),
+    ThemeIndicatorProperties(
+        theme = Theme.Dark,
+        label = R.string.dark,
+        buttonColor = ButtonColor.Uniform(Color.Black)
+    )
+)
+
 private data class ThemeIndicatorProperties(
-    val theme: com.w2sv.domain.model.Theme,
+    val theme: Theme,
     @StringRes val label: Int,
     val buttonColor: ButtonColor
 )
@@ -198,10 +197,10 @@ private fun ThemeButton(
 
 @Preview
 @Composable
-fun ThemeButtonPrev() {
+private fun ThemeButtonPrev() {
     AppTheme {
         val properties = ThemeIndicatorProperties(
-            theme = com.w2sv.domain.model.Theme.Dark,
+            theme = Theme.Dark,
             label = R.string.dark,
             buttonColor = ButtonColor.Uniform(Color.Black)
         )

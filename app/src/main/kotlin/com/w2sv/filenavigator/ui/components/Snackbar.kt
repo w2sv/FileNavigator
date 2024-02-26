@@ -14,7 +14,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +25,7 @@ import com.w2sv.filenavigator.ui.theme.AppColor
 
 val LocalSnackbarHostState = compositionLocalOf { SnackbarHostState() }
 
-@Stable
+@Immutable
 data class SnackbarAction(val label: String, val callback: () -> Unit)
 
 data class AppSnackbarVisuals(
@@ -51,7 +51,7 @@ suspend fun SnackbarHostState.showSnackbarAndDismissCurrent(snackbarVisuals: Sna
 }
 
 @Composable
-fun AppSnackbar(visuals: AppSnackbarVisuals) {
+fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
     Snackbar(
         action = {
             visuals.action?.let { action ->
@@ -62,6 +62,7 @@ fun AppSnackbar(visuals: AppSnackbarVisuals) {
                 }
             }
         },
+        modifier = modifier
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             visuals.kind?.let { kind ->

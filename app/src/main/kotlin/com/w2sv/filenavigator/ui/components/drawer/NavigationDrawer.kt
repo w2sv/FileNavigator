@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -28,6 +28,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppFontText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @Composable
 fun NavigationDrawer(
@@ -61,24 +62,19 @@ private fun Sheet(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Header()
-            Divider(modifier = Modifier.padding(top = 16.dp, bottom = 12.dp))
+            AppLogoWCircularBackground()
+            Spacer(modifier = Modifier.height(18.dp))
+            AppFontText(text = stringResource(id = R.string.version).format(BuildConfig.VERSION_NAME))
+            Spacer(modifier = Modifier.height(12.dp))
+            AppFontText(text = stringResource(R.string.copyright, LocalDate.now().year))
+            HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 12.dp))
             content()
         }
     }
 }
 
 @Composable
-private fun Header() {
-    AppLogoWCircularBackground()
-    Spacer(modifier = Modifier.height(18.dp))
-    AppFontText(text = stringResource(id = R.string.version).format(BuildConfig.VERSION_NAME))
-    Spacer(modifier = Modifier.height(12.dp))
-    AppFontText(text = stringResource(R.string.copyright))
-}
-
-@Composable
-fun AppLogoWCircularBackground(modifier: Modifier = Modifier) {
+private fun AppLogoWCircularBackground(modifier: Modifier = Modifier) {
     Icon(
         painterResource(id = R.drawable.ic_launcher_foreground),
         contentDescription = null,

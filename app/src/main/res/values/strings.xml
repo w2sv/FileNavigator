@@ -57,7 +57,7 @@
     <string name="return_to_home_screen">Return to home screen</string>
     <string name="discard">Discard</string>
     <string name="history">History</string>
-    <string name="copyright">© 2023 | w2sv</string>
+    <string name="copyright">© 2023 - %1$s | w2sv</string>
     <string name="home">Home</string>
     <string name="navigator_settings">Navigator Settings</string>
     <string name="missing_permissions">Missing Permissions</string>

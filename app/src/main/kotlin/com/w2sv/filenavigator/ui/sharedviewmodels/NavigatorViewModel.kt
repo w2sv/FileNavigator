@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.services.isServiceRunning
-import com.w2sv.data.storage.preferences.repository.FileTypeRepository
-import com.w2sv.data.storage.preferences.repository.PreferencesRepository
+import com.w2sv.data.storage.preferences.repository.NavigatorRepository
 import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NavigatorViewModel @Inject constructor(
-    fileTypeRepository: FileTypeRepository,
-    preferencesRepository: PreferencesRepository,
+    navigatorRepository: NavigatorRepository,
     @ApplicationContext context: Context
 ) : ViewModel() {
 
@@ -30,15 +28,14 @@ class NavigatorViewModel @Inject constructor(
         _isRunning.value = value
     }
 
-    val startDateTime = preferencesRepository.navigatorStartDateTime.stateIn(
+    val startDateTime = navigatorRepository.startDateTime.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(),
     )
 
     val configuration = NavigatorConfiguration(
         scope = viewModelScope,
-        fileTypeRepository = fileTypeRepository,
-        disableOnLowBattery = preferencesRepository.disableNavigatorOnLowBattery,
+        navigatorRepository = navigatorRepository,
         onStateSynced = {
             if (isRunning.value) {
                 FileNavigator.reregisterFileObservers(

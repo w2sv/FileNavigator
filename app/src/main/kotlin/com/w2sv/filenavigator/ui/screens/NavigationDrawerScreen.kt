@@ -43,6 +43,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun NavigationDrawerScreen(
+    modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -50,12 +51,12 @@ fun NavigationDrawerScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val postNotificationsPermissionState =
-        observedPostNotificationsPermissionState(
+        rememberObservedPostNotificationsPermissionState(
             onPermissionResult = { appVM.savePostNotificationsPermissionRequestedIfRequired() },
             onStatusChanged = appVM::setPostNotificationsPermissionGranted
         )
 
-    NavigationDrawer(drawerState) {
+    NavigationDrawer(state = drawerState, modifier = modifier) {
         val screen by appVM.screen.collectAsStateWithLifecycle()
 
         Scaffold(
@@ -127,7 +128,7 @@ fun NavigationDrawerScreen(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun observedPostNotificationsPermissionState(
+private fun rememberObservedPostNotificationsPermissionState(
     onPermissionResult: (Boolean) -> Unit,
     onStatusChanged: (Boolean) -> Unit
 ): PermissionState? =

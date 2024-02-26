@@ -15,6 +15,8 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +29,7 @@ import com.w2sv.filenavigator.ui.components.bounceOnClickAnimation
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.toEasing
 
+@Immutable
 data class ToggleNavigatorButtonProperties(
     val color: Color,
     @DrawableRes val iconRes: Int,
@@ -46,20 +49,22 @@ internal fun ToggleNavigatorButton(
         AnimatedContent(
             targetState = properties,
             label = "",
-            transitionSpec = {
-                slideInVertically(
-                    animationSpec = tween(
-                        durationMillis = DefaultAnimationDuration,
-                        easing = AnticipateOvershootInterpolator().toEasing()
-                    ),
-                    initialOffsetY = { it }) togetherWith
-                        slideOutVertically(
-                            targetOffsetY = { -it },
-                            animationSpec = tween(
-                                durationMillis = DefaultAnimationDuration,
-                                easing = AnticipateOvershootInterpolator().toEasing()
+            transitionSpec = remember {
+                {
+                    slideInVertically(
+                        animationSpec = tween(
+                            durationMillis = DefaultAnimationDuration,
+                            easing = AnticipateOvershootInterpolator().toEasing()
+                        ),
+                        initialOffsetY = { it }) togetherWith
+                            slideOutVertically(
+                                targetOffsetY = { -it },
+                                animationSpec = tween(
+                                    durationMillis = DefaultAnimationDuration,
+                                    easing = AnticipateOvershootInterpolator().toEasing()
+                                )
                             )
-                        )
+                }
             }
         ) {
             Row(

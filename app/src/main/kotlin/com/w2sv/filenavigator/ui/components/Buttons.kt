@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -43,6 +44,7 @@ fun DialogButton(
     }
 }
 
+@SuppressLint("ComposeModifierComposed")  // TODO
 fun Modifier.bounceOnClickAnimation(minScale: Float = 0.8f) = composed {
     var buttonState by remember { mutableStateOf(ButtonState.Idle) }
     val scale by animateFloatAsState(

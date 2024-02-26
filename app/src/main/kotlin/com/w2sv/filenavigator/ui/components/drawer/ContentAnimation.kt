@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.components.drawer
 
+import android.annotation.SuppressLint
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.derivedStateOf
@@ -12,8 +13,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import com.w2sv.filenavigator.ui.utils.extensions.visibilityPercentage
 
+@SuppressLint("ComposeModifierComposed")  // TODO
 fun Modifier.animateBasedOnDrawerProgression(drawerState: DrawerState): Modifier =
-    composed {
+    this then composed {
         val maxDrawerWidthPx =
             with(LocalDensity.current) { DrawerDefaults.MaximumDrawerWidth.toPx() }
 
@@ -31,7 +33,7 @@ fun Modifier.animateBasedOnDrawerProgression(drawerState: DrawerState): Modifier
             }
         }
 
-        return@composed graphicsLayer(
+        graphicsLayer(
             scaleX = drawerVisibilityPercentageInverse,
             scaleY = drawerVisibilityPercentageInverse,
             translationX = LocalConfiguration.current.screenWidthDp * drawerVisibilityPercentage,

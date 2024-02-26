@@ -17,7 +17,7 @@ class DateState {
     private val indexToDate = mutableStateMapOf<Int, String?>()
     private var lastComputedIndexToDate: Pair<Int, String>? by mutableStateOf(null)
 
-    fun getScopeTitle(i: Int, moveEntry: com.w2sv.domain.model.MoveEntry): String? =
+    fun getScopeTitle(i: Int, moveEntry: MoveEntry): String? =
         indexToDate.getOrPut(i) {
             if (lastComputedIndexToDate == null || i > lastComputedIndexToDate!!.first) {
                 getDateRepresentation(

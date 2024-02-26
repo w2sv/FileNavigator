@@ -3,11 +3,10 @@ package com.w2sv.filenavigator.ui.states
 import android.content.Context
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.w2sv.androidutils.coroutines.collectFromFlow
-import com.w2sv.androidutils.datastorage.datastore.preferences.PersistedValue
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlow
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
-import com.w2sv.data.storage.preferences.repository.FileTypeRepository
+import com.w2sv.data.storage.preferences.repository.NavigatorRepository
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.components.AppSnackbarVisuals
@@ -40,32 +39,31 @@ class NavigatorConfiguration(
 ) {
     constructor(
         scope: CoroutineScope,
-        fileTypeRepository: FileTypeRepository,
-        disableOnLowBattery: PersistedValue.UniTyped<Boolean>,
+        navigatorRepository: NavigatorRepository,
         onStateSynced: () -> Unit,
         statusMapChanged: MutableSharedFlow<Unit> = MutableSharedFlow(),
     ) : this(
         statusMapChanged = statusMapChanged,
         statusMap = UnconfirmedStateMap.fromPersistedFlowMapWithSynchronousInitial(
-            persistedFlowMap = fileTypeRepository.getFileTypeEnablementMap(),
+            persistedFlowMap = navigatorRepository.getFileTypeEnablementMap(),
             scope = scope,
             makeMap = { it.toMutableStateMap() },
             syncState = {
-                fileTypeRepository.saveFileTypeEnablementMap(it)
+                navigatorRepository.saveFileTypeEnablementMap(it)
             },
             onStateSynced = {
                 statusMapChanged.emit(Unit)
             }
         ),
         mediaFileSourceEnabledMap = UnconfirmedStateMap.fromPersistedFlowMapWithSynchronousInitial(
-            persistedFlowMap = fileTypeRepository.getMediaFileSourceEnablementMap(),
+            persistedFlowMap = navigatorRepository.getMediaFileSourceEnablementMap(),
             scope = scope,
             makeMap = { it.toMutableStateMap() },
-            syncState = { fileTypeRepository.saveMediaFileSourceEnablementMap(it) }
+            syncState = { navigatorRepository.saveMediaFileSourceEnablementMap(it) }
         ),
         disableOnLowBattery = UnconfirmedStateFlow(
             scope,
-            disableOnLowBattery,
+            navigatorRepository.disableOnLowBattery,
             SharingStarted.Eagerly
         ),
         onStateSynced = onStateSynced,

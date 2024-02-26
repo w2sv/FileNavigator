@@ -4,37 +4,26 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
-import com.w2sv.androidutils.datastorage.datastore.preferences.PreferencesDataStoreRepository
+import com.w2sv.androidutils.datastorage.datastore.DataStoreRepository
 import com.w2sv.domain.model.Theme
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class PreferencesRepository @Inject constructor(dataStore: DataStore<Preferences>) :
-    PreferencesDataStoreRepository(dataStore) {
+    DataStoreRepository(dataStore) {
 
-    val disableNavigatorOnLowBattery = getPersistedValue(
-        booleanPreferencesKey("disableNavigatorOnLowBattery"),
-        true
-    )
-
-    val theme = getPersistedValue(
+    val theme = dataStoreFlow(
         intPreferencesKey("theme"),
         Theme.DeviceDefault
     )
 
-    val useDynamicColors = getPersistedValue(
+    val useDynamicColors = dataStoreFlow(
         booleanPreferencesKey("useDynamicColors"),
         false
     )
 
-    val navigatorStartDateTime = getPersistedLocalDateTime(
-        stringPreferencesKey("navigatorStartDateTime"),
-        null
-    )
-
-    val postNotificationsPermissionRequested = getPersistedValue(
+    val postNotificationsPermissionRequested = dataStoreFlow(
         booleanPreferencesKey("postNotificationsPermissionRequested"),
         false
     )

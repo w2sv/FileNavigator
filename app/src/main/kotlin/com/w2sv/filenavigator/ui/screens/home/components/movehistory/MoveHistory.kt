@@ -36,6 +36,7 @@ import com.w2sv.filenavigator.ui.components.AppFontText
 import com.w2sv.filenavigator.ui.components.DialogButton
 import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
 import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun MoveHistory(
@@ -105,7 +106,7 @@ fun MoveHistory(
                     NoHistoryPlaceHolder()
                 } else {
                     MoveEntryColumn(
-                        history = moveHistory,
+                        history = moveHistory.toImmutableList(),
                         launchEntryDeletion = moveHistoryVM::launchEntryDeletion
                     )
                 }

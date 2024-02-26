@@ -7,8 +7,7 @@ import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.data.storage.preferences.repository.FileTypeRepository
-import com.w2sv.data.storage.preferences.repository.PreferencesRepository
+import com.w2sv.data.storage.preferences.repository.NavigatorRepository
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
 import com.w2sv.navigator.notifications.managers.AppNotificationsManager
@@ -27,10 +26,7 @@ import javax.inject.Singleton
 class FileNavigator : UnboundService() {
 
     @Inject
-    lateinit var fileTypeRepository: FileTypeRepository
-
-    @Inject
-    lateinit var preferencesRepository: PreferencesRepository
+    lateinit var navigatorRepository: NavigatorRepository
 
     @Inject
     lateinit var statusChanged: StatusChanged
@@ -46,9 +42,9 @@ class FileNavigator : UnboundService() {
 
     private fun getRegisteredFileObservers(): List<FileObserver> =
         getFileObservers(
-            fileTypeEnablementMap = fileTypeRepository.getFileTypeEnablementMap()
+            fileTypeEnablementMap = navigatorRepository.getFileTypeEnablementMap()
                 .getSynchronousMap(),
-            mediaFileSourceEnablementMap = fileTypeRepository.getMediaFileSourceEnablementMap()
+            mediaFileSourceEnablementMap = navigatorRepository.getMediaFileSourceEnablementMap()
                 .getSynchronousMap(),
             contentResolver = contentResolver,
             onNewNavigatableFileListener = { moveFile ->
@@ -58,7 +54,7 @@ class FileNavigator : UnboundService() {
                         BuilderArgs(
                             moveFile = moveFile,
                             getLastMoveDestination = { source ->
-                                fileTypeRepository.getLastMoveDestinationFlow(source)
+                                navigatorRepository.getLastMoveDestinationFlow(source)
                                     .getValueSynchronously()
                             }
                         )
@@ -109,7 +105,7 @@ class FileNavigator : UnboundService() {
 
         fileObservers = getRegisteredFileObservers()
         statusChanged.emitNewStatus(true)
-        preferencesRepository.navigatorStartDateTime.launchSave(LocalDateTime.now(), ioScope)
+        ioScope.launch { navigatorRepository.startDateTime.save(LocalDateTime.now()) }
     }
 
     private fun stop() {

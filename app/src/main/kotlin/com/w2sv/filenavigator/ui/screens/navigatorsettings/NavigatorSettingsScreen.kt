@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.DrawerState
@@ -34,6 +34,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,7 +61,6 @@ import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.utils.rememberBackPressHandler
 import com.w2sv.filenavigator.ui.utils.toEasing
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -75,7 +75,7 @@ fun NavigatorSettingsScreen(
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     // Reset navigator config on removal from composition, i.e., return to home screen.
-    // Doing it here rather than in onBackPress causes the UI not to update shortly before leaving the screen, which is preferable.
+    // Doing it here rather than in onBackPress causes the UI not to update shortly before leaving the screen.
     DisposableEffect(Unit) {
         onDispose {
             navigatorVM.configuration.reset()
@@ -86,37 +86,39 @@ fun NavigatorSettingsScreen(
 
     val backPressHandler = rememberBackPressHandler(scope)
 
-    fun onBackPress() {
-        when {
-            drawerState.isOpen -> {
-                parentScope.launch { drawerState.close() }
-            }
+    val onBackPress: () -> Unit = remember {
+        {
+            when {
+                drawerState.isOpen -> {
+                    parentScope.launch { drawerState.close() }
+                }
 
-            configurationHasChanged -> {
-                backPressHandler(
-                    onFirstPress = {
-                        scope.launch {
-                            snackbarHostState.showSnackbarAndDismissCurrent(
-                                AppSnackbarVisuals(
-                                    message = context.getString(R.string.changes_won_t_be_saved_if_you_leave_now),
-                                    kind = SnackbarKind.Error
+                configurationHasChanged -> {
+                    backPressHandler(
+                        onFirstPress = {
+                            scope.launch {
+                                snackbarHostState.showSnackbarAndDismissCurrent(
+                                    AppSnackbarVisuals(
+                                        message = context.getString(R.string.changes_won_t_be_saved_if_you_leave_now),
+                                        kind = SnackbarKind.Error
+                                    )
                                 )
-                            )
-                        }
-                    },
-                    onSecondPress = returnToHomeScreen
-                )
-            }
+                            }
+                        },
+                        onSecondPress = returnToHomeScreen
+                    )
+                }
 
-            else -> {
-                returnToHomeScreen()
+                else -> {
+                    returnToHomeScreen()
+                }
             }
         }
     }
 
     Column(modifier = modifier) {
         ButtonRow(
-            onBackButtonPress = ::onBackPress,
+            onBackButtonPress = onBackPress,
             configurationHasChanged = configurationHasChanged,
             resetConfiguration = navigatorVM.configuration::reset,
             syncConfiguration = {
@@ -141,10 +143,13 @@ fun NavigatorSettingsScreen(
             modifier = Modifier.fillMaxHeight(0.7f)
         )
         Spacer(modifier = Modifier.fillMaxHeight(0.08f))
-        MoreColumn(disableOnLowBattery = navigatorVM.configuration.disableOnLowBattery)
+        MoreColumn(
+            disableOnLowBattery = navigatorVM.configuration.disableOnLowBattery.collectAsStateWithLifecycle().value,
+            setDisableOnLowBattery = { navigatorVM.configuration.disableOnLowBattery.value = it }
+        )
     }
 
-    BackHandler(onBack = ::onBackPress)
+    BackHandler(onBack = onBackPress)
 }
 
 @Composable
@@ -162,20 +167,24 @@ private fun ButtonRow(
     ) {
         FilledTonalIconButton(onClick = onBackButtonPress) {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                imageVector = Icons.AutoMirrored.Default.ArrowBack,
                 contentDescription = stringResource(R.string.return_to_home_screen)
             )
         }
         AnimatedVisibility(
             visible = configurationHasChanged,
-            enter = slideInHorizontally(
-                tween(easing = AnticipateInterpolator().toEasing()),
-                initialOffsetX = { it / 2 }
-            ) + fadeIn(),
-            exit = slideOutHorizontally(
-                tween(easing = AnticipateInterpolator().toEasing()),
-                targetOffsetX = { it / 2 }
-            ) + fadeOut()
+            enter = remember {
+                slideInHorizontally(
+                    tween(easing = AnticipateInterpolator().toEasing()),
+                    initialOffsetX = { it / 2 }
+                ) + fadeIn()
+            },
+            exit = remember {
+                slideOutHorizontally(
+                    tween(easing = AnticipateInterpolator().toEasing()),
+                    targetOffsetX = { it / 2 }
+                ) + fadeOut()
+            }
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ConfigurationChangeButton(
@@ -224,14 +233,16 @@ private fun Prev() {
             imageVector = Icons.Default.Clear,
             text = stringResource(id = R.string.discard),
             color = AppColor.error,
-            onClick = { })
+            onClick = { }
+        )
     }
 }
 
 @Composable
 private fun MoreColumn(
-    modifier: Modifier = Modifier,
-    disableOnLowBattery: MutableStateFlow<Boolean>
+    disableOnLowBattery: Boolean,
+    setDisableOnLowBattery: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         AppFontText(
@@ -242,8 +253,8 @@ private fun MoreColumn(
         SwitchItemRow(
             iconRes = R.drawable.ic_battery_low_24,
             textRes = R.string.disable_on_low_battery,
-            checked = disableOnLowBattery.collectAsStateWithLifecycle().value,
-            onCheckedChange = { disableOnLowBattery.value = it },
+            checked = disableOnLowBattery,
+            onCheckedChange = setDisableOnLowBattery,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 4.dp)

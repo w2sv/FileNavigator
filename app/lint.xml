@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!--Allow CompositionLocals-->
+    <issue id="ComposeCompositionLocalUsage" severity="ignore" />
+    <issue id="NotificationPermission" severity="warning" />
+    <issue id="LintError" severity="warning" />
+</lint>

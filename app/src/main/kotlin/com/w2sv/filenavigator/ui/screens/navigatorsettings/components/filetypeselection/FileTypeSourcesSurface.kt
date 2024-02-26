@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +32,6 @@ import com.w2sv.filenavigator.ui.components.SnackbarKind
 import com.w2sv.filenavigator.ui.components.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
-import com.w2sv.filenavigator.ui.utils.InBetweenSpaced
 import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
 import com.w2sv.filenavigator.ui.utils.extensions.orDisabledIf
 import kotlinx.coroutines.CoroutineScope
@@ -48,20 +49,20 @@ fun FileTypeSourcesSurface(
         modifier = modifier.fillMaxWidth()
     ) {
         Column {
-            InBetweenSpaced(
-                elements = fileType.sources,
-                makeElement = {
-                    SourceRow(
-                        source = it,
-                        isEnabled = navigatorConfiguration.mediaFileSourceEnabledMap.getOrDefault(
-                            key = it,
-                            defaultValue = true
-                        ),
-                        navigatorConfiguration = navigatorConfiguration,
-                        modifier = Modifier.height(44.dp)
-                    )
+            fileType.sources.forEachIndexed { index, source ->
+                SourceRow(
+                    source = source,
+                    isEnabled = navigatorConfiguration.mediaFileSourceEnabledMap.getOrDefault(
+                        key = source,
+                        defaultValue = true
+                    ),
+                    navigatorConfiguration = navigatorConfiguration,
+                    modifier = Modifier.height(44.dp)
+                )
+                if (index != fileType.sources.lastIndex) {
+                    HorizontalDivider()
                 }
-            )
+            }
         }
     }
 }
@@ -103,24 +104,26 @@ private fun SourceRow(
             if (source.fileType.isMediaType) {
                 AppCheckbox(
                     checked = isEnabled,
-                    onCheckedChange = { checkedNew ->
-                        if (!source.fileType.sources.map {
-                                navigatorConfiguration.mediaFileSourceEnabledMap.getValue(
-                                    it
-                                )
-                            }
-                                .allFalseAfterEnteringValue(checkedNew)
-                        ) {
-                            navigatorConfiguration.mediaFileSourceEnabledMap[source] =
-                                checkedNew
-                        } else {
-                            scope.launch {
-                                snackbarHostState.showSnackbarAndDismissCurrent(
-                                    AppSnackbarVisuals(
-                                        message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
-                                        kind = SnackbarKind.Error
+                    onCheckedChange = remember {
+                        { checkedNew ->
+                            if (!source.fileType.sources.map {
+                                    navigatorConfiguration.mediaFileSourceEnabledMap.getValue(
+                                        it
                                     )
-                                )
+                                }
+                                    .allFalseAfterEnteringValue(checkedNew)
+                            ) {
+                                navigatorConfiguration.mediaFileSourceEnabledMap[source] =
+                                    checkedNew
+                            } else {
+                                scope.launch {
+                                    snackbarHostState.showSnackbarAndDismissCurrent(
+                                        AppSnackbarVisuals(
+                                            message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
+                                            kind = SnackbarKind.Error
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

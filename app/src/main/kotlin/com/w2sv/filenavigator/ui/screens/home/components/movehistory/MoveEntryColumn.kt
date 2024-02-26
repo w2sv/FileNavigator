@@ -16,7 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -45,6 +45,7 @@ import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.getMovedFileMediaUri
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.DateState
 import com.w2sv.filenavigator.ui.theme.AppColor
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -52,8 +53,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MoveEntryColumn(
-    history: List<com.w2sv.domain.model.MoveEntry>,
-    launchEntryDeletion: (com.w2sv.domain.model.MoveEntry) -> Job,
+    history: ImmutableList<MoveEntry>,
+    launchEntryDeletion: (MoveEntry) -> Job,
     modifier: Modifier = Modifier
 ) {
     val dateState: DateState = remember(history.size) {
@@ -88,8 +89,8 @@ fun MoveEntryColumn(
 
 @Composable
 private fun MoveEntryRow(
-    moveEntry: com.w2sv.domain.model.MoveEntry,
-    launchEntryDeletion: (com.w2sv.domain.model.MoveEntry) -> Job,
+    moveEntry: MoveEntry,
+    launchEntryDeletion: (MoveEntry) -> Job,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
@@ -147,7 +148,7 @@ private fun MoveEntryRow(
         }
         WeightedBox(weight = 0.1f) {
             Icon(
-                imageVector = Icons.Default.ArrowForward,
+                imageVector = Icons.AutoMirrored.Default.ArrowForward,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
                 tint = AppColor.disabled

@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.play)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.filenavigator.hilt)
-    alias(libs.plugins.filenavigator.room)
     id("kotlin-parcelize")
 }
 
@@ -117,7 +116,6 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     // .Compose
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -131,6 +129,8 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.google.guava)
     implementation(libs.simplestorage)
+    implementation(libs.kotlinx.collections.immutable)
+    lintChecks(libs.compose.lint.checks)
 
     // Unit Test
     testImplementation(libs.bundles.unitTest)

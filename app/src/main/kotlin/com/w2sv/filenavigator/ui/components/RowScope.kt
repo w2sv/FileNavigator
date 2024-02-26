@@ -10,16 +10,17 @@ import androidx.compose.ui.Modifier
 @Composable
 fun RowScope.WeightedBox(
     weight: Float,
+    modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.CenterStart,
     content: @Composable () -> Unit
 ) {
-    Box(modifier = Modifier.weight(weight), contentAlignment = contentAlignment) {
+    Box(modifier = modifier.weight(weight), contentAlignment = contentAlignment) {
         content()
     }
 }
 
 @Composable
-fun RowScope.RightAligned(content: @Composable () -> Unit) {
-    Spacer(modifier = Modifier.weight(1f))
+fun RowScope.RightAligned(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Spacer(modifier = modifier.weight(1f))
     content()
 }

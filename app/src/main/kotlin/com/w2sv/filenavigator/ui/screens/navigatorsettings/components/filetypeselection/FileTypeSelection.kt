@@ -25,8 +25,8 @@ import slimber.log.i
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FileTypeSelectionColumn(
-    modifier: Modifier = Modifier,
     navigatorConfiguration: NavigatorConfiguration,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier

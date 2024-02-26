@@ -20,7 +20,7 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.ToastArgs
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
-import com.w2sv.data.storage.preferences.repository.FileTypeRepository
+import com.w2sv.data.storage.preferences.repository.NavigatorRepository
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
@@ -50,7 +50,7 @@ class FileMoveActivity : ComponentActivity() {
     @HiltViewModel
     internal class ViewModel @Inject constructor(
         savedStateHandle: SavedStateHandle,
-        private val fileTypeRepository: FileTypeRepository,
+        private val navigatorRepository: NavigatorRepository,
         private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
         @ApplicationContext context: Context
     ) :
@@ -80,14 +80,14 @@ class FileMoveActivity : ComponentActivity() {
 
         fun launchLastMoveDestinationSaving(destination: Uri): Job =
             viewModelScope.launch {
-                fileTypeRepository.saveLastMoveDestination(
+                navigatorRepository.saveLastMoveDestination(
                     moveFile.source,
                     destination
                 )
             }
 
         val lastMoveDestination =
-            fileTypeRepository.getLastMoveDestinationFlow(moveFile.source).getValueSynchronously()
+            navigatorRepository.getLastMoveDestinationFlow(moveFile.source).getValueSynchronously()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

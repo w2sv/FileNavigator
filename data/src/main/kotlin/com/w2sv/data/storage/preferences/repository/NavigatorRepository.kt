@@ -5,18 +5,26 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.w2sv.androidutils.datastorage.datastore.preferences.DataStoreEntry
-import com.w2sv.androidutils.datastorage.datastore.preferences.PreferencesDataStoreRepository
+import com.w2sv.androidutils.datastorage.datastore.DataStoreEntry
+import com.w2sv.androidutils.datastorage.datastore.DataStoreRepository
 import com.w2sv.domain.model.FileType
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FileTypeRepository @Inject constructor(
-    dataStore: DataStore<Preferences>
-) :
-    PreferencesDataStoreRepository(dataStore) {
+class NavigatorRepository @Inject constructor(dataStore: DataStore<Preferences>) :
+    DataStoreRepository(dataStore) {
+
+    val startDateTime = dataStoreLocalDateTimeFlow(
+        stringPreferencesKey("navigatorStartDateTime"),
+        null
+    )
+
+    val disableOnLowBattery = dataStoreFlow(
+        booleanPreferencesKey("disableNavigatorOnLowBattery"),
+        true
+    )
 
     fun getFileTypeEnablementMap(): Map<FileType, Flow<Boolean>> {
         val dseToFileType = FileType.getValues()
