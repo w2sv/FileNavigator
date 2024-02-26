@@ -67,7 +67,7 @@ fun MoveHistory(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
+                .padding(20.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.Top,

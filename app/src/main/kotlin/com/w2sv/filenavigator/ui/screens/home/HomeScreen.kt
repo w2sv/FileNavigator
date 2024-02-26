@@ -14,7 +14,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         StatusDisplay(
