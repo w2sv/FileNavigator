@@ -7,8 +7,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarVisuals
@@ -63,7 +63,7 @@ fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
                 TextButton(
                     onClick = action.callback,
                 ) {
-                    Text(text = action.label, color = MaterialTheme.colorScheme.primary)
+                    Text(text = action.label, color = SnackbarDefaults.actionColor)
                 }
             }
         },

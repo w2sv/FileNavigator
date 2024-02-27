@@ -120,7 +120,7 @@ sealed class FileType(
     data object PDF : NonMedia(
         R.string.pdf,
         R.drawable.ic_pdf_24,
-        0xFFD6BA73,
+        0xFF1c03fc,
         setOf("pdf")
     )
 
@@ -182,7 +182,7 @@ sealed class FileType(
     data object APK : NonMedia(
         R.string.apk,
         R.drawable.ic_apk_file_24,
-        0xFFFCB07E,
+        0xFF14db7e,
         setOf("apk")
     )
 

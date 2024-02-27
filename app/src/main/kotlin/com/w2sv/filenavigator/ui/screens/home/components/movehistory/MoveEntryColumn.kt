@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Icon
@@ -83,8 +82,8 @@ private fun MoveEntryRow(
         modifier = modifier
             .clickable { onClick() }
             .background(
-                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(8.dp)
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                shape = MaterialTheme.shapes.medium
             )
             .padding(8.dp)
     ) {
