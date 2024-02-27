@@ -1,15 +1,12 @@
 package com.w2sv.filenavigator.ui.screens.home.components.movehistory
 
 import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,11 +16,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,36 +28,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.domain.model.MoveEntry
-import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
-import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
-import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
-import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
-import com.w2sv.filenavigator.ui.designsystem.showSnackbarAndDismissCurrent
-import com.w2sv.filenavigator.ui.model.MovedFileMediaUriRetrievalResult
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.model.getMovedFileMediaUri
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.DateState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MoveEntryColumn(
     history: ImmutableList<MoveEntry>,
-    launchEntryDeletion: (MoveEntry) -> Job,
+    onRowClick: (MoveEntry) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dateState: DateState = remember(history.size) {
         DateState()
     }
-
-    val onRowClick: (MoveEntry) -> Unit =
-        rememberOnRowClick(launchEntryDeletion = launchEntryDeletion)
 
     LazyColumn(
         modifier = modifier
@@ -73,60 +54,18 @@ fun MoveEntryColumn(
                     Text(
                         text = scopeTitle,
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
                 }
                 MoveEntryRow(
                     moveEntry = moveEntry,
-                    onClick = remember(moveEntry) { { onRowClick(moveEntry) } },
+                    onClick = { onRowClick(moveEntry) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateItemPlacement()
                         .padding(bottom = 8.dp)
                 )
-            }
-        }
-    }
-}
-
-@Composable
-private fun rememberOnRowClick(
-    launchEntryDeletion: (MoveEntry) -> Job,
-    context: Context = LocalContext.current,
-    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
-    scope: CoroutineScope = rememberCoroutineScope()
-): (MoveEntry) -> Unit {
-    return remember {
-        {
-            scope.launch {
-                when (val result = it.getMovedFileMediaUri(context)) {
-                    is MovedFileMediaUriRetrievalResult.CouldntFindFile -> {
-                        snackbarHostState.showSnackbarAndDismissCurrent(
-                            AppSnackbarVisuals(
-                                context.getString(R.string.couldn_t_find_file),
-                                kind = SnackbarKind.Error,
-                                action = SnackbarAction(
-                                    context.getString(R.string.delete_entry)
-                                ) {
-                                    launchEntryDeletion(it)
-                                    snackbarHostState.currentSnackbarData?.dismiss()
-                                }
-                            )
-                        )
-                    }
-
-                    is MovedFileMediaUriRetrievalResult.Success -> {
-                        context.startActivity(
-                            Intent()
-                                .setAction(Intent.ACTION_VIEW)
-                                .setDataAndType(
-                                    result.mediaUri,
-                                    it.fileType.simpleStorageMediaType.mimeType
-                                )
-                        )
-                    }
-                }
             }
         }
     }

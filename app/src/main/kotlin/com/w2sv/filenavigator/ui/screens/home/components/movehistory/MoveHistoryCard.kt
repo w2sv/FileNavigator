@@ -1,5 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.home.components.movehistory
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +19,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -26,16 +29,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
+import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
+import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
+import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
+import com.w2sv.filenavigator.ui.designsystem.showSnackbarAndDismissCurrent
+import com.w2sv.filenavigator.ui.sharedviewmodels.FileRetrievalResult
 import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
 import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
+import com.w2sv.filenavigator.ui.utils.CollectLatestFromFlow
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -59,6 +71,7 @@ fun MoveHistoryCard(
                 )
             }
         }
+    val retrieveAndViewFile = rememberRetrieveAndViewFile()
 
     ElevatedCard(
         modifier = modifier,
@@ -107,10 +120,62 @@ fun MoveHistoryCard(
                 } else {
                     MoveEntryColumn(
                         history = moveHistory.toImmutableList(),
-                        launchEntryDeletion = moveHistoryVM::launchEntryDeletion
+                        onRowClick = retrieveAndViewFile,
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun rememberRetrieveAndViewFile(
+    moveHistoryVM: MoveHistoryViewModel = viewModel(),
+    context: Context = LocalContext.current,
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
+): (MoveEntry) -> Unit {
+    CollectLatestFromFlow(
+        flow = moveHistoryVM.fileRetrievalResult,
+        action = remember {
+            { result ->
+                when (result) {
+                    is FileRetrievalResult.CouldntFindFile -> {
+                        snackbarHostState.showSnackbarAndDismissCurrent(
+                            AppSnackbarVisuals(
+                                message = context.getString(R.string.couldn_t_find_file),
+                                kind = SnackbarKind.Error,
+                                action = SnackbarAction(
+                                    label = context.getString(R.string.delete_entry),
+                                    callback = {
+                                        moveHistoryVM.launchEntryDeletion(result.moveEntry)
+                                        snackbarHostState.currentSnackbarData?.dismiss()
+                                    }
+                                )
+                            )
+                        )
+                    }
+
+                    is FileRetrievalResult.Success -> {
+                        context.startActivity(
+                            Intent()
+                                .setAction(Intent.ACTION_VIEW)
+                                .setDataAndType(
+                                    result.mediaUri,
+                                    result.moveEntry.fileType.simpleStorageMediaType.mimeType
+                                )
+                        )
+                    }
+                }
+            }
+        }
+    )
+
+    return remember {
+        { moveEntry ->
+            moveHistoryVM.launchFileRetrieval(
+                moveEntry = moveEntry,
+                context = context
+            )
         }
     }
 }
