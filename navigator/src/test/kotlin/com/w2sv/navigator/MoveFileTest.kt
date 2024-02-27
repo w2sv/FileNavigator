@@ -15,7 +15,7 @@ class MoveFileTest {
     fun testParceling() {
         MoveFile(
             mediaStoreFile = TestInstancesProvider.getMediaStoreFile(),
-            fileType = FileType.Media.Image,
+            fileType = FileType.Image,
             sourceKind = FileType.Source.Kind.Screenshot
         )
             .testParceling()
