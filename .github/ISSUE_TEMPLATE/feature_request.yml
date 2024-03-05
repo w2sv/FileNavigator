@@ -1,0 +1,11 @@
+name: "Feature Request"
+description: Create a new ticket for a new feature request
+title: "[Feature Request] "
+labels: [ "enhancement" ]
+body:
+  - type: textarea
+    attributes:
+      label: Overview
+      description: Please describe the feature you'd like to see implemented.
+    validations:
+      required: true

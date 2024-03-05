@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussion
+    url: https://github.com/w2sv/FileNavigator/discussions
+    about: You may also use the discussions for e.g. general ideas.
