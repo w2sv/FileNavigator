@@ -5,12 +5,12 @@ compileSdk = "34"
 agp = "8.3.0"
 kotlin = "1.9.22"
 java = "17"
-ksp = "1.9.22-1.0.17"
+ksp = "1.9.22-1.0.18"
 triplet-play = "3.9.0"
 
 compose-compiler = "1.5.8"
 compose-tooling = "1.6.2"
-hilt = "2.50"
+hilt = "2.51"
 junit = "4.13.2"
 lifecycle = "2.7.0"
 room = "2.6.1"
@@ -22,6 +22,8 @@ kotlinxCollectionsImmutable = "0.3.7"
 # Owned
 androidutils = "com.github.w2sv:AndroidUtils:0.3.27-rc5"
 kotlinutils = "com.github.w2sv:KotlinUtils:0.0.7-rc2"
+composed = "com.github.w2sv.Composed:composed:0.0.1-rc3"
+composed-permissions = "com.github.w2sv.Composed:permissions:0.0.1-rc3"
 
 # Androidx
 androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
@@ -47,7 +49,6 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 # Google
 google-guava = "com.google.guava:guava:33.0.0-jre"
-accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.34.0"
 
 # .Hilt
 google-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }

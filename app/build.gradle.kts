@@ -113,6 +113,8 @@ dependencies {
 
     implementation(libs.androidutils)
     implementation(libs.kotlinutils)
+    implementation(libs.composed)
+    implementation(libs.composed.permissions)
 
     // Androidx
     implementation(libs.androidx.core)
@@ -132,7 +134,6 @@ dependencies {
 
     // Other
     implementation(libs.slimber)
-    implementation(libs.accompanist.permissions)
     implementation(libs.google.guava)
     implementation(libs.simplestorage)
     implementation(libs.kotlinx.collections.immutable)

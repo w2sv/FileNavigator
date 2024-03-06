@@ -3,18 +3,18 @@ package com.w2sv.filenavigator.ui.states
 import android.content.Context
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateFlow
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStateMap
 import com.w2sv.androidutils.ui.unconfirmed_state.UnconfirmedStatesComposition
+import com.w2sv.composed.extensions.toMutableStateMap
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.repository.NavigatorRepository
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
-import com.w2sv.filenavigator.ui.utils.extensions.getMutableStateList
-import com.w2sv.filenavigator.ui.utils.extensions.toMutableStateMap
 import com.w2sv.filenavigator.ui.utils.extensions.toggle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -74,7 +74,7 @@ class NavigatorConfiguration(
 
     val sortedFileTypes: SnapshotStateList<FileType> =
         FileType.getValues()
-            .getMutableStateList()
+            .toMutableStateList()
             .apply {
                 sortByIsEnabledAndOriginalOrder(statusMap)
             }

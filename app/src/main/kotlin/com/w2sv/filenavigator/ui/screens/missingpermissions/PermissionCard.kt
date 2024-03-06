@@ -22,11 +22,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.w2sv.composed.rememberStyledTextResource
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
-import com.w2sv.filenavigator.ui.utils.styledTextResource
 
 @Preview
 @Composable
@@ -72,7 +72,7 @@ fun PermissionCard(
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = styledTextResource(id = properties.textRes),
+                text = rememberStyledTextResource(id = properties.textRes),
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(16.dp))

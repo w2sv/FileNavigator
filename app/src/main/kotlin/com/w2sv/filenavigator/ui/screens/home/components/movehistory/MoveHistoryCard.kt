@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.w2sv.composed.CollectLatestFromFlow
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -47,7 +48,6 @@ import com.w2sv.filenavigator.ui.designsystem.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.sharedviewmodels.FileRetrievalResult
 import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
 import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
-import com.w2sv.filenavigator.ui.utils.CollectLatestFromFlow
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable

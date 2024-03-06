@@ -20,10 +20,10 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.common.utils.goToManageExternalStorageSettings
+import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
-import com.w2sv.filenavigator.ui.utils.extensions.launchPermissionRequest
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -48,7 +48,7 @@ fun PermissionScreen(
                         onGrantButtonClick = {
                             postNotificationsPermissionState.launchPermissionRequest(
                                 launchedBefore = appVM.postNotificationsPermissionRequested.value,
-                                onBlocked = {
+                                onSuppressed = {
                                     goToAppSettings(
                                         context
                                     )

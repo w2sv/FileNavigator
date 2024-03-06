@@ -2,6 +2,7 @@ package com.w2sv.filenavigator.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 
 object AppColor {
@@ -12,7 +13,9 @@ object AppColor {
     val error = Color(201, 14, 52, 200)
 
     val disabled: Color
-        @Composable get() = MaterialTheme.colorScheme.onSurface.copy(0.38f)
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.onSurface.copy(0.38f)
 
     object ThemeLight {
         val onPrimary = Color(0xFFFFFFFF)
