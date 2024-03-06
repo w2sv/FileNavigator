@@ -24,7 +24,7 @@
 ------
 
 <p align="center">
-<b>The missing link between Android and a well-structured file system.</b>
+<b>The missing link between Android and a well-sorted file system.</b>
 </p>
 
 ------
