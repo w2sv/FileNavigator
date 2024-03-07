@@ -1,8 +1,5 @@
 SHELL=/bin/bash
 
-ktlint:
-	@ktlint --color
-
 clean:
 	@echo "Clean"
 	@./gradlew clean

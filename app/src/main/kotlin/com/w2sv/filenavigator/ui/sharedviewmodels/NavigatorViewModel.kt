@@ -3,6 +3,7 @@ package com.w2sv.filenavigator.ui.sharedviewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.domain.repository.NavigatorRepository
 import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NavigatorViewModel @Inject constructor(
     navigatorRepository: NavigatorRepository,
+    fileNavigatorStatusChanged: FileNavigator.StatusChanged,
     @ApplicationContext context: Context
 ) : ViewModel() {
 
@@ -23,8 +25,10 @@ class NavigatorViewModel @Inject constructor(
     private val _isRunning: MutableStateFlow<Boolean> =
         MutableStateFlow(context.isServiceRunning<FileNavigator>())
 
-    fun setIsRunning(value: Boolean) {
-        _isRunning.value = value
+    init {
+        viewModelScope.collectFromFlow(fileNavigatorStatusChanged.isRunning) {
+            _isRunning.value = it
+        }
     }
 
     val configuration = NavigatorConfiguration(

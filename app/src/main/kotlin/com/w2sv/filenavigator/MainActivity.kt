@@ -25,13 +25,9 @@ import com.w2sv.navigator.PowerSaveModeChangedReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import slimber.log.i
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    @Inject
-    lateinit var fileNavigatorStatusChanged: FileNavigator.StatusChanged
 
     private val appVM by viewModels<AppViewModel>()
     private val navigatorVM by viewModels<NavigatorViewModel>()
@@ -58,10 +54,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun CoroutineScope.collectFromFlows() {
-        collectFromFlow(fileNavigatorStatusChanged.isRunning) {
-            navigatorVM.setIsRunning(it)
-        }
-
         collectFromFlow(appVM.exitApplication) {
             finishAffinity()
         }
