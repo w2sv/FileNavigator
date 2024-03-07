@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.utils.extensions
+package com.w2sv.filenavigator.ui.utils
 
 // =============
 // Map

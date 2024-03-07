@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.navigatorsettings
 
 import android.content.Context
-import android.view.animation.AnticipateInterpolator
 import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -48,18 +47,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.designsystem.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeSelectionColumn
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.utils.Easing
 import com.w2sv.filenavigator.ui.utils.rememberBackPressHandler
-import com.w2sv.filenavigator.ui.utils.toEasing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -97,7 +96,7 @@ fun NavigatorSettingsScreen(
                     backPressHandler(
                         onFirstPress = {
                             scope.launch {
-                                snackbarHostState.showSnackbarAndDismissCurrent(
+                                snackbarHostState.dismissCurrentSnackbarAndShow(
                                     AppSnackbarVisuals(
                                         message = context.getString(R.string.changes_won_t_be_saved_if_you_leave_now),
                                         kind = SnackbarKind.Error
@@ -124,7 +123,7 @@ fun NavigatorSettingsScreen(
             syncConfiguration = {
                 navigatorVM.configuration.launchSync().invokeOnCompletion {
                     parentScope.launch {
-                        snackbarHostState.showSnackbarAndDismissCurrent(
+                        snackbarHostState.dismissCurrentSnackbarAndShow(
                             AppSnackbarVisuals(
                                 message = context.getString(R.string.applied_navigator_settings),
                                 kind = SnackbarKind.Success
@@ -175,13 +174,13 @@ private fun ButtonRow(
             visible = configurationHasChanged,
             enter = remember {
                 slideInHorizontally(
-                    tween(easing = AnticipateInterpolator().toEasing()),
+                    tween(easing = Easing.Anticipate),
                     initialOffsetX = { it / 2 }
                 ) + fadeIn()
             },
             exit = remember {
                 slideOutHorizontally(
-                    tween(easing = AnticipateInterpolator().toEasing()),
+                    tween(easing = Easing.Anticipate),
                     targetOffsetX = { it / 2 }
                 ) + fadeOut()
             }

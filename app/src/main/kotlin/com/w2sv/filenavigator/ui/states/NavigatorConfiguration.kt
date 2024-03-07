@@ -14,8 +14,8 @@ import com.w2sv.domain.repository.NavigatorRepository
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
-import com.w2sv.filenavigator.ui.utils.extensions.toggle
+import com.w2sv.filenavigator.ui.utils.allFalseAfterEnteringValue
+import com.w2sv.filenavigator.ui.utils.toggle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

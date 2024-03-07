@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.composed.CollectLatestFromFlow
+import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -44,7 +45,6 @@ import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.designsystem.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.sharedviewmodels.FileRetrievalResult
 import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
 import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
@@ -140,7 +140,7 @@ private fun rememberRetrieveAndViewFile(
             { result ->
                 when (result) {
                     is FileRetrievalResult.CouldntFindFile -> {
-                        snackbarHostState.showSnackbarAndDismissCurrent(
+                        snackbarHostState.dismissCurrentSnackbarAndShow(
                             AppSnackbarVisuals(
                                 message = context.getString(R.string.couldn_t_find_file),
                                 kind = SnackbarKind.Error,

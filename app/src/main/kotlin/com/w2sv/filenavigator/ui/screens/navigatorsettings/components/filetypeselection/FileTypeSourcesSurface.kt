@@ -23,17 +23,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppCheckbox
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.designsystem.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
-import com.w2sv.filenavigator.ui.utils.extensions.allFalseAfterEnteringValue
-import com.w2sv.filenavigator.ui.utils.extensions.orDisabledIf
+import com.w2sv.filenavigator.ui.utils.allFalseAfterEnteringValue
+import com.w2sv.filenavigator.ui.utils.orDisabledIf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -117,7 +117,7 @@ private fun SourceRow(
                                     checkedNew
                             } else {
                                 scope.launch {
-                                    snackbarHostState.showSnackbarAndDismissCurrent(
+                                    snackbarHostState.dismissCurrentSnackbarAndShow(
                                         AppSnackbarVisuals(
                                             message = context.getString(R.string.leave_at_least_one_file_source_selected_or_disable_the_entire_file_type),
                                             kind = SnackbarKind.Error

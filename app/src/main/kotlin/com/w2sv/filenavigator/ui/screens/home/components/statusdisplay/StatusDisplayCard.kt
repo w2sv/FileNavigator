@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.home.components.statusdisplay
 
 import android.content.Context
-import android.view.animation.AnticipateOvershootInterpolator
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
@@ -48,7 +47,7 @@ import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
-import com.w2sv.filenavigator.ui.utils.toEasing
+import com.w2sv.filenavigator.ui.utils.Easing
 import com.w2sv.navigator.FileNavigator
 
 @Composable
@@ -206,14 +205,14 @@ private fun <S> UpSlidingAnimatedContent(
                 slideInVertically(
                     animationSpec = tween(
                         durationMillis = DefaultAnimationDuration,
-                        easing = AnticipateOvershootInterpolator().toEasing()
+                        easing = Easing.AnticipateOvershoot
                     ),
                     initialOffsetY = { it }) togetherWith
                         slideOutVertically(
                             targetOffsetY = { -it },
                             animationSpec = tween(
                                 durationMillis = DefaultAnimationDuration,
-                                easing = AnticipateOvershootInterpolator().toEasing()
+                                easing = Easing.AnticipateOvershoot
                             )
                         )
             }

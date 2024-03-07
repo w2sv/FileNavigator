@@ -50,11 +50,6 @@ sealed class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
     data object Error : SnackbarKind(Icons.Outlined.Warning, AppColor.error)
 }
 
-suspend fun SnackbarHostState.showSnackbarAndDismissCurrent(snackbarVisuals: SnackbarVisuals) {
-    currentSnackbarData?.dismiss()
-    showSnackbar(snackbarVisuals)
-}
-
 @Composable
 fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
     Snackbar(

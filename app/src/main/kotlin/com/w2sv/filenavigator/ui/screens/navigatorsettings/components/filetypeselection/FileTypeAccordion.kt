@@ -26,14 +26,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
-import com.w2sv.filenavigator.ui.designsystem.showSnackbarAndDismissCurrent
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.utils.extensions.orDisabledIf
+import com.w2sv.filenavigator.ui.utils.orDisabledIf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -66,7 +66,7 @@ fun FileTypeAccordion(
                     checkedNew = checkedNew,
                     showSnackbar = { visuals ->
                         scope.launch {
-                            snackbarHostState.showSnackbarAndDismissCurrent(
+                            snackbarHostState.dismissCurrentSnackbarAndShow(
                                 visuals
                             )
                         }

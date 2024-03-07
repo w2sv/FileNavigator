@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.designsystem.drawer
 
-import android.view.animation.OvershootInterpolator
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateDp
@@ -22,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.utils.toEasing
+import com.w2sv.filenavigator.ui.utils.Easing
 
 @Composable
 fun ThemeSelectionRow(
@@ -149,13 +149,15 @@ private fun ThemeButton(
 
     val borderWidth by transition.animateDp(
         transitionSpec = {
-            if (targetState) {
-                tween(
-                    durationMillis = BORDER_ANIMATION_DURATION,
-                    easing = OvershootInterpolator().toEasing(),
-                )
-            } else {
-                tween(durationMillis = BORDER_ANIMATION_DURATION)
+            remember {
+                if (targetState) {
+                    tween(
+                        durationMillis = BORDER_ANIMATION_DURATION,
+                        easing = Easing.Overshoot,
+                    )
+                } else {
+                    tween(durationMillis = BORDER_ANIMATION_DURATION)
+                }
             }
         },
         label = "",
@@ -168,7 +170,7 @@ private fun ThemeButton(
             if (targetState) {
                 tween(
                     durationMillis = BORDER_ANIMATION_DURATION,
-                    easing = OvershootInterpolator().toEasing(),
+                    easing = Easing.Overshoot,
                 )
             } else {
                 tween(durationMillis = BORDER_ANIMATION_DURATION)
