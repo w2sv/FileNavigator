@@ -48,7 +48,8 @@ sealed class FileType(
 
         companion object {
             @JvmStatic
-            fun getValues(): List<Media> = listOf(Image, Video, Audio)
+            val values: List<Media>
+                get() = listOf(Image, Video, Audio)
         }
     }
 
@@ -72,7 +73,8 @@ sealed class FileType(
 
         companion object {
             @JvmStatic
-            fun getValues(): List<NonMedia> = listOf(PDF, Text, Archive, APK)
+            val values: List<NonMedia>
+                get() = listOf(PDF, Text, Archive, APK)
         }
     }
 
@@ -188,7 +190,8 @@ sealed class FileType(
 
     companion object {
         @JvmStatic
-        fun getValues(): List<FileType> = Media.getValues() + NonMedia.getValues()
+        val values: List<FileType>
+            get() = Media.values + NonMedia.values
     }
 
     @Parcelize

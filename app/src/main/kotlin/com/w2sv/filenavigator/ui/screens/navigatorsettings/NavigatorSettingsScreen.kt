@@ -32,7 +32,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,6 +46,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.w2sv.composed.CollectLatestFromFlow
+import com.w2sv.composed.OnRemoveFromComposition
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -75,13 +76,15 @@ fun NavigatorSettingsScreen(
 ) {
     // Reset navigator config on removal from composition, i.e., return to home screen.
     // Doing it here rather than in onBackPress causes the UI not to update shortly before leaving the screen.
-    DisposableEffect(Unit) {
-        onDispose {
-            navigatorVM.configuration.reset()
+    OnRemoveFromComposition(
+        remember {
+            {
+                navigatorVM.configuration.unconfirmedStates.reset()
+            }
         }
-    }
+    )
 
-    val configurationHasChanged by navigatorVM.configuration.statesDissimilar.collectAsStateWithLifecycle()
+    val configurationHasChanged by navigatorVM.configuration.unconfirmedStates.statesDissimilar.collectAsStateWithLifecycle()
 
     val backPressHandler = rememberBackPressHandler(scope)
 
@@ -115,13 +118,21 @@ fun NavigatorSettingsScreen(
         }
     }
 
+    CollectLatestFromFlow(
+        flow = navigatorVM.makeSnackbarVisuals,
+        action = { makeSnackbarVisuals ->
+            snackbarHostState.dismissCurrentSnackbarAndShow(makeSnackbarVisuals(context))
+        },
+        key1 = snackbarHostState
+    )
+
     Column(modifier = modifier) {
         ButtonRow(
             onBackButtonPress = onBackPress,
             configurationHasChanged = configurationHasChanged,
-            resetConfiguration = navigatorVM.configuration::reset,
+            resetConfiguration = navigatorVM.configuration.unconfirmedStates::reset,
             syncConfiguration = {
-                navigatorVM.configuration.launchSync().invokeOnCompletion {
+                navigatorVM.configuration.unconfirmedStates.launchSync().invokeOnCompletion {
                     parentScope.launch {
                         snackbarHostState.dismissCurrentSnackbarAndShow(
                             AppSnackbarVisuals(

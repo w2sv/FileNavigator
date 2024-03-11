@@ -11,5 +11,5 @@ val FileType.color: Color
 
 private val fileTypeColors =
     FileType
-        .getValues()
+        .values
         .associateWith { Color(it.colorInt) }

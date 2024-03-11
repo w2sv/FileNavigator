@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,41 +10,33 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.utils.orDisabledIf
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun FileTypeAccordion(
     fileType: FileType,
+    isEnabled: Boolean,
     isFirstDisabled: () -> Boolean,
-    navigatorConfiguration: NavigatorConfiguration,
+    onCheckedChange: (Boolean) -> Unit,
+    mediaFileSourceEnabled: (FileType.Source) -> Boolean,
+    onMediaFileSourceCheckedChange: (FileType.Source, Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    scope: CoroutineScope = rememberCoroutineScope(),
-    context: Context = LocalContext.current,
-    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
     Column(
         modifier = modifier
@@ -54,33 +45,18 @@ fun FileTypeAccordion(
             DisabledText(modifier = Modifier.padding(bottom = 8.dp))
         }
 
-        val isEnabled =
-            navigatorConfiguration.statusMap.getValue(fileType)
-
         Header(
             fileType = fileType,
             isEnabled = isEnabled,
-            onCheckedChange = { checkedNew ->
-                navigatorConfiguration.onFileTypeCheckedChangeInput(
-                    fileType = fileType,
-                    checkedNew = checkedNew,
-                    showSnackbar = { visuals ->
-                        scope.launch {
-                            snackbarHostState.dismissCurrentSnackbarAndShow(
-                                visuals
-                            )
-                        }
-                    },
-                    context = context
-                )
-            }
+            onCheckedChange = onCheckedChange
         )
         AnimatedVisibility(
             visible = isEnabled
         ) {
             FileTypeSourcesSurface(
                 fileType = fileType,
-                navigatorConfiguration = navigatorConfiguration
+                mediaFileSourceEnabled = mediaFileSourceEnabled,
+                setMediaFileSourceEnabled = onMediaFileSourceCheckedChange
             )
         }
     }

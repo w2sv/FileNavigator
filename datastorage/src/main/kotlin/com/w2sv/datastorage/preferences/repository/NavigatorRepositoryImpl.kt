@@ -5,8 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.w2sv.androidutils.datastorage.datastore.DataStoreEntry
-import com.w2sv.androidutils.datastorage.datastore.DataStoreRepository
+import com.w2sv.androidutils.datastorage.preferences_datastore.DataStoreEntry
+import com.w2sv.androidutils.datastorage.preferences_datastore.PreferencesDataStoreRepository
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.repository.NavigatorRepository
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 
 @Singleton
 class NavigatorRepositoryImpl @Inject constructor(dataStore: DataStore<Preferences>) :
-    DataStoreRepository(dataStore),
+    PreferencesDataStoreRepository(dataStore),
     NavigatorRepository {
 
     override val disableOnLowBattery = dataStoreFlow(
@@ -24,7 +24,7 @@ class NavigatorRepositoryImpl @Inject constructor(dataStore: DataStore<Preferenc
     )
 
     override fun getFileTypeEnablementMap(): Map<FileType, Flow<Boolean>> {
-        val dseToFileType = FileType.getValues()
+        val dseToFileType = FileType.values
             .associateBy { it.isEnabledDSE }
         return getFlowMap(dseToFileType.keys)
             .mapKeys { (k, _) -> dseToFileType.getValue(k) }
@@ -35,7 +35,7 @@ class NavigatorRepositoryImpl @Inject constructor(dataStore: DataStore<Preferenc
     }
 
     override fun getMediaFileSourceEnablementMap(): Map<FileType.Source, Flow<Boolean>> {
-        val dseToSource = FileType.Media.getValues()
+        val dseToSource = FileType.Media.values
             .flatMap { it.sources }
             .associateBy { it.isEnabledDSE }
         return getFlowMap(dseToSource.keys)

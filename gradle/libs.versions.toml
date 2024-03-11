@@ -21,7 +21,7 @@ composed = "0.0.2-rc1"
 [libraries]
 
 # Owned
-androidutils = "com.github.w2sv:AndroidUtils:0.3.27-rc5"
+androidutils = "com.github.w2sv:AndroidUtils:0.3.28-rc2"
 kotlinutils = "com.github.w2sv:KotlinUtils:0.0.7-rc2"
 composed = { module = "com.github.w2sv.Composed:composed", version.ref = "composed" }
 composed-permissions = { module = "com.github.w2sv.Composed:permissions", version.ref = "composed" }

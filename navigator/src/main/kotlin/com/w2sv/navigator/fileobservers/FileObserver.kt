@@ -101,7 +101,7 @@ internal fun getFileObservers(
 ): List<FileObserver> =
     buildList {
         addAll(
-            FileType.Media.getValues()
+            FileType.Media.values
                 .filter { fileTypeEnablementMap.getValue(it) }
                 .map { mediaType ->
                     MediaFileObserver(
@@ -116,7 +116,7 @@ internal fun getFileObservers(
                     )
                 }
         )
-        FileType.NonMedia.getValues()
+        FileType.NonMedia.values
             .filter { fileTypeEnablementMap.getValue(it) }
             .run {
                 if (isNotEmpty()) {

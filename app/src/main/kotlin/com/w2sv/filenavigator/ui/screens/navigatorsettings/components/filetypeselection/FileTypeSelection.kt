@@ -39,8 +39,9 @@ fun FileTypeSelectionColumn(
         Spacer(modifier = Modifier.height(16.dp))
 
         val firstDisabledFileType by navigatorConfiguration.firstDisabledFileType.collectAsStateWithLifecycle()
+        val lazyListState = rememberLazyListState()
 
-        LazyColumn(state = rememberLazyListState()) {
+        LazyColumn(state = lazyListState) {
             items(
                 items = navigatorConfiguration.sortedFileTypes,
                 key = { it }
@@ -49,8 +50,23 @@ fun FileTypeSelectionColumn(
 
                 FileTypeAccordion(
                     fileType = fileType,
+                    isEnabled = navigatorConfiguration.statusMap.getValue(fileType),
                     isFirstDisabled = { fileType == firstDisabledFileType },
-                    navigatorConfiguration = navigatorConfiguration,
+                    onCheckedChange = {
+                        navigatorConfiguration.onFileTypeCheckedChange(
+                            fileType = fileType,
+                            checkedNew = it
+                        )
+                    },
+                    mediaFileSourceEnabled = {
+                        navigatorConfiguration.mediaFileSourceEnabledMap.getOrDefault(
+                            it,
+                            true
+                        )
+                    },
+                    onMediaFileSourceCheckedChange = { source, checked ->
+                        navigatorConfiguration.onMediaFileSourceCheckedChange(source, checked)
+                    },
                     modifier = Modifier
                         .padding(vertical = 4.dp)
                         .animateItemPlacement(tween(DefaultAnimationDuration))  // Animate upon reordering
