@@ -2,11 +2,11 @@ package com.w2sv.navigator
 
 import android.content.Context
 import android.content.Intent
-import com.w2sv.androidutils.coroutines.getSynchronousMap
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
+import com.w2sv.common.utils.valueUnflowed
 import com.w2sv.domain.repository.NavigatorRepository
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
@@ -41,10 +41,8 @@ class FileNavigator : UnboundService() {
 
     private fun getRegisteredFileObservers(): List<FileObserver> =
         getFileObservers(
-            fileTypeEnablementMap = navigatorRepository.getFileTypeEnablementMap()
-                .getSynchronousMap(),
-            mediaFileSourceEnablementMap = navigatorRepository.getMediaFileSourceEnablementMap()
-                .getSynchronousMap(),
+            fileTypeEnablementMap = navigatorRepository.fileTypeEnablementMap.valueUnflowed(),
+            mediaFileSourceEnablementMap = navigatorRepository.mediaFileSourceEnablementMap.valueUnflowed(),
             contentResolver = contentResolver,
             onNewNavigatableFileListener = { moveFile ->
                 // with scope because construction of inner class BuilderArgs requires inner class scope

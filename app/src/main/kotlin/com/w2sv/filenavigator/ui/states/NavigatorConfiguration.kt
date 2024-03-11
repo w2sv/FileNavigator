@@ -9,6 +9,7 @@ import com.w2sv.androidutils.ui.reversible_state.ReversibleStateMap
 import com.w2sv.androidutils.ui.reversible_state.ReversibleStatesComposition
 import com.w2sv.common.utils.ReversibleValue
 import com.w2sv.common.utils.increment
+import com.w2sv.common.utils.valueUnflowed
 import com.w2sv.composed.extensions.toMutableStateMap
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.repository.NavigatorRepository
@@ -33,20 +34,18 @@ class NavigatorConfiguration(
 ) {
     private val statusMapChanged = MutableSharedFlow<Unit>()
 
-    val statusMap = ReversibleStateMap.fromPersistedFlowMapWithSynchronousInitial(
-        persistedFlowMap = navigatorRepository.getFileTypeEnablementMap(),
-        scope = scope,
-        makeMap = { it.toMutableStateMap() },
+    val statusMap = ReversibleStateMap(
+        persistedStateFlowMap = navigatorRepository.fileTypeEnablementMap,
+        makeMap = { it.valueUnflowed().toMutableStateMap() },
         syncState = {
             navigatorRepository.saveFileTypeEnablementMap(it)
             statusMapChanged.emit(Unit)
         }
     )
 
-    val mediaFileSourceEnabledMap = ReversibleStateMap.fromPersistedFlowMapWithSynchronousInitial(
-        persistedFlowMap = navigatorRepository.getMediaFileSourceEnablementMap(),
-        scope = scope,
-        makeMap = { it.toMutableStateMap() },
+    val mediaFileSourceEnabledMap = ReversibleStateMap(
+        persistedStateFlowMap = navigatorRepository.mediaFileSourceEnablementMap,
+        makeMap = { it.valueUnflowed().toMutableStateMap() },
         syncState = {
             navigatorRepository.saveMediaFileSourceEnablementMap(it)
         }
