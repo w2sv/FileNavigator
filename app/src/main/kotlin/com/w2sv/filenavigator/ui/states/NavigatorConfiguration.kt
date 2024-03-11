@@ -1,9 +1,10 @@
 package com.w2sv.filenavigator.ui.states
 
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
-import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.ui.reversible_state.ReversibleStateFlow
 import com.w2sv.androidutils.ui.reversible_state.ReversibleStateMap
 import com.w2sv.androidutils.ui.reversible_state.ReversibleStatesComposition
@@ -20,10 +21,7 @@ import com.w2sv.filenavigator.ui.sharedviewmodels.MakeSnackbarVisuals
 import com.w2sv.kotlinutils.extensions.toInt
 import com.w2sv.kotlinutils.extensions.toNonZeroInt
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 
 @Stable
 class NavigatorConfiguration(
@@ -32,14 +30,32 @@ class NavigatorConfiguration(
     private val emitMakeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
     onStateSynced: () -> Unit,
 ) {
-    private val statusMapChanged = MutableSharedFlow<Unit>()
+    val sortedFileTypes: SnapshotStateList<FileType> =
+        FileType.values
+            .toMutableStateList()
+            .apply {
+                sortByIsEnabledAndOriginalOrder(
+                    isEnabled = {
+                        navigatorRepository.fileTypeEnablementMap.getValue(
+                            it
+                        )
+                            .value
+                    }
+                )
+            }
+
+    val firstDisabledFileType by derivedStateOf {
+        sortedFileTypes.firstOrNull { !navigatorRepository.fileTypeEnablementMap.getValue(it).value }
+    }
 
     val statusMap = ReversibleStateMap(
         persistedStateFlowMap = navigatorRepository.fileTypeEnablementMap,
         makeMap = { it.valueUnflowed().toMutableStateMap() },
         syncState = {
             navigatorRepository.saveFileTypeEnablementMap(it)
-            statusMapChanged.emit(Unit)
+        },
+        onStateSynced = { map ->
+            sortedFileTypes.sortByIsEnabledAndOriginalOrder(isEnabled = { map.getValue(it) })
         }
     )
 
@@ -52,9 +68,9 @@ class NavigatorConfiguration(
     )
 
     val disableOnLowBattery = ReversibleStateFlow(
-        scope,
-        navigatorRepository.disableOnLowBattery,
-        SharingStarted.Eagerly
+        coroutineScope = scope,
+        dataStoreFlow = navigatorRepository.disableOnLowBattery,
+        started = SharingStarted.Eagerly
     )
 
     val unconfirmedStates = ReversibleStatesComposition(
@@ -74,26 +90,6 @@ class NavigatorConfiguration(
             fileTypeToNCheckedSources.reset()
         }
     )
-
-    val sortedFileTypes: SnapshotStateList<FileType> =
-        FileType.values
-            .toMutableStateList()
-            .apply {
-                sortByIsEnabledAndOriginalOrder(statusMap)
-            }
-
-    private fun getFirstDisabledFileType(): FileType? =
-        sortedFileTypes.getFirstDisabled { !statusMap.persistedStateFlowMap.getValue(it).value }
-
-    val firstDisabledFileType get() = _firstDisabledFileType.asStateFlow()
-    private val _firstDisabledFileType = MutableStateFlow(getFirstDisabledFileType())
-
-    init {
-        scope.collectFromFlow(statusMapChanged) {
-            sortedFileTypes.sortByIsEnabledAndOriginalOrder(statusMap)
-            _firstDisabledFileType.value = getFirstDisabledFileType()
-        }
-    }
 
     fun onMediaFileSourceCheckedChange(source: FileType.Source, checkedNew: Boolean) {
         if (!checkedNew && fileTypeToNCheckedSources.value.getValue(source.fileType) <= 1) {
@@ -148,18 +144,9 @@ class NavigatorConfiguration(
     private val nCheckedFileTypes = ReversibleValue(statusMap.values.count { it })
 }
 
-private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(fileTypeStatuses: Map<FileType, Boolean>) {
+private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(isEnabled: (FileType) -> Boolean) {
     sortWith(
-        compareByDescending<FileType> {
-            fileTypeStatuses.getValue(
-                it
-            )
-        }
+        compareByDescending(isEnabled)
             .thenBy(FileType.values::indexOf)
     )
 }
-
-private fun List<FileType>.getFirstDisabled(isDisabled: (FileType) -> Boolean): FileType? =
-    windowed(2)
-        .firstOrNull { !isDisabled(it[0]) && isDisabled(it[1]) }
-        ?.let { it[1] }

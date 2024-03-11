@@ -85,7 +85,7 @@ private val FileType.isEnabledDSE
     )
 
 private val FileType.Source.isEnabledDSE
-    get() = DataStoreEntry.UniType.Impl(  // TODO: Remove for NonMedia
+    get() = DataStoreEntry.UniType.Impl(
         booleanPreferencesKey(getPreferencesKeyContent("IS_ENABLED")),
         true
     )

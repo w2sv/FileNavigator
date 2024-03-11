@@ -12,11 +12,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
@@ -38,7 +37,6 @@ fun FileTypeSelectionColumn(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val firstDisabledFileType by navigatorConfiguration.firstDisabledFileType.collectAsStateWithLifecycle()
         val lazyListState = rememberLazyListState()
 
         LazyColumn(state = lazyListState) {
@@ -51,21 +49,27 @@ fun FileTypeSelectionColumn(
                 FileTypeAccordion(
                     fileType = fileType,
                     isEnabled = navigatorConfiguration.statusMap.getValue(fileType),
-                    isFirstDisabled = { fileType == firstDisabledFileType },
-                    onCheckedChange = {
-                        navigatorConfiguration.onFileTypeCheckedChange(
-                            fileType = fileType,
-                            checkedNew = it
-                        )
+                    isFirstDisabled = remember { { fileType == navigatorConfiguration.firstDisabledFileType } },
+                    onCheckedChange = remember {
+                        {
+                            navigatorConfiguration.onFileTypeCheckedChange(
+                                fileType = fileType,
+                                checkedNew = it
+                            )
+                        }
                     },
-                    mediaFileSourceEnabled = {
-                        navigatorConfiguration.mediaFileSourceEnabledMap.getOrDefault(
-                            it,
-                            true
-                        )
+                    mediaFileSourceEnabled = remember {
+                        {
+                            navigatorConfiguration.mediaFileSourceEnabledMap.getOrDefault(
+                                it,
+                                true
+                            )
+                        }
                     },
-                    onMediaFileSourceCheckedChange = { source, checked ->
-                        navigatorConfiguration.onMediaFileSourceCheckedChange(source, checked)
+                    onMediaFileSourceCheckedChange = remember {
+                        { source, checked ->
+                            navigatorConfiguration.onMediaFileSourceCheckedChange(source, checked)
+                        }
                     },
                     modifier = Modifier
                         .padding(vertical = 4.dp)

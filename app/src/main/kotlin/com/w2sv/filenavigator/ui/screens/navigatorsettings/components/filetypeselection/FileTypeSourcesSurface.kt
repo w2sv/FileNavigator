@@ -2,12 +2,10 @@ package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypes
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,7 +19,9 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.ui.designsystem.AppCheckbox
 import com.w2sv.filenavigator.ui.model.color
+import com.w2sv.filenavigator.ui.utils.ElementDividedColumn
 import com.w2sv.filenavigator.ui.utils.orDisabledIf
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun FileTypeSourcesSurface(
@@ -35,19 +35,17 @@ fun FileTypeSourcesSurface(
         tonalElevation = 8.dp,
         modifier = modifier.fillMaxWidth()
     ) {
-        Column {
-            fileType.sources.forEachIndexed { index, source ->
+        ElementDividedColumn(
+            elements = fileType.sources.toImmutableList(),
+            makeElement = { source ->
                 SourceRow(
                     source = source,
                     isEnabled = mediaFileSourceEnabled(source),
                     onCheckedChange = { setMediaFileSourceEnabled(source, it) },
                     modifier = Modifier.height(44.dp)
                 )
-                if (index != fileType.sources.lastIndex) {
-                    HorizontalDivider()
-                }
             }
-        }
+        )
     }
 }
 
