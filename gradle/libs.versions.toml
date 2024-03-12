@@ -6,7 +6,7 @@ agp = "8.3.0"
 kotlin = "1.9.22"
 java = "17"
 ksp = "1.9.22-1.0.17"
-triplet-play = "3.9.0"
+triplet-play = "3.9.1"
 
 compose-compiler = "1.5.8"
 compose-tooling = "1.6.2"
