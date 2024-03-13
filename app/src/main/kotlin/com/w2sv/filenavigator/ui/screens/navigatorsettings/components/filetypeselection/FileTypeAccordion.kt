@@ -32,7 +32,7 @@ import com.w2sv.filenavigator.ui.utils.orDisabledIf
 fun FileTypeAccordion(
     fileType: FileType,
     isEnabled: Boolean,
-    isFirstDisabled: () -> Boolean,
+    isFirstDisabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     mediaFileSourceEnabled: (FileType.Source) -> Boolean,
     onMediaFileSourceCheckedChange: (FileType.Source, Boolean) -> Unit,
@@ -41,7 +41,7 @@ fun FileTypeAccordion(
     Column(
         modifier = modifier
     ) {
-        if (isFirstDisabled()) {
+        if (isFirstDisabled) {
             DisabledText(modifier = Modifier.padding(bottom = 8.dp))
         }
 

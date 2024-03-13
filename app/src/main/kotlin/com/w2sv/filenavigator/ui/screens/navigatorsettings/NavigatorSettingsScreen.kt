@@ -10,15 +10,19 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -32,6 +36,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -54,15 +59,18 @@ import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeSelectionColumn
+import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.Easing
 import com.w2sv.filenavigator.ui.utils.rememberBackPressHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import slimber.log.i
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavigatorSettingsScreen(
     drawerState: DrawerState,
@@ -147,16 +155,72 @@ fun NavigatorSettingsScreen(
                 .fillMaxWidth()
                 .fillMaxHeight(0.1f)
         )
-        Spacer(modifier = Modifier.fillMaxHeight(0.02f))
-        FileTypeSelectionColumn(
-            navigatorConfiguration = navigatorVM.configuration,
-            modifier = Modifier.fillMaxHeight(0.7f)
-        )
-        Spacer(modifier = Modifier.fillMaxHeight(0.08f))
-        MoreColumn(
-            disableOnLowBattery = navigatorVM.configuration.disableOnLowBattery.collectAsStateWithLifecycle().value,
-            setDisableOnLowBattery = { navigatorVM.configuration.disableOnLowBattery.value = it }
-        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        val firstDisabledFileType by navigatorVM.configuration.firstDisabledFileType.collectAsStateWithLifecycle()
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            item {
+                Text(
+                    text = stringResource(id = R.string.file_types),
+                    style = MaterialTheme.typography.headlineMedium
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            items(navigatorVM.configuration.sortedFileTypes, key = { it }) { fileType ->
+                i { "Laying out ${fileType.name}" }
+
+                FileTypeAccordion(
+                    fileType = fileType,
+                    isEnabled = navigatorVM.configuration.fileEnablementMap.getValue(fileType),
+                    isFirstDisabled = remember {
+                        derivedStateOf {
+                            fileType == firstDisabledFileType
+                        }
+                    }.value,
+                    onCheckedChange = remember(fileType) {
+                        {
+                            navigatorVM.configuration.onFileTypeCheckedChange(
+                                fileType = fileType,
+                                checkedNew = it
+                            )
+                        }
+                    },
+                    mediaFileSourceEnabled = remember(fileType) {
+                        {
+                            navigatorVM.configuration.mediaFileSourceEnablementMap.getOrDefault(
+                                it,
+                                true
+                            )
+                        }
+                    },
+                    onMediaFileSourceCheckedChange = remember(fileType) {
+                        { source, checked ->
+                            navigatorVM.configuration.onMediaFileSourceCheckedChange(
+                                source,
+                                checked
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(vertical = 4.dp)
+                        .animateItemPlacement(tween(DefaultAnimationDuration))  // Animate upon reordering
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                MoreColumn(
+                    disableOnLowBattery = navigatorVM.configuration.disableOnLowBattery.collectAsStateWithLifecycle().value,
+                    setDisableOnLowBattery = {
+                        navigatorVM.configuration.disableOnLowBattery.value = it
+                    }
+                )
+            }
+        }
     }
 
     BackHandler(onBack = onBackPress)
