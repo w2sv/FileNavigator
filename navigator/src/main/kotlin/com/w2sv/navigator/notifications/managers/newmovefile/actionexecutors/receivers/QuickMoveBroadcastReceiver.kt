@@ -7,7 +7,6 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.callback.FileCallback
-import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.di.AppDispatcher
@@ -20,6 +19,7 @@ import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.model.getMoveEntry
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.showFileSuccessfullyMovedToast
 import com.w2sv.navigator.notifications.putNavigatableFileExtra
 import com.w2sv.navigator.notifications.putNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
@@ -91,12 +91,7 @@ class QuickMoveBroadcastReceiver : BroadcastReceiver() {
                 targetFolder = targetDirectoryDocumentFile,
                 callback = object : FileCallback() {
                     override fun onCompleted(result: Any) {
-                        context.showToast(
-                            context.getString(
-                                R.string.moved_file_to,
-                                targetDirectoryDocumentFile.getSimplePath(context)
-                            )
-                        )
+                        context.showFileSuccessfullyMovedToast(targetDirectoryDocumentFile)
 
                         scope.launch {
                             insertMoveEntryUseCase(

@@ -13,7 +13,6 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.anggrayudi.storage.callback.FileCallback
-import com.anggrayudi.storage.file.getSimplePath
 import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.coroutines.getValueSynchronously
 import com.w2sv.androidutils.notifying.showToast
@@ -48,7 +47,7 @@ class FileMoveActivity : ComponentActivity() {
     }
 
     @HiltViewModel
-    internal class ViewModel @Inject constructor(
+    class ViewModel @Inject constructor(
         savedStateHandle: SavedStateHandle,
         private val navigatorRepository: NavigatorRepository,
         private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
@@ -61,7 +60,7 @@ class FileMoveActivity : ComponentActivity() {
 
         val moveMediaFile: MediaFile? = moveFile.getSimpleStorageMediaFile(context)
 
-        fun preemptiveExitReason(): PreemptiveExitReason? =
+        internal fun preemptiveExitReason(): PreemptiveExitReason? =
             when {
                 !isExternalStorageManger() -> PreemptiveExitReason.MissingManageAllFilesPermission
                 !moveFile.mediaStoreFile.columnData.fileExists -> PreemptiveExitReason.MoveFileNotFound
@@ -171,12 +170,7 @@ class FileMoveActivity : ComponentActivity() {
 
                             removeNotificationAndCleanupResources()
 
-                            showToast(
-                                getString(
-                                    R.string.moved_file_to,
-                                    targetDirectoryDocumentFile.getSimplePath(applicationContext)
-                                )
-                            )
+                            showFileSuccessfullyMovedToast(targetDirectoryDocumentFile)
                         }
 
                         override fun onFailed(errorCode: ErrorCode) {
