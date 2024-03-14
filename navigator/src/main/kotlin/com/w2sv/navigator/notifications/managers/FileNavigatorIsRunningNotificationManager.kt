@@ -31,9 +31,11 @@ class FileNavigatorIsRunningNotificationManager(
                 setStyle(
                     NotificationCompat.BigTextStyle()
                         .bigText(
-                            context.getString(R.string.you_will_receive_a_notification_when_a_new_file_pertaining_to_your_selected_file_types_enters_the_file_system)
+                            context.getString(R.string.you_will_receive_a_notification_when_a_new_file_corresponding_to_your_selected_file_types_enters_the_file_system)
                         )
                 )
+
+                foregroundServiceBehavior = NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE
 
                 setContentIntent(
                     PendingIntent.getActivity(

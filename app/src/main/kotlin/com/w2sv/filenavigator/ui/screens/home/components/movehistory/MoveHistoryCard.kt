@@ -71,7 +71,7 @@ fun MoveHistoryCard(
                 )
             }
         }
-    val retrieveAndViewFile = rememberRetrieveAndViewFile()
+    val retrieveAndViewFile: (MoveEntry) -> Unit = rememberRetrieveAndViewFile()
 
     ElevatedCard(
         modifier = modifier,
@@ -107,6 +107,8 @@ fun MoveHistoryCard(
                     }
                 }
             }
+            
+            Spacer(modifier = Modifier.height(8.dp))
 
             AnimatedContent(
                 targetState = moveHistoryIsEmpty,

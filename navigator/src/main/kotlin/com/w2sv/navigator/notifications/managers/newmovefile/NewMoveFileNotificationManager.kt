@@ -73,15 +73,16 @@ class NewMoveFileNotificationManager(
                     getDocumentUriFileName(
                         documentUri = lastMoveDestination,
                         context = context
-                    )?.let { fileName ->
-                        addAction(
-                            getQuickMoveAction(
-                                requestCode = requestCodeIterator.next(),
-                                lastMoveDestination = lastMoveDestination,
-                                lastMoveDestinationFileName = fileName
+                    )
+                        ?.let { fileName ->
+                            addAction(
+                                getQuickMoveAction(
+                                    requestCode = requestCodeIterator.next(),
+                                    lastMoveDestination = lastMoveDestination,
+                                    lastMoveDestinationFileName = fileName
+                                )
                             )
-                        )
-                    }
+                        }
                 }
 
                 setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))

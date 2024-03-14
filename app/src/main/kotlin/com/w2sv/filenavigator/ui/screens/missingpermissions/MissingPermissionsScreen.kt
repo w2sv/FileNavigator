@@ -1,12 +1,11 @@
 package com.w2sv.filenavigator.ui.screens.missingpermissions
 
 import android.content.Context
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -20,12 +19,12 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.common.utils.goToManageExternalStorageSettings
+import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
-import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PermissionScreen(
     postNotificationsPermissionState: PermissionState?,
@@ -72,20 +71,30 @@ fun PermissionScreen(
         }
     }
 
-    LazyColumn(
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxSize()
-    ) {
-        items(permissionCardProperties, key = { it.hashCode() }) {
-            PermissionCard(
-                properties = it,
-                modifier = Modifier.animateItemPlacement(
-                    tween(
-                        DefaultAnimationDuration
-                    )
+    if (isPortraitModeActive) {
+        Column(
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier.fillMaxSize()
+        ) {
+            permissionCardProperties.forEach {
+                PermissionCard(
+                    properties = it
                 )
-            )
+            }
+        }
+    } else {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            permissionCardProperties.forEach {
+                PermissionCard(
+                    properties = it,
+                    modifier = Modifier.fillMaxWidth(0.4f)
+                )
+            }
         }
     }
 }

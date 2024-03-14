@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Single source of truth for manipulating, i.e. showing and cancelling, app notifications.
+ * Single source of truth for showing and cancelling app notifications.
  */
 @Singleton
 class AppNotificationsManager @Inject constructor(

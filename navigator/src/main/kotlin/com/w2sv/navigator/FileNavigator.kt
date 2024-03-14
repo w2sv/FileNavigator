@@ -89,7 +89,7 @@ class FileNavigator : UnboundService() {
             }
         }
 
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     private fun start() {
