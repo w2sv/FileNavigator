@@ -11,23 +11,27 @@ import androidx.compose.ui.Modifier
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.MoveHistoryCard
 import com.w2sv.filenavigator.ui.screens.home.components.statusdisplay.StatusDisplayCard
+import com.w2sv.filenavigator.ui.utils.ModifierReceivingComposable
+import com.w2sv.filenavigator.ui.utils.rememberMovableContentOf
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
+    val statusDisplayCard: ModifierReceivingComposable = rememberMovableContentOf {
+        StatusDisplayCard(it)
+    }
+    val moveHistoryCard: ModifierReceivingComposable = rememberMovableContentOf {
+        MoveHistoryCard(it)
+    }
+
     if (isPortraitModeActive) {
         Column(
             modifier = modifier,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatusDisplayCard(
-                modifier = Modifier
-                    .fillMaxHeight(0.28f)
-            )
-            MoveHistoryCard(
-                modifier = Modifier.fillMaxHeight(0.8f)
-            )
+            statusDisplayCard(Modifier.fillMaxHeight(0.28f))
+            moveHistoryCard(Modifier.fillMaxHeight(0.8f))
         }
     } else {
         Row(
@@ -35,13 +39,13 @@ fun HomeScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatusDisplayCard(
-                modifier = Modifier
+            statusDisplayCard(
+                Modifier
                     .fillMaxWidth(0.4f)
                     .fillMaxHeight(0.8f)
             )
-            MoveHistoryCard(
-                modifier = Modifier
+            moveHistoryCard(
+                Modifier
                     .fillMaxWidth(0.8f)
             )
         }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,18 +24,50 @@ import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
+import com.w2sv.filenavigator.ui.utils.ModifierReceivingComposable
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PermissionScreen(
     postNotificationsPermissionState: PermissionState?,
     modifier: Modifier = Modifier,
+) {
+    val permissionCards =
+        rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState)
+
+    if (isPortraitModeActive) {
+        Column(
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier.fillMaxSize()
+        ) {
+            permissionCards.forEach {
+                it(Modifier)
+            }
+        }
+    } else {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            permissionCards.forEach {
+                it(Modifier.fillMaxWidth(0.4f))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun rememberMovablePermissionCards(
+    postNotificationsPermissionState: PermissionState?,
     appVM: AppViewModel = viewModel(),
     context: Context = LocalContext.current
-) {
+): List<ModifierReceivingComposable> {
     val manageAllFilesPermissionGranted by appVM.manageAllFilesPermissionGranted.collectAsStateWithLifecycle()
 
-    val permissionCardProperties = remember(
+    return remember(
         key1 = postNotificationsPermissionState?.status?.isGranted,
         key2 = manageAllFilesPermissionGranted
     ) {
@@ -69,32 +102,8 @@ fun PermissionScreen(
                 )
             }
         }
-    }
-
-    if (isPortraitModeActive) {
-        Column(
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.fillMaxSize()
-        ) {
-            permissionCardProperties.forEach {
-                PermissionCard(
-                    properties = it
-                )
+            .map { properties ->
+                movableContentOf { mod -> PermissionCard(properties = properties, modifier = mod) }
             }
-        }
-    } else {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            permissionCardProperties.forEach {
-                PermissionCard(
-                    properties = it,
-                    modifier = Modifier.fillMaxWidth(0.4f)
-                )
-            }
-        }
     }
 }
