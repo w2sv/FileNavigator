@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,11 +41,11 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
+import com.w2sv.filenavigator.ui.designsystem.MoreElevatedCard
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.sharedviewmodels.FileRetrievalResult
 import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
-import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -73,9 +71,8 @@ fun MoveHistoryCard(
         }
     val retrieveAndViewFile: (MoveEntry) -> Unit = rememberRetrieveAndViewFile()
 
-    ElevatedCard(
-        modifier = modifier,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = DefaultElevatedCardElevation)
+    MoreElevatedCard(
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier
@@ -107,7 +104,7 @@ fun MoveHistoryCard(
                     }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(8.dp))
 
             AnimatedContent(

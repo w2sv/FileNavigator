@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -41,12 +39,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.MoreElevatedCard
 import com.w2sv.filenavigator.ui.screens.Screen
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
-import com.w2sv.filenavigator.ui.theme.DefaultElevatedCardElevation
 import com.w2sv.filenavigator.ui.utils.Easing
 import com.w2sv.navigator.FileNavigator
 
@@ -90,9 +88,8 @@ fun StatusDisplayCard(
         navigatorIsRunningDependentPropertiesMap.getValue(navigatorIsRunning)
     }
 
-    ElevatedCard(
+    MoreElevatedCard(
         modifier = modifier.fillMaxSize(),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = DefaultElevatedCardElevation)
     ) {
         Column(
             modifier = Modifier

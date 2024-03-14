@@ -35,9 +35,11 @@ fun HomeScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatusDisplayCard(modifier = Modifier
-                .fillMaxWidth(0.4f)
-                .fillMaxHeight(0.8f))
+            StatusDisplayCard(
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .fillMaxHeight(0.8f)
+            )
             MoveHistoryCard(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
