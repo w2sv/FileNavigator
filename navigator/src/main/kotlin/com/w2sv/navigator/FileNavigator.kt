@@ -51,7 +51,8 @@ class FileNavigator : UnboundService() {
                         BuilderArgs(
                             moveFile = moveFile,
                             getLastMoveDestination = { source ->
-                                navigatorRepository.getLastMoveDestinationFlow(source)
+                                navigatorRepository
+                                    .getLastMoveDestinationFlow(source)
                                     .getValueSynchronously()
                             }
                         )

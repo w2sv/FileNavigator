@@ -12,7 +12,7 @@ import java.security.MessageDigest
 class MediaStoreFileProvider {
 
     sealed interface Result {
-        class Success(val mediaStoreFile: MediaStoreFile) : Result
+        data class Success(val mediaStoreFile: MediaStoreFile) : Result
         data object CouldntFetchMediaStoreColumnData : Result
         data object FileIsPending : Result
         data object FileNotFoundException : Result

@@ -1,5 +1,5 @@
 <resources>
-    <string name="moved_file_to">Moved file to %1$s</string>
+    <string name="moved_file_to"><![CDATA[Moved file to <b>%1$s</b>]]></string>
     <string name="move">Move</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
     <string name="stop">Stop</string>
