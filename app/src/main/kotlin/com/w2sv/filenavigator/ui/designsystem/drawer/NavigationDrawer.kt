@@ -76,7 +76,7 @@ private fun Sheet(
 @Composable
 private fun AppLogoWCircularBackground(modifier: Modifier = Modifier) {
     Icon(
-        painterResource(id = R.drawable.ic_launcher_foreground),
+        painterResource(id = R.drawable.ic_app_foreground_108),
         contentDescription = null,
         tint = MaterialTheme.colorScheme.inversePrimary,
         modifier = modifier

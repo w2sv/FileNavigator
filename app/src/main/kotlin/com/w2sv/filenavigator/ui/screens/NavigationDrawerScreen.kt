@@ -87,7 +87,7 @@ fun NavigationDrawerScreen(
                         .drawerRepelledAnimation(drawerState)
                         .padding(20.dp)
 
-                AnimatedContent(targetState = screen, label = "") {
+                AnimatedContent(targetState = screen, label = "ScreenChangeAnimation") {
                     when (it) {
                         Screen.Home -> {
                             HomeScreen(
