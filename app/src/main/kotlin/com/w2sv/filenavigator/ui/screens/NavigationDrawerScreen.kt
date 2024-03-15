@@ -33,7 +33,6 @@ import com.w2sv.filenavigator.ui.designsystem.AppTopBar
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.designsystem.drawer.drawerRepelledAnimation
-import com.w2sv.filenavigator.ui.designsystem.drawer.rememberDrawerRepelledAnimationState
 import com.w2sv.filenavigator.ui.screens.home.HomeScreen
 import com.w2sv.filenavigator.ui.screens.missingpermissions.PermissionScreen
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.NavigatorSettingsScreen
@@ -85,12 +84,8 @@ fun NavigationDrawerScreen(
                 val sharedModifier =
                     Modifier
                         .fillMaxSize()
+                        .drawerRepelledAnimation(drawerState)
                         .padding(20.dp)
-                        .drawerRepelledAnimation(
-                            state = rememberDrawerRepelledAnimationState(
-                                drawerState = drawerState
-                            )
-                        )
 
                 AnimatedContent(targetState = screen, label = "") {
                     when (it) {
