@@ -6,9 +6,6 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 
 object AppColor {
-    val primary = Color(0xFF00696E)
-    val inversePrimary = Color(0xFF00DFC2)
-
     val success = Color(12, 173, 34, 200)
     val error = Color(201, 14, 52, 200)
 
@@ -18,6 +15,8 @@ object AppColor {
         get() = MaterialTheme.colorScheme.onSurface.copy(0.38f)
 
     object ThemeLight {
+        val primary = Color(0xFF00696E)
+        val inversePrimary = Color(0xFF00DFC2)
         val onPrimary = Color(0xFFFFFFFF)
         val primaryContainer = Color(0xFF6FF6FE)
         val onPrimaryContainer = Color(0xFF002021)
@@ -48,14 +47,16 @@ object AppColor {
     }
 
     object ThemeDark {
+        val primary = Color(0xFF018d94)
+        val inversePrimary = Color(0xFF02eefa)
         val onPrimary = Color(0xFF003739)
         val primaryContainer = Color(0xFF004F53)
         val onPrimaryContainer = Color(0xFF6FF6FE)
-        val secondary = inversePrimary
+        val secondary = Color(0xFF029c86)
         val onSecondary = Color(0xFF00382F)
         val secondaryContainer = Color(0xFF005045)
         val onSecondaryContainer = Color(0xFF09FEDD)
-        val tertiary = Color(0xFFFFACEC)
+        val tertiary = Color(0xFFc95fb9)
         val onTertiary = Color(0xFF56124F)
         val tertiaryContainer = Color(0xFF712B67)
         val onTertiaryContainer = Color(0xFFFFD7F2)

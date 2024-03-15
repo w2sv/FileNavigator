@@ -32,7 +32,7 @@ fun AppTheme(
 }
 
 private val lightColors = lightColorScheme(
-    primary = AppColor.primary,
+    primary = AppColor.ThemeLight.primary,
     onPrimary = AppColor.ThemeLight.onPrimary,
     primaryContainer = AppColor.ThemeLight.primaryContainer,
     onPrimaryContainer = AppColor.ThemeLight.onPrimaryContainer,
@@ -57,14 +57,14 @@ private val lightColors = lightColorScheme(
     outline = AppColor.ThemeLight.outline,
     inverseOnSurface = AppColor.ThemeLight.inverseOnSurface,
     inverseSurface = AppColor.ThemeLight.inverseSurface,
-    inversePrimary = AppColor.inversePrimary,
+    inversePrimary = AppColor.ThemeLight.inversePrimary,
     surfaceTint = AppColor.ThemeLight.surfaceTint,
     outlineVariant = AppColor.ThemeLight.outlineVariant,
     scrim = AppColor.ThemeLight.scrim,
 )
 
 private val darkColors = darkColorScheme(
-    primary = AppColor.primary,
+    primary = AppColor.ThemeDark.primary,
     onPrimary = AppColor.ThemeDark.onPrimary,
     primaryContainer = AppColor.ThemeDark.primaryContainer,
     onPrimaryContainer = AppColor.ThemeDark.onPrimaryContainer,
@@ -89,7 +89,7 @@ private val darkColors = darkColorScheme(
     outline = AppColor.ThemeDark.outline,
     inverseOnSurface = AppColor.ThemeDark.inverseOnSurface,
     inverseSurface = AppColor.ThemeDark.inverseSurface,
-    inversePrimary = AppColor.inversePrimary,
+    inversePrimary = AppColor.ThemeDark.inversePrimary,
     surfaceTint = AppColor.ThemeDark.surfaceTint,
     outlineVariant = AppColor.ThemeDark.outlineVariant,
     scrim = AppColor.ThemeDark.scrim,
