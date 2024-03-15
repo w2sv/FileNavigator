@@ -6,10 +6,11 @@ agp = "8.3.0"
 kotlin = "1.9.22"
 java = "17"
 ksp = "1.9.22-1.0.18"
-triplet-play = "3.9.0"
+triplet-play = "3.9.1"
 
 compose-compiler = "1.5.8"
 compose-tooling = "1.6.3"
+compose-material3 = "1.2.1"
 hilt = "2.51"
 junit = "4.13.2"
 lifecycle = "2.7.0"
@@ -31,7 +32,7 @@ androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
 androidx-core = "androidx.core:core-ktx:1.12.0"
 androidx-splashscreen = "androidx.core:core-splashscreen:1.0.1"
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
-androidx-compose-material3 = "androidx.compose.material3:material3:1.2.1"
+androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose-tooling" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-tooling" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-tooling" }
@@ -49,7 +50,7 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 # Google
-google-guava = "com.google.guava:guava:33.0.0-jre"
+google-guava = "com.google.guava:guava:33.1.0-jre"
 
 # .Hilt
 google-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
