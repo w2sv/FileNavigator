@@ -10,7 +10,7 @@ triplet-play = "3.9.0"
 
 compose-compiler = "1.5.8"
 compose-tooling = "1.6.2"
-hilt = "2.50"
+hilt = "2.51.1"
 junit = "4.13.2"
 lifecycle = "2.7.0"
 room = "2.6.1"
