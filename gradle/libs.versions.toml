@@ -9,7 +9,7 @@ ksp = "1.9.22-1.0.17"
 triplet-play = "3.9.0"
 
 compose-compiler = "1.5.8"
-compose-tooling = "1.6.2"
+compose-tooling = "1.6.7"
 hilt = "2.50"
 junit = "4.13.2"
 lifecycle = "2.7.0"
