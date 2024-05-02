@@ -46,7 +46,7 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 # Google
-google-guava = "com.google.guava:guava:33.0.0-jre"
+google-guava = "com.google.guava:guava:33.2.0-jre"
 accompanist-permissions = "com.google.accompanist:accompanist-permissions:0.34.0"
 
 # .Hilt
