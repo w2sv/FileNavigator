@@ -14,14 +14,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.media.MediaFile
-import com.w2sv.androidutils.coroutines.getValueSynchronously
+import com.w2sv.androidutils.coroutines.firstBlocking
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.utils.ToastArgs
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
+import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorRepository
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
-import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.model.getMoveEntry
 import com.w2sv.navigator.notifications.NotificationResources
@@ -86,7 +86,7 @@ class FileMoveActivity : ComponentActivity() {
             }
 
         val lastMoveDestination =
-            navigatorRepository.getLastMoveDestinationFlow(moveFile.source).getValueSynchronously()
+            navigatorRepository.getLastMoveDestinationFlow(moveFile.source).firstBlocking()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

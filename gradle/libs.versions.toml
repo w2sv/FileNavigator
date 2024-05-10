@@ -8,7 +8,7 @@ java = "17"
 ksp = "1.9.23-1.0.20"
 triplet-play = "3.9.1"
 
-compose-compiler = "1.5.10"
+compose-compiler = "1.5.12"
 compose-tooling = "1.6.7"
 compose-material3 = "1.2.1"
 hilt = "2.51.1"

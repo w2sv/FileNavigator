@@ -6,7 +6,7 @@ import androidx.annotation.ColorLong
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.anggrayudi.storage.media.MediaType
-import com.w2sv.domain.R
+import com.w2sv.core.domain.R
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 

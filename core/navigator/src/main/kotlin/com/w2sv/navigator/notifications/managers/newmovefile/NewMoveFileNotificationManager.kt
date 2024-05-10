@@ -13,8 +13,8 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.common.utils.getDocumentUriFileName
+import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileType
-import com.w2sv.navigator.R
 import com.w2sv.navigator.model.MoveFile
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
@@ -107,8 +107,8 @@ class NewMoveFileNotificationManager(
 
                             FileType.Source.Kind.Camera -> context.getString(
                                 when (args.moveFile.source.fileType) {
-                                    FileType.Image -> com.w2sv.domain.R.string.photo
-                                    FileType.Video -> com.w2sv.domain.R.string.video
+                                    FileType.Image -> com.w2sv.core.domain.R.string.photo
+                                    FileType.Video -> com.w2sv.core.domain.R.string.video
                                     else -> throw Error()
                                 }
                             )

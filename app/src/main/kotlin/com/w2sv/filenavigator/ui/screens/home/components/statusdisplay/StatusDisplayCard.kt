@@ -128,7 +128,7 @@ fun StatusDisplayCard(
                     onClick = { appVM.setScreen(Screen.NavigatorSettings) }
                 ) {
                     Icon(
-                        painter = painterResource(id = com.w2sv.navigator.R.drawable.ic_settings_24),
+                        painter = painterResource(id = com.w2sv.core.navigator.R.drawable.ic_settings_24),
                         contentDescription = null
                     )
                 }

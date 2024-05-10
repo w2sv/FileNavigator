@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screens
 
 import android.Manifest
-import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +16,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,6 +52,10 @@ fun NavigationDrawerScreen(
             onPermissionResult = { appVM.savePostNotificationsPermissionRequestedIfRequired() },
             onStatusChanged = appVM::setPostNotificationsPermissionGranted
         )
+
+    BackHandler(enabled = drawerState.isOpen) {
+        scope.launch { drawerState.close() }
+    }
 
     NavigationDrawer(state = drawerState, modifier = modifier) {
         val screen by appVM.screen.collectAsStateWithLifecycle()
@@ -103,7 +105,6 @@ fun NavigationDrawerScreen(
 
                         Screen.NavigatorSettings -> {
                             NavigatorSettingsScreen(
-                                drawerState = drawerState,
                                 returnToHomeScreen = { appVM.setScreen(Screen.Home) },
                                 parentScope = scope,
                                 modifier = sharedModifier
