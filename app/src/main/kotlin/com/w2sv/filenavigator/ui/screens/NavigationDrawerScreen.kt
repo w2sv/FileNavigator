@@ -44,7 +44,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun NavigationDrawerScreen(
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     scope: CoroutineScope = rememberCoroutineScope(),
     appVM: AppViewModel = viewModel()
@@ -112,15 +111,6 @@ fun NavigationDrawerScreen(
                         }
                     }
                 }
-            }
-        }
-    }
-
-    BackHandler {
-        when (drawerState.currentValue) {
-            DrawerValue.Closed -> appVM.onBackPress(context)
-            DrawerValue.Open -> scope.launch {
-                drawerState.close()
             }
         }
     }

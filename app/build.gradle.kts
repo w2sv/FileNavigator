@@ -3,11 +3,11 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.application)
+    alias(libs.plugins.android.application)
     alias(libs.plugins.play)
-    alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.filenavigator.hilt)
-    id("kotlin-parcelize")
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -95,6 +95,17 @@ android {
                 (output as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
                     "${versionName}.apk"
             }
+    }
+
+    kotlinOptions {
+        freeCompilerArgs += listOf(
+            // Apply compose_compiler_config.conf
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=${project.rootDir.absolutePath}/compose_compiler_config.conf",
+            // Enable strong skipping
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:experimentalStrongSkipping=true"
+        )
     }
 }
 

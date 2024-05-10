@@ -32,9 +32,9 @@ import androidx.core.app.ShareCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.androidutils.generic.appPlayStoreUrl
+import com.w2sv.androidutils.generic.dynamicColorsSupported
 import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
 import com.w2sv.androidutils.notifying.showToast
-import com.w2sv.common.utils.dynamicColorsSupported
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel

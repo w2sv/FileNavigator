@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
-    <!--Allow CompositionLocals-->
+    <!--Allow CompositionLocal's-->
     <issue id="ComposeCompositionLocalUsage" severity="ignore" />
     <issue id="NotificationPermission" severity="warning" />
     <issue id="LintError" severity="warning" />
+    <issue id="MonochromeLauncherIcon" severity="ignore" />
+    <issue id="ComposeModifierMissing" severity="ignore" />
 </lint>

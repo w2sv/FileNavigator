@@ -1,7 +1,7 @@
 package com.w2sv.domain.repository
 
 import android.net.Uri
-import com.w2sv.androidutils.datastorage.preferences_datastore.DataStoreFlow
+import com.w2sv.androidutils.datastorage.preferences_datastore.flow.DataStoreFlow
 import com.w2sv.domain.model.FileType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow

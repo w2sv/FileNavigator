@@ -26,7 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -38,7 +37,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.composed.CollectLatestFromFlow
-import com.w2sv.composed.OnRemoveFromComposition
+import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -64,7 +62,6 @@ import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.Easing
-import com.w2sv.filenavigator.ui.utils.rememberBackPressHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import slimber.log.i
@@ -72,18 +69,16 @@ import slimber.log.i
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavigatorSettingsScreen(
-    drawerState: DrawerState,
     returnToHomeScreen: () -> Unit,
     parentScope: CoroutineScope,
     modifier: Modifier = Modifier,
     navigatorVM: NavigatorViewModel = viewModel(),
     context: Context = LocalContext.current,
-    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
-    scope: CoroutineScope = rememberCoroutineScope()
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
     // Reset navigator config on removal from composition, i.e., return to home screen.
     // Doing it here rather than in onBackPress causes the UI not to update shortly before leaving the screen.
-    OnRemoveFromComposition(
+    OnDispose(
         remember {
             {
                 navigatorVM.configuration.unconfirmedStates.reset()
@@ -93,38 +88,6 @@ fun NavigatorSettingsScreen(
 
     val configurationHasChanged by navigatorVM.configuration.unconfirmedStates.statesDissimilar.collectAsStateWithLifecycle()
 
-    val backPressHandler = rememberBackPressHandler(scope)
-
-    val onBackPress: () -> Unit = remember {
-        {
-            when {
-                drawerState.isOpen -> {
-                    parentScope.launch { drawerState.close() }
-                }
-
-                configurationHasChanged -> {
-                    backPressHandler(
-                        onFirstPress = {
-                            scope.launch {
-                                snackbarHostState.dismissCurrentSnackbarAndShow(
-                                    AppSnackbarVisuals(
-                                        message = context.getString(R.string.changes_won_t_be_saved_if_you_leave_now),
-                                        kind = SnackbarKind.Error
-                                    )
-                                )
-                            }
-                        },
-                        onSecondPress = returnToHomeScreen
-                    )
-                }
-
-                else -> {
-                    returnToHomeScreen()
-                }
-            }
-        }
-    }
-
     CollectLatestFromFlow(
         flow = navigatorVM.makeSnackbarVisuals,
         action = { makeSnackbarVisuals ->
@@ -133,9 +96,11 @@ fun NavigatorSettingsScreen(
         key1 = snackbarHostState
     )
 
+    BackHandler(onBack = returnToHomeScreen)
+
     Column(modifier = modifier) {
         ButtonRow(
-            onBackButtonPress = onBackPress,
+            onBackButtonPress = returnToHomeScreen,
             configurationHasChanged = configurationHasChanged,
             resetConfiguration = navigatorVM.configuration.unconfirmedStates::reset,
             syncConfiguration = {
@@ -221,8 +186,6 @@ fun NavigatorSettingsScreen(
             }
         }
     }
-
-    BackHandler(onBack = onBackPress)
 }
 
 @Composable

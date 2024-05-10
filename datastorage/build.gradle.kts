@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.filenavigator.library)
     alias(libs.plugins.filenavigator.hilt)
     alias(libs.plugins.filenavigator.room)
-    id("kotlin-parcelize")
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 dependencies {

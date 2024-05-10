@@ -119,29 +119,4 @@ class AppViewModel @Inject constructor(
             preferencesRepository.useDynamicColors.save(value)
         }
     }
-
-    // ==============
-    // BackPress Handling
-    // ==============
-
-    val exitApplication get() = _exitApplication.asSharedFlow()
-    private val _exitApplication = MutableSharedFlow<Unit>()
-
-    fun onBackPress(context: Context) {
-        backPressHandler.invoke(
-            onFirstPress = {
-                context.showToast(context.getString(R.string.tap_again_to_exit))
-            },
-            onSecondPress = {
-                viewModelScope.launch {
-                    _exitApplication.emit(Unit)
-                }
-            }
-        )
-    }
-
-    private val backPressHandler = BackPressHandler(
-        coroutineScope = viewModelScope,
-        confirmationWindowDuration = BACK_PRESS_WINDOW_DURATION
-    )
 }

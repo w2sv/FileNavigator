@@ -8,7 +8,6 @@ import com.w2sv.androidutils.ui.reversible_state.ReversibleStateMap
 import com.w2sv.androidutils.ui.reversible_state.ReversibleStatesComposition
 import com.w2sv.common.utils.ReversibleValue
 import com.w2sv.common.utils.increment
-import com.w2sv.common.utils.valueUnflowed
 import com.w2sv.composed.extensions.toMutableStateMap
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.repository.NavigatorRepository
@@ -53,8 +52,8 @@ class NavigatorConfiguration(
     )
 
     val fileEnablementMap = ReversibleStateMap(
-        persistedStateFlowMap = navigatorRepository.fileTypeEnablementMap,
-        makeMap = { it.valueUnflowed().toMutableStateMap() },
+        appliedStateMap = navigatorRepository.fileTypeEnablementMap,
+        makeMap = { it.toMutableStateMap() },
         syncState = {
             navigatorRepository.saveFileTypeEnablementMap(it)
         },
@@ -67,15 +66,15 @@ class NavigatorConfiguration(
     )
 
     val mediaFileSourceEnablementMap = ReversibleStateMap(
-        persistedStateFlowMap = navigatorRepository.mediaFileSourceEnablementMap,
-        makeMap = { it.valueUnflowed().toMutableStateMap() },
+        appliedStateMap = navigatorRepository.mediaFileSourceEnablementMap,
+        makeMap = { it.toMutableStateMap() },
         syncState = {
             navigatorRepository.saveMediaFileSourceEnablementMap(it)
         }
     )
 
     val disableOnLowBattery = ReversibleStateFlow(
-        coroutineScope = scope,
+        scope = scope,
         dataStoreFlow = navigatorRepository.disableOnLowBattery,
         started = SharingStarted.Eagerly
     )
@@ -86,7 +85,7 @@ class NavigatorConfiguration(
             mediaFileSourceEnablementMap,
             disableOnLowBattery
         ),
-        coroutineScope = scope,
+        scope = scope,
         onStateSynced = {
             nCheckedFileTypes.sync()
             fileTypeToNCheckedSources.sync()
