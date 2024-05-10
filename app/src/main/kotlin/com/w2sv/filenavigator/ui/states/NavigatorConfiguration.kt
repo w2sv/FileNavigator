@@ -55,7 +55,7 @@ class NavigatorConfiguration(
         appliedStateMap = navigatorRepository.fileTypeEnablementMap,
         makeMap = { it.toMutableStateMap() },
         syncState = {
-            navigatorRepository.saveFileTypeEnablementMap(it)
+            navigatorRepository.fileTypeEnablementMap.save(it)
         },
         onStateSynced = { map ->
             sortedFileTypes.sortByIsEnabledAndOriginalOrder(isEnabled = { map.getValue(it) })
@@ -69,7 +69,7 @@ class NavigatorConfiguration(
         appliedStateMap = navigatorRepository.mediaFileSourceEnablementMap,
         makeMap = { it.toMutableStateMap() },
         syncState = {
-            navigatorRepository.saveMediaFileSourceEnablementMap(it)
+            navigatorRepository.mediaFileSourceEnablementMap.save(it)
         }
     )
 

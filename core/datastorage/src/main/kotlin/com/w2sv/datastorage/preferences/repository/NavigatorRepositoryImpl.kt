@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.w2sv.androidutils.datastorage.preferences_datastore.DataStoreEntry
 import com.w2sv.androidutils.datastorage.preferences_datastore.PreferencesDataStoreRepository
+import com.w2sv.androidutils.datastorage.preferences_datastore.flow.DataStoreStateFlowMap
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.repository.NavigatorRepository
 import kotlinx.coroutines.CoroutineScope
@@ -14,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,38 +30,20 @@ class NavigatorRepositoryImpl @Inject constructor(dataStore: DataStore<Preferenc
         true
     )
 
-    override val fileTypeEnablementMap: Map<FileType, StateFlow<Boolean>> =
-        FileType.values
-            .associateBy { it.isEnabledDSE }
-            .let { dseToFileType ->
-                getStateFlowMap(
-                    properties = dseToFileType.keys,
-                    scope = scope,
-                    sharingStarted = SharingStarted.Eagerly
-                )
-                    .mapKeys { (k, _) -> dseToFileType.getValue(k) }
-            }
+    override val fileTypeEnablementMap: DataStoreStateFlowMap<FileType, Boolean> =
+        dataStoreFlowMap(FileType.values.associateWith { it.isEnabledDSE })
+            .stateIn(
+                scope,
+                SharingStarted.Eagerly
+            )
 
-    override suspend fun saveFileTypeEnablementMap(map: Map<FileType, Boolean>) {
-        saveMap(map.mapKeys { (k, _) -> k.isEnabledDSE })
-    }
-
-    override val mediaFileSourceEnablementMap: Map<FileType.Source, StateFlow<Boolean>> =
-        FileType.Media.values
-            .flatMap { it.sources }
-            .associateBy { it.isEnabledDSE }
-            .let { dseToSource ->
-                getStateFlowMap(
-                    properties = dseToSource.keys,
-                    scope = scope,
-                    sharingStarted = SharingStarted.Eagerly
-                )
-                    .mapKeys { (k, _) -> dseToSource.getValue(k) }
-            }
-
-    override suspend fun saveMediaFileSourceEnablementMap(map: Map<FileType.Source, Boolean>) {
-        saveMap(map.mapKeys { (k, _) -> k.isEnabledDSE })
-    }
+    override val mediaFileSourceEnablementMap: DataStoreStateFlowMap<FileType.Source, Boolean> =
+        dataStoreFlowMap(
+            FileType.Media.values
+                .flatMap { it.sources }
+                .associateWith { it.isEnabledDSE }
+        )
+            .stateIn(scope, SharingStarted.Eagerly)
 
     // =======================
     // Last move destination
