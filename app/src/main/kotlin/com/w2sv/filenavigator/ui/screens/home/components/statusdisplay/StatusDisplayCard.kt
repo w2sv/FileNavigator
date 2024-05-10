@@ -19,8 +19,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -107,6 +108,7 @@ fun StatusDisplayCard(
                     Text(
                         text = stringResource(id = it.textRes),
                         fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
                         color = it.color
                     )
                 }
@@ -122,7 +124,7 @@ fun StatusDisplayCard(
                         .height(65.dp)
                         .width(180.dp)
                 )
-                FilledTonalIconButton(
+                FilledIconButton(
                     onClick = { appVM.setScreen(Screen.NavigatorSettings) }
                 ) {
                     Icon(
@@ -156,7 +158,7 @@ internal fun ToggleNavigatorButton(
     properties: ToggleNavigatorButtonProperties,
     modifier: Modifier = Modifier
 ) {
-    FilledTonalButton(
+    Button(
         onClick = properties.onClick,
         modifier = modifier,
     ) {
@@ -175,7 +177,6 @@ internal fun ToggleNavigatorButton(
                 Text(
                     text = stringResource(id = it.labelRes),
                     fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
