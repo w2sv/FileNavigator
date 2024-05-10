@@ -1,13 +1,17 @@
 package com.w2sv.filenavigator
 
 import android.animation.ObjectAnimator
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnticipateInterpolator
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -33,21 +37,41 @@ class MainActivity : ComponentActivity() {
     private val navigatorVM by viewModels<NavigatorViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen().setOnExitAnimationListener(SwipeRightSplashScreenExitAnimation())
+        installSplashScreen().setOnExitAnimationListener(
+            SwipeRightSplashScreenExitAnimation(
+                onAnimationEnd = { enableEdgeToEdge() }
+            )
+        )
 
         super.onCreate(savedInstanceState)
 
         lifecycleScope.collectFromFlows()
 
         setContent {
+            val useDarkTheme = when (appVM.theme.collectAsStateWithLifecycle().value) {
+                Theme.Light -> false
+                Theme.Dark -> true
+                Theme.Default -> isSystemInDarkTheme()
+            }
+
             AppTheme(
                 useDynamicTheme = appVM.useDynamicColors.collectAsStateWithLifecycle().value,
-                useDarkTheme = when (appVM.theme.collectAsStateWithLifecycle().value) {
-                    Theme.Dark -> true
-                    Theme.Light -> false
-                    Theme.Default -> isSystemInDarkTheme()
-                }
+                useDarkTheme = useDarkTheme
             ) {
+                // Reset system bar styles on theme change
+                LaunchedEffect(useDarkTheme) {
+                    val systemBarStyle = if (useDarkTheme) {
+                        SystemBarStyle.dark(Color.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                    }
+
+                    enableEdgeToEdge(
+                        systemBarStyle,
+                        systemBarStyle,
+                    )
+                }
+
                 NavigationDrawerScreen()
             }
         }
@@ -82,7 +106,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private class SwipeRightSplashScreenExitAnimation : SplashScreen.OnExitAnimationListener {
+private class SwipeRightSplashScreenExitAnimation(private val onAnimationEnd: () -> Unit) :
+    SplashScreen.OnExitAnimationListener {
     override fun onSplashScreenExit(splashScreenViewProvider: SplashScreenViewProvider) {
         ObjectAnimator.ofFloat(
             splashScreenViewProvider.view,
@@ -95,6 +120,7 @@ private class SwipeRightSplashScreenExitAnimation : SplashScreen.OnExitAnimation
                 duration = 400L
                 doOnEnd {
                     splashScreenViewProvider.remove()
+                    onAnimationEnd()
                 }
             }
             .start()

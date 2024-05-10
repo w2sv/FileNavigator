@@ -12,7 +12,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -25,6 +24,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.common.utils.postNotificationsPermissionRequired
+import com.w2sv.composed.OnChange
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbar
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.AppTopBar
@@ -41,7 +41,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun NavigationDrawerScreen(
-    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     scope: CoroutineScope = rememberCoroutineScope(),
     appVM: AppViewModel = viewModel()
@@ -57,7 +56,7 @@ fun NavigationDrawerScreen(
         scope.launch { drawerState.close() }
     }
 
-    NavigationDrawer(state = drawerState, modifier = modifier) {
+    NavigationDrawer(state = drawerState) {
         val screen by appVM.screen.collectAsStateWithLifecycle()
 
         Scaffold(
@@ -129,8 +128,8 @@ private fun rememberObservedPostNotificationsPermissionState(
             onPermissionResult = onPermissionResult
         )
             .also {
-                LaunchedEffect(it.status) {
-                    onStatusChanged(it.status.isGranted)
+                OnChange(value = it.status) { status ->
+                    onStatusChanged(status.isGranted)
                 }
             }
     } else {
