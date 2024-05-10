@@ -1,27 +1,24 @@
 plugins {
     alias(libs.plugins.filenavigator.library)
     alias(libs.plugins.filenavigator.hilt)
+    alias(libs.plugins.filenavigator.room)
     alias(libs.plugins.kotlin.parcelize)
 }
 
 dependencies {
-    implementation(projects.domain)
-    implementation(projects.common)
+    implementation(projects.core.common)
+    implementation(projects.core.domain)
 
     implementation(libs.androidx.core)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.viewmodel)
+    implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.androidutils)
-    implementation(libs.kotlinutils)
     implementation(libs.slimber)
-
-    implementation(libs.google.guava)
 
     implementation(libs.simplestorage)
 
     // ---------------
     // Test
 
-    testImplementation(projects.test)
+    testImplementation(projects.core.test)
 }

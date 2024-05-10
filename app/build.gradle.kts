@@ -117,10 +117,10 @@ play {
 }
 
 dependencies {
-    implementation(projects.datastorage)
-    implementation(projects.domain)
-    implementation(projects.common)
-    implementation(projects.navigator)
+    implementation(projects.core.datastorage)
+    implementation(projects.core.domain)
+    implementation(projects.core.common)
+    implementation(projects.core.navigator)
 
     implementation(libs.androidutils)
     implementation(libs.kotlinutils)
