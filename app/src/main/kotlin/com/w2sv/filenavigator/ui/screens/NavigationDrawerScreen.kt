@@ -5,16 +5,17 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,6 +32,7 @@ import com.w2sv.filenavigator.ui.designsystem.AppTopBar
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.designsystem.drawer.drawerRepelledAnimation
+import com.w2sv.filenavigator.ui.designsystem.drawer.rememberDrawerRepelledAnimationState
 import com.w2sv.filenavigator.ui.screens.home.HomeScreen
 import com.w2sv.filenavigator.ui.screens.missingpermissions.PermissionScreen
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.NavigatorSettingsScreen
@@ -41,11 +43,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun NavigationDrawerScreen(
-    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     scope: CoroutineScope = rememberCoroutineScope(),
     appVM: AppViewModel = viewModel()
 ) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val postNotificationsPermissionState =
         rememberObservedPostNotificationsPermissionState(
             onPermissionResult = { appVM.savePostNotificationsPermissionRequestedIfRequired() },
@@ -61,7 +62,7 @@ fun NavigationDrawerScreen(
 
         Scaffold(
             snackbarHost = {
-                SnackbarHost(snackbarHostState) { snackbarData ->
+                SnackbarHost(LocalSnackbarHostState.current) { snackbarData ->
                     AppSnackbar(visuals = snackbarData.visuals as AppSnackbarVisuals)
                 }
             },
@@ -84,7 +85,11 @@ fun NavigationDrawerScreen(
                 val sharedModifier =
                     Modifier
                         .fillMaxSize()
-                        .drawerRepelledAnimation(drawerState)
+                        .drawerRepelledAnimation(
+                            state = rememberDrawerRepelledAnimationState(drawerState = drawerState),
+                            animationBoxWidth = LocalConfiguration.current.screenWidthDp,
+                            animationBoxHeight = LocalConfiguration.current.screenHeightDp
+                        )
                         .padding(20.dp)
 
                 AnimatedContent(targetState = screen, label = "ScreenChangeAnimation") {

@@ -1,6 +1,11 @@
 package com.w2sv.filenavigator.ui.designsystem
 
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.R
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AppTopBar(title: String, modifier: Modifier = Modifier, onNavigationIconClick: () -> Unit) {
     TopAppBar(
@@ -39,6 +44,8 @@ fun AppTopBar(title: String, modifier: Modifier = Modifier, onNavigationIconClic
                     modifier = Modifier.size(28.dp),
                 )
             }
-        }
+        },
+        windowInsets = WindowInsets.statusBarsIgnoringVisibility  // Apply status bar insets also if status bar hidden during immersive mode
+            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
     )
 }
