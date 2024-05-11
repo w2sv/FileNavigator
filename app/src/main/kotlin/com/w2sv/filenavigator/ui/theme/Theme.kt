@@ -2,13 +2,21 @@ package com.w2sv.filenavigator.ui.theme
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.materialkolor.PaletteStyle
+import com.materialkolor.rememberDynamicColorScheme
+
+private val seedColor = Color(color = 0xFF00696E)
 
 @SuppressLint("NewApi")
 @Composable
@@ -22,75 +30,62 @@ fun AppTheme(
         colorScheme = when {
             useDynamicTheme && useDarkTheme -> dynamicDarkColorScheme(context)
             useDynamicTheme && !useDarkTheme -> dynamicLightColorScheme(context)
-            !useDynamicTheme && useDarkTheme -> darkColors
-            else -> lightColors
-        },
+            else -> rememberDynamicColorScheme(
+                seedColor = seedColor,
+                isDark = useDarkTheme,
+                style = PaletteStyle.Rainbow,
+            )
+        }
+            .animate(animationSpec = spring(stiffness = Spring.StiffnessMedium)),
         typography = typography
     ) {
         content()
     }
 }
 
-private val lightColors = lightColorScheme(
-    primary = AppColor.ThemeLight.primary,
-    onPrimary = AppColor.ThemeLight.onPrimary,
-    primaryContainer = AppColor.ThemeLight.primaryContainer,
-    onPrimaryContainer = AppColor.ThemeLight.onPrimaryContainer,
-    secondary = AppColor.ThemeLight.secondary,
-    onSecondary = AppColor.ThemeLight.onSecondary,
-    secondaryContainer = AppColor.ThemeLight.secondaryContainer,
-    onSecondaryContainer = AppColor.ThemeLight.onSecondaryContainer,
-    tertiary = AppColor.ThemeLight.tertiary,
-    onTertiary = AppColor.ThemeLight.onTertiary,
-    tertiaryContainer = AppColor.ThemeLight.tertiaryContainer,
-    onTertiaryContainer = AppColor.ThemeLight.onTertiaryContainer,
-    error = AppColor.ThemeLight.error,
-    errorContainer = AppColor.ThemeLight.errorContainer,
-    onError = AppColor.ThemeLight.onError,
-    onErrorContainer = AppColor.ThemeLight.onErrorContainer,
-    background = AppColor.ThemeLight.background,
-    onBackground = AppColor.ThemeLight.onBackground,
-    surface = AppColor.ThemeLight.surface,
-    onSurface = AppColor.ThemeLight.onSurface,
-    surfaceVariant = AppColor.ThemeLight.surfaceVariant,
-    onSurfaceVariant = AppColor.ThemeLight.onSurfaceVariant,
-    outline = AppColor.ThemeLight.outline,
-    inverseOnSurface = AppColor.ThemeLight.inverseOnSurface,
-    inverseSurface = AppColor.ThemeLight.inverseSurface,
-    inversePrimary = AppColor.ThemeLight.inversePrimary,
-    surfaceTint = AppColor.ThemeLight.surfaceTint,
-    outlineVariant = AppColor.ThemeLight.outlineVariant,
-    scrim = AppColor.ThemeLight.scrim,
-)
+@Composable
+private fun ColorScheme.animate(animationSpec: AnimationSpec<Color>): ColorScheme {
+    return copy(
+        primary = primary.animate(animationSpec),
+        primaryContainer = primaryContainer.animate(animationSpec),
+        secondary = secondary.animate(animationSpec),
+        secondaryContainer = secondaryContainer.animate(animationSpec),
+        tertiary = tertiary.animate(animationSpec),
+        tertiaryContainer = tertiaryContainer.animate(animationSpec),
+        background = background.animate(animationSpec),
+        surface = surface.animate(animationSpec),
+        surfaceTint = surfaceTint.animate(animationSpec),
+        surfaceBright = surfaceBright.animate(animationSpec),
+        surfaceDim = surfaceDim.animate(animationSpec),
+        surfaceContainer = surfaceContainer.animate(animationSpec),
+        surfaceContainerHigh = surfaceContainerHigh.animate(animationSpec),
+        surfaceContainerHighest = surfaceContainerHighest.animate(animationSpec),
+        surfaceContainerLow = surfaceContainerLow.animate(animationSpec),
+        surfaceContainerLowest = surfaceContainerLowest.animate(animationSpec),
+        surfaceVariant = surfaceVariant.animate(animationSpec),
+        error = error.animate(animationSpec),
+        errorContainer = errorContainer.animate(animationSpec),
+        onPrimary = onPrimary.animate(animationSpec),
+        onPrimaryContainer = onPrimaryContainer.animate(animationSpec),
+        onSecondary = onSecondary.animate(animationSpec),
+        onSecondaryContainer = onSecondaryContainer.animate(animationSpec),
+        onTertiary = onTertiary.animate(animationSpec),
+        onTertiaryContainer = onTertiaryContainer.animate(animationSpec),
+        onBackground = onBackground.animate(animationSpec),
+        onSurface = onSurface.animate(animationSpec),
+        onSurfaceVariant = onSurfaceVariant.animate(animationSpec),
+        onError = onError.animate(animationSpec),
+        onErrorContainer = onErrorContainer.animate(animationSpec),
+        inversePrimary = inversePrimary.animate(animationSpec),
+        inverseSurface = inverseSurface.animate(animationSpec),
+        inverseOnSurface = inverseOnSurface.animate(animationSpec),
+        outline = outline.animate(animationSpec),
+        outlineVariant = outlineVariant.animate(animationSpec),
+        scrim = scrim.animate(animationSpec),
+    )
+}
 
-private val darkColors = darkColorScheme(
-    primary = AppColor.ThemeDark.primary,
-    onPrimary = AppColor.ThemeDark.onPrimary,
-    primaryContainer = AppColor.ThemeDark.primaryContainer,
-    onPrimaryContainer = AppColor.ThemeDark.onPrimaryContainer,
-    secondary = AppColor.ThemeDark.secondary,
-    onSecondary = AppColor.ThemeDark.onSecondary,
-    secondaryContainer = AppColor.ThemeDark.secondaryContainer,
-    onSecondaryContainer = AppColor.ThemeDark.onSecondaryContainer,
-    tertiary = AppColor.ThemeDark.tertiary,
-    onTertiary = AppColor.ThemeDark.onTertiary,
-    tertiaryContainer = AppColor.ThemeDark.tertiaryContainer,
-    onTertiaryContainer = AppColor.ThemeDark.onTertiaryContainer,
-    error = AppColor.ThemeDark.error,
-    errorContainer = AppColor.ThemeDark.errorContainer,
-    onError = AppColor.ThemeDark.onError,
-    onErrorContainer = AppColor.ThemeDark.onErrorContainer,
-    background = AppColor.ThemeDark.background,
-    onBackground = AppColor.ThemeDark.onBackground,
-    surface = AppColor.ThemeDark.surface,
-    onSurface = AppColor.ThemeDark.onSurface,
-    surfaceVariant = AppColor.ThemeDark.surfaceVariant,
-    onSurfaceVariant = AppColor.ThemeDark.onSurfaceVariant,
-    outline = AppColor.ThemeDark.outline,
-    inverseOnSurface = AppColor.ThemeDark.inverseOnSurface,
-    inverseSurface = AppColor.ThemeDark.inverseSurface,
-    inversePrimary = AppColor.ThemeDark.inversePrimary,
-    surfaceTint = AppColor.ThemeDark.surfaceTint,
-    outlineVariant = AppColor.ThemeDark.outlineVariant,
-    scrim = AppColor.ThemeDark.scrim,
-)
+@Composable
+private fun Color.animate(animationSpec: AnimationSpec<Color>): Color {
+    return animateColorAsState(this, animationSpec, label = "").value
+}

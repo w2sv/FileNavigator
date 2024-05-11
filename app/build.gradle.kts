@@ -149,6 +149,7 @@ dependencies {
     implementation(libs.simplestorage)
     implementation(libs.kotlinx.collections.immutable)
     lintChecks(libs.compose.lint.checks)
+    implementation(libs.materialKolor)
 
     // Unit Test
     testImplementation(libs.bundles.unitTest)
