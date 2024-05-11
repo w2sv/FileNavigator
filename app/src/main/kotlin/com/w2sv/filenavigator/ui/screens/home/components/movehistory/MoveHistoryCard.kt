@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.w2sv.composed.CollectLatestFromFlow
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.R
@@ -59,12 +58,12 @@ fun MoveHistoryCard(
     val moveHistoryIsEmpty by remember {
         derivedStateOf { moveHistory.isEmpty() }
     }
-    var showDeleteHistoryDialog by rememberSaveable {
+    var showHistoryDeletionDialog by rememberSaveable {
         mutableStateOf(false)
     }
-    if (showDeleteHistoryDialog) {
+    if (showHistoryDeletionDialog) {
         HistoryDeletionDialog(
-            closeDialog = { showDeleteHistoryDialog = false },
+            closeDialog = { showHistoryDeletionDialog = false },
             onConfirmed = moveHistoryVM::launchHistoryDeletion
         )
     }
@@ -93,7 +92,7 @@ fun MoveHistoryCard(
 
                 AnimatedVisibility(visible = !moveHistoryIsEmpty) {
                     IconButton(
-                        onClick = { showDeleteHistoryDialog = true },
+                        onClick = { showHistoryDeletionDialog = true },
                         modifier = Modifier.size(38.dp),
                     ) {
                         Icon(
@@ -133,47 +132,42 @@ private fun rememberRetrieveAndViewFile(
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ): (MoveEntry) -> Unit {
-    CollectLatestFromFlow(
-        flow = moveHistoryVM.fileRetrievalResult,
-        action = remember {
-            { result ->
-                when (result) {
-                    is FileRetrievalResult.CouldntFindFile -> {
-                        snackbarHostState.dismissCurrentSnackbarAndShow(
-                            AppSnackbarVisuals(
-                                message = context.getString(R.string.couldn_t_find_file),
-                                kind = SnackbarKind.Error,
-                                action = SnackbarAction(
-                                    label = context.getString(R.string.delete_entry),
-                                    callback = {
-                                        moveHistoryVM.launchEntryDeletion(result.moveEntry)
-                                        snackbarHostState.currentSnackbarData?.dismiss()
-                                    }
-                                )
-                            )
-                        )
-                    }
-
-                    is FileRetrievalResult.Success -> {
-                        context.startActivity(
-                            Intent()
-                                .setAction(Intent.ACTION_VIEW)
-                                .setDataAndType(
-                                    result.mediaUri,
-                                    result.moveEntry.fileType.simpleStorageMediaType.mimeType
-                                )
-                        )
-                    }
-                }
-            }
-        }
-    )
 
     return remember {
         { moveEntry ->
             moveHistoryVM.launchFileRetrieval(
                 moveEntry = moveEntry,
-                context = context
+                context = context,
+                onResult = { result ->
+                    when (result) {
+                        is FileRetrievalResult.CouldntFindFile -> {
+                            snackbarHostState.dismissCurrentSnackbarAndShow(
+                                AppSnackbarVisuals(
+                                    message = context.getString(R.string.couldn_t_find_file),
+                                    kind = SnackbarKind.Error,
+                                    action = SnackbarAction(
+                                        label = context.getString(R.string.delete_entry),
+                                        callback = {
+                                            moveHistoryVM.launchEntryDeletion(result.moveEntry)
+                                            snackbarHostState.currentSnackbarData?.dismiss()
+                                        }
+                                    )
+                                )
+                            )
+                        }
+
+                        is FileRetrievalResult.Success -> {
+                            context.startActivity(
+                                Intent()
+                                    .setAction(Intent.ACTION_VIEW)
+                                    .setDataAndType(
+                                        result.mediaUri,
+                                        result.moveEntry.fileType.simpleStorageMediaType.mimeType
+                                    )
+                            )
+                        }
+                    }
+                }
             )
         }
     }

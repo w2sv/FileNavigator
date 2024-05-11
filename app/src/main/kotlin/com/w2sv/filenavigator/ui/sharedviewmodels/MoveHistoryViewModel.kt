@@ -12,10 +12,7 @@ import com.w2sv.domain.repository.MoveEntryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,10 +40,11 @@ class MoveHistoryViewModel @Inject constructor(private val moveEntryRepository: 
     fun launchFileRetrieval(
         moveEntry: MoveEntry,
         context: Context,
+        onResult: suspend (FileRetrievalResult) -> Unit
     ) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                _fileRetrievalResult.emit(
+                onResult(
                     when (val mediaUri = moveEntry.getMediaUri(context)) {
                         null -> FileRetrievalResult.CouldntFindFile(moveEntry)
                         else -> FileRetrievalResult.Success(moveEntry, mediaUri)
@@ -55,9 +53,6 @@ class MoveHistoryViewModel @Inject constructor(private val moveEntryRepository: 
             }
         }
     }
-
-    val fileRetrievalResult: SharedFlow<FileRetrievalResult> get() = _fileRetrievalResult.asSharedFlow()
-    private val _fileRetrievalResult = MutableSharedFlow<FileRetrievalResult>()
 }
 
 @Immutable
