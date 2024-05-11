@@ -24,6 +24,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,17 +59,16 @@ fun MoveHistoryCard(
     val moveHistoryIsEmpty by remember {
         derivedStateOf { moveHistory.isEmpty() }
     }
-    var showHistoryDeletionConfirmationDialog by remember {
+    var showDeleteHistoryDialog by rememberSaveable {
         mutableStateOf(false)
     }
-        .apply {
-            if (value) {
-                HistoryDeletionConfirmationDialog(
-                    closeDialog = { value = false },
-                    onConfirmed = moveHistoryVM::launchHistoryDeletion
-                )
-            }
-        }
+    if (showDeleteHistoryDialog) {
+        HistoryDeletionDialog(
+            closeDialog = { showDeleteHistoryDialog = false },
+            onConfirmed = moveHistoryVM::launchHistoryDeletion
+        )
+    }
+
     val retrieveAndViewFile: (MoveEntry) -> Unit = rememberRetrieveAndViewFile()
 
     MoreElevatedCard(
@@ -93,7 +93,7 @@ fun MoveHistoryCard(
 
                 AnimatedVisibility(visible = !moveHistoryIsEmpty) {
                     IconButton(
-                        onClick = { showHistoryDeletionConfirmationDialog = true },
+                        onClick = { showDeleteHistoryDialog = true },
                         modifier = Modifier.size(38.dp),
                     ) {
                         Icon(
@@ -180,7 +180,7 @@ private fun rememberRetrieveAndViewFile(
 }
 
 @Composable
-private fun HistoryDeletionConfirmationDialog(closeDialog: () -> Unit, onConfirmed: () -> Unit) {
+private fun HistoryDeletionDialog(closeDialog: () -> Unit, onConfirmed: () -> Unit) {
     AlertDialog(
         onDismissRequest = closeDialog,
         confirmButton = {
