@@ -2,8 +2,8 @@ package com.w2sv.filenavigator.ui.designsystem.drawer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -17,12 +17,14 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.R
@@ -40,36 +42,47 @@ fun NavigationDrawer(
     ModalNavigationDrawer(
         modifier = modifier,
         drawerContent = {
-            Sheet {
-                NavigationDrawerSheetContent(closeDrawer = { scope.launch { state.close() } })
-            }
+            NavigationDrawerSheet(
+                closeDrawer = remember {
+                    { scope.launch { state.close() } }
+                }
+            )
         },
-        drawerState = state
-    ) {
-        content()
-    }
+        drawerState = state,
+        content = content
+    )
 }
 
 @Composable
-private fun Sheet(
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
+private fun NavigationDrawerSheet(
+    closeDrawer: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     ModalDrawerSheet(modifier = modifier) {
         Column(
             modifier = Modifier
-                .padding(vertical = 32.dp, horizontal = 24.dp)
+                .padding(horizontal = 24.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AppLogoWCircularBackground()
-            Spacer(modifier = Modifier.height(18.dp))
-            Text(text = stringResource(id = R.string.version).format(BuildConfig.VERSION_NAME))
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(text = stringResource(R.string.copyright, LocalDate.now().year))
+            Header(modifier = Modifier.fillMaxWidth())
             HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 12.dp))
-            content()
+            NavigationDrawerSheetItemColumn(closeDrawer = closeDrawer)
         }
+    }
+}
+
+@Composable
+private fun Header(modifier: Modifier = Modifier) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        AppLogoWCircularBackground()
+        Spacer(modifier = Modifier.height(18.dp))
+        Text(
+            text = stringResource(id = R.string.version).format(BuildConfig.VERSION_NAME),
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(text = stringResource(R.string.copyright, LocalDate.now().year))
     }
 }
 

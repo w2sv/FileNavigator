@@ -67,4 +67,5 @@
     <string name="support_the_app">Support the app</string>
     <string name="report_a_bug">Report a bug / request a feature</string>
     <string name="source">Source</string>
+    <string name="use_colors_derived_from_your_wallpaper">Use colors derived from your wallpaper</string>
 </resources>
