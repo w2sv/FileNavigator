@@ -28,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import slimber.log.i
 import javax.inject.Inject
 
-class NewMoveFileNotificationManager(
+internal class NewMoveFileNotificationManager(
     context: Context,
     notificationManager: NotificationManager
 ) : MultiInstanceAppNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(

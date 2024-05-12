@@ -9,7 +9,7 @@ import com.w2sv.androidutils.notifying.UniqueIds
 import com.w2sv.navigator.notifications.NotificationResources
 import slimber.log.i
 
-abstract class MultiInstanceAppNotificationManager<A : MultiInstanceAppNotificationManager.BuilderArgs>(
+internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceAppNotificationManager.BuilderArgs>(
     notificationChannel: NotificationChannel,
     notificationManager: NotificationManager,
     context: Context,

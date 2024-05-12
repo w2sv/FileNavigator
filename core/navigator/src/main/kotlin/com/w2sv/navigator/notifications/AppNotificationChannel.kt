@@ -9,12 +9,12 @@ import com.w2sv.core.navigator.R
 /**
  * Enum assures required id-uniqueness of resulting [NotificationChannel].
  */
-enum class AppNotificationChannel(@StringRes val nameRes: Int) {
+internal enum class AppNotificationChannel(@StringRes val nameRes: Int) {
     FileNavigatorIsRunning(R.string.file_navigator_is_running),
     NewFile(R.string.new_file)
 }
 
-fun AppNotificationChannel.getNotificationChannel(
+internal fun AppNotificationChannel.getNotificationChannel(
     context: Context,
     importance: Int = NotificationManager.IMPORTANCE_DEFAULT
 ): NotificationChannel =

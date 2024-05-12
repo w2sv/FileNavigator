@@ -38,7 +38,7 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FileMoveActivity : ComponentActivity() {
+internal class FileMoveActivity : ComponentActivity() {
 
     internal enum class PreemptiveExitReason {
         MissingManageAllFilesPermission,
@@ -122,7 +122,10 @@ class FileMoveActivity : ComponentActivity() {
     private val viewModel by viewModels<ViewModel>()
 
     private val destinationPickerLauncher =
-        registerForActivityResult(ActivityResultContracts.OpenDocumentTree(), ::onTargetDirSelected)
+        registerForActivityResult(
+            contract = ActivityResultContracts.OpenDocumentTree(),
+            callback = ::onTargetDirSelected
+        )
 
     private fun onTargetDirSelected(treeUri: Uri?) {
         i { "Move destination DocumentTree Uri: $treeUri" }

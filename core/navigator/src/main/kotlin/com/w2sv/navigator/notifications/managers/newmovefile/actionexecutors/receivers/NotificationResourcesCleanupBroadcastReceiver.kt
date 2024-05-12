@@ -7,7 +7,7 @@ import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 
-abstract class NotificationResourcesCleanupBroadcastReceiver : BroadcastReceiver() {
+internal abstract class NotificationResourcesCleanupBroadcastReceiver : BroadcastReceiver() {
 
     abstract val multiInstanceAppNotificationManager: MultiInstanceAppNotificationManager<*>
 

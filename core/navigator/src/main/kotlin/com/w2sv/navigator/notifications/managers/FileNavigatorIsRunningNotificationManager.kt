@@ -13,7 +13,7 @@ import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 
-class FileNavigatorIsRunningNotificationManager(
+internal class FileNavigatorIsRunningNotificationManager(
     context: Context,
     notificationManager: NotificationManager
 ) : AppNotificationManager<AppNotificationManager.BuilderArgs.Empty>(

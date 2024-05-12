@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class NotificationResources(
+internal data class NotificationResources(
     val id: Int,
     val actionRequestCodes: ArrayList<Int>
 ) : Parcelable {

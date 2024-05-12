@@ -9,7 +9,7 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.security.MessageDigest
 
-class MediaStoreFileProvider {
+internal class MediaStoreFileProvider {
 
     sealed interface Result {
         data class Success(val mediaStoreFile: MediaStoreFile) : Result

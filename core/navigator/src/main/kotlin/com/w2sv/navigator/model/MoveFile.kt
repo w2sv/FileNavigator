@@ -8,7 +8,7 @@ import com.w2sv.domain.model.FileType
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class MoveFile(
+internal data class MoveFile(
     val mediaStoreFile: MediaStoreFile,
     val source: FileType.Source
 ) : Parcelable {

@@ -4,7 +4,7 @@ import android.net.Uri
 import com.w2sv.domain.model.MoveEntry
 import java.time.LocalDateTime
 
-fun getMoveEntry(
+internal fun getMoveEntry(
     moveFile: MoveFile,
     destinationDocumentUri: Uri,
     dateTime: LocalDateTime

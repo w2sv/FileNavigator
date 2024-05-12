@@ -24,7 +24,7 @@ private const val RECENTLY_ADDED_MS_THRESHOLD = 5_000L
  * @param volumeRelativeDirPath Relative dir path from the storage volume, e.g. "Documents/", "DCIM/Camera/".
  */
 @Parcelize
-data class MediaStoreColumnData(
+internal data class MediaStoreColumnData(
     val rowId: String,
     val absPath: String,
     val volumeRelativeDirPath: String,

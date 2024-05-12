@@ -5,7 +5,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class MediaStoreFile(
+internal data class MediaStoreFile(
     val uri: Uri,
     val columnData: MediaStoreColumnData,
     val sha256: String

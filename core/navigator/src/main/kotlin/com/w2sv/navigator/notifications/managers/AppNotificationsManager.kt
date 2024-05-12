@@ -11,7 +11,7 @@ import javax.inject.Singleton
  * Single source of truth for showing and cancelling app notifications.
  */
 @Singleton
-class AppNotificationsManager @Inject constructor(
+internal class AppNotificationsManager @Inject constructor(
     notificationManager: NotificationManager,
     @ApplicationContext context: Context
 ) {

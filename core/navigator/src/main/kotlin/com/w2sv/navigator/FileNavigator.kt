@@ -25,13 +25,13 @@ import javax.inject.Singleton
 class FileNavigator : UnboundService() {
 
     @Inject
-    lateinit var navigatorRepository: NavigatorRepository
+    internal lateinit var navigatorRepository: NavigatorRepository
 
     @Inject
-    lateinit var statusChanged: StatusChanged
+    internal lateinit var statusChanged: StatusChanged
 
     @Inject
-    lateinit var appNotificationsManager: AppNotificationsManager
+    internal lateinit var appNotificationsManager: AppNotificationsManager
 
     @Inject
     @GlobalScope(AppDispatcher.IO)

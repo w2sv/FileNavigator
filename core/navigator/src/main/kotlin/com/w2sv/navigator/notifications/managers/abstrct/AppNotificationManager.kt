@@ -8,7 +8,7 @@ import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
 import com.w2sv.core.navigator.R
 
-abstract class AppNotificationManager<A : AppNotificationManager.BuilderArgs>(
+internal abstract class AppNotificationManager<A : AppNotificationManager.BuilderArgs>(
     protected val notificationChannel: NotificationChannel,
     protected val notificationManager: NotificationManager,
     protected val context: Context
