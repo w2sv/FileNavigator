@@ -62,7 +62,8 @@ class NavigatorConfiguration(
             _firstDisabledFileType.value = sortedFileTypes.firstDisabled {
                 map.getValue(it)
             }
-        }
+        },
+        appliedStateMapBasedStateAlignmentAssuranceScope = scope
     )
 
     val mediaFileSourceEnablementMap = ReversibleStateMap(
@@ -70,13 +71,15 @@ class NavigatorConfiguration(
         makeMap = { it.toMutableStateMap() },
         syncState = {
             navigatorRepository.mediaFileSourceEnablementMap.save(it)
-        }
+        },
+        appliedStateMapBasedStateAlignmentAssuranceScope = scope
     )
 
     val disableOnLowBattery = ReversibleStateFlow(
         scope = scope,
         dataStoreFlow = navigatorRepository.disableOnLowBattery,
-        started = SharingStarted.Eagerly
+        started = SharingStarted.Eagerly,
+        appliedStateBasedStateAlignmentPostInit = true
     )
 
     val unconfirmedStates = ReversibleStatesComposition(

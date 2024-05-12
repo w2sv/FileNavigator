@@ -34,6 +34,7 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.MissingPermissionsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.navigation.popUpTo
@@ -137,7 +138,8 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             dependenciesContainerBuilder = {
                                 dependency(postNotificationsPermissionState)
-                            }
+                            },
+                            startRoute = NavigatorSettingsScreenDestination
                         )
                     }
                 }

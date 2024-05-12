@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Text
@@ -48,6 +49,16 @@ sealed class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
 
     @Immutable
     data object Error : SnackbarKind(Icons.Outlined.Warning, AppColor.error)
+}
+
+@Composable
+fun AppSnackbarHost(
+    modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
+) {
+    SnackbarHost(hostState = snackbarHostState, modifier = modifier) { snackbarData ->
+        AppSnackbar(visuals = snackbarData.visuals as AppSnackbarVisuals)
+    }
 }
 
 @Composable

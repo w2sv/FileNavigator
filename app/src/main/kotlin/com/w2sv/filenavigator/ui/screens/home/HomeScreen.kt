@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -23,10 +22,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbar
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
+import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppTopBar
-import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.designsystem.drawer.drawerRepelledAnimation
@@ -51,9 +48,7 @@ fun HomeScreen(
     NavigationDrawer(state = drawerState) {
         Scaffold(
             snackbarHost = {
-                SnackbarHost(LocalSnackbarHostState.current) { snackbarData ->
-                    AppSnackbar(visuals = snackbarData.visuals as AppSnackbarVisuals)
-                }
+                AppSnackbarHost()
             },
             topBar = {
                 AppTopBar(
