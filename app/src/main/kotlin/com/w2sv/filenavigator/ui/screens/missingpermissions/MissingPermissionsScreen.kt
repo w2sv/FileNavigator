@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -15,8 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
@@ -31,40 +32,58 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.utils.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.utils.activityViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Destination<RootGraph>
 @Composable
 fun MissingPermissionsScreen(
-    postNotificationsPermissionState: PostNotificationsPermissionState,
-    modifier: Modifier = Modifier,
+    postNotificationsPermissionState: PostNotificationsPermissionState
 ) {
     val permissionCards =
         rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState.state)
 
-    if (isPortraitModeActive) {
-        Column(
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.fillMaxSize()
-        ) {
-            permissionCards.forEach {
-                it(Modifier)
-            }
+    val sharedModifier = Modifier.fillMaxSize()
+
+    when (isPortraitModeActive) {
+        true -> PortraitMode(permissionCards = permissionCards, modifier = sharedModifier)
+        false -> LandscapeMode(permissionCards = permissionCards, modifier = sharedModifier)
+    }
+}
+
+@Composable
+private fun PortraitMode(
+    permissionCards: ImmutableList<ModifierReceivingComposable>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.padding(horizontal = 32.dp)
+    ) {
+        permissionCards.forEach {
+            it(Modifier)
         }
-    } else {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            permissionCards.forEach {
-                it(
-                    Modifier
-                        .fillMaxWidth(0.4f)
-                        .verticalScroll(rememberScrollState())
-                )
-            }
+    }
+}
+
+@Composable
+private fun LandscapeMode(
+    permissionCards: ImmutableList<ModifierReceivingComposable>,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = modifier
+    ) {
+        permissionCards.forEach {
+            it(
+                Modifier
+                    .fillMaxWidth(0.4f)
+                    .verticalScroll(rememberScrollState())
+            )
         }
     }
 }
@@ -75,7 +94,7 @@ private fun rememberMovablePermissionCards(
     postNotificationsPermissionState: PermissionState?,
     appVM: AppViewModel = activityViewModel(),
     context: Context = LocalContext.current
-): List<ModifierReceivingComposable> {
+): ImmutableList<ModifierReceivingComposable> {
     val manageAllFilesPermissionGranted by appVM.manageAllFilesPermissionGranted.collectAsStateWithLifecycle()
 
     return remember(
@@ -114,7 +133,13 @@ private fun rememberMovablePermissionCards(
             }
         }
             .map { properties ->
-                movableContentOf { mod -> PermissionCard(properties = properties, modifier = mod) }
+                movableContentOf { mod: Modifier ->
+                    PermissionCard(
+                        properties = properties,
+                        modifier = mod
+                    )
+                }
             }
+            .toPersistentList()
     }
 }
