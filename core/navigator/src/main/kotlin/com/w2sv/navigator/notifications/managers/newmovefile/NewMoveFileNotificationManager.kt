@@ -23,7 +23,7 @@ import com.w2sv.navigator.notifications.managers.AppNotificationsManager
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.FileMoveActivity
 import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.NotificationResourcesCleanupBroadcastReceiver
-import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.QuickMoveBroadcastReceiver
+import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.MoveBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import slimber.log.i
 import javax.inject.Inject
@@ -190,7 +190,7 @@ internal class NewMoveFileNotificationManager(
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,
-                        QuickMoveBroadcastReceiver.getIntent(
+                        MoveBroadcastReceiver.getIntent(
                             args.moveFile,
                             args.resources,
                             lastMoveDestination.also {

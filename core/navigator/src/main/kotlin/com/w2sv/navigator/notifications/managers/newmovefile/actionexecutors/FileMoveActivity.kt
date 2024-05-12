@@ -11,8 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
-import com.anggrayudi.storage.callback.FileCallback
 import com.anggrayudi.storage.media.MediaFile
 import com.w2sv.androidutils.coroutines.firstBlocking
 import com.w2sv.androidutils.notifying.showToast
@@ -21,20 +19,17 @@ import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorRepository
-import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.model.MoveFile
-import com.w2sv.navigator.model.getMoveEntry
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
-import com.w2sv.navigator.notifications.putNavigatableFileExtra
+import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.MoveBroadcastReceiver
+import com.w2sv.navigator.notifications.putMoveDestinationExtra
+import com.w2sv.navigator.notifications.putMoveFileExtra
 import com.w2sv.navigator.notifications.putNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import slimber.log.i
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -49,8 +44,7 @@ internal class FileMoveActivity : ComponentActivity() {
     @HiltViewModel
     class ViewModel @Inject constructor(
         savedStateHandle: SavedStateHandle,
-        private val navigatorRepository: NavigatorRepository,
-        private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
+        navigatorRepository: NavigatorRepository,
         @ApplicationContext context: Context
     ) :
         androidx.lifecycle.ViewModel() {
@@ -66,23 +60,6 @@ internal class FileMoveActivity : ComponentActivity() {
                 !moveFile.mediaStoreFile.columnData.fileExists -> PreemptiveExitReason.MoveFileNotFound
                 moveMediaFile == null -> PreemptiveExitReason.MoveMediaFileNull
                 else -> null
-            }
-
-        // ===============
-        // FileTypeRepository
-        // ===============
-
-        fun launchMoveEntryInsertion(destination: Uri, dateTime: LocalDateTime): Job =
-            viewModelScope.launch {
-                insertMoveEntryUseCase.invoke(getMoveEntry(moveFile, destination, dateTime))
-            }
-
-        fun launchLastMoveDestinationSaving(destination: Uri): Job =
-            viewModelScope.launch {
-                navigatorRepository.saveLastMoveDestination(
-                    moveFile.source,
-                    destination
-                )
             }
 
         val lastMoveDestination =
@@ -155,35 +132,12 @@ internal class FileMoveActivity : ComponentActivity() {
             return showResultToastAndFinishActivity(ToastArgs(getString(R.string.file_already_at_selected_location)))
         }
 
-        // Move file
-        viewModel.viewModelScope
-            .launch {
-                viewModel.moveMediaFile!!.moveTo(
-                    targetFolder = targetDirectoryDocumentFile,
-                    callback = object : FileCallback() {
-                        override fun onCompleted(result: Any) {
-                            i { "onCompleted" }
-                            viewModel
-                                .launchLastMoveDestinationSaving(targetDirectoryDocumentFile.uri)
-
-                            viewModel.launchMoveEntryInsertion(
-                                targetDirectoryDocumentFile.uri,
-                                LocalDateTime.now()
-                            )
-
-                            removeNotificationAndCleanupResources()
-
-                            showFileSuccessfullyMovedToast(targetDirectoryDocumentFile)
-                        }
-
-                        override fun onFailed(errorCode: ErrorCode) {
-                            i { errorCode.toString() }
-                            showToast(errorCode.name)
-                        }
-                    }
-                )
+        sendBroadcast(
+            intent.apply {
+                setClass(applicationContext, MoveBroadcastReceiver::class.java)
+                putMoveDestinationExtra(targetDirectoryDocumentFile.uri)
             }
-
+        )
         finishAndRemoveTask()
     }
 
@@ -213,7 +167,7 @@ internal class FileMoveActivity : ComponentActivity() {
                     FileMoveActivity::class.java
                 )
             )
-                .putNavigatableFileExtra(moveFile)
+                .putMoveFileExtra(moveFile)
                 .putNotificationResourcesExtra(notificationResources)
     }
 }
