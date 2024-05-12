@@ -5,7 +5,6 @@ import com.w2sv.androidutils.datastorage.preferences_datastore.flow.DataStoreFlo
 import com.w2sv.androidutils.datastorage.preferences_datastore.flow.DataStoreStateFlowMap
 import com.w2sv.domain.model.FileType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 
 interface NavigatorRepository {
     val disableOnLowBattery: DataStoreFlow<Boolean>
