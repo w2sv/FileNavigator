@@ -33,7 +33,8 @@
         <receiver android:name="com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.QuickMoveBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager$ResourcesCleanupBroadcastReceiver" />
 
-        <activity android:name="com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.FileMoveActivity" />
+        <activity
+            android:name="com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.FileMoveActivity" />
     </application>
 
 </manifest>
