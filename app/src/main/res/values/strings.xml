@@ -23,7 +23,7 @@
     <string name="apply">Apply</string>
     <string name="disable_on_low_battery">Disable on low battery</string>
     <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">Leave at least one file source selected or disable the entire file type.</string>
-    <string name="file_types">Navigated File Types</string>
+    <string name="file_types">File Types</string>
     <string name="_default">Default</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>

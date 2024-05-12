@@ -34,16 +34,17 @@ class DrawerRepelledAnimationState(private val getDrawerVisibilityPercentage: ()
     }
 }
 
+@Stable
 fun Modifier.drawerRepelledAnimation(
     state: DrawerRepelledAnimationState,
     animationBoxWidth: Int,
     animationBoxHeight: Int
 ): Modifier =
-    this then graphicsLayer(
-        scaleX = state.drawerVisibilityPercentageInverse,
-        scaleY = state.drawerVisibilityPercentageInverse,
-        translationX = animationBoxWidth * state.drawerVisibilityPercentage,
-        translationY = animationBoxHeight * state.drawerVisibilityPercentage,
-        rotationY = state.drawerVisibilityPercentageAngle,
+    graphicsLayer {
+        scaleX = state.drawerVisibilityPercentageInverse
+        scaleY = state.drawerVisibilityPercentageInverse
+        translationX = animationBoxWidth * state.drawerVisibilityPercentage
+        translationY = animationBoxHeight * state.drawerVisibilityPercentage
+        rotationY = state.drawerVisibilityPercentageAngle
         rotationZ = state.drawerVisibilityPercentageAngle
-    )
+    }

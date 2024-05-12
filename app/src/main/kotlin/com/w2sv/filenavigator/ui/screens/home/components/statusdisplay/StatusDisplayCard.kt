@@ -38,25 +38,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
+import com.ramcosta.composedestinations.navigation.navigate
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.MoreElevatedCard
-import com.w2sv.filenavigator.ui.screens.Screen
-import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.Easing
+import com.w2sv.filenavigator.ui.utils.LocalNavHostController
+import com.w2sv.filenavigator.ui.utils.activityViewModel
 import com.w2sv.navigator.FileNavigator
 
 @Composable
 fun StatusDisplayCard(
     modifier: Modifier = Modifier,
-    navigatorStateVM: NavigatorViewModel = viewModel(),
-    appVM: AppViewModel = viewModel(),
+    navigatorVM: NavigatorViewModel = activityViewModel(),
+    navController: NavController = LocalNavHostController.current,
     context: Context = LocalContext.current
 ) {
-    val navigatorIsRunning by navigatorStateVM.isRunning.collectAsStateWithLifecycle()
+    val navigatorIsRunning by navigatorVM.isRunning.collectAsStateWithLifecycle()
 
     val navigatorIsRunningDependentPropertiesMap = remember {
         mapOf(
@@ -125,7 +127,7 @@ fun StatusDisplayCard(
                         .width(180.dp)
                 )
                 FilledIconButton(
-                    onClick = { appVM.setScreen(Screen.NavigatorSettings) }
+                    onClick = { navController.navigate(NavigatorSettingsScreenDestination) }
                 ) {
                     Icon(
                         painter = painterResource(id = com.w2sv.core.navigator.R.drawable.ic_settings_24),

@@ -142,6 +142,9 @@ dependencies {
     implementation(libs.androidx.compose.activity)
     implementation(libs.androidx.compose.viewmodel)
     implementation(libs.androidx.lifecycle.compose)
+    implementation(libs.compose.destinations)
+    ksp(libs.compose.destinations.ksp)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // Other
     implementation(libs.slimber)

@@ -17,8 +17,6 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,25 +26,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @Composable
 fun NavigationDrawer(
     state: DrawerState,
     modifier: Modifier = Modifier,
-    scope: CoroutineScope = rememberCoroutineScope(),
     content: @Composable () -> Unit
 ) {
     ModalNavigationDrawer(
         modifier = modifier,
         drawerContent = {
-            NavigationDrawerSheet(
-                closeDrawer = remember {
-                    { scope.launch { state.close() } }
-                }
-            )
+            NavigationDrawerSheet()
         },
         drawerState = state,
         content = content
@@ -55,7 +46,6 @@ fun NavigationDrawer(
 
 @Composable
 private fun NavigationDrawerSheet(
-    closeDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ModalDrawerSheet(modifier = modifier) {
@@ -67,7 +57,7 @@ private fun NavigationDrawerSheet(
         ) {
             Header(modifier = Modifier.fillMaxWidth())
             HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 12.dp))
-            NavigationDrawerSheetItemColumn(closeDrawer = closeDrawer)
+            NavigationDrawerSheetItemColumn()
         }
     }
 }

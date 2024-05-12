@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.w2sv.androidutils.generic.appPlayStoreUrl
 import com.w2sv.androidutils.generic.dynamicColorsSupported
 import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
@@ -39,6 +38,7 @@ import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
+import com.w2sv.filenavigator.ui.utils.activityViewModel
 
 private object AppUrl {
     const val LICENSE = "https://github.com/w2sv/FileNavigator/blob/main/LICENSE"
@@ -51,9 +51,8 @@ private object AppUrl {
 
 @Composable
 internal fun NavigationDrawerSheetItemColumn(
-    closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
-    appVM: AppViewModel = viewModel()
+    appVM: AppViewModel = activityViewModel()
 ) {
     Column(modifier = modifier) {
         val context: Context = LocalContext.current
@@ -161,7 +160,6 @@ internal fun NavigationDrawerSheetItemColumn(
                     is NavigationDrawerSheetElement.Item -> {
                         Item(
                             item = it,
-                            closeDrawer = closeDrawer,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 12.dp),
@@ -230,11 +228,10 @@ private fun SubHeader(
 @Composable
 private fun Item(
     item: NavigationDrawerSheetElement.Item,
-    closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        MainItemRow(item = item, closeDrawer = closeDrawer)
+        MainItemRow(item = item)
         item.explanationRes?.let {
             Text(
                 text = stringResource(id = it),
@@ -252,7 +249,6 @@ private val labelStartPadding = 16.dp
 @Composable
 private fun MainItemRow(
     item: NavigationDrawerSheetElement.Item,
-    closeDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -261,7 +257,6 @@ private fun MainItemRow(
                 if (item is NavigationDrawerSheetElement.Item.Clickable)
                     Modifier.clickable {
                         item.onClick()
-                        closeDrawer()
                     }
                 else
                     Modifier

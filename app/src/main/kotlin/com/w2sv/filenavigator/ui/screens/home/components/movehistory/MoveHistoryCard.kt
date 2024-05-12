@@ -34,8 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -46,12 +44,13 @@ import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.sharedviewmodels.FileRetrievalResult
 import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
+import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun MoveHistoryCard(
     modifier: Modifier = Modifier,
-    moveHistoryVM: MoveHistoryViewModel = viewModel()
+    moveHistoryVM: MoveHistoryViewModel = activityViewModel()
 ) {
     val moveHistory by moveHistoryVM.moveHistory.collectAsStateWithLifecycle()
 
@@ -128,20 +127,21 @@ fun MoveHistoryCard(
 
 @Composable
 private fun rememberRetrieveAndViewFile(
-    moveHistoryVM: MoveHistoryViewModel = viewModel(),
+    moveHistoryVM: MoveHistoryViewModel = activityViewModel(),
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ): (MoveEntry) -> Unit {
-
     return remember {
         { moveEntry ->
             moveHistoryVM.launchFileRetrieval(
                 moveEntry = moveEntry,
                 context = context,
                 onResult = { result ->
+                    snackbarHostState.currentSnackbarData?.dismiss()
+
                     when (result) {
                         is FileRetrievalResult.CouldntFindFile -> {
-                            snackbarHostState.dismissCurrentSnackbarAndShow(
+                            snackbarHostState.showSnackbar(
                                 AppSnackbarVisuals(
                                     message = context.getString(R.string.couldn_t_find_file),
                                     kind = SnackbarKind.Error,

@@ -26,17 +26,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,6 +51,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.composed.CollectLatestFromFlow
 import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
@@ -58,21 +64,21 @@ import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
+import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.utils.Easing
-import kotlinx.coroutines.CoroutineScope
+import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.coroutines.launch
 import slimber.log.i
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
+@Destination<RootGraph>
 @Composable
 fun NavigatorSettingsScreen(
-    returnToHomeScreen: () -> Unit,
-    parentScope: CoroutineScope,
-    modifier: Modifier = Modifier,
-    navigatorVM: NavigatorViewModel = viewModel(),
+    navigator: DestinationsNavigator,
+    navigatorVM: NavigatorViewModel = activityViewModel(),
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
@@ -90,153 +96,170 @@ fun NavigatorSettingsScreen(
 
     CollectLatestFromFlow(
         flow = navigatorVM.makeSnackbarVisuals,
-        action = { makeSnackbarVisuals ->
-            snackbarHostState.dismissCurrentSnackbarAndShow(makeSnackbarVisuals(context))
-        },
         key1 = snackbarHostState
-    )
+    ) { makeSnackbarVisuals ->
+        snackbarHostState.dismissCurrentSnackbarAndShow(makeSnackbarVisuals(context))
+    }
 
-    BackHandler(onBack = returnToHomeScreen)
+    val onBack: () -> Unit = remember { { navigator.popBackStack() } }
+    val scope = rememberCoroutineScope()
 
-    Column(modifier = modifier) {
-        ButtonRow(
-            onBackButtonPress = returnToHomeScreen,
-            configurationHasChanged = configurationHasChanged,
-            resetConfiguration = navigatorVM.configuration.unconfirmedStates::reset,
-            syncConfiguration = {
-                navigatorVM.configuration.unconfirmedStates.launchSync().invokeOnCompletion {
-                    parentScope.launch {
-                        snackbarHostState.dismissCurrentSnackbarAndShow(
-                            AppSnackbarVisuals(
-                                message = context.getString(R.string.applied_navigator_settings),
-                                kind = SnackbarKind.Success
-                            )
+    BackHandler(onBack = onBack)
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = stringResource(id = R.string.navigator_settings)) },
+                navigationIcon = {
+                    FilledTonalIconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.return_to_home_screen)
                         )
                     }
                 }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        val firstDisabledFileType by navigatorVM.configuration.firstDisabledFileType.collectAsStateWithLifecycle()
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            item {
-                Text(
-                    text = stringResource(id = R.string.file_types),
-                    style = MaterialTheme.typography.headlineMedium
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            items(navigatorVM.configuration.sortedFileTypes, key = { it }) { fileType ->
-                i { "Laying out ${fileType.name}" }
-
-                FileTypeAccordion(
-                    fileType = fileType,
-                    isEnabled = navigatorVM.configuration.fileEnablementMap.getValue(fileType),
-                    isFirstDisabled = remember {
-                        derivedStateOf {
-                            fileType == firstDisabledFileType
-                        }
-                    }.value,
-                    onCheckedChange = remember(fileType) {
-                        {
-                            navigatorVM.configuration.onFileTypeCheckedChange(
-                                fileType = fileType,
-                                checkedNew = it
-                            )
-                        }
-                    },
-                    mediaFileSourceEnabled = remember(fileType) {
-                        {
-                            navigatorVM.configuration.mediaFileSourceEnablementMap.getOrDefault(
-                                it,
-                                true
-                            )
-                        }
-                    },
-                    onMediaFileSourceCheckedChange = remember(fileType) {
-                        { source, checked ->
-                            navigatorVM.configuration.onMediaFileSourceCheckedChange(
-                                source,
-                                checked
-                            )
-                        }
-                    },
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                        .animateItemPlacement(tween(DefaultAnimationDuration))  // Animate upon reordering
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                MoreColumn(
-                    disableOnLowBattery = navigatorVM.configuration.disableOnLowBattery.collectAsStateWithLifecycle().value,
-                    setDisableOnLowBattery = {
-                        navigatorVM.configuration.disableOnLowBattery.value = it
+            )
+        },
+        floatingActionButton = {
+            ConfigurationButtonRow(
+                configurationHasChanged = configurationHasChanged,
+                resetConfiguration = remember { { navigatorVM.configuration.unconfirmedStates.reset() } },
+                syncConfiguration = remember {
+                    {
+                        navigatorVM.configuration.unconfirmedStates.launchSync()
+                            .invokeOnCompletion {
+                                scope.launch {
+                                    snackbarHostState.dismissCurrentSnackbarAndShow(
+                                        AppSnackbarVisuals(
+                                            message = context.getString(R.string.applied_navigator_settings),
+                                            kind = SnackbarKind.Success
+                                        )
+                                    )
+                                }
+                            }
                     }
-                )
-            }
+                },
+                modifier = Modifier.height(56.dp)
+            )
+        }
+    ) { paddingValues ->
+        NavigatorConfigurationColumn(
+            configuration = navigatorVM.configuration,
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(top = 8.dp)
+                .padding(horizontal = 16.dp)
+                .fillMaxSize()
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun NavigatorConfigurationColumn(
+    configuration: NavigatorConfiguration,
+    modifier: Modifier = Modifier
+) {
+    val firstDisabledFileType by configuration.firstDisabledFileType.collectAsStateWithLifecycle()
+
+    LazyColumn(
+        modifier = modifier
+    ) {
+        item {
+            Text(
+                text = stringResource(id = R.string.file_types),
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        items(configuration.sortedFileTypes, key = { it }) { fileType ->
+            i { "Laying out ${fileType.name}" }
+
+            FileTypeAccordion(
+                fileType = fileType,
+                isEnabled = configuration.fileEnablementMap.getValue(fileType),
+                isFirstDisabled = fileType == firstDisabledFileType,
+                onCheckedChange = remember(fileType) {
+                    {
+                        configuration.onFileTypeCheckedChange(
+                            fileType = fileType,
+                            checkedNew = it
+                        )
+                    }
+                },
+                mediaFileSourceEnabled = remember(fileType) {
+                    {
+                        configuration.mediaFileSourceEnablementMap.getOrDefault(
+                            it,
+                            true
+                        )
+                    }
+                },
+                onMediaFileSourceCheckedChange = remember(fileType) {
+                    { source, checked ->
+                        configuration.onMediaFileSourceCheckedChange(
+                            source,
+                            checked
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .animateItemPlacement(tween(DefaultAnimationDuration))  // Animate upon reordering
+            )
+        }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            MoreColumn(
+                disableOnLowBattery = configuration.disableOnLowBattery.collectAsStateWithLifecycle().value,
+                setDisableOnLowBattery = {
+                    configuration.disableOnLowBattery.value = it
+                }
+            )
         }
     }
 }
 
 @Composable
-private fun ButtonRow(
-    onBackButtonPress: () -> Unit,
+private fun ConfigurationButtonRow(
     configurationHasChanged: Boolean,
     resetConfiguration: () -> Unit,
     syncConfiguration: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+    AnimatedVisibility(
+        visible = configurationHasChanged,
+        enter = remember {
+            slideInHorizontally(
+                tween(easing = Easing.Anticipate),
+                initialOffsetX = { it / 2 }
+            ) + fadeIn()
+        },
+        exit = remember {
+            slideOutHorizontally(
+                tween(easing = Easing.Anticipate),
+                targetOffsetX = { it / 2 }
+            ) + fadeOut()
+        },
         modifier = modifier
     ) {
-        FilledTonalIconButton(onClick = onBackButtonPress) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                contentDescription = stringResource(R.string.return_to_home_screen)
-            )
-        }
-        AnimatedVisibility(
-            visible = configurationHasChanged,
-            enter = remember {
-                slideInHorizontally(
-                    tween(easing = Easing.Anticipate),
-                    initialOffsetX = { it / 2 }
-                ) + fadeIn()
-            },
-            exit = remember {
-                slideOutHorizontally(
-                    tween(easing = Easing.Anticipate),
-                    targetOffsetX = { it / 2 }
-                ) + fadeOut()
-            }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                ConfigurationChangeButton(
-                    imageVector = Icons.Default.Clear,
-                    text = stringResource(R.string.discard),
-                    color = AppColor.error,
-                    onClick = resetConfiguration
-                )
-                Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-                ConfigurationChangeButton(
-                    imageVector = Icons.Default.Check,
-                    text = stringResource(id = R.string.apply),
-                    color = AppColor.success,
-                    onClick = syncConfiguration
-                )
-            }
+            ConfigurationChangeButton(
+                imageVector = Icons.Default.Clear,
+                text = stringResource(R.string.discard),
+                color = AppColor.error,
+                onClick = resetConfiguration
+            )
+            ConfigurationChangeButton(
+                imageVector = Icons.Default.Check,
+                text = stringResource(id = R.string.apply),
+                color = AppColor.success,
+                onClick = syncConfiguration
+            )
         }
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,7 +41,7 @@ fun MoveEntryColumn(
     onRowClick: (MoveEntry) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dateState: DateState = remember(history.size) {
+    val dateState = remember(history.size) {
         DateState()
     }
 
@@ -80,10 +81,10 @@ private fun MoveEntryRow(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .clip(MaterialTheme.shapes.medium)
             .clickable { onClick() }
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
-                shape = MaterialTheme.shapes.medium
             )
             .padding(8.dp)
     ) {

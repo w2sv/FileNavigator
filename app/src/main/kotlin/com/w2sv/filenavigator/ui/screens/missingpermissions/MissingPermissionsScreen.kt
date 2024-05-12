@@ -20,22 +20,27 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
+import com.w2sv.filenavigator.PostNotificationsPermissionState
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.utils.ModifierReceivingComposable
+import com.w2sv.filenavigator.ui.utils.activityViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
+@Destination<RootGraph>
 @Composable
-fun PermissionScreen(
-    postNotificationsPermissionState: PermissionState?,
+fun MissingPermissionsScreen(
+    postNotificationsPermissionState: PostNotificationsPermissionState,
     modifier: Modifier = Modifier,
 ) {
     val permissionCards =
-        rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState)
+        rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState.state)
 
     if (isPortraitModeActive) {
         Column(
@@ -68,7 +73,7 @@ fun PermissionScreen(
 @Composable
 private fun rememberMovablePermissionCards(
     postNotificationsPermissionState: PermissionState?,
-    appVM: AppViewModel = viewModel(),
+    appVM: AppViewModel = activityViewModel(),
     context: Context = LocalContext.current
 ): List<ModifierReceivingComposable> {
     val manageAllFilesPermissionGranted by appVM.manageAllFilesPermissionGranted.collectAsStateWithLifecycle()

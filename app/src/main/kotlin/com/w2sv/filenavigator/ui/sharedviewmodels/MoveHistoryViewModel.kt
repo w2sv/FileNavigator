@@ -25,7 +25,7 @@ class MoveHistoryViewModel @Inject constructor(private val moveEntryRepository: 
 
     val moveHistory = moveEntryRepository
         .getAllInDescendingOrder()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     fun launchHistoryDeletion(): Job =
         viewModelScope.launch(Dispatchers.IO) {
