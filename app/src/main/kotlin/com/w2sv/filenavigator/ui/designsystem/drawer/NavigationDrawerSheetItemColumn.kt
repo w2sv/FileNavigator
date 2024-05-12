@@ -35,6 +35,7 @@ import com.w2sv.androidutils.generic.appPlayStoreUrl
 import com.w2sv.androidutils.generic.dynamicColorsSupported
 import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
 import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
@@ -231,7 +232,7 @@ private fun Item(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        MainItemRow(item = item)
+        MainItemRow(item = item, modifier = Modifier.fillMaxWidth())
         item.explanationRes?.let {
             Text(
                 text = stringResource(id = it),
@@ -253,14 +254,11 @@ private fun MainItemRow(
 ) {
     Row(
         modifier = modifier
-            .then(
-                if (item is NavigationDrawerSheetElement.Item.Clickable)
-                    Modifier.clickable {
-                        item.onClick()
-                    }
-                else
-                    Modifier
-            ),
+            .thenIfNotNull(item as? NavigationDrawerSheetElement.Item.Clickable) {
+                clickable {
+                    it.onClick()
+                }
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(

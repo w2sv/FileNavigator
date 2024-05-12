@@ -2,10 +2,15 @@ package com.w2sv.filenavigator.ui.designsystem.drawer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -44,20 +49,26 @@ fun NavigationDrawer(
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun NavigationDrawerSheet(
     modifier: Modifier = Modifier
 ) {
-    ModalDrawerSheet(modifier = modifier) {
+    ModalDrawerSheet(
+        modifier = modifier,
+        windowInsets = WindowInsets(0, 0, 0, 0)
+    ) {
         Column(
             modifier = Modifier
                 .padding(horizontal = 24.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility))
             Header(modifier = Modifier.fillMaxWidth())
             HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 12.dp))
             NavigationDrawerSheetItemColumn()
+            Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility))
         }
     }
 }
@@ -79,7 +90,7 @@ private fun Header(modifier: Modifier = Modifier) {
 @Composable
 private fun AppLogoWCircularBackground(modifier: Modifier = Modifier) {
     Icon(
-        painterResource(id = R.drawable.ic_app_foreground_108),
+        painter = painterResource(id = R.drawable.ic_app_foreground_108),
         contentDescription = null,
         tint = MaterialTheme.colorScheme.inversePrimary,
         modifier = modifier
