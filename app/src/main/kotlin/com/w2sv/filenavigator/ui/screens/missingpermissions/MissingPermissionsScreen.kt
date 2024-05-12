@@ -29,6 +29,7 @@ import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.PostNotificationsPermissionState
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.utils.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.utils.activityViewModel
@@ -36,7 +37,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
 @OptIn(ExperimentalPermissionsApi::class)
-@Destination<RootGraph>
+@Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
 fun MissingPermissionsScreen(
     postNotificationsPermissionState: PostNotificationsPermissionState
