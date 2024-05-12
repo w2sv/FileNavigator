@@ -24,6 +24,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,6 +47,9 @@ import com.w2sv.filenavigator.ui.sharedviewmodels.FileRetrievalResult
 import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @Composable
 fun MoveHistoryCard(
@@ -129,46 +133,53 @@ fun MoveHistoryCard(
 private fun rememberRetrieveAndViewFile(
     moveHistoryVM: MoveHistoryViewModel = activityViewModel(),
     context: Context = LocalContext.current,
-    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
+    scope: CoroutineScope = rememberCoroutineScope()
 ): (MoveEntry) -> Unit {
+    var fileRetrievalJob: Job? = remember {
+        null
+    }
     return remember {
         { moveEntry ->
-            moveHistoryVM.launchFileRetrieval(
-                moveEntry = moveEntry,
-                context = context,
-                onResult = { result ->
-                    snackbarHostState.currentSnackbarData?.dismiss()
+            fileRetrievalJob?.cancel()
+            fileRetrievalJob = scope.launch {
+                moveHistoryVM.launchFileRetrieval(
+                    moveEntry = moveEntry,
+                    context = context,
+                    onResult = { result ->
+                        snackbarHostState.currentSnackbarData?.dismiss()
 
-                    when (result) {
-                        is FileRetrievalResult.CouldntFindFile -> {
-                            snackbarHostState.showSnackbar(
-                                AppSnackbarVisuals(
-                                    message = context.getString(R.string.couldn_t_find_file),
-                                    kind = SnackbarKind.Error,
-                                    action = SnackbarAction(
-                                        label = context.getString(R.string.delete_entry),
-                                        callback = {
-                                            moveHistoryVM.launchEntryDeletion(result.moveEntry)
-                                            snackbarHostState.currentSnackbarData?.dismiss()
-                                        }
+                        when (result) {
+                            is FileRetrievalResult.CouldntFindFile -> {
+                                snackbarHostState.showSnackbar(
+                                    AppSnackbarVisuals(
+                                        message = context.getString(R.string.couldn_t_find_file),
+                                        kind = SnackbarKind.Error,
+                                        action = SnackbarAction(
+                                            label = context.getString(R.string.delete_entry),
+                                            callback = {
+                                                moveHistoryVM.launchEntryDeletion(result.moveEntry)
+                                                snackbarHostState.currentSnackbarData?.dismiss()
+                                            }
+                                        )
                                     )
                                 )
-                            )
-                        }
+                            }
 
-                        is FileRetrievalResult.Success -> {
-                            context.startActivity(
-                                Intent()
-                                    .setAction(Intent.ACTION_VIEW)
-                                    .setDataAndType(
-                                        result.mediaUri,
-                                        result.moveEntry.fileType.simpleStorageMediaType.mimeType
-                                    )
-                            )
+                            is FileRetrievalResult.Success -> {
+                                context.startActivity(
+                                    Intent()
+                                        .setAction(Intent.ACTION_VIEW)
+                                        .setDataAndType(
+                                            result.mediaUri,
+                                            result.moveEntry.fileType.simpleStorageMediaType.mimeType
+                                        )
+                                )
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }

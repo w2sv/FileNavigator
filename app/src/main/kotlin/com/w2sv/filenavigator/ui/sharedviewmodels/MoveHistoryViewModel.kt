@@ -37,20 +37,18 @@ class MoveHistoryViewModel @Inject constructor(private val moveEntryRepository: 
             moveEntryRepository.delete(entry)
         }
 
-    fun launchFileRetrieval(
+    suspend fun launchFileRetrieval(
         moveEntry: MoveEntry,
         context: Context,
         onResult: suspend (FileRetrievalResult) -> Unit
     ) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                onResult(
-                    when (val mediaUri = moveEntry.getMediaUri(context)) {
-                        null -> FileRetrievalResult.CouldntFindFile(moveEntry)
-                        else -> FileRetrievalResult.Success(moveEntry, mediaUri)
-                    }
-                )
-            }
+        withContext(Dispatchers.IO) {
+            onResult(
+                when (val mediaUri = moveEntry.getMediaUri(context)) {
+                    null -> FileRetrievalResult.CouldntFindFile(moveEntry)
+                    else -> FileRetrievalResult.Success(moveEntry, mediaUri)
+                }
+            )
         }
     }
 }
