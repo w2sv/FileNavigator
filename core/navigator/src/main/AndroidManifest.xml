@@ -30,10 +30,10 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.MoveBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.moving.MoveBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager$ResourcesCleanupBroadcastReceiver" />
 
-        <activity android:name="com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.FileMoveActivity" />
+        <activity android:name="com.w2sv.navigator.moving.FileMoveActivity" />
     </application>
 
 </manifest>

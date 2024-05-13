@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors
+package com.w2sv.navigator.moving
 
 import android.content.Context
 import androidx.documentfile.provider.DocumentFile

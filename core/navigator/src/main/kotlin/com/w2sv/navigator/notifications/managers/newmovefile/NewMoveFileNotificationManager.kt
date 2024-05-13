@@ -21,9 +21,9 @@ import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.AppNotificationsManager
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
-import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.FileMoveActivity
-import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.NotificationResourcesCleanupBroadcastReceiver
-import com.w2sv.navigator.notifications.managers.newmovefile.actionexecutors.receivers.MoveBroadcastReceiver
+import com.w2sv.navigator.moving.FileMoveActivity
+import com.w2sv.navigator.notifications.NotificationResourcesCleanupBroadcastReceiver
+import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import slimber.log.i
 import javax.inject.Inject
@@ -186,17 +186,17 @@ internal class NewMoveFileNotificationManager(
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
                     R.drawable.ic_app_logo_24,
-                    "to /$lastMoveDestinationFileName",
+                    context.getString(R.string.to, lastMoveDestinationFileName),
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,
                         MoveBroadcastReceiver.getIntent(
-                            args.moveFile,
-                            args.resources,
-                            lastMoveDestination.also {
+                            moveFile = args.moveFile,
+                            moveDestinationDocumentUri = lastMoveDestination.also {
                                 i { "MoveDestination Extra: $it" }
                             },
-                            context
+                            notificationResources = args.resources,
+                            context = context
                         ),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
