@@ -98,14 +98,16 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                     context.showFileSuccessfullyMovedToast(moveDestinationDocumentFile)
 
                     scope.launch {
+                        val movedFileDocumentUri =
+                            Uri.parse("${moveDestinationDocumentFile.uri}%2F${Uri.encode(moveFile.mediaStoreFile.columnData.name)}")
                         insertMoveEntryUseCase(
                             getMoveEntry(
                                 moveFile = moveFile,
                                 destinationDocumentUri = moveDestinationDocumentFile.uri,
-                                movedFileMediaUri = movedFileMediaUri(
-                                    moveDestinationDocumentUri = moveDestinationDocumentFile.uri,
-                                    fileName = moveFile.mediaStoreFile.columnData.name,
-                                    context = context
+                                movedFileDocumentUri = movedFileDocumentUri,
+                                movedFileMediaUri = MediaStore.getMediaUri(
+                                    context,
+                                    movedFileDocumentUri
                                 )!!,
                                 dateTime = LocalDateTime.now()
                             )

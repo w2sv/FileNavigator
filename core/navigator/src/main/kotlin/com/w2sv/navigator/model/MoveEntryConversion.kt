@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 internal fun getMoveEntry(
     moveFile: MoveFile,
     destinationDocumentUri: Uri,
+    movedFileDocumentUri: Uri,
     movedFileMediaUri: Uri,
     dateTime: LocalDateTime
 ): MoveEntry =
@@ -15,6 +16,7 @@ internal fun getMoveEntry(
         fileType = moveFile.source.fileType,
         fileSourceKind = moveFile.source.kind,
         destinationDocumentUri = destinationDocumentUri,
+        movedFileDocumentUri = movedFileDocumentUri,
         movedFileMediaUri = movedFileMediaUri,
         dateTime = dateTime
     )

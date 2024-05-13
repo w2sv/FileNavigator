@@ -8,6 +8,7 @@ data class MoveEntry(
     val fileType: FileType,
     val fileSourceKind: FileType.Source.Kind,
     val destinationDocumentUri: Uri,
+    val movedFileDocumentUri: Uri,
     val movedFileMediaUri: Uri,
     val dateTime: LocalDateTime
 ) {

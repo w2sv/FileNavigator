@@ -17,19 +17,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import com.w2sv.common.utils.getDocumentUriPath
+import com.w2sv.composed.OnLifecycleEvent
+import com.w2sv.composed.extensions.thenIf
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.model.color
+import com.w2sv.filenavigator.ui.model.launchViewActivity
+import com.w2sv.filenavigator.ui.model.movedFileExists
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.DateState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import kotlinx.collections.immutable.ImmutableList
@@ -38,7 +47,6 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 fun MoveEntryColumn(
     history: ImmutableList<MoveEntry>,
-    onRowClick: (MoveEntry) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dateState = remember(history.size) {
@@ -60,7 +68,6 @@ fun MoveEntryColumn(
                 }
                 MoveEntryRow(
                     moveEntry = moveEntry,
-                    onClick = { onRowClick(moveEntry) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateItemPlacement()
@@ -74,18 +81,29 @@ fun MoveEntryColumn(
 @Composable
 private fun MoveEntryRow(
     moveEntry: MoveEntry,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
 ) {
+    var movedFileExists by remember(moveEntry) {
+        mutableStateOf(moveEntry.movedFileExists(context))
+    }
+    OnLifecycleEvent(lifecycleEvent = Lifecycle.Event.ON_START, key1 = moveEntry) {
+        if (movedFileExists) {
+            movedFileExists = moveEntry.movedFileExists(context)
+        }
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clip(MaterialTheme.shapes.medium)
-            .clickable { onClick() }
+            .clickable(enabled = movedFileExists) { moveEntry.launchViewActivity(context) }
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
             )
+            .thenIf(!movedFileExists) {
+                alpha(0.32f)
+            }
             .padding(8.dp)
     ) {
         WeightedBox(weight = 0.15f) {
