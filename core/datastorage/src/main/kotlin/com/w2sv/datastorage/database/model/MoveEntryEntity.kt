@@ -13,6 +13,7 @@ data class MoveEntryEntity(
     val fileType: FileType,
     val fileSourceKind: FileType.Source.Kind,
     val destinationDocumentUri: Uri,
+    val movedFileMediaUri: Uri,
     @PrimaryKey val dateTime: LocalDateTime
 ) {
     constructor(moveEntry: MoveEntry) : this(
@@ -20,6 +21,7 @@ data class MoveEntryEntity(
         fileType = moveEntry.fileType,
         fileSourceKind = moveEntry.fileSourceKind,
         destinationDocumentUri = moveEntry.destinationDocumentUri,
+        movedFileMediaUri = moveEntry.movedFileMediaUri,
         dateTime = moveEntry.dateTime
     )
 
@@ -29,6 +31,7 @@ data class MoveEntryEntity(
             fileType = fileType,
             fileSourceKind = fileSourceKind,
             destinationDocumentUri = destinationDocumentUri,
+            movedFileMediaUri = movedFileMediaUri,
             dateTime = dateTime
         )
 }

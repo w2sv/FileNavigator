@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.MediaStore
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.callback.FileCallback
 import com.w2sv.androidutils.generic.getParcelableCompat
@@ -64,7 +65,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         }
 
         // Exit on unsuccessful conversion to SimpleStorage objects
-        val targetDirectoryDocumentFile =
+        val moveDestinationDocumentFile =
             DocumentFile.fromSingleUri(
                 context,
                 intent.getParcelableCompat<Uri>(Extra.MOVE_DESTINATION)!!
@@ -74,12 +75,12 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
             )
         val moveMediaFile = moveFile.getSimpleStorageMediaFile(context)
 
-        if (targetDirectoryDocumentFile == null || moveMediaFile == null) {
+        if (moveDestinationDocumentFile == null || moveMediaFile == null) {
             return MoveException.InternalError
         }
 
         // Exit if file already at selected location.
-        if (targetDirectoryDocumentFile.hasChild(
+        if (moveDestinationDocumentFile.hasChild(
                 context = context,
                 path = moveFile.mediaStoreFile.columnData.name,
                 requiresWriteAccess = false
@@ -91,23 +92,29 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         val updateLastMoveDestination = intent.hasExtra(Extra.UPDATE_LAST_MOVE_DESTINATION)
 
         moveMediaFile.moveTo(
-            targetFolder = targetDirectoryDocumentFile,
+            targetFolder = moveDestinationDocumentFile,
             callback = object : FileCallback() {
                 override fun onCompleted(result: Any) {
-                    context.showFileSuccessfullyMovedToast(targetDirectoryDocumentFile)
+                    context.showFileSuccessfullyMovedToast(moveDestinationDocumentFile)
 
                     scope.launch {
                         insertMoveEntryUseCase(
                             getMoveEntry(
-                                moveFile,
-                                targetDirectoryDocumentFile.uri,
-                                LocalDateTime.now()
+                                moveFile = moveFile,
+                                destinationDocumentUri = moveDestinationDocumentFile.uri,
+                                movedFileMediaUri = movedFileMediaUri(
+                                    moveDestinationDocumentUri = moveDestinationDocumentFile.uri,
+                                    fileName = moveFile.mediaStoreFile.columnData.name,
+                                    context = context
+                                )!!,
+                                dateTime = LocalDateTime.now()
                             )
                         )
+
                         if (updateLastMoveDestination) {
                             navigatorRepository.saveLastMoveDestination(
                                 source = moveFile.source,
-                                destination = targetDirectoryDocumentFile.uri
+                                destination = moveDestinationDocumentFile.uri
                             )
                         }
                     }
@@ -166,6 +173,41 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                 moveDestinationDocumentUri
             )
     }
+}
+
+//private fun movedFileMediaUri(
+//    moveDestinationDocumentFile: DocumentFile,
+//    fileName: String,
+//    context: Context
+//): Uri? {
+//    val documentFile = moveDestinationDocumentFile
+//        .child(context, fileName, false)
+//        ?: return null
+//
+//    i { "URI movedFileDocumentUri: ${documentFile.uri}" }
+//
+//    val mediaUri = MediaStore.getMediaUri(
+//        context,
+//        documentFile.uri
+//    )
+//
+//    i { "URI moved Media: $mediaUri" }
+//
+//    return mediaUri
+//}
+
+private fun movedFileMediaUri(
+    moveDestinationDocumentUri: Uri,
+    fileName: String,
+    context: Context
+): Uri? {
+    val movedFileDocumentUri =
+        Uri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
+
+    return MediaStore.getMediaUri(
+        context,
+        movedFileDocumentUri
+    )
 }
 
 private fun onMoveException(moveException: MoveException, context: Context, intent: Intent) {
