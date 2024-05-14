@@ -66,4 +66,6 @@
     <string name="reset">Reset</string>
     <string name="amoled_black">AMOLED Black</string>
     <string name="use_amoled_black_theme">Use AMOLED black theme</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
 </resources>

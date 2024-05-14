@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class DateStateKtTest {
+class IndexToDateRepresentationMapKtTest {
 
     @Test
     fun testGetDateRepresentationToday() {

@@ -57,8 +57,6 @@ fun MoveHistoryCard(
         )
     }
 
-//    val retrieveAndViewFile: (MoveEntry) -> Unit = rememberRetrieveAndViewFile()
-
     MoreElevatedCard(
         modifier = modifier
     ) {
@@ -106,7 +104,8 @@ fun MoveHistoryCard(
                     NoHistoryPlaceHolder()
                 } else {
                     MoveEntryColumn(
-                        history = moveHistory.toImmutableList()
+                        history = moveHistory.toImmutableList(),
+                        deleteMoveEntry = remember { { moveEntry -> moveHistoryVM.launchEntryDeletion(moveEntry) } }
                     )
                 }
             }

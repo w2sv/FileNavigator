@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,9 +36,8 @@ import com.w2sv.composed.extensions.thenIf
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.model.launchViewActivity
 import com.w2sv.filenavigator.ui.model.movedFileExists
-import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.DateState
+import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.rememberIndexToDateRepresentationMap
 import com.w2sv.filenavigator.ui.theme.AppColor
 import kotlinx.collections.immutable.ImmutableList
 
@@ -47,28 +45,32 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 fun MoveEntryColumn(
     history: ImmutableList<MoveEntry>,
+    deleteMoveEntry: (MoveEntry) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dateState = remember(history.size) {
-        DateState()
-    }
+    val indexToDateRepresentationMap = rememberIndexToDateRepresentationMap()
 
     LazyColumn(
         modifier = modifier
     ) {
         itemsIndexed(history, key = { i, _ -> i }) { i, moveEntry ->
-            dateState.getScopeTitle(i, moveEntry)?.let { scopeTitle ->
-                Text(
-                    text = scopeTitle,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-            }
+            indexToDateRepresentationMap.getDateRepresentation(i, moveEntry.dateTime)
+                ?.let { dateRepresentation ->
+                    Text(
+                        text = dateRepresentation,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
             MoveEntryRow(
                 moveEntry = moveEntry,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable {
+                        indexToDateRepresentationMap.removeIndex(i)
+                        deleteMoveEntry(moveEntry)
+                    }
                     .animateItemPlacement()
                     .padding(bottom = 8.dp)
             )
@@ -95,7 +97,7 @@ private fun MoveEntryRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clip(MaterialTheme.shapes.medium)
-            .clickable(enabled = movedFileExists) { moveEntry.launchViewActivity(context) }
+//            .clickable(enabled = movedFileExists) { moveEntry.launchViewActivity(context) }
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
             )
