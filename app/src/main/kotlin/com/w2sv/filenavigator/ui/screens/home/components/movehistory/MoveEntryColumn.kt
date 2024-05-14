@@ -57,23 +57,21 @@ fun MoveEntryColumn(
         modifier = modifier
     ) {
         itemsIndexed(history, key = { i, _ -> i }) { i, moveEntry ->
-            Column {
-                dateState.getScopeTitle(i, moveEntry)?.let { scopeTitle ->
-                    Text(
-                        text = scopeTitle,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                }
-                MoveEntryRow(
-                    moveEntry = moveEntry,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .animateItemPlacement()
-                        .padding(bottom = 8.dp)
+            dateState.getScopeTitle(i, moveEntry)?.let { scopeTitle ->
+                Text(
+                    text = scopeTitle,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
+            MoveEntryRow(
+                moveEntry = moveEntry,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItemPlacement()
+                    .padding(bottom = 8.dp)
+            )
         }
     }
 }

@@ -254,7 +254,7 @@ private fun SubHeader(
     Text(
         text = stringResource(id = titleRes),
         modifier = modifier,
-        fontSize = 16.sp,
+        fontSize = 17.sp,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.tertiary,
     )
