@@ -45,7 +45,7 @@
     <string name="license">License</string>
     <string name="developer">Developer</string>
     <string name="disabled">Disabled</string>
-    <string name="use_dynamic_colors">Use Dynamic Colors</string>
+    <string name="dynamic_colors">Dynamic Colors</string>
     <string name="navigator_status">Navigator Status:</string>
     <string name="active">Active</string>
     <string name="inactive">Inactive</string>
@@ -64,4 +64,6 @@
     <string name="source">Source</string>
     <string name="use_colors_derived_from_your_wallpaper">Use colors derived from your wallpaper</string>
     <string name="reset">Reset</string>
+    <string name="amoled_black">AMOLED Black</string>
+    <string name="use_amoled_black_theme">Use AMOLED black theme</string>
 </resources>

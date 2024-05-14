@@ -8,6 +8,7 @@ import com.w2sv.androidutils.coroutines.combineStates
 import com.w2sv.androidutils.permissions.hasPermission
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.postNotificationsPermissionRequired
+import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -77,9 +78,20 @@ class AppViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(),
     )
 
-    fun saveTheme(theme: com.w2sv.domain.model.Theme) {
+    fun saveTheme(theme: Theme) {
         viewModelScope.launch {
             preferencesRepository.theme.save(theme)
+        }
+    }
+
+    val useAmoledBlackTheme = preferencesRepository.useAmoledBlackTheme.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+    )
+
+    fun saveUseAmoledBlackTheme(value: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.useAmoledBlackTheme.save(value)
         }
     }
 

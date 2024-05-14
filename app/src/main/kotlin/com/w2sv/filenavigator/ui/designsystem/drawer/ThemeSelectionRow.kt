@@ -162,7 +162,7 @@ private fun ThemeButton(
         },
         label = "",
     ) { state ->
-        if (state) 3.dp else 0.dp
+        if (state) 3.dp else 0.5.dp
     }
 
     val borderColor by transition.animateColor(
@@ -178,7 +178,7 @@ private fun ThemeButton(
         },
         label = "",
     ) { state ->
-        if (state) MaterialTheme.colorScheme.primary else Color.Transparent
+        if (state) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     BoxWithConstraints(contentAlignment = Alignment.Center, modifier = modifier) {

@@ -11,7 +11,6 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -41,10 +40,10 @@ import com.ramcosta.composedestinations.utils.isRouteOnBackStack
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.common.utils.postNotificationsPermissionRequired
 import com.w2sv.composed.OnChange
-import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.theme.useDarkTheme
 import com.w2sv.filenavigator.ui.utils.LocalNavHostController
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.PowerSaveModeChangedReceiver
@@ -70,19 +69,16 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.collectFromFlows()
 
         setContent {
-            val useDarkTheme = when (appVM.theme.collectAsStateWithLifecycle().value) {
-                Theme.Light -> false
-                Theme.Dark -> true
-                Theme.Default -> isSystemInDarkTheme()
-            }
+            val useDarkTheme = useDarkTheme(theme = appVM.theme.collectAsStateWithLifecycle().value)
 
             AppTheme(
-                useDynamicTheme = appVM.useDynamicColors.collectAsStateWithLifecycle().value,
-                useDarkTheme = useDarkTheme
+                useDynamicColors = appVM.useDynamicColors.collectAsStateWithLifecycle().value,
+                useDarkTheme = useDarkTheme,
+                useAmoledBlackTheme = appVM.useAmoledBlackTheme.collectAsStateWithLifecycle().value
             ) {
                 // Reset system bar styles on theme change
-                LaunchedEffect(useDarkTheme) {
-                    val systemBarStyle = if (useDarkTheme) {
+                OnChange(useDarkTheme) {
+                    val systemBarStyle = if (it) {
                         SystemBarStyle.dark(Color.TRANSPARENT)
                     } else {
                         SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)

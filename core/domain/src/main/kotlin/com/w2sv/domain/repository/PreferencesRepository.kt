@@ -5,6 +5,7 @@ import com.w2sv.domain.model.Theme
 
 interface PreferencesRepository {
     val theme: DataStoreFlow<Theme>
+    val useAmoledBlackTheme: DataStoreFlow<Boolean>
     val useDynamicColors: DataStoreFlow<Boolean>
     val postNotificationsPermissionRequested: DataStoreFlow<Boolean>
 }

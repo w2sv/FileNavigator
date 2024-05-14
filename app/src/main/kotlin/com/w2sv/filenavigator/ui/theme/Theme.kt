@@ -6,6 +6,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -15,27 +16,44 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.materialkolor.PaletteStyle
 import com.materialkolor.rememberDynamicColorScheme
+import com.w2sv.domain.model.Theme
 
 private val seedColor = Color(color = 0xFF00696E)
+
+@Composable
+fun useDarkTheme(theme: Theme): Boolean =
+    when (theme) {
+        Theme.Light -> false
+        Theme.Dark -> true
+        Theme.Default -> isSystemInDarkTheme()
+    }
 
 @SuppressLint("NewApi")
 @Composable
 fun AppTheme(
-    useDynamicTheme: Boolean = false,
+    useDynamicColors: Boolean = false,
     useDarkTheme: Boolean = false,
+    useAmoledBlackTheme: Boolean = false,
     context: Context = LocalContext.current,
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
         colorScheme = when {
-            useDynamicTheme && useDarkTheme -> dynamicDarkColorScheme(context)
-            useDynamicTheme && !useDarkTheme -> dynamicLightColorScheme(context)
+            useDynamicColors && useDarkTheme -> dynamicDarkColorScheme(context)
+            useDynamicColors && !useDarkTheme -> dynamicLightColorScheme(context)
             else -> rememberDynamicColorScheme(
                 seedColor = seedColor,
                 isDark = useDarkTheme,
                 style = PaletteStyle.Rainbow,
             )
         }
+            .run {
+                if (useAmoledBlackTheme && useDarkTheme) {
+                    copy(background = Color.Black, surface = Color.Black)
+                } else {
+                    this
+                }
+            }
             .animate(animationSpec = spring(stiffness = Spring.StiffnessMedium)),
         typography = typography
     ) {

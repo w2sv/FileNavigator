@@ -6,9 +6,17 @@ import android.content.Intent
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +28,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,10 +48,11 @@ import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
+import com.w2sv.filenavigator.ui.theme.useDarkTheme
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 
 private object AppUrl {
-    const val LICENSE = "https://github.com/w2sv/FileNavigator/blob/main/LICENSE"
+    const val LICENSE = "https://github.com/w2sv/FileNavigator/blob/main/LICENSE.md"
     const val PRIVACY_POLICY = "https://github.com/w2sv/FileNavigator/blob/main/PRIVACY-POLICY.md"
     const val GITHUB_REPOSITORY = "https://github.com/w2sv/FileNavigator"
     const val CREATE_ISSUE = "https://github.com/w2sv/FileNavigator/issues/new"
@@ -50,6 +60,7 @@ private object AppUrl {
         "https://play.google.com/store/apps/dev?id=6884111703871536890"
 }
 
+@Suppress("SameParameterValue")
 @Composable
 internal fun NavigationDrawerSheetItemColumn(
     modifier: Modifier = Modifier,
@@ -58,6 +69,8 @@ internal fun NavigationDrawerSheetItemColumn(
     Column(modifier = modifier) {
         val context: Context = LocalContext.current
 
+        val theme by appVM.theme.collectAsStateWithLifecycle()
+        val useDarkTheme = useDarkTheme(theme = theme)
         remember {
             buildList {
                 add(NavigationDrawerSheetElement.Header(R.string.appearance))
@@ -67,7 +80,7 @@ internal fun NavigationDrawerSheetItemColumn(
                         R.string.theme
                     ) {
                         ThemeSelectionRow(
-                            selected = appVM.theme.collectAsStateWithLifecycle().value,
+                            selected = theme,
                             onSelected = appVM::saveTheme,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -75,10 +88,26 @@ internal fun NavigationDrawerSheetItemColumn(
                             horizontalArrangement = Arrangement.SpaceBetween,
                         )
                     })
+                add(
+                    NavigationDrawerSheetElement.Item.Custom(
+                        iconRes = R.drawable.ic_contrast_24,
+                        labelRes = R.string.amoled_black,
+                        visible = {
+                            useDarkTheme
+                        }
+                    ) {
+                        RightAligned {
+                            Switch(
+                                checked = appVM.useAmoledBlackTheme.collectAsStateWithLifecycle().value,
+                                onCheckedChange = appVM::saveUseAmoledBlackTheme
+                            )
+                        }
+                    }
+                )
                 if (dynamicColorsSupported) {
                     add(NavigationDrawerSheetElement.Item.Custom(
                         iconRes = R.drawable.ic_palette_24,
-                        labelRes = R.string.use_dynamic_colors,
+                        labelRes = R.string.dynamic_colors,
                         explanationRes = R.string.use_colors_derived_from_your_wallpaper
                     ) {
                         RightAligned {
@@ -156,20 +185,20 @@ internal fun NavigationDrawerSheetItemColumn(
                     })
             }
         }
-            .forEach {
-                when (it) {
+            .forEach { element ->
+                when (element) {
                     is NavigationDrawerSheetElement.Item -> {
-                        Item(
-                            item = it,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp),
-                        )
+                        OptionalAnimatedVisibility(visible = element.visible) {
+                            Item(
+                                item = element,
+                                modifier = itemModifier,
+                            )
+                        }
                     }
 
                     is NavigationDrawerSheetElement.Header -> {
                         SubHeader(
-                            titleRes = it.titleRes,
+                            titleRes = element.titleRes,
                             modifier = Modifier
                                 .padding(vertical = 4.dp)
                                 .align(Alignment.CenterHorizontally)
@@ -180,20 +209,53 @@ internal fun NavigationDrawerSheetItemColumn(
     }
 }
 
+@Composable
+fun ColumnScope.OptionalAnimatedVisibility(
+    visible: (() -> Boolean)?,
+    modifier: Modifier = Modifier,
+    enter: EnterTransition = fadeIn() + expandVertically(),
+    exit: ExitTransition = fadeOut() + shrinkVertically(),
+    label: String = "AnimatedVisibility",
+    content: @Composable (ColumnScope.() -> Unit)
+) {
+    visible?.let {
+        AnimatedVisibility(
+            visible = it(),
+            modifier = modifier,
+            enter = enter,
+            exit = exit,
+            label = label
+        ) {
+            content()
+        }
+    } ?: content()
+}
+
+private val itemModifier = Modifier
+    .fillMaxWidth()
+    .padding(vertical = 12.dp)
+
 @Immutable
 private sealed interface NavigationDrawerSheetElement {
+
+    @Immutable
+    data class Header(
+        @StringRes val titleRes: Int,
+    ) : NavigationDrawerSheetElement
 
     @Immutable
     interface Item : NavigationDrawerSheetElement {
         val iconRes: Int
         val labelRes: Int
         val explanationRes: Int?
+        val visible: (() -> Boolean)?
 
         @Immutable
         data class Clickable(
             @DrawableRes override val iconRes: Int,
             @StringRes override val labelRes: Int,
             @StringRes override val explanationRes: Int? = null,
+            override val visible: (() -> Boolean)? = null,
             val onClick: () -> Unit
         ) : Item
 
@@ -202,14 +264,10 @@ private sealed interface NavigationDrawerSheetElement {
             @DrawableRes override val iconRes: Int,
             @StringRes override val labelRes: Int,
             @StringRes override val explanationRes: Int? = null,
+            override val visible: (() -> Boolean)? = null,
             val content: @Composable RowScope.() -> Unit
         ) : Item
     }
-
-    @Immutable
-    data class Header(
-        @StringRes val titleRes: Int,
-    ) : NavigationDrawerSheetElement
 }
 
 @Composable
@@ -237,7 +295,7 @@ private fun Item(
             Text(
                 text = stringResource(id = it),
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
-                modifier = Modifier.padding(start = iconSize + labelStartPadding, top = 2.dp),
+                modifier = Modifier.padding(start = iconSize + labelStartPadding),
                 fontSize = 14.sp
             )
         }

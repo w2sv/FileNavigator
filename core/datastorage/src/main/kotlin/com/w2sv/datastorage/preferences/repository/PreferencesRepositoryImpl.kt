@@ -21,6 +21,9 @@ class PreferencesRepositoryImpl @Inject constructor(dataStore: DataStore<Prefere
         Theme.Default
     )
 
+    override val useAmoledBlackTheme =
+        dataStoreFlow(booleanPreferencesKey("useAmoledBlackTheme"), false)
+
     override val useDynamicColors = dataStoreFlow(
         booleanPreferencesKey("useDynamicColors"),
         dynamicColorsSupported
