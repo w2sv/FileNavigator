@@ -6,17 +6,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,6 +41,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.theme.useDarkTheme
+import com.w2sv.filenavigator.ui.utils.OptionalAnimatedVisibility
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 
 private object AppUrl {
@@ -71,6 +64,9 @@ internal fun NavigationDrawerSheetItemColumn(
 
         val theme by appVM.theme.collectAsStateWithLifecycle()
         val useDarkTheme = useDarkTheme(theme = theme)
+        val useDynamicColors by appVM.useDynamicColors.collectAsStateWithLifecycle()
+        val useAmoledBlackTheme by appVM.useAmoledBlackTheme.collectAsStateWithLifecycle()
+
         remember {
             buildList {
                 add(NavigationDrawerSheetElement.Header(R.string.appearance))
@@ -89,34 +85,26 @@ internal fun NavigationDrawerSheetItemColumn(
                         )
                     })
                 add(
-                    NavigationDrawerSheetElement.Item.Custom(
+                    NavigationDrawerSheetElement.Item.Switch(
                         iconRes = R.drawable.ic_contrast_24,
                         labelRes = R.string.amoled_black,
                         visible = {
                             useDarkTheme
-                        }
-                    ) {
-                        RightAligned {
-                            Switch(
-                                checked = appVM.useAmoledBlackTheme.collectAsStateWithLifecycle().value,
-                                onCheckedChange = appVM::saveUseAmoledBlackTheme
-                            )
-                        }
-                    }
+                        },
+                        checked = { useAmoledBlackTheme },
+                        onCheckedChange = appVM::saveUseAmoledBlackTheme
+                    )
                 )
                 if (dynamicColorsSupported) {
-                    add(NavigationDrawerSheetElement.Item.Custom(
-                        iconRes = R.drawable.ic_palette_24,
-                        labelRes = R.string.dynamic_colors,
-                        explanationRes = R.string.use_colors_derived_from_your_wallpaper
-                    ) {
-                        RightAligned {
-                            Switch(
-                                checked = appVM.useDynamicColors.collectAsStateWithLifecycle().value,
-                                onCheckedChange = appVM::saveUseDynamicColors
-                            )
-                        }
-                    })
+                    add(
+                        NavigationDrawerSheetElement.Item.Switch(
+                            iconRes = R.drawable.ic_palette_24,
+                            labelRes = R.string.dynamic_colors,
+                            explanationRes = R.string.use_colors_derived_from_your_wallpaper,
+                            checked = { useDynamicColors },
+                            onCheckedChange = appVM::saveUseDynamicColors
+                        )
+                    )
                 }
                 add(NavigationDrawerSheetElement.Header(R.string.legal))
                 add(
@@ -209,28 +197,6 @@ internal fun NavigationDrawerSheetItemColumn(
     }
 }
 
-@Composable
-fun ColumnScope.OptionalAnimatedVisibility(
-    visible: (() -> Boolean)?,
-    modifier: Modifier = Modifier,
-    enter: EnterTransition = fadeIn() + expandVertically(),
-    exit: ExitTransition = fadeOut() + shrinkVertically(),
-    label: String = "AnimatedVisibility",
-    content: @Composable (ColumnScope.() -> Unit)
-) {
-    visible?.let {
-        AnimatedVisibility(
-            visible = it(),
-            modifier = modifier,
-            enter = enter,
-            exit = exit,
-            label = label
-        ) {
-            content()
-        }
-    } ?: content()
-}
-
 private val itemModifier = Modifier
     .fillMaxWidth()
     .padding(vertical = 12.dp)
@@ -244,7 +210,7 @@ private sealed interface NavigationDrawerSheetElement {
     ) : NavigationDrawerSheetElement
 
     @Immutable
-    interface Item : NavigationDrawerSheetElement {
+    sealed interface Item : NavigationDrawerSheetElement {
         val iconRes: Int
         val labelRes: Int
         val explanationRes: Int?
@@ -257,6 +223,16 @@ private sealed interface NavigationDrawerSheetElement {
             @StringRes override val explanationRes: Int? = null,
             override val visible: (() -> Boolean)? = null,
             val onClick: () -> Unit
+        ) : Item
+
+        @Immutable
+        data class Switch(
+            @DrawableRes override val iconRes: Int,
+            @StringRes override val labelRes: Int,
+            @StringRes override val explanationRes: Int? = null,
+            override val visible: (() -> Boolean)? = null,
+            val checked: () -> Boolean,
+            val onCheckedChange: (Boolean) -> Unit
         ) : Item
 
         @Immutable
@@ -334,8 +310,18 @@ private fun MainItemRow(
             fontWeight = FontWeight.Medium,
         )
 
-        if (item is NavigationDrawerSheetElement.Item.Custom) {
-            item.content(this)
+        when (item) {
+            is NavigationDrawerSheetElement.Item.Custom -> {
+                item.content(this)
+            }
+
+            is NavigationDrawerSheetElement.Item.Switch -> {
+                RightAligned {
+                    Switch(checked = item.checked(), onCheckedChange = item.onCheckedChange)
+                }
+            }
+
+            else -> Unit
         }
     }
 }

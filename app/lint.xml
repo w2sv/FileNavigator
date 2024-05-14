@@ -6,5 +6,4 @@
     <issue id="LintError" severity="warning" />
     <issue id="MonochromeLauncherIcon" severity="ignore" />
     <issue id="ComposeModifierMissing" severity="ignore" />
-    <issue id="SameParameterValue" severity="ignore" />
 </lint>
