@@ -3,10 +3,12 @@ package com.w2sv.filenavigator.ui.designsystem
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.spec.DestinationStyle
 
@@ -23,10 +25,15 @@ abstract class PopNonPopIdenticalAnimatedDestinationStyle : DestinationStyle.Ani
 
 object NavigationTransitions : PopNonPopIdenticalAnimatedDestinationStyle() {
     override val enterTransition: NavigationEnterTransition = {
-        fadeIn(animationSpec = tween(220, delayMillis = 90)) +
-                scaleIn(initialScale = 0.92f, animationSpec = tween(220, delayMillis = 90))
+        fadeIn(animationSpec = animationSpec) +
+                scaleIn(initialScale = 0.92f, animationSpec = animationSpec)
     }
     override val exitTransition: NavigationExitTransition = {
-        fadeOut(animationSpec = tween(90))
+        fadeOut(animationSpec = animationSpec) + scaleOut(
+            targetScale = 0.92f,
+            animationSpec = animationSpec
+        )
     }
 }
+
+private val animationSpec: FiniteAnimationSpec<Float> = tween(220)
