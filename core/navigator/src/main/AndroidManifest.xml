@@ -33,7 +33,9 @@
         <receiver android:name="com.w2sv.navigator.moving.MoveBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager$ResourcesCleanupBroadcastReceiver" />
 
-        <activity android:name="com.w2sv.navigator.moving.FileMoveActivity" />
+        <activity
+            android:name="com.w2sv.navigator.moving.FileMoveActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 
 </manifest>

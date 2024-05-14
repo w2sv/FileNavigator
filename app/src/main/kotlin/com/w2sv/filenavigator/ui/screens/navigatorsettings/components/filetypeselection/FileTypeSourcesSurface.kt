@@ -19,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.InterElementDividedColumn
 import com.w2sv.domain.model.FileType
-import com.w2sv.filenavigator.ui.designsystem.AppCheckbox
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.utils.orDisabledIf
 import kotlinx.collections.immutable.toImmutableList
