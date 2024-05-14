@@ -36,7 +36,6 @@ import com.w2sv.composed.extensions.thenIf
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.model.launchViewActivity
 import com.w2sv.filenavigator.ui.model.movedFileExists
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.rememberFirstDateRepresentations
 import com.w2sv.filenavigator.ui.theme.AppColor
@@ -46,7 +45,7 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 fun MoveEntryColumn(
     history: ImmutableList<MoveEntry>,
-    deleteMoveEntry: (MoveEntry) -> Unit,
+    onRowClick: (MoveEntry, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dateRepresentationList = rememberFirstDateRepresentations(history)
@@ -65,6 +64,7 @@ fun MoveEntryColumn(
             }
             MoveEntryRow(
                 moveEntry = moveEntry,
+                onClick = onRowClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .animateItemPlacement()
@@ -77,6 +77,7 @@ fun MoveEntryColumn(
 @Composable
 private fun MoveEntryRow(
     moveEntry: MoveEntry,
+    onClick: (MoveEntry, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
 ) {
@@ -93,7 +94,7 @@ private fun MoveEntryRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clip(MaterialTheme.shapes.medium)
-            .clickable(enabled = movedFileExists) { moveEntry.launchViewActivity(context) }
+            .clickable { onClick(moveEntry, movedFileExists) }
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
             )
