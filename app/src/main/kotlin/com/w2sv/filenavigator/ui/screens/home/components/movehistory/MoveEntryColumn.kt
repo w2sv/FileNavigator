@@ -37,7 +37,7 @@ import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.movedFileExists
-import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.rememberIndexToDateRepresentationMap
+import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.rememberFirstDateRepresentations
 import com.w2sv.filenavigator.ui.theme.AppColor
 import kotlinx.collections.immutable.ImmutableList
 
@@ -48,27 +48,25 @@ fun MoveEntryColumn(
     deleteMoveEntry: (MoveEntry) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val indexToDateRepresentationMap = rememberIndexToDateRepresentationMap()
+    val dateRepresentationList = rememberFirstDateRepresentations(history)
 
     LazyColumn(
         modifier = modifier
     ) {
         itemsIndexed(history, key = { i, _ -> i }) { i, moveEntry ->
-            indexToDateRepresentationMap.getDateRepresentation(i, moveEntry.dateTime)
-                ?.let { dateRepresentation ->
-                    Text(
-                        text = dateRepresentation,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                }
+            dateRepresentationList[i]?.let { dateRepresentation ->
+                Text(
+                    text = dateRepresentation,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+            }
             MoveEntryRow(
                 moveEntry = moveEntry,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        indexToDateRepresentationMap.removeIndex(i)
                         deleteMoveEntry(moveEntry)
                     }
                     .animateItemPlacement()
