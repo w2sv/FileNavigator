@@ -36,6 +36,7 @@ import com.w2sv.composed.extensions.thenIf
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.model.color
+import com.w2sv.filenavigator.ui.model.launchViewActivity
 import com.w2sv.filenavigator.ui.model.movedFileExists
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.rememberFirstDateRepresentations
 import com.w2sv.filenavigator.ui.theme.AppColor
@@ -66,9 +67,6 @@ fun MoveEntryColumn(
                 moveEntry = moveEntry,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
-                        deleteMoveEntry(moveEntry)
-                    }
                     .animateItemPlacement()
                     .padding(bottom = 8.dp)
             )
@@ -95,7 +93,7 @@ private fun MoveEntryRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clip(MaterialTheme.shapes.medium)
-//            .clickable(enabled = movedFileExists) { moveEntry.launchViewActivity(context) }
+            .clickable(enabled = movedFileExists) { moveEntry.launchViewActivity(context) }
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
             )
