@@ -16,7 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
@@ -43,7 +43,7 @@ import com.w2sv.composed.OnChange
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.theme.useDarkTheme
+import com.w2sv.filenavigator.ui.theme.rememberUseDarkTheme
 import com.w2sv.filenavigator.ui.utils.LocalNavHostController
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.PowerSaveModeChangedReceiver
@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.collectFromFlows()
 
         setContent {
-            val useDarkTheme = useDarkTheme(theme = appVM.theme.collectAsStateWithLifecycle().value)
+            val useDarkTheme by rememberUseDarkTheme(theme = appVM.theme.collectAsStateWithLifecycle().value)
 
             AppTheme(
                 useDynamicColors = appVM.useDynamicColors.collectAsStateWithLifecycle().value,

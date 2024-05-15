@@ -42,16 +42,20 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
 
     protected fun getNotificationResources(nPendingRequestCodes: Int): NotificationResources =
         NotificationResources(
-            notificationIds.addNewId(),
-            pendingIntentRequestCodes.addMultipleNewIds(nPendingRequestCodes)
+            id = notificationIds.addNewId(),
+            actionRequestCodes = pendingIntentRequestCodes.addMultipleNewIds(nPendingRequestCodes)
         )
 
     fun buildAndEmit(args: A) {
         super.buildAndEmit(args.resources.id, args)
 
         if (nActiveNotifications >= 2) {
-            notificationManager.notify(summaryId, buildSummaryNotification())
+            emitSummaryNotification()
         }
+    }
+
+    private fun emitSummaryNotification() {
+        notificationManager.notify(summaryId, buildSummaryNotification())
     }
 
     abstract fun buildSummaryNotification(): Notification
@@ -63,6 +67,11 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
     fun cancelNotificationAndFreeResources(resources: NotificationResources) {
         notificationManager.cancel(resources.id)
         freeNotificationResources(resources)
+        if (nActiveNotifications == 0) {
+            notificationManager.cancel(summaryId)
+        } else {
+            emitSummaryNotification()
+        }
     }
 
     private fun freeNotificationResources(resources: NotificationResources) {

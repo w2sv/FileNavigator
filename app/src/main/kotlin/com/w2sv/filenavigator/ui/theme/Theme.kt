@@ -12,21 +12,31 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.materialkolor.PaletteStyle
 import com.materialkolor.rememberDynamicColorScheme
 import com.w2sv.domain.model.Theme
+import slimber.log.i
 
 private val seedColor = Color(color = 0xFF00696E)
 
 @Composable
-fun useDarkTheme(theme: Theme): Boolean =
-    when (theme) {
-        Theme.Light -> false
-        Theme.Dark -> true
-        Theme.Default -> isSystemInDarkTheme()
+fun rememberUseDarkTheme(theme: Theme): State<Boolean> {
+    val systemInDarkTheme = isSystemInDarkTheme()
+    return remember(theme, systemInDarkTheme) {
+        mutableStateOf(
+            when (theme) {
+                Theme.Light -> false
+                Theme.Dark -> true
+                Theme.Default -> systemInDarkTheme
+            }
+        )
     }
+}
 
 @SuppressLint("NewApi")
 @Composable

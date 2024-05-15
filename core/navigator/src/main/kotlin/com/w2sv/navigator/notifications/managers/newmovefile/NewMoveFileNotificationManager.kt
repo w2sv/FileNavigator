@@ -15,15 +15,15 @@ import androidx.core.text.buildSpannedString
 import com.w2sv.common.utils.getDocumentUriFileName
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileType
+import com.w2sv.navigator.moving.FileMoveActivity
+import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.MoveFile
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
+import com.w2sv.navigator.notifications.NotificationResourcesCleanupBroadcastReceiver
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.AppNotificationsManager
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
-import com.w2sv.navigator.moving.FileMoveActivity
-import com.w2sv.navigator.notifications.NotificationResourcesCleanupBroadcastReceiver
-import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import slimber.log.i
 import javax.inject.Inject
@@ -218,13 +218,13 @@ internal class NewMoveFileNotificationManager(
 
     override fun buildSummaryNotification(): Notification =
         Builder()
-            .setGroupSummary(true)
             .setContentTitle(
                 context.getString(
-                    R.string.new_navigatable_files,
+                    if (nActiveNotifications >= 2) R.string.navigatable_files else R.string.navigatable_file,
                     nActiveNotifications
                 )
             )
+            .setGroupSummary(true)
             .build()
 
     @AndroidEntryPoint

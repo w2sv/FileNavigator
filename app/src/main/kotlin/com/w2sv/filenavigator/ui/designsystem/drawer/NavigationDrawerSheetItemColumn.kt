@@ -21,7 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,13 +38,15 @@ import com.w2sv.androidutils.generic.appPlayStoreUrl
 import com.w2sv.androidutils.generic.dynamicColorsSupported
 import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
 import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.composed.OnChange
 import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
-import com.w2sv.filenavigator.ui.theme.useDarkTheme
+import com.w2sv.filenavigator.ui.theme.rememberUseDarkTheme
 import com.w2sv.filenavigator.ui.utils.OptionalAnimatedVisibility
 import com.w2sv.filenavigator.ui.utils.activityViewModel
+import slimber.log.i
 
 private object AppUrl {
     const val LICENSE = "https://github.com/w2sv/FileNavigator/blob/main/LICENSE.md"
@@ -63,7 +67,16 @@ internal fun NavigationDrawerSheetItemColumn(
         val context: Context = LocalContext.current
 
         val theme by appVM.theme.collectAsStateWithLifecycle()
-        val useDarkTheme = useDarkTheme(theme = theme)
+        var useDarkTheme by remember {
+            mutableStateOf(false)
+        }
+        OnChange(rememberUseDarkTheme(theme = theme).value) {
+            useDarkTheme = it
+        }
+//        val rememberUseDarkTheme = rememberUseDarkTheme(theme = theme)
+//        OnChange(rememberUseDarkTheme) {
+//            i {"rememberUseDarkTheme: $it"}
+//        }
         val useDynamicColors by appVM.useDynamicColors.collectAsStateWithLifecycle()
         val useAmoledBlackTheme by appVM.useAmoledBlackTheme.collectAsStateWithLifecycle()
 
@@ -89,6 +102,7 @@ internal fun NavigationDrawerSheetItemColumn(
                         iconRes = R.drawable.ic_contrast_24,
                         labelRes = R.string.amoled_black,
                         visible = {
+                            i { "rememberUseDarkTheme: $useDarkTheme" }
                             useDarkTheme
                         },
                         checked = { useAmoledBlackTheme },
