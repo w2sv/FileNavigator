@@ -57,7 +57,6 @@ private object AppUrl {
         "https://play.google.com/store/apps/dev?id=6884111703871536890"
 }
 
-@Suppress("SameParameterValue")
 @Composable
 internal fun NavigationDrawerSheetItemColumn(
     modifier: Modifier = Modifier,
@@ -67,16 +66,14 @@ internal fun NavigationDrawerSheetItemColumn(
         val context: Context = LocalContext.current
 
         val theme by appVM.theme.collectAsStateWithLifecycle()
+        // I don't know why, but somehow it doesn't work otherwise
+        val useDarkThemeExternal by rememberUseDarkTheme(theme = theme)
         var useDarkTheme by remember {
-            mutableStateOf(false)
+            mutableStateOf(useDarkThemeExternal)
         }
-        OnChange(rememberUseDarkTheme(theme = theme).value) {
+        OnChange(useDarkThemeExternal) {
             useDarkTheme = it
         }
-//        val rememberUseDarkTheme = rememberUseDarkTheme(theme = theme)
-//        OnChange(rememberUseDarkTheme) {
-//            i {"rememberUseDarkTheme: $it"}
-//        }
         val useDynamicColors by appVM.useDynamicColors.collectAsStateWithLifecycle()
         val useAmoledBlackTheme by appVM.useAmoledBlackTheme.collectAsStateWithLifecycle()
 

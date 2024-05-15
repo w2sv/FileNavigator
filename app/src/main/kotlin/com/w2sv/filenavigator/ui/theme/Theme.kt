@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.materialkolor.PaletteStyle
 import com.materialkolor.rememberDynamicColorScheme
 import com.w2sv.domain.model.Theme
-import slimber.log.i
 
 private val seedColor = Color(color = 0xFF00696E)
 
