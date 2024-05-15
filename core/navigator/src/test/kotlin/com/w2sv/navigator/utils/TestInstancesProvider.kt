@@ -5,7 +5,7 @@ import com.w2sv.navigator.model.MediaStoreColumnData
 import com.w2sv.navigator.model.MediaStoreFile
 import java.time.LocalDateTime
 
-object TestInstancesProvider {
+internal object TestInstancesProvider {
 
     fun getMediaStoreColumnData(
         rowId: String = "",

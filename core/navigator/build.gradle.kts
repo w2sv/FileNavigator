@@ -1,7 +1,17 @@
+
 plugins {
     alias(libs.plugins.filenavigator.library)
     alias(libs.plugins.filenavigator.hilt)
     alias(libs.plugins.kotlin.parcelize)
+}
+
+android {
+    @Suppress("UnstableApiUsage")
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {

@@ -2,6 +2,7 @@ package com.w2sv.navigator.model
 
 import android.content.ContentResolver
 import android.net.Uri
+import androidx.annotation.VisibleForTesting
 import com.w2sv.navigator.fileobservers.emitDiscardedLog
 import slimber.log.i
 import java.io.File
@@ -58,10 +59,14 @@ internal class MediaStoreFileProvider {
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-private fun File.contentHash(messageDigest: MessageDigest): String {
+@VisibleForTesting
+internal fun File.contentHash(
+    messageDigest: MessageDigest,
+    bufferSize: Int = 8192,
+): String {
     FileInputStream(this)
         .use { inputStream ->
-            val buffer = ByteArray(8192)
+            val buffer = ByteArray(bufferSize)
             var bytesRead: Int
             while (inputStream.read(buffer).also { bytesRead = it } != -1) {
                 messageDigest.update(buffer, 0, bytesRead)

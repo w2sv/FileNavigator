@@ -9,7 +9,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class MoveFileTest {
+internal class MoveFileTest {
 
     @Test
     fun testParceling() {
