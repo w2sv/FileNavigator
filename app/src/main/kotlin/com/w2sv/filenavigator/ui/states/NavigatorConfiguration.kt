@@ -6,7 +6,6 @@ import androidx.compose.runtime.toMutableStateList
 import com.w2sv.androidutils.ui.reversible_state.ReversibleStateFlow
 import com.w2sv.androidutils.ui.reversible_state.ReversibleStateMap
 import com.w2sv.androidutils.ui.reversible_state.ReversibleStatesComposition
-import com.w2sv.common.utils.ReversibleValue
 import com.w2sv.common.utils.increment
 import com.w2sv.composed.extensions.toMutableStateMap
 import com.w2sv.domain.model.FileType
@@ -15,7 +14,6 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.sharedviewmodels.MakeSnackbarVisuals
-import com.w2sv.kotlinutils.extensions.toInt
 import com.w2sv.kotlinutils.extensions.toNonZeroInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -114,22 +112,20 @@ class NavigatorConfiguration(
         }
     }
 
-    private val fileTypeToNCheckedSources: ReversibleValue<MutableMap<FileType, Int>> =
+    private val fileTypeToNCheckedSources: ReversibleValue<MutableMap<FileType, Int>> by lazy {
         ReversibleValue(
             FileType.Media.values
                 .associateWith { fileType ->
-                    var nCheckedSources = 0
-                    fileType.sources.forEach { source ->
-                        nCheckedSources += mediaFileSourceEnablementMap.getOrDefault(
+                    fileType.sources.count { source ->
+                        mediaFileSourceEnablementMap.getOrDefault(
                             source,
                             true
                         )
-                            .toInt()
                     }
-                    nCheckedSources
                 }
                 .toMutableMap()
         )
+    }
 
     fun onFileTypeCheckedChange(
         fileType: FileType,
@@ -150,7 +146,22 @@ class NavigatorConfiguration(
         }
     }
 
-    private val nCheckedFileTypes = ReversibleValue(fileEnablementMap.values.count { it })
+    private val nCheckedFileTypes by lazy {
+        ReversibleValue(fileEnablementMap.values.count { it })
+    }
+}
+
+private data class ReversibleValue<T>(var value: T) {
+    var previous: T = value
+        private set
+
+    fun sync() {
+        previous = value
+    }
+
+    fun reset() {
+        value = previous
+    }
 }
 
 private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(isEnabled: (FileType) -> Boolean) {
@@ -160,5 +171,5 @@ private fun MutableList<FileType>.sortByIsEnabledAndOriginalOrder(isEnabled: (Fi
     )
 }
 
-private fun List<FileType>.firstDisabled(isEnabled: (FileType) -> Boolean): FileType? =
+private inline fun List<FileType>.firstDisabled(isEnabled: (FileType) -> Boolean): FileType? =
     firstOrNull { !isEnabled(it) }

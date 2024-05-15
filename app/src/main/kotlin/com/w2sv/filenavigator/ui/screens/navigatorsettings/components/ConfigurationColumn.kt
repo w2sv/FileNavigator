@@ -69,16 +69,16 @@ fun NavigatorConfigurationColumn(
                 mediaFileSourceEnabled = remember(fileType) {
                     {
                         configuration.mediaFileSourceEnablementMap.getOrDefault(
-                            it,
-                            true
+                            key = it,
+                            defaultValue = true
                         )
                     }
                 },
                 onMediaFileSourceCheckedChange = remember(fileType) {
                     { source, checked ->
                         configuration.onMediaFileSourceCheckedChange(
-                            source,
-                            checked
+                            source = source,
+                            checkedNew = checked
                         )
                     }
                 },
