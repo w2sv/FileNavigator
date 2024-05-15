@@ -49,9 +49,9 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
     fun buildAndEmit(args: A) {
         super.buildAndEmit(args.resources.id, args)
 
-//        if (nActiveNotifications >= 2) {
-        emitSummaryNotification()
-//        }
+        if (nActiveNotifications >= 2) {
+            emitSummaryNotification()
+        }
     }
 
     private fun emitSummaryNotification() {
