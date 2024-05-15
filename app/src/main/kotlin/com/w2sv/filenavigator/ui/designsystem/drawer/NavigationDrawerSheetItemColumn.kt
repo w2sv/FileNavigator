@@ -66,7 +66,7 @@ internal fun NavigationDrawerSheetItemColumn(
         val context: Context = LocalContext.current
 
         val theme by appVM.theme.collectAsStateWithLifecycle()
-        // I don't know why, but somehow it doesn't work otherwise
+        // I don't know why, but it doesn't work otherwise
         val useDarkThemeExternal by rememberUseDarkTheme(theme = theme)
         var useDarkTheme by remember {
             mutableStateOf(useDarkThemeExternal)

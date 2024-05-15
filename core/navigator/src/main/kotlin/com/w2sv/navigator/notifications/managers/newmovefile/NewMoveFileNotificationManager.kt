@@ -41,7 +41,11 @@ internal class NewMoveFileNotificationManager(
     inner class BuilderArgs(
         val moveFile: MoveFile,
         val getLastMoveDestination: (FileType.Source) -> Uri?,
-    ) : MultiInstanceAppNotificationManager.BuilderArgs(getNotificationResources(4))
+    ) : MultiInstanceAppNotificationManager.BuilderArgs(
+        resources = getNotificationResources(
+            nPendingRequestCodes = 4
+        )
+    )
 
     override fun getBuilder(args: BuilderArgs): Builder =
         object : Builder() {
@@ -224,6 +228,7 @@ internal class NewMoveFileNotificationManager(
                     nActiveNotifications
                 )
             )
+            .setOnlyAlertOnce(true)
             .setGroupSummary(true)
             .build()
 
