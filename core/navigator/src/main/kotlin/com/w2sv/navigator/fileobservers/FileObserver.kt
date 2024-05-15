@@ -10,7 +10,7 @@ import com.w2sv.androidutils.generic.milliSecondsTo
 import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.model.MediaStoreFileProvider
-import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.moving.MoveFile
 import slimber.log.i
 import java.time.LocalDateTime
 
@@ -41,8 +41,11 @@ internal abstract class FileObserver(
             is MediaStoreFileProvider.Result.Success -> {
                 when {
                     latestCutCandidate?.matches(
-                        CutPasteCandidate(uri, changeObservationDateTime),
-                        500
+                        other = CutPasteCandidate(
+                            uri = uri,
+                            changeObservationDateTime = changeObservationDateTime
+                        ),
+                        milliSecondsThreshold = 500
                     ) == true -> {
                         cache.add(result.mediaStoreFile)
                         emitDiscardedLog { "Move" }
@@ -85,8 +88,8 @@ internal abstract class FileObserver(
 
 private data class CutPasteCandidate(val uri: Uri, val changeObservationDateTime: LocalDateTime) {
 
-    fun matches(other: CutPasteCandidate, timeThreshold: Int): Boolean =
-        uri != other.uri && changeObservationDateTime.milliSecondsTo(other.changeObservationDateTime) < timeThreshold
+    fun matches(other: CutPasteCandidate, milliSecondsThreshold: Int): Boolean =
+        uri != other.uri && changeObservationDateTime.milliSecondsTo(other.changeObservationDateTime) < milliSecondsThreshold
 }
 
 internal fun emitDiscardedLog(reason: () -> String) {

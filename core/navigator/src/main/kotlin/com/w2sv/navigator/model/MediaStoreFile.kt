@@ -13,7 +13,7 @@ internal data class MediaStoreFile(
 
     /**
      * @return true if this & other have the same URI (=> identical path) OR
-     * if they have the identical content and file name (=> same file that may have been moved to a different location).
+     * if they have the identical content and file name (=> same file that has been moved to a different location).
      */
     fun isIdenticalFileAs(other: MediaStoreFile): Boolean =
         uri == other.uri || (sha256 == other.sha256 && columnData.name == other.columnData.name)

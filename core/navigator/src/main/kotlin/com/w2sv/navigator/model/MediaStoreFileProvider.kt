@@ -8,6 +8,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.security.MessageDigest
+import kotlin.time.measureTimedValue
 
 internal class MediaStoreFileProvider {
 
@@ -32,8 +33,12 @@ internal class MediaStoreFileProvider {
         }
 
         val sha256 = try {
-            columnData.getFile().getContentHash(sha256MessageDigest)
-                .also { i { "SHA256 ($mediaUri) = $it" } }
+            measureTimedValue {
+                columnData.getFile().contentHash(sha256MessageDigest)
+            }
+                .also { i { "SHA256 ($mediaUri) = ${it.value}" } }
+                .also { i { "Computation took ${it.duration}" } }
+                .value
         } catch (e: FileNotFoundException) {
             emitDiscardedLog(e::toString)
             return Result.FileNotFoundException
@@ -53,7 +58,7 @@ internal class MediaStoreFileProvider {
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-private fun File.getContentHash(messageDigest: MessageDigest): String {
+private fun File.contentHash(messageDigest: MessageDigest): String {
     FileInputStream(this)
         .use { inputStream ->
             val buffer = ByteArray(8192)

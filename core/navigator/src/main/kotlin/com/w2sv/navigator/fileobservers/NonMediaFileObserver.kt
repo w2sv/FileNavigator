@@ -4,7 +4,7 @@ import android.content.ContentResolver
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
-import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.moving.MoveFile
 import slimber.log.i
 
 internal class NonMediaFileObserver(

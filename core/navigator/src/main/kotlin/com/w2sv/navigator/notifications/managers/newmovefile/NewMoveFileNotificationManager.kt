@@ -15,7 +15,7 @@ import androidx.core.text.buildSpannedString
 import com.w2sv.common.utils.getDocumentUriFileName
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileType
-import com.w2sv.navigator.model.MoveFile
+import com.w2sv.navigator.moving.MoveFile
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.getNotificationChannel

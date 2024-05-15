@@ -1,9 +1,7 @@
 package com.w2sv.navigator.notifications
 
 import android.content.Intent
-import android.net.Uri
-import com.w2sv.navigator.model.MoveFile
-import com.w2sv.navigator.moving.MoveBroadcastReceiver
+import com.w2sv.navigator.moving.MoveFile
 
 internal fun Intent.putMoveFileExtra(moveFile: MoveFile): Intent =
     putExtra(MoveFile.EXTRA, moveFile)
