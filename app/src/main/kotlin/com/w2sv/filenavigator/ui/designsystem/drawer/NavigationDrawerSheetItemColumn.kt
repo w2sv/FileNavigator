@@ -188,8 +188,7 @@ internal fun NavigationDrawerSheetItemColumn(
                         SubHeader(
                             titleRes = element.titleRes,
                             modifier = Modifier
-                                .padding(vertical = 4.dp)
-                                .align(Alignment.CenterHorizontally)
+                                .padding(top = 12.dp, bottom = 8.dp)
                         )
                     }
                 }
@@ -254,9 +253,8 @@ private fun SubHeader(
     Text(
         text = stringResource(id = titleRes),
         modifier = modifier,
-        fontSize = 17.sp,
+        fontSize = 18.sp,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.tertiary,
     )
 }
 
