@@ -10,14 +10,19 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.anggrayudi.storage.file.child
+import slimber.log.i
 
 internal object Migrations {
     class Migration2to3(private val context: Context) : Migration(2, 3) {
 
         override fun migrate(db: SupportSQLiteDatabase) {
+            i { "Running migration" }
+
+            // Add columns beset with default values to table
             db.execSQL("ALTER TABLE MoveEntryEntity ADD COLUMN movedFileDocumentUri TEXT NOT NULL DEFAULT ''")
             db.execSQL("ALTER TABLE MoveEntryEntity ADD COLUMN movedFileMediaUri TEXT NOT NULL DEFAULT ''")
 
+            // Attempt to dynamically migrate each row
             db.beginTransaction()
             try {
                 val cursor = db.query("SELECT * FROM MoveEntryEntity")
@@ -39,15 +44,21 @@ internal object Migrations {
             val destinationDocumentUri =
                 Uri.parse(cursor.getString("destinationDocumentUri"))
 
-            val documentFile = DocumentFile
-                .fromSingleUri(context, destinationDocumentUri)
-                ?.child(
-                    context = context,
-                    path = fileName,
-                    requiresWriteAccess = false
-                )
+            val documentFile = try {
+                DocumentFile
+                    .fromSingleUri(context, destinationDocumentUri)
+                    ?.child(
+                        context = context,
+                        path = fileName,
+                        requiresWriteAccess = false
+                    )
+            } catch (e: SecurityException) {
+                null
+            }
 
-            if (documentFile != null) {
+            if (documentFile == null) {
+                i { "Couldn't find moved file - aborting row update" }
+            } else {
                 db.update(
                     table = "MoveEntryEntity",
                     conflictAlgorithm = SQLiteDatabase.CONFLICT_ABORT,
@@ -70,6 +81,7 @@ internal object Migrations {
                         cursor.getString("dateTime")
                     )
                 )
+                    .also { i { "Updated $it row(s)" } }
             }
         }
     }
