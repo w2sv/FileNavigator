@@ -56,6 +56,7 @@ private object AppUrl {
     const val CREATE_ISSUE = "https://github.com/w2sv/FileNavigator/issues/new"
     const val GOOGLE_PLAY_DEVELOPER_PAGE =
         "https://play.google.com/store/apps/dev?id=6884111703871536890"
+    const val DONATE = "https://buymeacoffee.com/w2sv"
 }
 
 @Composable
@@ -168,6 +169,14 @@ internal fun NavigationDrawerSheetItemColumn(
                     ) {
                         context.openUrlWithActivityNotFoundHandling(AppUrl.CREATE_ISSUE)
                     })
+                add(
+                    NavigationDrawerSheetElement.Item.Clickable(
+                        iconRes = R.drawable.ic_donate_24,
+                        labelRes = R.string.support_development,
+                        explanationRes = R.string.buy_me_a_coffee_as_a_sign_of_gratitude_if_you_feel_like_doing_so
+                    ) {
+                        context.openUrlWithActivityNotFoundHandling(AppUrl.DONATE)
+                    })
                 add(NavigationDrawerSheetElement.Header(R.string.more))
                 add(
                     NavigationDrawerSheetElement.Item.Clickable(
@@ -278,7 +287,14 @@ private fun Item(
     item: NavigationDrawerSheetElement.Item,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .thenIfNotNull(item as? NavigationDrawerSheetElement.Item.Clickable) {
+                clickable {
+                    it.onClick()
+                }
+            }
+    ) {
         MainItemRow(item = item, modifier = Modifier.fillMaxWidth())
         item.explanationRes?.let {
             Text(
@@ -300,12 +316,7 @@ private fun MainItemRow(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier
-            .thenIfNotNull(item as? NavigationDrawerSheetElement.Item.Clickable) {
-                clickable {
-                    it.onClick()
-                }
-            },
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
