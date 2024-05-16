@@ -170,15 +170,17 @@ internal fun NavigationDrawerSheetItemColumn(
                 add(NavigationDrawerSheetElement.Header(R.string.more))
                 add(
                     NavigationDrawerSheetElement.Item.Clickable(
-                        R.drawable.ic_developer_24,
-                        R.string.developer
+                        iconRes = R.drawable.ic_developer_24,
+                        labelRes = R.string.developer,
+                        explanationRes = R.string.check_out_my_other_apps
                     ) {
                         context.openUrlWithActivityNotFoundHandling(AppUrl.GOOGLE_PLAY_DEVELOPER_PAGE)
                     })
                 add(
                     NavigationDrawerSheetElement.Item.Clickable(
-                        R.drawable.ic_github_24,
-                        R.string.source
+                        iconRes = R.drawable.ic_github_24,
+                        labelRes = R.string.source,
+                        explanationRes = R.string.examine_the_app_s_source_code_on_github
                     ) {
                         context.openUrlWithActivityNotFoundHandling(AppUrl.GITHUB_REPOSITORY)
                     })
@@ -198,8 +200,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     is NavigationDrawerSheetElement.Header -> {
                         SubHeader(
                             titleRes = element.titleRes,
-                            modifier = Modifier
-                                .padding(top = 12.dp, bottom = 8.dp)
+                            modifier = headerModifier
                         )
                     }
                 }
@@ -210,6 +211,8 @@ internal fun NavigationDrawerSheetItemColumn(
 private val itemModifier = Modifier
     .fillMaxWidth()
     .padding(vertical = 12.dp)
+private val headerModifier = Modifier
+    .padding(top = 20.dp, bottom = 4.dp)
 
 @Immutable
 private sealed interface NavigationDrawerSheetElement {

@@ -60,18 +60,23 @@ private fun NavigationDrawerSheet(
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 24.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility))
-            Header(modifier = Modifier.fillMaxWidth())
-            HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 12.dp))
-            NavigationDrawerSheetItemColumn()
+            Header(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = horizontalPadding)
+            )
+            HorizontalDivider(modifier = Modifier.padding(top = 16.dp))
+            NavigationDrawerSheetItemColumn(Modifier.padding(horizontal = horizontalPadding))
             Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility))
         }
     }
 }
+
+private val horizontalPadding = 24.dp
 
 @Composable
 private fun Header(modifier: Modifier = Modifier) {

@@ -68,4 +68,6 @@
     <string name="use_amoled_black_theme">Use AMOLED black theme</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
+    <string name="examine_the_app_s_source_code_on_github">Examine the app\'s source code on GitHub</string>
+    <string name="check_out_my_other_apps">Check out my other apps</string>
 </resources>
