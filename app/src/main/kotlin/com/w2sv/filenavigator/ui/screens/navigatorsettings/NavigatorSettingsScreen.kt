@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,12 +23,10 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -39,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,6 +53,7 @@ import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
+import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme
@@ -94,32 +91,22 @@ fun NavigatorSettingsScreen(
 
     Scaffold(
         topBar = {
-            Column {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(id = R.string.navigator_settings),
-                            modifier = Modifier.padding(start = 14.dp),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+            TopAppBarAboveHorizontalDivider(
+                title = stringResource(id = R.string.navigator_settings),
+                navigationIcon = {
+                    FilledTonalIconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .size(38.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.return_to_main_screen)
                         )
-                    },
-                    navigationIcon = {
-                        FilledTonalIconButton(
-                            onClick = onBack,
-                            modifier = Modifier
-                                .padding(start = 12.dp)
-                                .size(38.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = stringResource(R.string.return_to_home_screen)
-                            )
-                        }
                     }
-                )
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
-            }
+                }
+            )
         },
         floatingActionButton = {
             val scope = rememberCoroutineScope()

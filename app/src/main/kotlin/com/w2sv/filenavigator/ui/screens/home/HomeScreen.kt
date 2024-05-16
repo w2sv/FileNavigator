@@ -23,7 +23,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
-import com.w2sv.filenavigator.ui.designsystem.AppTopBar
+import com.w2sv.filenavigator.ui.designsystem.NavigationDrawerScreenTopBar
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.drawer.NavigationDrawer
@@ -52,7 +52,7 @@ fun HomeScreen(
                 AppSnackbarHost()
             },
             topBar = {
-                AppTopBar(
+                NavigationDrawerScreenTopBar(
                     title = stringResource(id = R.string.app_name),
                     onNavigationIconClick = {
                         scope.launch {

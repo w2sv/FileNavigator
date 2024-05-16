@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.missingpermissions
 
 import android.content.Context
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
@@ -16,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -30,13 +38,14 @@ import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.PostNotificationsPermissionState
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
+import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.utils.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
 fun MissingPermissionsScreen(
@@ -45,11 +54,20 @@ fun MissingPermissionsScreen(
     val permissionCards =
         rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState.state)
 
-    val sharedModifier = Modifier.fillMaxSize()
+    Scaffold(
+        topBar = {
+            TopAppBarAboveHorizontalDivider(title = stringResource(id = R.string.required_permissions))
+        }
+    ) { paddingValues ->
+        val sharedModifier =
+            Modifier
+                .fillMaxSize()
+                .padding(top = paddingValues.calculateTopPadding())
 
-    when (isPortraitModeActive) {
-        true -> PortraitMode(permissionCards = permissionCards, modifier = sharedModifier)
-        false -> LandscapeMode(permissionCards = permissionCards, modifier = sharedModifier)
+        when (isPortraitModeActive) {
+            true -> PortraitMode(permissionCards = permissionCards, modifier = sharedModifier)
+            false -> LandscapeMode(permissionCards = permissionCards, modifier = sharedModifier)
+        }
     }
 }
 
@@ -61,7 +79,9 @@ private fun PortraitMode(
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.padding(horizontal = 32.dp)
+        modifier = modifier
+            .padding(horizontal = 32.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         permissionCards.forEach {
             it(Modifier)
@@ -77,7 +97,7 @@ private fun LandscapeMode(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = modifier
+        modifier = modifier.horizontalScroll(rememberScrollState())
     ) {
         permissionCards.forEach {
             it(
