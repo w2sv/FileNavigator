@@ -177,7 +177,7 @@ private fun rememberObservedPostNotificationsPermissionState(
     onStatusChanged: (Boolean) -> Unit
 ): PostNotificationsPermissionState =
     PostNotificationsPermissionState(
-        state = if (postNotificationsPermissionRequired()) {
+        state = if (postNotificationsPermissionRequired) {
             rememberPermissionState(
                 permission = Manifest.permission.POST_NOTIFICATIONS,
                 onPermissionResult = onPermissionResult

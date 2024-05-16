@@ -3,6 +3,7 @@ package com.w2sv.datastorage.database.di
 import android.content.Context
 import androidx.room.Room
 import com.w2sv.datastorage.database.AppDatabase
+import com.w2sv.datastorage.database.Migrations
 import com.w2sv.datastorage.database.dao.MoveEntryDao
 import dagger.Module
 import dagger.Provides
@@ -23,6 +24,9 @@ object DatabaseModule {
                 context,
                 AppDatabase::class.java,
                 "app-database"
+            )
+            .addMigrations(
+                Migrations.Migration2to3(context = context)
             )
             .fallbackToDestructiveMigration()
             .build()

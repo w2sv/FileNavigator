@@ -50,7 +50,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
     private fun moveFile(context: Context, intent: Intent): MoveException? {
         // Exit if 'manage all files' permission not granted
-        if (!isExternalStorageManger()) {
+        if (!isExternalStorageManger) {
             return MoveException.MissingManageAllFilesPermission
         }
 
