@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +47,7 @@ import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.model.launchViewActivity
 import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
+import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -197,16 +200,19 @@ private fun NoHistoryPlaceHolder(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_history_24),
-            contentDescription = null,
-            modifier = Modifier.size(92.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            text = stringResource(R.string.navigated_files_will_appear_here),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariantDecreasedAlpha
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_history_24),
+                contentDescription = null,
+                modifier = Modifier.size(92.dp),
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = stringResource(R.string.navigated_files_will_appear_here),
+                modifier = Modifier.padding(horizontal = 12.dp)
+            )
+        }
     }
 }

@@ -43,6 +43,7 @@ import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
+import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.theme.rememberUseDarkTheme
 import com.w2sv.filenavigator.ui.utils.OptionalAnimatedVisibility
 import com.w2sv.filenavigator.ui.utils.activityViewModel
@@ -282,7 +283,7 @@ private fun Item(
         item.explanationRes?.let {
             Text(
                 text = stringResource(id = it),
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                color = MaterialTheme.colorScheme.onSurfaceVariantDecreasedAlpha,
                 modifier = Modifier.padding(start = iconSize + labelStartPadding),
                 fontSize = 14.sp
             )

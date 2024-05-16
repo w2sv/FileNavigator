@@ -39,6 +39,7 @@ import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.movedFileExists
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.rememberFirstDateRepresentations
 import com.w2sv.filenavigator.ui.theme.AppColor
+import com.w2sv.filenavigator.ui.theme.onSurfaceDisabled
 import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -118,7 +119,7 @@ private fun MoveEntryRow(
                 imageVector = Icons.AutoMirrored.Default.ArrowForward,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
-                tint = AppColor.disabled
+                tint = MaterialTheme.colorScheme.onSurfaceDisabled
             )
         }
         WeightedBox(weight = 0.5f) {

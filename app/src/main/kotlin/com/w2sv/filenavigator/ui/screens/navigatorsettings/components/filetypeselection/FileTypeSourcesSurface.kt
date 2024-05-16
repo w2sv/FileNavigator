@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.composed.InterElementDividedColumn
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.utils.orDisabledIf
+import com.w2sv.filenavigator.ui.utils.orOnSurfaceDisabledIf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -66,7 +66,7 @@ private fun SourceRow(
                 painter = painterResource(id = source.kind.iconRes),
                 contentDescription = null,
                 tint = source.fileType.color
-                    .orDisabledIf(condition = !isEnabled)
+                    .orOnSurfaceDisabledIf(condition = !isEnabled)
             )
         }
         // Label
@@ -74,7 +74,7 @@ private fun SourceRow(
             Text(
                 text = stringResource(id = source.kind.labelRes),
                 color = MaterialTheme.colorScheme.onSurface
-                    .orDisabledIf(condition = !isEnabled)
+                    .orOnSurfaceDisabledIf(condition = !isEnabled)
             )
         }
 

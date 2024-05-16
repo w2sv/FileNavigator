@@ -26,7 +26,8 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.utils.orDisabledIf
+import com.w2sv.filenavigator.ui.theme.onSurfaceDisabled
+import com.w2sv.filenavigator.ui.utils.orOnSurfaceDisabledIf
 
 @Composable
 fun FileTypeAccordion(
@@ -67,7 +68,7 @@ private fun DisabledText(modifier: Modifier = Modifier) {
     Text(
         text = stringResource(R.string.disabled),
         fontSize = 16.sp,
-        color = AppColor.disabled,
+        color = MaterialTheme.colorScheme.onSurfaceDisabled,
         modifier = modifier
     )
 }
@@ -93,14 +94,14 @@ private fun Header(
                     painter = painterResource(id = fileType.iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(34.dp),
-                    tint = fileType.color.orDisabledIf(condition = !isEnabled)
+                    tint = fileType.color.orOnSurfaceDisabledIf(condition = !isEnabled)
                 )
             }
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
                 Text(
                     text = stringResource(id = fileType.titleRes),
                     fontSize = 18.sp,
-                    color = Color.Unspecified.orDisabledIf(condition = !isEnabled)
+                    color = Color.Unspecified.orOnSurfaceDisabledIf(condition = !isEnabled)
                 )
             }
             Box(
