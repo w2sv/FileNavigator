@@ -47,7 +47,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.composed.CollectLatestFromFlow
-import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
 import com.w2sv.composed.isPortraitModeActive
@@ -75,16 +74,6 @@ fun NavigatorSettingsScreen(
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
-    // Reset navigator config on removal from composition, i.e., return to home screen.
-    // Doing it here rather than in onBackPress causes the UI not to update shortly before leaving the screen.
-    OnDispose(
-        remember {
-            {
-                navigatorVM.configuration.unconfirmedStates.reset()
-            }
-        }
-    )
-
     val configurationHasChanged by navigatorVM.configuration.unconfirmedStates.statesDissimilar.collectAsStateWithLifecycle()
 
     CollectLatestFromFlow(
@@ -94,7 +83,12 @@ fun NavigatorSettingsScreen(
         snackbarHostState.dismissCurrentSnackbarAndShow(makeSnackbarVisuals(context))
     }
 
-    val onBack: () -> Unit = remember { { navigator.popBackStack() } }
+    val onBack: () -> Unit = remember {
+        {
+            navigatorVM.configuration.unconfirmedStates.reset()
+            navigator.popBackStack()
+        }
+    }
 
     BackHandler(onBack = onBack)
 
