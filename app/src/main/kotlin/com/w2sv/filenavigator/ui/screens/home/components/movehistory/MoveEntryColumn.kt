@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,15 +39,16 @@ import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.movedFileExists
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.rememberFirstDateRepresentations
-import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.onSurfaceDisabled
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MoveEntryColumn(
     history: ImmutableList<MoveEntry>,
-    onRowClick: (MoveEntry, Boolean) -> Unit,
+    onRowClick: suspend (MoveEntry, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dateRepresentationList = rememberFirstDateRepresentations(history)
@@ -78,9 +80,10 @@ fun MoveEntryColumn(
 @Composable
 private fun MoveEntryRow(
     moveEntry: MoveEntry,
-    onClick: (MoveEntry, Boolean) -> Unit,
+    onClick: suspend (MoveEntry, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope()
 ) {
     var movedFileExists by remember(moveEntry) {
         mutableStateOf(moveEntry.movedFileExists(context))
@@ -95,7 +98,7 @@ private fun MoveEntryRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clip(MaterialTheme.shapes.medium)
-            .clickable { onClick(moveEntry, movedFileExists) }
+            .clickable { scope.launch { onClick(moveEntry, movedFileExists) } }
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
             )

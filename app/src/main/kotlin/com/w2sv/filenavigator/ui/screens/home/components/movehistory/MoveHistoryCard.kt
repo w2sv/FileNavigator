@@ -51,7 +51,6 @@ import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun MoveHistoryCard(
@@ -134,29 +133,26 @@ private fun rememberMoveEntryRowOnClick(
     moveHistoryVM: MoveHistoryViewModel = activityViewModel(),
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
-    scope: CoroutineScope = rememberCoroutineScope()
-): (MoveEntry, Boolean) -> Unit {
+): suspend (MoveEntry, Boolean) -> Unit {
     return remember {
         { moveEntry, fileExists ->
             if (fileExists) {
                 snackbarHostState.currentSnackbarData?.dismiss()
                 moveEntry.launchViewActivity(context)
             } else {
-                scope.launch {
-                    snackbarHostState.dismissCurrentSnackbarAndShow(
-                        AppSnackbarVisuals(
-                            message = context.getString(R.string.couldn_t_find_file),
-                            kind = SnackbarKind.Error,
-                            action = SnackbarAction(
-                                label = context.getString(R.string.delete_entry),
-                                callback = {
-                                    moveHistoryVM.launchEntryDeletion(moveEntry)
-                                    snackbarHostState.currentSnackbarData?.dismiss()
-                                }
-                            )
+                snackbarHostState.dismissCurrentSnackbarAndShow(
+                    AppSnackbarVisuals(
+                        message = context.getString(R.string.couldn_t_find_file),
+                        kind = SnackbarKind.Error,
+                        action = SnackbarAction(
+                            label = context.getString(R.string.delete_entry),
+                            callback = {
+                                moveHistoryVM.launchEntryDeletion(moveEntry)
+                                snackbarHostState.currentSnackbarData?.dismiss()
+                            }
                         )
                     )
-                }
+                )
             }
         }
     }
