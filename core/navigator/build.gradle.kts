@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.filenavigator.library)
     alias(libs.plugins.filenavigator.hilt)

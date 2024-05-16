@@ -2,7 +2,6 @@ package com.w2sv.navigator.moving
 
 import android.net.Uri
 import com.w2sv.domain.model.MoveEntry
-import com.w2sv.navigator.moving.MoveFile
 import java.time.LocalDateTime
 
 internal fun getMoveEntry(

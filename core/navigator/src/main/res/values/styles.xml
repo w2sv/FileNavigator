@@ -1,7 +1,0 @@
-<resources>
-
-    <style name="Theme.Translucent" parent="Theme.AppCompat">
-        <item name="android:windowBackground">@android:color/transparent</item>
-    </style>
-
-</resources>

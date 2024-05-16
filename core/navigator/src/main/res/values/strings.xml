@@ -12,8 +12,6 @@
     <string name="new_file">New file</string>
     <string name="couldnt_move_manage_all_files_permission_missing">Couldn\'t move: Manage all files permission missing!</string>
     <string name="couldnt_move_file_internal_error">Couldn\'t move: Internal Error</string>
-    <string name="moving_to_default_destination_requires_permission_to_manage_all_files">Moving to default destination requires access to manage all files!</string>
-    <string name="couldn_t_move_file_has_already_been_moved_deleted_or_renamed">Couldn\'t move: File has already been moved, deleted or renamed!</string>
     <string name="couldn_t_find_move_file">Couldn\'t find file!</string>
     <string name="navigatable_file">%1$d navigatable file</string>
     <string name="navigatable_files">%1$d navigatable files</string>

@@ -54,8 +54,8 @@ import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
-import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
+import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.NavigatorConfigurationColumn
