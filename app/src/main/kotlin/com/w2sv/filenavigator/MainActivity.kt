@@ -51,6 +51,7 @@ import kotlinx.coroutines.CoroutineScope
 import slimber.log.i
 
 @AndroidEntryPoint
+@OptIn(ExperimentalPermissionsApi::class)
 class MainActivity : ComponentActivity() {
 
     private val appVM by viewModels<AppViewModel>()

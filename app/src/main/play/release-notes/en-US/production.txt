@@ -2,6 +2,7 @@
     - enabled edge-to-edge mode
     - revised the color scheme
     - added AMOLED black theme
+    - fixed Landscape mode layout
     - improved and enriched the navigation drawer
     - added color change animation
     - improved drawer animation
