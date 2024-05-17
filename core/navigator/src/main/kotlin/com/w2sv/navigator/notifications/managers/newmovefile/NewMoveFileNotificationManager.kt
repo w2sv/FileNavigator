@@ -32,7 +32,7 @@ internal class NewMoveFileNotificationManager(
     context: Context,
     notificationManager: NotificationManager
 ) : MultiInstanceAppNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
-    notificationChannel = AppNotificationChannel.NewFile.getNotificationChannel(context),
+    notificationChannel = AppNotificationChannel.NewNavigatableFile.getNotificationChannel(context),
     notificationManager = notificationManager,
     context = context,
     resourcesBaseSeed = 1,
@@ -117,11 +117,9 @@ internal class NewMoveFileNotificationManager(
                                 }
                             )
 
-                            FileType.Source.Kind.Download -> "${
-                                context.getString(
-                                    R.string.downloaded
-                                )
-                            } ${context.getString(fileType.titleRes)}"
+                            FileType.Source.Kind.Download -> "${context.getString(fileType.titleRes)} ${
+                                context.getString(R.string.download)
+                            }"
 
                             FileType.Source.Kind.OtherApp -> "/${args.moveFile.mediaStoreFile.columnData.dirName} ${
                                 context.getString(

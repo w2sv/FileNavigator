@@ -11,10 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
@@ -23,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -31,8 +27,12 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.popUpTo
 import com.w2sv.androidutils.generic.goToAppSettings
 import com.w2sv.common.utils.goToManageExternalStorageSettings
+import com.w2sv.composed.OnChange
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.PostNotificationsPermissionState
@@ -48,11 +48,24 @@ import kotlinx.collections.immutable.toPersistentList
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
-fun MissingPermissionsScreen(
-    postNotificationsPermissionState: PostNotificationsPermissionState
+fun RequiredPermissionsScreen(
+    postNotificationsPermissionState: PostNotificationsPermissionState,
+    navigator: DestinationsNavigator
 ) {
     val permissionCards =
         rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState.state)
+
+    OnChange(value = permissionCards.size) {
+        if (it == 0) {
+            navigator.navigate(
+                direction = HomeScreenDestination,
+                builder = {
+                    launchSingleTop = true
+                    popUpTo(HomeScreenDestination)
+                }
+            )
+        }
+    }
 
     Scaffold(
         topBar = {

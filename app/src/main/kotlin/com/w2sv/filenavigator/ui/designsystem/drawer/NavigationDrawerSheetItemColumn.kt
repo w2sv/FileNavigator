@@ -173,7 +173,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     NavigationDrawerSheetElement.Item.Clickable(
                         iconRes = R.drawable.ic_donate_24,
                         labelRes = R.string.support_development,
-                        explanationRes = R.string.buy_me_a_coffee_as_a_sign_of_gratitude_if_you_feel_like_doing_so
+                        explanationRes = R.string.buy_me_a_coffee_as_a_sign_of_gratitude
                     ) {
                         context.openUrlWithActivityNotFoundHandling(AppUrl.DONATE)
                     })

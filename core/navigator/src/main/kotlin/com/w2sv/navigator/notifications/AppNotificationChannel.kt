@@ -11,7 +11,7 @@ import com.w2sv.core.navigator.R
  */
 internal enum class AppNotificationChannel(@StringRes val nameRes: Int) {
     FileNavigatorIsRunning(R.string.file_navigator_is_running),
-    NewFile(R.string.new_file)
+    NewNavigatableFile(R.string.new_navigatable_file)
 }
 
 internal fun AppNotificationChannel.getNotificationChannel(

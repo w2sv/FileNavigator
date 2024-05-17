@@ -8,14 +8,14 @@
     <string name="stop_navigator">Stop Navigator</string>
 
     <string name="new_">New</string>
-    <string name="downloaded">"downloaded"</string>
-    <string name="new_file">New file</string>
+    <string name="new_navigatable_file">New navigatable file</string>
     <string name="couldnt_move_manage_all_files_permission_missing">Couldn\'t move: Manage all files permission missing!</string>
     <string name="couldnt_move_file_internal_error">Couldn\'t move: Internal Error</string>
     <string name="couldn_t_find_move_file">Couldn\'t find file!</string>
     <string name="navigatable_file">%1$d navigatable file</string>
     <string name="navigatable_files">%1$d navigatable files</string>
-    <string name="you_will_receive_a_notification_when_a_new_file_corresponding_to_your_selected_file_types_enters_the_file_system">You will receive a notification when a new file corresponding to your selected file types enters the file system.</string>
+    <string name="you_will_receive_a_notification_when_a_new_file_corresponding_to_your_selected_file_types_enters_the_file_system">You will be notified when a new file corresponding to your selected file types enters the file system.</string>
     <string name="file_already_at_selected_location">File already at selected location!</string>
     <string name="to">to /%1$s</string>
+    <string name="download">Download</string>
 </resources>

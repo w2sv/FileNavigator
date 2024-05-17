@@ -31,8 +31,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.MissingPermissionsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.RequiredPermissionsScreenDestination
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.navigation.popUpTo
@@ -100,33 +99,20 @@ class MainActivity : ComponentActivity() {
 
                 OnChange(appVM.allPermissionsGranted.collectAsStateWithLifecycle().value) { allPermissionsGranted ->
                     if (!allPermissionsGranted && !navController.isRouteOnBackStack(
-                            MissingPermissionsScreenDestination
+                            RequiredPermissionsScreenDestination
                         )
                     ) {
                         navController.navigate(
-                            direction = MissingPermissionsScreenDestination,
+                            direction = RequiredPermissionsScreenDestination,
                             navOptionsBuilder = {
                                 launchSingleTop = true
-                                popUpTo(MissingPermissionsScreenDestination)
-                            }
-                        )
-                    } else if (allPermissionsGranted && navController.isRouteOnBackStack(
-                            MissingPermissionsScreenDestination
-                        )
-                    ) {
-                        navController.navigate(
-                            direction = HomeScreenDestination,
-                            navOptionsBuilder = {
-                                launchSingleTop = true
-                                popUpTo(HomeScreenDestination)
+                                popUpTo(RequiredPermissionsScreenDestination)
                             }
                         )
                     }
                 }
 
-                CompositionLocalProvider(
-                    LocalNavHostController provides navController
-                ) {
+                CompositionLocalProvider(LocalNavHostController provides navController) {
                     Surface(modifier = Modifier.fillMaxSize()) {
                         DestinationsNavHost(
                             navGraph = NavGraphs.root,
