@@ -1,10 +1,8 @@
 package com.w2sv.filenavigator.ui.screens.home.components.movehistory
 
 import android.content.Context
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -45,7 +43,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MoveHistory(
     history: ImmutableList<MoveEntry>,
@@ -57,24 +54,23 @@ fun MoveHistory(
     LazyColumn(
         modifier = modifier
     ) {
-        itemsIndexed(history, key = { i, _ -> i }) { i, moveEntry ->
-            Column(modifier = Modifier.animateItemPlacement()) {
-                dateRepresentationList[i]?.let { dateRepresentation ->
-                    Text(
-                        text = dateRepresentation,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                }
-                MoveEntryRow(
-                    moveEntry = moveEntry,
-                    onClick = onRowClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+        itemsIndexed(history, key = { _, moveEntry -> moveEntry.dateTime }) { i, moveEntry ->
+            dateRepresentationList[i]?.let { dateRepresentation ->
+                Text(
+                    text = dateRepresentation,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
+            MoveEntryRow(
+                moveEntry = moveEntry,
+                onClick = onRowClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItem()
+                    .padding(bottom = 8.dp)
+            )
         }
     }
 }
