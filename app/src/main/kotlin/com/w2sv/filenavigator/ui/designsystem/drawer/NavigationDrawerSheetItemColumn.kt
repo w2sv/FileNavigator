@@ -47,7 +47,6 @@ import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.theme.rememberUseDarkTheme
 import com.w2sv.filenavigator.ui.utils.OptionalAnimatedVisibility
 import com.w2sv.filenavigator.ui.utils.activityViewModel
-import slimber.log.i
 
 private object AppUrl {
     const val LICENSE = "https://github.com/w2sv/FileNavigator/blob/main/LICENSE.md"
