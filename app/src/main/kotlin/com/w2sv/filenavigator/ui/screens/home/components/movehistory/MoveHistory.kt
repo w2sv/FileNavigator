@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,7 +47,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MoveEntryColumn(
+fun MoveHistory(
     history: ImmutableList<MoveEntry>,
     onRowClick: suspend (MoveEntry, Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -57,22 +58,23 @@ fun MoveEntryColumn(
         modifier = modifier
     ) {
         itemsIndexed(history, key = { i, _ -> i }) { i, moveEntry ->
-            dateRepresentationList[i]?.let { dateRepresentation ->
-                Text(
-                    text = dateRepresentation,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 4.dp)
+            Column(modifier = Modifier.animateItemPlacement()) {
+                dateRepresentationList[i]?.let { dateRepresentation ->
+                    Text(
+                        text = dateRepresentation,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+                MoveEntryRow(
+                    moveEntry = moveEntry,
+                    onClick = onRowClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
                 )
             }
-            MoveEntryRow(
-                moveEntry = moveEntry,
-                onClick = onRowClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateItemPlacement()
-                    .padding(bottom = 8.dp)
-            )
         }
     }
 }

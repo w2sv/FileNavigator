@@ -25,7 +25,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,7 +49,6 @@ import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun MoveHistoryCard(
@@ -118,7 +116,7 @@ fun MoveHistoryCard(
                 if (it) {
                     NoHistoryPlaceHolder()
                 } else {
-                    MoveEntryColumn(
+                    MoveHistory(
                         history = moveHistory.toImmutableList(),
                         onRowClick = rememberMoveEntryRowOnClick()
                     )

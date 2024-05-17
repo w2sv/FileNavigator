@@ -141,6 +141,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.activity)
     implementation(libs.androidx.compose.viewmodel)
+    implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.lifecycle.compose)
     implementation(libs.compose.destinations)
     ksp(libs.compose.destinations.ksp)
