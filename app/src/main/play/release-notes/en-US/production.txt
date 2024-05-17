@@ -3,15 +3,13 @@
     - revised the color scheme
     - added AMOLED black theme
     - fixed Landscape mode layout
-    - improved and enriched the navigation drawer
-    - added color change animation
-    - improved drawer animation
-- File move destination selection changes:
-    - made activity background translucent
+    - & more
+Move destination selection changes:
+    - translucent activity background
     - close the picker immediately after destination selection
-- Move file history changes:
-    - fixed the dates on history change
+- Move history changes:
+    - fixed dates
     - indicate which files aren't present anymore
-    - still present files are immediately viewable now
-- Improved notifications & successfully moved file toast
+    - present files are now immediately viewable
+- Improved notifications
 - Countless performance improvements
