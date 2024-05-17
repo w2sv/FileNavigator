@@ -140,7 +140,6 @@ internal class NewMoveFileNotificationManager(
 
             private fun getContentText(): SpannedString =
                 buildSpannedString {
-                    bold { append(context.getString(R.string.name).lineBreakSuffixed()) }
                     append(args.moveFile.mediaStoreFile.columnData.name.lineBreakSuffixed())
                     bold { append(context.getString(R.string.found_at).lineBreakSuffixed()) }
                     append(

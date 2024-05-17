@@ -21,7 +21,7 @@ import com.materialkolor.PaletteStyle
 import com.materialkolor.rememberDynamicColorScheme
 import com.w2sv.domain.model.Theme
 
-private val seedColor = Color(color = 0xFF00DFC2)
+private val seedColor = Color(color = 0xFF00696E)
 
 @Composable
 fun rememberUseDarkTheme(theme: Theme): State<Boolean> {
@@ -53,7 +53,7 @@ fun AppTheme(
             else -> rememberDynamicColorScheme(
                 seedColor = seedColor,
                 isDark = useDarkTheme,
-                style = PaletteStyle.Fidelity,  // Vibrant, TonalSpot, Fidelity
+                style = PaletteStyle.Rainbow,  // Vibrant, TonalSpot, Fidelity, Rainbow
             )
         }
             .run {
