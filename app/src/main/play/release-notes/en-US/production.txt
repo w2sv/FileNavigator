@@ -1,0 +1,16 @@
+- UI Rework
+    - enabled edge-to-edge mode
+    - revised the color scheme
+    - added AMOLED black theme
+    - improved and enriched the navigation drawer
+    - added color change animation
+    - improved drawer animation
+- File move destination selection changes:
+    - made activity background translucent
+    - close the picker immediately after destination selection
+- Move file history changes:
+    - fixed the dates on history change
+    - indicate which files aren't present anymore
+    - still present files are immediately viewable now
+- Improved notifications & successfully moved file toast
+- Countless performance improvements
