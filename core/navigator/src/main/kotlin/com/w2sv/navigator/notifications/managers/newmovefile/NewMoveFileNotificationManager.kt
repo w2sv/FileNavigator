@@ -12,7 +12,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
-import com.w2sv.common.utils.colonSuffixed
 import com.w2sv.common.utils.getDocumentUriFileName
 import com.w2sv.common.utils.lineBreakSuffixed
 import com.w2sv.common.utils.removeSlashSuffix

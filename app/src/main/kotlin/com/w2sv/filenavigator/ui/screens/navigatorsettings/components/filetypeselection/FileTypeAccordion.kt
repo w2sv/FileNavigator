@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.sp
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.onSurfaceDisabled
 import com.w2sv.filenavigator.ui.utils.orOnSurfaceDisabledIf
 
