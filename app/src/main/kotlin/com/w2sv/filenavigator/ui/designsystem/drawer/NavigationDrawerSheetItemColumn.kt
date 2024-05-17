@@ -101,7 +101,6 @@ internal fun NavigationDrawerSheetItemColumn(
                         iconRes = R.drawable.ic_contrast_24,
                         labelRes = R.string.amoled_black,
                         visible = {
-                            i { "rememberUseDarkTheme: $useDarkTheme" }
                             useDarkTheme
                         },
                         checked = { useAmoledBlackTheme },
