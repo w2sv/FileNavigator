@@ -12,7 +12,11 @@ import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
+import com.w2sv.common.utils.colonSuffixed
 import com.w2sv.common.utils.getDocumentUriFileName
+import com.w2sv.common.utils.lineBreakSuffixed
+import com.w2sv.common.utils.removeSlashSuffix
+import com.w2sv.common.utils.slashPrefixed
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.moving.FileMoveActivity
@@ -121,11 +125,12 @@ internal class NewMoveFileNotificationManager(
                                 context.getString(R.string.download)
                             }"
 
-                            FileType.Source.Kind.OtherApp -> "/${args.moveFile.mediaStoreFile.columnData.dirName} ${
+                            FileType.Source.Kind.OtherApp -> "${args.moveFile.mediaStoreFile.columnData.dirName} ${
                                 context.getString(
                                     fileType.titleRes
                                 )
                             }"
+                                .slashPrefixed()
                         }
                     }
 
@@ -136,17 +141,13 @@ internal class NewMoveFileNotificationManager(
 
             private fun getContentText(): SpannedString =
                 buildSpannedString {
-                    bold { append(args.moveFile.mediaStoreFile.columnData.name) }
-                    append(" ${context.getString(R.string.found_at)} ")
-                    bold {
-                        append(
-                            "/${
-                                args.moveFile.mediaStoreFile.columnData.volumeRelativeDirPath.removeSuffix(
-                                    "/"
-                                )
-                            }"
-                        )
-                    }
+                    bold { append(context.getString(R.string.name).lineBreakSuffixed()) }
+                    append(args.moveFile.mediaStoreFile.columnData.name.lineBreakSuffixed())
+                    bold { append(context.getString(R.string.found_at).lineBreakSuffixed()) }
+                    append(
+                        args.moveFile.mediaStoreFile.columnData.volumeRelativeDirPath.removeSlashSuffix()
+                            .slashPrefixed()
+                    )
                 }
 
             private fun getViewFilePendingIntent(requestCode: Int)

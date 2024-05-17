@@ -3,7 +3,6 @@ package com.w2sv.common.utils
 import android.content.ContentResolver
 import android.database.Cursor
 import android.net.Uri
-import androidx.annotation.IntRange
 
 fun <R> ContentResolver.query(
     uri: Uri,
@@ -23,10 +22,3 @@ fun <R> ContentResolver.query(
             it.moveToFirst()
             onCursor(it)
         }
-
-fun Cursor.getBoolean(@IntRange(from = 0) i: Int): Boolean =
-    when (getString(i)) {
-        "0" -> false
-        "1" -> true
-        else -> throw IllegalStateException("Invalid string for boolean conversion")
-    }

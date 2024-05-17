@@ -8,7 +8,9 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import com.w2sv.androidutils.generic.localDateTimeFromUnixTimeStamp
 import com.w2sv.androidutils.generic.milliSecondsToNow
-import com.w2sv.common.utils.getBoolean
+import com.w2sv.common.utils.getBooleanOrThrow
+import com.w2sv.common.utils.getLongOrThrow
+import com.w2sv.common.utils.getStringOrThrow
 import com.w2sv.common.utils.query
 import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.fileobservers.emitDiscardedLog
@@ -30,7 +32,7 @@ internal data class MediaStoreColumnData(
     val volumeRelativeDirPath: String,
     val name: String,
     val dateTimeAdded: LocalDateTime,
-    val size: Long,
+    val size: Long,  // Seems to be always 0
     val isPending: Boolean
 ) : Parcelable {
 
@@ -103,19 +105,15 @@ internal data class MediaStoreColumnData(
                     )
                 ) {
                     MediaStoreColumnData(
-                        rowId = it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)),
-                        absPath = it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)),
-                        volumeRelativeDirPath = it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.RELATIVE_PATH)),
-                        name = it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)),
+                        rowId = it.getStringOrThrow(MediaStore.MediaColumns._ID),
+                        absPath = it.getStringOrThrow(MediaStore.MediaColumns.DATA),
+                        volumeRelativeDirPath = it.getStringOrThrow(MediaStore.MediaColumns.RELATIVE_PATH),
+                        name = it.getStringOrThrow(MediaStore.MediaColumns.DISPLAY_NAME),
                         dateTimeAdded = localDateTimeFromUnixTimeStamp(
-                            it.getLong(
-                                it.getColumnIndexOrThrow(
-                                    MediaStore.MediaColumns.DATE_ADDED
-                                )
-                            )
+                            it.getLongOrThrow(MediaStore.MediaColumns.DATE_ADDED)
                         ),
-                        size = it.getLong(it.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE)),
-                        isPending = it.getBoolean(it.getColumnIndexOrThrow(MediaStore.MediaColumns.IS_PENDING))
+                        size = it.getLongOrThrow(MediaStore.MediaColumns.SIZE),
+                        isPending = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_PENDING)
                     )
                         .also {
                             i { it.toString() }

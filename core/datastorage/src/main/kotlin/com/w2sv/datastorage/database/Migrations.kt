@@ -10,6 +10,7 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.anggrayudi.storage.file.child
+import com.w2sv.common.utils.getStringOrThrow
 import slimber.log.i
 
 internal object Migrations {
@@ -40,9 +41,9 @@ internal object Migrations {
 
         private fun migrateRow(cursor: Cursor, db: SupportSQLiteDatabase) {
             val fileName =
-                cursor.getString("fileName")
+                cursor.getStringOrThrow("fileName")
             val destinationDocumentUri =
-                Uri.parse(cursor.getString("destinationDocumentUri"))
+                Uri.parse(cursor.getStringOrThrow("destinationDocumentUri"))
 
             val documentFile = try {
                 DocumentFile
@@ -78,7 +79,7 @@ internal object Migrations {
                     },
                     whereClause = "dateTime = ?",
                     whereArgs = arrayOf(
-                        cursor.getString("dateTime")
+                        cursor.getStringOrThrow("dateTime")
                     )
                 )
                     .also { i { "Updated $it row(s)" } }
@@ -86,6 +87,3 @@ internal object Migrations {
         }
     }
 }
-
-private fun Cursor.getString(columnName: String): String =
-    getString(getColumnIndexOrThrow(columnName))
