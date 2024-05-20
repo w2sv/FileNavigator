@@ -33,6 +33,7 @@
 
 <p align="center">
 <a href="https://play.google.com/store/apps/details?id=com.w2sv.filenavigator"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" height="80"/></a>
+<a href="https://f-droid.org/packages/com.w2sv.filenavigator/"><img alt="Download from F-Droid" src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="80"/></a>
 <a href="https://github.com/w2sv/FileNavigator/releases/latest"><img alt="Get it on GitHub" src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" height="80"/></a>
 </p>
 
