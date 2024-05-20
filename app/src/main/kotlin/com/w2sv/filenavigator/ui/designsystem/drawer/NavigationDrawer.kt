@@ -70,7 +70,7 @@ private fun NavigationDrawerSheet(
                     .padding(horizontal = horizontalPadding)
             )
             HorizontalDivider(modifier = Modifier.padding(top = 16.dp))
-            NavigationDrawerSheetItemColumn(Modifier.padding(horizontal = horizontalPadding))
+            NavigationDrawerSheetItemColumn(modifier = Modifier.padding(horizontal = horizontalPadding))
             Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility))
         }
     }
