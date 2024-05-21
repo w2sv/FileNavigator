@@ -1,35 +1,58 @@
 package com.w2sv.navigator.tile
 
 import android.app.Dialog
+import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import com.w2sv.androidutils.coroutines.collectFromFlow
+import com.w2sv.common.di.AppDispatcher
+import com.w2sv.common.di.GlobalScope
+import com.w2sv.core.navigator.R
 import com.w2sv.navigator.FileNavigator
-import com.w2sv.navigator.shared.launchMainActivityPendingIntent
-import com.w2sv.navigator.shared.mainActivityIntent
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import slimber.log.i
+import javax.inject.Inject
 
-class FileNavigatorTileService: TileService() {
+@AndroidEntryPoint
+class FileNavigatorTileService : TileService() {
 
-    // Called when the user adds your tile.
-    override fun onTileAdded() {
-        super.onTileAdded()
-    }
-    // Called when your app can update your tile.
+    @Inject
+    @GlobalScope(AppDispatcher.Default)
+    internal lateinit var scope: CoroutineScope
+
+    @Inject
+    internal lateinit var fileNavigatorStatusChanged: FileNavigator.StatusChanged
+
     override fun onStartListening() {
         super.onStartListening()
+
+        i { "onStartListening" }
+        scope.collectFromFlow(fileNavigatorStatusChanged.isRunning) { isRunning ->
+            qsTile.state = if (isRunning) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+            qsTile.updateTile()
+        }
     }
 
-    // Called when your app can no longer update your tile.
-    override fun onStopListening() {
-        super.onStopListening()
-    }
-
-    // Called when the user taps on your tile in an active or inactive state.
     override fun onClick() {
         super.onClick()
 
-        startActivityAndCollapse(mainActivityIntent(this))
-    }
-    // Called when the user removes your tile.
-    override fun onTileRemoved() {
-        super.onTileRemoved()
+        when (qsTile.state) {
+            Tile.STATE_ACTIVE -> {
+                FileNavigator.stop(this)
+            }
+
+            Tile.STATE_INACTIVE -> {
+                showDialog(
+                    Dialog(this)
+                        .apply {
+                            setContentView(R.layout.tile_dialog)
+                            setOnShowListener {
+                                FileNavigator.start(this@FileNavigatorTileService)
+//                                dismiss()
+                            }
+                        }
+                )
+            }
+        }
     }
 }
