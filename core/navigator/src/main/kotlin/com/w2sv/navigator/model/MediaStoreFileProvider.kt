@@ -3,6 +3,7 @@ package com.w2sv.navigator.model
 import android.content.ContentResolver
 import android.net.Uri
 import androidx.annotation.VisibleForTesting
+import com.google.common.collect.EvictingQueue
 import com.w2sv.navigator.fileobservers.emitDiscardedLog
 import slimber.log.i
 import java.io.File
@@ -18,12 +19,20 @@ internal class MediaStoreFileProvider {
         data object CouldntFetchMediaStoreColumnData : Result
         data object FileIsPending : Result
         data object FileNotFoundException : Result
+        data object AlreadySeen : Result
     }
+
+    private val seen = EvictingQueue.create<Uri>(5)
 
     fun getMediaStoreFileIfNotPending(
         mediaUri: Uri,
         contentResolver: ContentResolver
     ): Result {
+        if (seen.contains(mediaUri)) {
+            emitDiscardedLog { "already seen" }
+            return Result.AlreadySeen
+        }
+
         val columnData =
             MediaStoreColumnData.fetch(mediaUri, contentResolver)
                 ?: return Result.CouldntFetchMediaStoreColumnData
@@ -37,14 +46,14 @@ internal class MediaStoreFileProvider {
             measureTimedValue {
                 columnData.getFile().contentHash(sha256MessageDigest)
             }
-                .also { i { "SHA256 ($mediaUri) = ${it.value}" } }
-                .also { i { "Computation took ${it.duration}" } }
+                .also { i { "SHA256 ($mediaUri) = ${it.value}/nComputation took ${it.duration}" } }
                 .value
         } catch (e: FileNotFoundException) {
             emitDiscardedLog(e::toString)
             return Result.FileNotFoundException
         }
 
+        seen.add(mediaUri)
         return Result.Success(
             MediaStoreFile(
                 uri = mediaUri,

@@ -1,6 +1,7 @@
 package com.w2sv.navigator.fileobservers
 
 import android.content.ContentResolver
+import android.os.Handler
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
@@ -10,12 +11,14 @@ import slimber.log.i
 internal class NonMediaFileObserver(
     private val fileTypes: List<FileType.NonMedia>,
     contentResolver: ContentResolver,
-    onNewMoveFile: (MoveFile) -> Unit
+    onNewMoveFile: (MoveFile) -> Unit,
+    handler: Handler
 ) :
     FileObserver(
-        MediaType.DOWNLOADS.readUri!!,
-        contentResolver,
-        onNewMoveFile
+        contentObserverUri = MediaType.DOWNLOADS.readUri!!,
+        contentResolver = contentResolver,
+        onNewMoveFileListener = onNewMoveFile,
+        handler = handler
     ) {
 
     init {

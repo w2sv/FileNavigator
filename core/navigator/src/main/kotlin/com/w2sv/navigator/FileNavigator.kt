@@ -2,6 +2,8 @@ package com.w2sv.navigator
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.HandlerThread
 import com.w2sv.androidutils.coroutines.firstBlocking
 import com.w2sv.androidutils.coroutines.mapValuesToCurrentValue
 import com.w2sv.androidutils.services.UnboundService
@@ -39,8 +41,12 @@ class FileNavigator : UnboundService() {
 
     private lateinit var fileObservers: List<FileObserver>
 
-    private fun getRegisteredFileObservers(): List<FileObserver> =
-        getFileObservers(
+    private val contentObserverHandlerThread =
+        HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
+
+    private fun getRegisteredFileObservers(): List<FileObserver> {
+        val handler = Handler(contentObserverHandlerThread.apply { start() }.looper)
+        return getFileObservers(
             fileTypeEnablementMap = navigatorRepository.fileTypeEnablementMap.mapValuesToCurrentValue(),
             mediaFileSourceEnablementMap = navigatorRepository.mediaFileSourceEnablementMap.mapValuesToCurrentValue(),
             contentResolver = contentResolver,
@@ -58,7 +64,8 @@ class FileNavigator : UnboundService() {
                         )
                     )
                 }
-            }
+            },
+            handler
         )
             .onEach {
                 contentResolver.registerContentObserver(
@@ -68,6 +75,7 @@ class FileNavigator : UnboundService() {
                 )
             }
             .also { i { "Registered ${it.size} FileObservers" } }
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         i { "onStartCommand | action: ${intent?.action}" }
@@ -125,6 +133,8 @@ class FileNavigator : UnboundService() {
             unregisterFileObservers()
         } catch (e: UninitializedPropertyAccessException) {
             i(e)
+        } finally {
+            contentObserverHandlerThread.quit()
         }
     }
 

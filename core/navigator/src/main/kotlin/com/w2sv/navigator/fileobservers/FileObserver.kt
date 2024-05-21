@@ -4,7 +4,7 @@ import android.content.ContentResolver
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Handler
-import android.os.Looper
+import android.os.HandlerThread
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.generic.milliSecondsTo
 import com.w2sv.domain.model.FileType
@@ -18,8 +18,9 @@ internal abstract class FileObserver(
     val contentObserverUri: Uri,
     private val contentResolver: ContentResolver,
     private val onNewMoveFileListener: (MoveFile) -> Unit,
+    handler: Handler
 ) :
-    ContentObserver(Handler(Looper.getMainLooper())) {
+    ContentObserver(handler) {
 
     private val mediaStoreFileProvider: MediaStoreFileProvider = MediaStoreFileProvider()
 
@@ -100,9 +101,10 @@ internal fun getFileObservers(
     fileTypeEnablementMap: Map<FileType, Boolean>,
     mediaFileSourceEnablementMap: Map<FileType.Source, Boolean>,
     contentResolver: ContentResolver,
-    onNewNavigatableFileListener: (MoveFile) -> Unit
-): List<FileObserver> =
-    buildList {
+    onNewNavigatableFileListener: (MoveFile) -> Unit,
+    handler: Handler
+): List<FileObserver> {
+    return buildList {
         addAll(
             FileType.Media.values
                 .filter { fileTypeEnablementMap.getValue(it) }
@@ -115,7 +117,8 @@ internal fun getFileObservers(
                             .map { source -> source.kind }
                             .toSet(),
                         contentResolver = contentResolver,
-                        onNewMoveFile = onNewNavigatableFileListener
+                        onNewMoveFile = onNewNavigatableFileListener,
+                        handler = handler
                     )
                 }
         )
@@ -127,9 +130,11 @@ internal fun getFileObservers(
                         NonMediaFileObserver(
                             fileTypes = this,
                             contentResolver = contentResolver,
-                            onNewMoveFile = onNewNavigatableFileListener
+                            onNewMoveFile = onNewNavigatableFileListener,
+                            handler = handler
                         )
                     )
                 }
             }
     }
+}

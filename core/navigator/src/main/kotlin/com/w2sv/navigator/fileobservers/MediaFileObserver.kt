@@ -1,6 +1,7 @@
 package com.w2sv.navigator.fileobservers
 
 import android.content.ContentResolver
+import android.os.Handler
 import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.moving.MoveFile
@@ -10,12 +11,14 @@ internal class MediaFileObserver(
     private val fileType: FileType.Media,
     private val sourceKinds: Set<FileType.Source.Kind>,
     contentResolver: ContentResolver,
-    onNewMoveFile: (MoveFile) -> Unit
+    onNewMoveFile: (MoveFile) -> Unit,
+    handler: Handler
 ) :
     FileObserver(
-        fileType.simpleStorageMediaType.readUri!!,
-        contentResolver,
-        onNewMoveFile
+        contentObserverUri = fileType.simpleStorageMediaType.readUri!!,
+        contentResolver = contentResolver,
+        onNewMoveFileListener = onNewMoveFile,
+        handler = handler
     ) {
 
     init {
