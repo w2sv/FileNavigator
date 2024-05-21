@@ -31,7 +31,7 @@
         </receiver>
 
         <receiver android:name="com.w2sv.navigator.moving.MoveBroadcastReceiver" />
-        <receiver android:name="com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager$ResourcesCleanupBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager$ResourcesCleanupBroadcastReceiver" />
 
         <activity
             android:name="com.w2sv.navigator.moving.FileMoveActivity"

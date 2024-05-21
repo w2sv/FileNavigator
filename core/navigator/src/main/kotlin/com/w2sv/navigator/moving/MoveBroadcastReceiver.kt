@@ -17,7 +17,7 @@ import com.w2sv.common.utils.showToast
 import com.w2sv.domain.repository.NavigatorRepository
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.notifications.managers.newmovefile.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putMoveFileExtra
 import com.w2sv.navigator.notifications.putNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
