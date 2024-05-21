@@ -12,6 +12,7 @@ import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
+import com.w2sv.navigator.shared.launchMainActivityPendingIntent
 
 internal class FileNavigatorIsRunningNotificationManager(
     context: Context,
@@ -38,14 +39,7 @@ internal class FileNavigatorIsRunningNotificationManager(
                 foregroundServiceBehavior = NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE
 
                 setContentIntent(
-                    PendingIntent.getActivity(
-                        context,
-                        1,
-                        Intent.makeRestartActivityTask(
-                            ComponentName(context, "com.w2sv.filenavigator.MainActivity")
-                        ),
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
+                    launchMainActivityPendingIntent(context)
                 )
 
                 // add stop action
