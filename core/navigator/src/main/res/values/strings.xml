@@ -19,5 +19,5 @@
     <string name="to">to /%1$s</string>
     <string name="download">Download</string>
     <string name="name">Name</string>
-    <string name="starting_navigator">Starting navigator...</string>
+    <string name="starting_navigator">Launching File Navigator…</string>
 </resources>

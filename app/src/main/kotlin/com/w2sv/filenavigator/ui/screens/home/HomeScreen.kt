@@ -53,7 +53,7 @@ fun HomeScreen(
             },
             topBar = {
                 NavigationDrawerScreenTopBar(
-                    title = stringResource(id = R.string.app_name),
+                    title = stringResource(id = com.w2sv.core.common.R.string.app_name),
                     onNavigationIconClick = {
                         scope.launch {
                             drawerState.open()

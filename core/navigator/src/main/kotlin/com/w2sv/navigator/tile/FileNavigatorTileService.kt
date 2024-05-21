@@ -1,13 +1,21 @@
 package com.w2sv.navigator.tile
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Dialog
+import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.w2sv.androidutils.coroutines.collectFromFlow
+import com.w2sv.androidutils.coroutines.launchDelayed
+import com.w2sv.androidutils.permissions.hasPermission
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
+import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.core.navigator.R
 import com.w2sv.navigator.FileNavigator
+import com.w2sv.navigator.shared.mainActivityIntent
+import com.w2sv.navigator.shared.mainActivityPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import slimber.log.i
@@ -42,17 +50,40 @@ class FileNavigatorTileService : TileService() {
             }
 
             Tile.STATE_INACTIVE -> {
-                showDialog(
-                    Dialog(this)
-                        .apply {
-                            setContentView(R.layout.tile_dialog)
-                            setOnShowListener {
-                                FileNavigator.start(this@FileNavigatorTileService)
-//                                dismiss()
-                            }
-                        }
-                )
+                if (isExternalStorageManger && hasPermission(Manifest.permission.POST_NOTIFICATIONS)) {
+                    showDialogAndLaunchNavigator()
+                } else {
+                    startMainActivityAndCollapse()
+                }
             }
         }
     }
+
+    @SuppressLint("StartActivityAndCollapseDeprecated")
+    private fun startMainActivityAndCollapse() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startActivityAndCollapse(mainActivityPendingIntent(this))
+        } else {
+            @Suppress("DEPRECATION")
+            startActivityAndCollapse(mainActivityIntent(this))
+        }
+    }
+
+    private fun showDialogAndLaunchNavigator() {
+        showDialog(
+            Dialog(this)
+                .apply {
+                    setTheme(com.afollestad.materialdialogs.R.style.MD_Dark)
+                    setContentView(R.layout.tile_dialog)
+                    setOnShowListener {
+                        scope.launchDelayed(250) {
+                            FileNavigator.start(this@FileNavigatorTileService)
+                            dismiss()
+                        }
+                    }
+                }
+        )
+    }
 }
+
+

@@ -5,7 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 
-fun launchMainActivityPendingIntent(context: Context): PendingIntent =
+fun mainActivityPendingIntent(context: Context): PendingIntent =
     PendingIntent.getActivity(
         context,
         1,

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <style name="Theme.Tile.Dialog" parent="Theme.MaterialComponents.Dialog">
-        <item name="background">@color/ic_launcher_background</item>
-    </style>
-</resources>
