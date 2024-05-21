@@ -6,9 +6,11 @@ import android.app.Dialog
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import androidx.annotation.IntDef
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.coroutines.launchDelayed
 import com.w2sv.androidutils.permissions.hasPermission
+import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.isExternalStorageManger
@@ -22,7 +24,7 @@ import slimber.log.i
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FileNavigatorTileService : TileService() {
+internal class FileNavigatorTileService : TileService() {
 
     @Inject
     @GlobalScope(AppDispatcher.Default)
@@ -35,9 +37,13 @@ class FileNavigatorTileService : TileService() {
         super.onStartListening()
 
         i { "onStartListening" }
+
+        if (!isServiceRunning<FileNavigator>()) {
+            updateTileState(Tile.STATE_INACTIVE)
+        }
+
         scope.collectFromFlow(fileNavigatorStatusChanged.isRunning) { isRunning ->
-            qsTile.state = if (isRunning) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-            qsTile.updateTile()
+            updateTileState(if (isRunning) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE)
         }
     }
 
@@ -86,4 +92,10 @@ class FileNavigatorTileService : TileService() {
     }
 }
 
+@IntDef(Tile.STATE_ACTIVE, Tile.STATE_INACTIVE, Tile.STATE_UNAVAILABLE)
+private annotation class TileState
 
+private fun TileService.updateTileState(@TileState state: Int) {
+    qsTile.state = state
+    qsTile.updateTile()
+}

@@ -106,6 +106,7 @@ class FileNavigator : UnboundService() {
     }
 
     private fun stop() {
+        i { "FileNavigator.stop" }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
         statusChanged.emitNewStatus(false)
