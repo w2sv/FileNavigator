@@ -12,6 +12,9 @@ build-apk:
 	@echo "Build APK"
 	@./gradlew assembleRelease --console verbose
 
+compose-compiler-reports:
+	@echo ./gradlew assembleRelease -PcomposeCompilerReports=true
+
 # ==============
 # Publishing
 # ==============

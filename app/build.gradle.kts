@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -8,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.filenavigator.hilt)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.compose.compiler)
 }
 
 android {
@@ -25,7 +25,7 @@ android {
         versionName = version.toString()
 
         // Store bundles as "{versionName}-{buildFlavor}.aab"
-        archivesName = versionName
+//        archivesName = versionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -65,10 +65,6 @@ android {
         buildConfig = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
-    }
-
     packaging {
         resources {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
@@ -96,17 +92,15 @@ android {
                     "${versionName}.apk"
             }
     }
+}
 
-    kotlinOptions {
-        freeCompilerArgs += listOf(
-            // Apply compose_compiler_config.conf
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=${project.rootDir.absolutePath}/compose_compiler_config.conf",
-            // Enable strong skipping
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:experimentalStrongSkipping=true"
-        )
-    }
+// https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-compiler.html#compose-compiler-options-dsl
+composeCompiler {
+    enableStrongSkippingMode = true
+    includeSourceInformation = true
+    stabilityConfigurationFile.set(rootProject.file("compose_compiler_config.conf"))
+    metricsDestination.set(project.layout.buildDirectory.dir("compose_compiler"))
+    reportsDestination.set(project.layout.buildDirectory.dir("compose_compiler"))
 }
 
 // https://github.com/Triple-T/gradle-play-publisher

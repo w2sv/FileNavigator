@@ -3,12 +3,11 @@ minSdk = "30"  # min for MediaStore.Downloads.EXTERNAL_CONTENT_URI
 compileSdk = "34"
 
 agp = "8.3.2"
-kotlin = "1.9.23"
+kotlin = "2.0.0"
 java = "17"
-ksp = "1.9.23-1.0.20"
+ksp = "2.0.0-1.0.21"
 triplet-play = "3.9.1"
 
-compose-compiler = "1.5.12"
 compose-tooling = "1.6.7"
 compose-material3 = "1.2.1"
 hilt = "2.51.1"
@@ -90,6 +89,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 play = { id = "com.github.triplet.play", version.ref = "triplet-play" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
