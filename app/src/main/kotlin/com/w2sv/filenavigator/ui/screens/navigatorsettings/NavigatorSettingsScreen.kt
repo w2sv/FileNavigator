@@ -10,11 +10,16 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -24,13 +29,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -38,6 +49,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -46,6 +58,7 @@ import com.w2sv.composed.CollectLatestFromFlow
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
 import com.w2sv.composed.isPortraitModeActive
+import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -54,6 +67,8 @@ import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
+import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
+import com.w2sv.filenavigator.ui.designsystem.emptyWindowInsets
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme
@@ -89,6 +104,11 @@ fun NavigatorSettingsScreen(
 
     BackHandler(onBack = onBack)
 
+    val scope = rememberCoroutineScope()
+    var autoMoveConfigurationFileType by rememberSaveable {
+        mutableStateOf<FileType?>(FileType.Image)
+    }
+
     Scaffold(
         topBar = {
             TopAppBarAboveHorizontalDivider(
@@ -109,7 +129,6 @@ fun NavigatorSettingsScreen(
             )
         },
         floatingActionButton = {
-            val scope = rememberCoroutineScope()
             ConfigurationButtonRow(
                 configurationHasChanged = configurationHasChanged,
                 resetConfiguration = remember { { navigatorVM.configuration.unconfirmedStates.reset() } },
@@ -145,6 +164,38 @@ fun NavigatorSettingsScreen(
                 .padding(horizontal = if (isPortraitModeActive) Padding.defaultHorizontal else 52.dp)
                 .fillMaxSize()
         )
+
+//        autoMoveConfigurationFileType?.let {
+//            AutoMoveBottomSheet(
+//                fileType = it,
+//                onDismissRequest = { autoMoveConfigurationFileType = null },
+//            )
+//        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+private fun AutoMoveBottomSheet(
+    fileType: FileType,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    sheetState: SheetState = rememberModalBottomSheetState()
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
+        modifier = modifier,
+        windowInsets = emptyWindowInsets,
+    ) {
+        Row(modifier = Modifier.align(Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
+            FileTypeIcon(fileType = fileType, modifier = Modifier.padding(horizontal = 16.dp))
+            Text(
+                text = "${stringResource(id = fileType.titleRes)} Auto Move",
+                fontSize = 18.sp
+            )
+        }
+        Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility))
     }
 }
 

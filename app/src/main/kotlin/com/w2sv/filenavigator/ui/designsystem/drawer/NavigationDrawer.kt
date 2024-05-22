@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.emptyWindowInsets
 import java.time.LocalDate
 
 @Composable
@@ -56,7 +57,7 @@ private fun NavigationDrawerSheet(
 ) {
     ModalDrawerSheet(
         modifier = modifier,
-        windowInsets = WindowInsets(0, 0, 0, 0)
+        windowInsets = emptyWindowInsets
     ) {
         Column(
             modifier = Modifier
