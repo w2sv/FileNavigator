@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator
 
-import android.Manifest
 import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.os.Bundle
@@ -13,9 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.animation.doOnEnd
@@ -25,22 +22,19 @@ import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.RequiredPermissionsScreenDestination
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
 import com.w2sv.androidutils.coroutines.collectFromFlow
-import com.w2sv.common.utils.postNotificationsPermissionRequired
 import com.w2sv.composed.OnChange
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
+import com.w2sv.filenavigator.ui.states.rememberObservedPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.rememberUseDarkTheme
 import com.w2sv.filenavigator.ui.utils.LocalNavHostController
@@ -120,6 +114,7 @@ class MainActivity : ComponentActivity() {
                             dependenciesContainerBuilder = {
                                 dependency(postNotificationsPermissionState)
                             },
+                            startRoute = NavigatorSettingsScreenDestination
                         )
                     }
                 }
@@ -155,33 +150,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-private fun rememberObservedPostNotificationsPermissionState(
-    onPermissionResult: (Boolean) -> Unit,
-    onStatusChanged: (Boolean) -> Unit
-): PostNotificationsPermissionState =
-    PostNotificationsPermissionState(
-        state = if (postNotificationsPermissionRequired) {
-            rememberPermissionState(
-                permission = Manifest.permission.POST_NOTIFICATIONS,
-                onPermissionResult = onPermissionResult
-            )
-                .also {
-                    OnChange(value = it.status) { status ->
-                        onStatusChanged(status.isGranted)
-                    }
-                }
-        } else {
-            null
-        }
-    )
-
-@Immutable
-data class PostNotificationsPermissionState @OptIn(ExperimentalPermissionsApi::class) constructor(
-    val state: PermissionState?
-)
 
 private class SwipeRightSplashScreenExitAnimation(private val onAnimationEnd: () -> Unit) :
     SplashScreen.OnExitAnimationListener {
