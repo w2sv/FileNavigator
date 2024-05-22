@@ -17,6 +17,7 @@ import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.getDocumentUriFileName
 import com.w2sv.common.utils.lineBreakSuffixed
+import com.w2sv.common.utils.loadBitmap
 import com.w2sv.common.utils.removeSlashSuffix
 import com.w2sv.common.utils.slashPrefixed
 import com.w2sv.core.navigator.R
@@ -80,51 +81,50 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 setContentTitle(
                     "${context.getString(R.string.new_)} ${getMoveFileTitle()}"
                 )
-                // Set icons
+                // Set file source icon
                 setLargeIcon(
                     AppCompatResources.getDrawable(context, args.moveFile.source.getIconRes())
                         ?.apply { setTint(args.moveFile.source.fileType.colorInt) }
                         ?.toBitmap()
                 )
-                // Set content
-                setStyle(
-                    NotificationCompat.BigTextStyle()
-                        .bigText(getContentText())
-                )
-
-                // Set actions & intents
-                val requestCodeIterator = args.resources.actionRequestCodes.iterator()
-
-                addAction(getMoveFileAction(requestCodeIterator.next()))
-
-                // Add quickMoveAction if lastMoveDestination present.
-                getLastMoveDestination(args.moveFile.source)?.let { lastMoveDestination ->
-                    // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
-                    getDocumentUriFileName(
-                        documentUri = lastMoveDestination,
-                        context = context
-                    )
-                        ?.let { fileName ->
-                            addAction(
-                                getQuickMoveAction(
-                                    requestCode = requestCodeIterator.next(),
-                                    lastMoveDestination = lastMoveDestination,
-                                    lastMoveDestinationFileName = fileName
-                                )
-                            )
-                        }
-                }
-
-                setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
-
-                setDeleteIntent(
-                    getCleanupNotificationResourcesPendingIntent(
-                        requestCode = requestCodeIterator.next(),
-                    )
-                )
+                setContent()
+                setActionsAndIntents()
 
                 return super.build()
             }
+
+            private fun setContent() {
+                val bigPictureStyleSet = setBigPictureStyleIfImage()
+                if (!bigPictureStyleSet) {
+                    setStyle(
+                        NotificationCompat.BigTextStyle()
+                            .bigText(getContentText())
+                    )
+                }
+            }
+
+            private fun setBigPictureStyleIfImage(): Boolean {
+                if (args.moveFile.source.fileType is FileType.Image) {
+                    context.contentResolver.loadBitmap(args.moveFile.mediaStoreFile.uri)?.let {
+                        setStyle(
+                            NotificationCompat.BigPictureStyle()
+                                .bigPicture(it)
+                        )
+                        return true
+                    }
+                }
+                return false
+            }
+
+            private fun getContentText(): SpannedString =
+                buildSpannedString {
+                    append(args.moveFile.mediaStoreFile.columnData.name.lineBreakSuffixed())
+                    bold { append(context.getString(R.string.found_at).lineBreakSuffixed()) }
+                    append(
+                        args.moveFile.mediaStoreFile.columnData.volumeRelativeDirPath.removeSlashSuffix()
+                            .slashPrefixed()
+                    )
+                }
 
             private fun getMoveFileTitle(): String =
                 when (val fileType = args.moveFile.source.fileType) {
@@ -161,15 +161,38 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                     }
                 }
 
-            private fun getContentText(): SpannedString =
-                buildSpannedString {
-                    append(args.moveFile.mediaStoreFile.columnData.name.lineBreakSuffixed())
-                    bold { append(context.getString(R.string.found_at).lineBreakSuffixed()) }
-                    append(
-                        args.moveFile.mediaStoreFile.columnData.volumeRelativeDirPath.removeSlashSuffix()
-                            .slashPrefixed()
+            private fun setActionsAndIntents() {
+                // Set actions & intents
+                val requestCodeIterator = args.resources.actionRequestCodes.iterator()
+
+                addAction(getMoveFileAction(requestCodeIterator.next()))
+
+                // Add quickMoveAction if lastMoveDestination present.
+                getLastMoveDestination(args.moveFile.source)?.let { lastMoveDestination ->
+                    // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
+                    getDocumentUriFileName(
+                        documentUri = lastMoveDestination,
+                        context = context
                     )
+                        ?.let { fileName ->
+                            addAction(
+                                getQuickMoveAction(
+                                    requestCode = requestCodeIterator.next(),
+                                    lastMoveDestination = lastMoveDestination,
+                                    lastMoveDestinationFileName = fileName
+                                )
+                            )
+                        }
                 }
+
+                setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
+
+                setDeleteIntent(
+                    getCleanupNotificationResourcesPendingIntent(
+                        requestCode = requestCodeIterator.next(),
+                    )
+                )
+            }
 
             private fun getViewFilePendingIntent(requestCode: Int)
                     : PendingIntent =
