@@ -17,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
@@ -57,9 +59,11 @@ class MainActivity : ComponentActivity() {
     private val navigatorVM by viewModels<NavigatorViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        var triggerStatusBarStyleUpdate by mutableStateOf(false)
+
         installSplashScreen().setOnExitAnimationListener(
             SwipeRightSplashScreenExitAnimation(
-                onAnimationEnd = { enableEdgeToEdge() }
+                onAnimationEnd = { triggerStatusBarStyleUpdate = true }
             )
         )
 
@@ -76,7 +80,7 @@ class MainActivity : ComponentActivity() {
                 useAmoledBlackTheme = appVM.useAmoledBlackTheme.collectAsStateWithLifecycle().value
             ) {
                 // Reset system bar styles on theme change
-                OnChange(useDarkTheme) {
+                OnChange(useDarkTheme, triggerStatusBarStyleUpdate) {
                     val systemBarStyle = if (it) {
                         SystemBarStyle.dark(Color.TRANSPARENT)
                     } else {
