@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator
 
-import android.Manifest
 import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.os.Bundle
@@ -11,11 +10,12 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -27,10 +27,6 @@ import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.RequiredPermissionsScreenDestination
@@ -39,13 +35,14 @@ import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
 import com.w2sv.androidutils.coroutines.collectFromFlow
-import com.w2sv.common.utils.postNotificationsPermissionRequired
 import com.w2sv.composed.OnChange
+import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
+import com.w2sv.filenavigator.ui.states.rememberObservedPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.theme.rememberUseDarkTheme
 import com.w2sv.filenavigator.ui.utils.LocalNavHostController
+import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.PowerSaveModeChangedReceiver
 import dagger.hilt.android.AndroidEntryPoint
@@ -72,59 +69,62 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.collectFromFlows()
 
         setContent {
-            val useDarkTheme by rememberUseDarkTheme(theme = appVM.theme.collectAsStateWithLifecycle().value)
-
-            AppTheme(
-                useDynamicColors = appVM.useDynamicColors.collectAsStateWithLifecycle().value,
-                useDarkTheme = useDarkTheme,
-                useAmoledBlackTheme = appVM.useAmoledBlackTheme.collectAsStateWithLifecycle().value
+            CompositionLocalProvider(
+                LocalUseDarkTheme provides useDarkTheme(theme = appVM.theme.collectAsStateWithLifecycle().value)
             ) {
-                // Reset system bar styles on theme change
-                OnChange(useDarkTheme, triggerStatusBarStyleUpdate) {
-                    val systemBarStyle = if (it) {
-                        SystemBarStyle.dark(Color.TRANSPARENT)
-                    } else {
-                        SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-                    }
+                val useDarkTheme = LocalUseDarkTheme.current
+                AppTheme(
+                    useDarkTheme = useDarkTheme,
+                    useAmoledBlackTheme = appVM.useAmoledBlackTheme.collectAsStateWithLifecycle().value,
+                    useDynamicColors = appVM.useDynamicColors.collectAsStateWithLifecycle().value
+                ) {
+                    // Reset system bar styles on theme change
+                    LaunchedEffect(useDarkTheme, triggerStatusBarStyleUpdate) {
+                        val systemBarStyle = if (useDarkTheme) {
+                            SystemBarStyle.dark(Color.TRANSPARENT)
+                        } else {
+                            SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                        }
 
-                    enableEdgeToEdge(
-                        systemBarStyle,
-                        systemBarStyle,
-                    )
-                }
-
-                val postNotificationsPermissionState =
-                    rememberObservedPostNotificationsPermissionState(
-                        onPermissionResult = { appVM.savePostNotificationsPermissionRequestedIfRequired() },
-                        onStatusChanged = appVM::setPostNotificationsPermissionGranted
-                    )
-
-                val navController = rememberNavController()
-
-                OnChange(appVM.allPermissionsGranted.collectAsStateWithLifecycle().value) { allPermissionsGranted ->
-                    if (!allPermissionsGranted && !navController.isRouteOnBackStack(
-                            RequiredPermissionsScreenDestination
-                        )
-                    ) {
-                        navController.navigate(
-                            direction = RequiredPermissionsScreenDestination,
-                            navOptionsBuilder = {
-                                launchSingleTop = true
-                                popUpTo(RequiredPermissionsScreenDestination)
-                            }
+                        enableEdgeToEdge(
+                            systemBarStyle,
+                            systemBarStyle,
                         )
                     }
-                }
 
-                CompositionLocalProvider(LocalNavHostController provides navController) {
-                    Surface(modifier = Modifier.fillMaxSize()) {
-                        DestinationsNavHost(
-                            navGraph = NavGraphs.root,
-                            navController = navController,
-                            dependenciesContainerBuilder = {
-                                dependency(postNotificationsPermissionState)
-                            },
+                    val postNotificationsPermissionState =
+                        rememberObservedPostNotificationsPermissionState(
+                            onPermissionResult = { appVM.savePostNotificationsPermissionRequestedIfRequired() },
+                            onStatusChanged = appVM::setPostNotificationsPermissionGranted
                         )
+
+                    val navController = rememberNavController()
+
+                    OnChange(appVM.allPermissionsGranted.collectAsStateWithLifecycle().value) { allPermissionsGranted ->
+                        if (!allPermissionsGranted && !navController.isRouteOnBackStack(
+                                RequiredPermissionsScreenDestination
+                            )
+                        ) {
+                            navController.navigate(
+                                direction = RequiredPermissionsScreenDestination,
+                                navOptionsBuilder = {
+                                    launchSingleTop = true
+                                    popUpTo(RequiredPermissionsScreenDestination)
+                                }
+                            )
+                        }
+                    }
+
+                    CompositionLocalProvider(LocalNavHostController provides navController) {
+                        Surface(modifier = Modifier.fillMaxSize()) {
+                            DestinationsNavHost(
+                                navGraph = NavGraphs.root,
+                                navController = navController,
+                                dependenciesContainerBuilder = {
+                                    dependency(postNotificationsPermissionState)
+                                },
+                            )
+                        }
                     }
                 }
             }
@@ -160,32 +160,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-private fun rememberObservedPostNotificationsPermissionState(
-    onPermissionResult: (Boolean) -> Unit,
-    onStatusChanged: (Boolean) -> Unit
-): PostNotificationsPermissionState =
-    PostNotificationsPermissionState(
-        state = if (postNotificationsPermissionRequired) {
-            rememberPermissionState(
-                permission = Manifest.permission.POST_NOTIFICATIONS,
-                onPermissionResult = onPermissionResult
-            )
-                .also {
-                    OnChange(value = it.status) { status ->
-                        onStatusChanged(status.isGranted)
-                    }
-                }
-        } else {
-            null
-        }
-    )
-
-@Immutable
-data class PostNotificationsPermissionState @OptIn(ExperimentalPermissionsApi::class) constructor(
-    val state: PermissionState?
-)
+private fun useDarkTheme(theme: Theme): Boolean {
+    return when (theme) {
+        Theme.Light -> false
+        Theme.Dark -> true
+        Theme.Default -> isSystemInDarkTheme()
+    }
+}
 
 private class SwipeRightSplashScreenExitAnimation(private val onAnimationEnd: () -> Unit) :
     SplashScreen.OnExitAnimationListener {

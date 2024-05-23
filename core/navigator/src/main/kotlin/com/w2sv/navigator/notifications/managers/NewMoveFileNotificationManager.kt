@@ -71,7 +71,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                     "${context.getString(R.string.new_)} ${getMoveFileTitle()}"
                 )
                 // Set file source icon
-                setLargeIcon(
+                 setLargeIcon(
                     AppCompatResources.getDrawable(context, args.moveFile.source.getIconRes())
                         ?.apply { setTint(args.moveFile.source.fileType.colorInt) }
                         ?.toBitmap()

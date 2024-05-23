@@ -2,15 +2,10 @@ package com.w2sv.filenavigator.ui.designsystem.drawer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -31,47 +26,53 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.SystemBarsIgnoringVisibilityPaddedColumn
+import com.w2sv.filenavigator.ui.designsystem.drawer.model.NavigationDrawerItemState
+import com.w2sv.filenavigator.ui.designsystem.drawer.model.rememberNavigationDrawerItemState
+import com.w2sv.filenavigator.ui.designsystem.emptyInsets
 import java.time.LocalDate
 
 @Composable
 fun NavigationDrawer(
     state: DrawerState,
     modifier: Modifier = Modifier,
+    itemState: NavigationDrawerItemState = rememberNavigationDrawerItemState(),
     content: @Composable () -> Unit
 ) {
     ModalNavigationDrawer(
         modifier = modifier,
         drawerContent = {
-            NavigationDrawerSheet()
+            NavigationDrawerSheet(itemState = itemState)
         },
         drawerState = state,
         content = content
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun NavigationDrawerSheet(
+    itemState: NavigationDrawerItemState,
     modifier: Modifier = Modifier
 ) {
     ModalDrawerSheet(
         modifier = modifier,
-        windowInsets = WindowInsets(0, 0, 0, 0)
+        windowInsets = emptyInsets
     ) {
-        Column(
+        SystemBarsIgnoringVisibilityPaddedColumn(
             modifier = Modifier
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility))
             Header(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = horizontalPadding)
             )
-            HorizontalDivider(modifier = Modifier.padding(top = 16.dp))
-            NavigationDrawerSheetItemColumn(modifier = Modifier.padding(horizontal = horizontalPadding))
-            Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility))
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            NavigationDrawerSheetItemColumn(
+                itemState = itemState,
+                modifier = Modifier.padding(horizontal = horizontalPadding)
+            )
         }
     }
 }

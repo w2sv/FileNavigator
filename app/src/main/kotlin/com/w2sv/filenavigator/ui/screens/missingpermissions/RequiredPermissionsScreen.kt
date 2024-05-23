@@ -35,7 +35,7 @@ import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.composed.OnChange
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
-import com.w2sv.filenavigator.PostNotificationsPermissionState
+import com.w2sv.filenavigator.ui.states.PostNotificationsPermissionState
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
