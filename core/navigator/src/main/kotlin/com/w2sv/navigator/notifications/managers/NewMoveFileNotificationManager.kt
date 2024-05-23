@@ -31,6 +31,7 @@ import com.w2sv.navigator.moving.MoveFile
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.NotificationResourcesCleanupBroadcastReceiver
+import com.w2sv.navigator.notifications.ViewFileIfPresentBroadcastReceiver
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -216,16 +217,17 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun getViewFilePendingIntent(requestCode: Int)
                     : PendingIntent =
-                PendingIntent.getActivity(
+                PendingIntent.getBroadcast(
                     context,
                     requestCode,
-                    Intent()
-                        .setAction(Intent.ACTION_VIEW)
-                        .setDataAndType(
-                            args.moveFile.mediaStoreFile.uri,
-                            args.moveFile.source.fileType.simpleStorageMediaType.mimeType
-                        ),
-                    PendingIntent.FLAG_IMMUTABLE
+                    ViewFileIfPresentBroadcastReceiver.intent(
+                        context = context.applicationContext,
+                        mediaUri = args.moveFile.mediaStoreFile.uri,
+                        absPath = args.moveFile.mediaStoreFile.columnData.absPath,
+                        mimeType = args.moveFile.source.fileType.simpleStorageMediaType.mimeType,
+                        notificationResources = args.resources
+                    ),
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
 
             private fun getMoveFileAction(

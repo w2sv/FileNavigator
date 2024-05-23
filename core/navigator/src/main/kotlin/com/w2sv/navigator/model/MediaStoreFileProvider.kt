@@ -11,8 +11,6 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.security.MessageDigest
 
-private data class SeenParameters(val uri: Uri, val fileSize: Long)
-
 internal class MediaStoreFileProvider {
 
     sealed interface Result {
@@ -22,6 +20,8 @@ internal class MediaStoreFileProvider {
         data object FileNotFoundException : Result
         data object AlreadySeen : Result
     }
+
+    private data class SeenParameters(val uri: Uri, val fileSize: Long)
 
     private val seenParametersCache = EvictingQueue.create<SeenParameters>(5)
 

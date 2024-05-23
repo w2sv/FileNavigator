@@ -3,7 +3,7 @@ package com.w2sv.navigator.moving
 import com.w2sv.common.utils.ToastProperties
 import com.w2sv.core.navigator.R
 
-enum class MoveException(val toastProperties: ToastProperties?, val cancelNotification: Boolean) {
+enum class MoveException(val toastProperties: ToastProperties, val cancelNotification: Boolean) {
 
     MissingManageAllFilesPermission(
         toastProperties = ToastProperties(
@@ -17,7 +17,7 @@ enum class MoveException(val toastProperties: ToastProperties?, val cancelNotifi
      */
     MoveFileNotFound(
         toastProperties = ToastProperties(
-            message = R.string.couldn_t_find_move_file,
+            message = R.string.file_has_already_been_moved_or_deleted,
         ),
         cancelNotification = true
     ),
