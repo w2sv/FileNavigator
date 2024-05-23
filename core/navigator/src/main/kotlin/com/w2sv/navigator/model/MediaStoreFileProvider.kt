@@ -10,7 +10,8 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.security.MessageDigest
-import kotlin.time.measureTimedValue
+
+private data class SeenParameters(val uri: Uri, val fileSize: Long)
 
 internal class MediaStoreFileProvider {
 
@@ -22,38 +23,44 @@ internal class MediaStoreFileProvider {
         data object AlreadySeen : Result
     }
 
-    private val seen = EvictingQueue.create<Uri>(5)
+    private val seenParametersCache = EvictingQueue.create<SeenParameters>(5)
 
-    fun getMediaStoreFileIfNotPending(
+    fun getMediaStoreFileIfNotPendingAndNotAlreadySeen(
         mediaUri: Uri,
         contentResolver: ContentResolver
     ): Result {
-        if (seen.contains(mediaUri)) {
-            emitDiscardedLog { "already seen" }
-            return Result.AlreadySeen
-        }
-
+        // Fetch MediaStoreColumnData; exit if impossible
         val columnData =
             MediaStoreColumnData.fetch(mediaUri, contentResolver)
                 ?: return Result.CouldntFetchMediaStoreColumnData
 
+        // Exit if file is pending
         if (columnData.isPending) {
             emitDiscardedLog { "pending" }
             return Result.FileIsPending
         }
 
+        // Create SeenParameters & exit if in seenParametersCache to avoid expensive recomputation of content hash
+        val seenParameters = SeenParameters(uri = mediaUri, fileSize = columnData.size)
+        if (seenParametersCache.contains(seenParameters)) {
+            emitDiscardedLog { "already seen" }
+            return Result.AlreadySeen
+        }
+
         val sha256 = try {
-            measureTimedValue {
-                columnData.getFile().contentHash(sha256MessageDigest)
-            }
-                .also { i { "SHA256 ($mediaUri) = ${it.value}/nComputation took ${it.duration}" } }
-                .value
+            columnData.getFile().contentHash(sha256MessageDigest)
+                .also { i { "SHA256 ($mediaUri) = $it" } }
+//            measureTimedValue {
+//                columnData.getFile().contentHash(sha256MessageDigest)
+//            }
+//                .also { i { "SHA256 ($mediaUri) = ${it.value}/nComputation took ${it.duration}" } }
+//                .value
         } catch (e: FileNotFoundException) {
             emitDiscardedLog(e::toString)
             return Result.FileNotFoundException
         }
 
-        seen.add(mediaUri)
+        seenParametersCache.add(seenParameters)
         return Result.Success(
             MediaStoreFile(
                 uri = mediaUri,

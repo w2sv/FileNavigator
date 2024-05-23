@@ -35,60 +35,67 @@ internal abstract class FileObserver(
         uri ?: return
 
         val changeObservationDateTime = LocalDateTime.now()
+        val manualMoveCandidate by lazy {
+            ManualMoveCandidate(
+                uri = uri,
+                changeObservationDateTime = changeObservationDateTime
+            )
+        }
+        val mediaStoreFileProvisionResult = mediaStoreFileProvider.getMediaStoreFileIfNotPendingAndNotAlreadySeen(
+            mediaUri = uri,
+            contentResolver = contentResolver
+        )
 
-        when (val result =
-            mediaStoreFileProvider.getMediaStoreFileIfNotPending(uri, contentResolver)) {
+        when (mediaStoreFileProvisionResult) {
             is MediaStoreFileProvider.Result.Success -> {
                 when {
-                    latestCutCandidate?.matches(
-                        other = CutPasteCandidate(
-                            uri = uri,
-                            changeObservationDateTime = changeObservationDateTime
-                        ),
-                        milliSecondsThreshold = 500
-                    ) == true -> {
-                        cache.add(result.mediaStoreFile)
-                        emitDiscardedLog { "Move" }
+                    matchesLatestManualMoveCandidate(manualMoveCandidate) -> {
+                        seenMediaStoreFiles.add(mediaStoreFileProvisionResult.mediaStoreFile)
+                        emitDiscardedLog { "Manually moved file" }
                     }
 
-                    !result.mediaStoreFile.columnData.recentlyAdded -> emitDiscardedLog { "not recently added" }
-
-                    cache.any { it.isIdenticalFileAs(result.mediaStoreFile) } -> emitDiscardedLog { "identical file in cache" }
+                    seenMediaStoreFiles.any { it.isIdenticalFileAs(mediaStoreFileProvisionResult.mediaStoreFile) } -> emitDiscardedLog { "Identical file in cache" }
 
                     else -> {
-                        getMoveFileIfMatching(result.mediaStoreFile)
+                        getMoveFileIfMatchingConstraints(mediaStoreFileProvisionResult.mediaStoreFile)
                             ?.let {
                                 i { "Calling onNewNavigatableFileListener on $it" }
                                 onNewMoveFileListener(it)
                             }
 
-                        cache.add(result.mediaStoreFile)
-                        i { "Added ${result.mediaStoreFile} to cache" }
+                        seenMediaStoreFiles.add(mediaStoreFileProvisionResult.mediaStoreFile)
+                        i { "Added ${mediaStoreFileProvisionResult.mediaStoreFile} to cache" }
                     }
                 }
             }
 
-            else -> {
-                if (result is MediaStoreFileProvider.Result.CouldntFetchMediaStoreColumnData) {
-                    latestCutCandidate = CutPasteCandidate(uri, changeObservationDateTime)
-                }
+            is MediaStoreFileProvider.Result.CouldntFetchMediaStoreColumnData -> {
+                latestManualMoveCandidate = manualMoveCandidate
             }
+
+            else -> Unit
         }
     }
 
-    private val cache =
+    private val seenMediaStoreFiles =
         EvictingQueue.create<MediaStoreFile>(5)
 
-    private var latestCutCandidate: CutPasteCandidate? = null
+    private var latestManualMoveCandidate: ManualMoveCandidate? = null
 
-    protected abstract fun getMoveFileIfMatching(
+    private fun matchesLatestManualMoveCandidate(candidate: ManualMoveCandidate): Boolean =
+        latestManualMoveCandidate?.matches(
+            other = candidate,
+            milliSecondsThreshold = 500
+        ) == true
+
+    protected abstract fun getMoveFileIfMatchingConstraints(
         mediaStoreFile: MediaStoreFile
     ): MoveFile?
 }
 
-private data class CutPasteCandidate(val uri: Uri, val changeObservationDateTime: LocalDateTime) {
+private data class ManualMoveCandidate(val uri: Uri, val changeObservationDateTime: LocalDateTime) {
 
-    fun matches(other: CutPasteCandidate, milliSecondsThreshold: Int): Boolean =
+    fun matches(other: ManualMoveCandidate, milliSecondsThreshold: Int): Boolean =
         uri != other.uri && changeObservationDateTime.milliSecondsTo(other.changeObservationDateTime) < milliSecondsThreshold
 }
 
