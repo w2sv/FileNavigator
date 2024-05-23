@@ -56,7 +56,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            isDebuggable = true
+            // isDebuggable = true
             signingConfig = signingConfigs.getByName("release")
         }
     }

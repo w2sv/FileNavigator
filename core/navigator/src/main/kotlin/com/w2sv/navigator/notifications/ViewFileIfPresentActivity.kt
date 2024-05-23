@@ -29,7 +29,7 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
                         mediaUri,
                         mimeType
                     )
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             )
         } else {
             showToast(MoveException.MoveFileNotFound.toastProperties)
