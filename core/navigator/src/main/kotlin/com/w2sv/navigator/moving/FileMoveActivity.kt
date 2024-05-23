@@ -52,7 +52,6 @@ internal class FileMoveActivity : ComponentActivity() {
 
     private val viewModel by viewModels<ViewModel>()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

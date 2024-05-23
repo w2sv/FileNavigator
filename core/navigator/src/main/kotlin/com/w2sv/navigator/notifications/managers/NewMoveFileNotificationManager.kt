@@ -31,7 +31,7 @@ import com.w2sv.navigator.moving.MoveFile
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.NotificationResourcesCleanupBroadcastReceiver
-import com.w2sv.navigator.notifications.ViewFileIfPresentBroadcastReceiver
+import com.w2sv.navigator.notifications.ViewFileIfPresentActivity
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -217,11 +217,11 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun getViewFilePendingIntent(requestCode: Int)
                     : PendingIntent =
-                PendingIntent.getBroadcast(
+                PendingIntent.getActivity(
                     context,
                     requestCode,
-                    ViewFileIfPresentBroadcastReceiver.intent(
-                        context = context.applicationContext,
+                    ViewFileIfPresentActivity.makeRestartActivityIntent(
+                        context = context,
                         mediaUri = args.moveFile.mediaStoreFile.uri,
                         absPath = args.moveFile.mediaStoreFile.columnData.absPath,
                         mimeType = args.moveFile.source.fileType.simpleStorageMediaType.mimeType,

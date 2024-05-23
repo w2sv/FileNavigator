@@ -1,9 +1,11 @@
 package com.w2sv.navigator.notifications
 
-import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import androidx.activity.ComponentActivity
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.common.utils.showToast
 import com.w2sv.navigator.moving.MoveException
@@ -11,32 +13,32 @@ import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import slimber.log.i
 import java.io.File
 
-internal class ViewFileIfPresentBroadcastReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context?, intent: Intent?) {
-        i { "ViewFileIfPresentBroadcastReceiver.onReceive" }
-        if (context == null || intent == null) return
+internal class ViewFileIfPresentActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         val mediaUri = intent.getParcelableCompat<Uri>(Extra.MEDIA_URI)
         val mimeType = intent.getStringExtra(Extra.MIME_TYPE)
         val absPath = intent.getStringExtra(Extra.ABS_PATH)!!
 
         if (File(absPath).exists()) {
-            context.applicationContext.startActivity(
+            startActivity(
                 Intent()
                     .setAction(Intent.ACTION_VIEW)
                     .setDataAndType(
                         mediaUri,
                         mimeType
                     )
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)  // Resolves "java.lang.RuntimeException: Unable to start receiver com.w2sv.navigator.notifications.ViewFileIfPresentBroadcastReceiver: android.util.AndroidRuntimeException: Calling startActivity() from outside of an Activity  context requires the FLAG_ACTIVITY_NEW_TASK flag. Is this really what you want?"
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         } else {
-            context.showToast(MoveException.MoveFileNotFound.toastProperties)
+            showToast(MoveException.MoveFileNotFound.toastProperties)
             NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
-                context = context,
+                context = this,
                 intent = intent
             )
         }
+        finishAndRemoveTask()
     }
 
     private data object Extra {
@@ -49,14 +51,19 @@ internal class ViewFileIfPresentBroadcastReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        fun intent(
+        fun makeRestartActivityIntent(
             context: Context,
             mediaUri: Uri,
             absPath: String,
             mimeType: String,
             notificationResources: NotificationResources
         ): Intent =
-            Intent(context, ViewFileIfPresentBroadcastReceiver::class.java)
+            Intent.makeRestartActivityTask(
+                ComponentName(
+                    context,
+                    ViewFileIfPresentActivity::class.java
+                )
+            )
                 .putExtra(Extra.MIME_TYPE, mimeType)
                 .putExtra(Extra.MEDIA_URI, mediaUri)
                 .putExtra(Extra.ABS_PATH, absPath)

@@ -19,7 +19,7 @@ class PowerSaveModeChangedReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action != PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) return
 
-        i { "Received intent $intent" }
+        i { "Received makeRestartActivityIntent $intent" }
 
         context?.run {
             when (powerManager.isPowerSaveMode) {
