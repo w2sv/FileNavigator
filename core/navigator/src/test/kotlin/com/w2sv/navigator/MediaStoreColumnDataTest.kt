@@ -2,12 +2,7 @@ package com.w2sv.navigator
 
 import com.w2sv.navigator.utils.TestInstancesProvider
 import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertFalse
-import junit.framework.TestCase.assertTrue
 import org.junit.Test
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 internal class MediaStoreColumnDataTest {
 

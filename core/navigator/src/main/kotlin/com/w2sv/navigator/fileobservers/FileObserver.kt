@@ -41,10 +41,11 @@ internal abstract class FileObserver(
                 changeObservationDateTime = changeObservationDateTime
             )
         }
-        val mediaStoreFileProvisionResult = mediaStoreFileProvider.getMediaStoreFileIfNotPendingAndNotAlreadySeen(
-            mediaUri = uri,
-            contentResolver = contentResolver
-        )
+        val mediaStoreFileProvisionResult =
+            mediaStoreFileProvider.getMediaStoreFileIfNotPendingAndNotAlreadySeen(
+                mediaUri = uri,
+                contentResolver = contentResolver
+            )
 
         when (mediaStoreFileProvisionResult) {
             is MediaStoreFileProvider.Result.Success -> {

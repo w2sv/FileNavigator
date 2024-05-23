@@ -10,7 +10,6 @@ import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.common.utils.showToast
 import com.w2sv.navigator.moving.MoveException
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
-import slimber.log.i
 import java.io.File
 
 internal class ViewFileIfPresentActivity : ComponentActivity() {
