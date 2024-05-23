@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Handler
-import android.os.HandlerThread
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.generic.milliSecondsTo
 import com.w2sv.domain.model.FileType

@@ -18,5 +18,4 @@
     <string name="file_already_at_selected_location">File already at selected location!</string>
     <string name="to">to /%1$s</string>
     <string name="download">Download</string>
-    <string name="name">Name</string>
 </resources>
