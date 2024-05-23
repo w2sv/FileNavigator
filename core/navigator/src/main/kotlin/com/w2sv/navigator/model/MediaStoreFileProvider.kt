@@ -34,9 +34,13 @@ internal class MediaStoreFileProvider {
             MediaStoreColumnData.fetch(mediaUri, contentResolver)
                 ?: return Result.CouldntFetchMediaStoreColumnData
 
-        // Exit if file is pending
+        // Exit if file is pending or trashed
         if (columnData.isPending) {
             emitDiscardedLog { "pending" }
+            return Result.FileIsPending
+        }
+        if (columnData.isTrashed) {
+            emitDiscardedLog { "trashed" }
             return Result.FileIsPending
         }
 

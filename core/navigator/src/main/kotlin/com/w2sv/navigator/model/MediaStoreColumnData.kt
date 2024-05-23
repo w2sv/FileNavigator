@@ -33,7 +33,8 @@ internal data class MediaStoreColumnData(
     val name: String,
     val dateTimeAdded: LocalDateTime,
     val size: Long,  // Seems to be always 0 on images
-    val isPending: Boolean
+    val isPending: Boolean,
+    val isTrashed: Boolean
 ) : Parcelable {
 
 //    @IgnoredOnParcel
@@ -102,6 +103,7 @@ internal data class MediaStoreColumnData(
                         MediaStore.MediaColumns.DATE_ADDED,
                         MediaStore.MediaColumns.SIZE,
                         MediaStore.MediaColumns.IS_PENDING,
+                        MediaStore.MediaColumns.IS_TRASHED,
                     )
                 ) {
                     MediaStoreColumnData(
@@ -113,7 +115,8 @@ internal data class MediaStoreColumnData(
                             it.getLongOrThrow(MediaStore.MediaColumns.DATE_ADDED)
                         ),
                         size = it.getLongOrThrow(MediaStore.MediaColumns.SIZE),
-                        isPending = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_PENDING)
+                        isPending = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_PENDING),
+                        isTrashed = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_TRASHED),
                     )
                         .also {
                             i { it.toString() }
