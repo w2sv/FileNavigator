@@ -30,7 +30,7 @@ class FileNavigator : UnboundService() {
     internal lateinit var navigatorRepository: NavigatorRepository
 
     @Inject
-    internal lateinit var statusChanged: StatusChanged
+    internal lateinit var status: Status
 
     @Inject
     internal lateinit var fileNavigatorIsRunningNotificationManager: FileNavigatorIsRunningNotificationManager
@@ -51,7 +51,6 @@ class FileNavigator : UnboundService() {
         if (!contentObserverHandlerThread.isAlive) {
             contentObserverHandlerThread.start()
         }
-        val handler = Handler(contentObserverHandlerThread.looper)
         return getFileObservers(
             fileTypeEnablementMap = navigatorRepository.fileTypeEnablementMap.mapValuesToCurrentValue(),
             mediaFileSourceEnablementMap = navigatorRepository.mediaFileSourceEnablementMap.mapValuesToCurrentValue(),
@@ -66,7 +65,7 @@ class FileNavigator : UnboundService() {
                     )
                 }
             },
-            handler
+            handler = Handler(contentObserverHandlerThread.looper)
         )
             .onEach {
                 contentResolver.registerContentObserver(
@@ -111,14 +110,14 @@ class FileNavigator : UnboundService() {
         )
 
         fileObservers = getRegisteredFileObservers()
-        statusChanged.emitNewStatus(true)
+        status.emitNewStatus(true)
     }
 
     private fun stop() {
         i { "FileNavigator.stop" }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        statusChanged.emitNewStatus(false)
+        status.emitNewStatus(false)
     }
 
     private fun unregisterFileObservers() {
@@ -141,7 +140,7 @@ class FileNavigator : UnboundService() {
     }
 
     @Singleton
-    class StatusChanged @Inject constructor(@GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope) {
+    class Status @Inject constructor(@GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope) {
         val isRunning get() = _isRunning.asSharedFlow()
         private val _isRunning: MutableSharedFlow<Boolean> = MutableSharedFlow()
 

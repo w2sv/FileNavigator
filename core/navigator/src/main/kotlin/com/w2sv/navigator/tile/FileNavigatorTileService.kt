@@ -31,19 +31,26 @@ internal class FileNavigatorTileService : TileService() {
     internal lateinit var scope: CoroutineScope
 
     @Inject
-    internal lateinit var fileNavigatorStatusChanged: FileNavigator.StatusChanged
+    internal lateinit var fileNavigatorStatus: FileNavigator.Status
 
+    /**
+     * Called every time the quick tile pan is displayed.
+     */
     override fun onStartListening() {
         super.onStartListening()
 
         i { "onStartListening" }
 
-        if (!isServiceRunning<FileNavigator>()) {
-            updateTileState(Tile.STATE_INACTIVE)
+        // Update tile state reactively on navigator status change
+        scope.collectFromFlow(fileNavigatorStatus.isRunning) { isRunning ->
+            updateTileState(if (isRunning) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE)
         }
 
-        scope.collectFromFlow(fileNavigatorStatusChanged.isRunning) { isRunning ->
-            updateTileState(if (isRunning) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE)
+        // If process was killed by removing the app from recents, fileNavigatorStatusChanged will not fire.
+        // For that case, update tile state non-reactively, to make sure tile state and navigator state are in sync, as
+        // it'd make for a horrible user experience if they weren't.
+        if (!isServiceRunning<FileNavigator>()) {
+            updateTileState(Tile.STATE_INACTIVE)
         }
     }
 
@@ -56,6 +63,7 @@ internal class FileNavigatorTileService : TileService() {
             }
 
             Tile.STATE_INACTIVE -> {
+                // Start navigator if all required permissions are granted, otherwise launch MainActivity, which will invoke the 'Required Permissions' screen
                 if (isExternalStorageManger && hasPermission(Manifest.permission.POST_NOTIFICATIONS)) {
                     showDialogAndLaunchNavigator()
                 } else {
@@ -75,6 +83,13 @@ internal class FileNavigatorTileService : TileService() {
         }
     }
 
+    /**
+     * Starting from Sdk Version 31 (Android 12), foreground services can't be started from the background.
+     * Therefore show a Dialog, which promotes the app to a foreground process state, and start the FGS while it's showing.
+     *
+     * https://developer.android.com/develop/background-work/services/foreground-services#bg-access-restrictions
+     * https://stackoverflow.com/questions/77331327/start-a-foreground-service-from-a-quick-tile-on-android-targetsdkversion-34-and
+     */
     private fun showDialogAndLaunchNavigator() {
         showDialog(
             Dialog(this)
@@ -82,7 +97,7 @@ internal class FileNavigatorTileService : TileService() {
                     setTheme(com.afollestad.materialdialogs.R.style.MD_Dark)
                     setContentView(R.layout.tile_dialog)
                     setOnShowListener {
-                        scope.launchDelayed(250) {
+                        scope.launchDelayed(250) {  // Add small delay to make the dialog visible for a bit longer than merely a couple of milliseconds for UX
                             FileNavigator.start(this@FileNavigatorTileService)
                             dismiss()
                         }

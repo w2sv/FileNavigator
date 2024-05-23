@@ -24,7 +24,7 @@ typealias MakeSnackbarVisuals = (Context) -> SnackbarVisuals
 @HiltViewModel
 class NavigatorViewModel @Inject constructor(
     navigatorRepository: NavigatorRepository,
-    fileNavigatorStatusChanged: FileNavigator.StatusChanged,
+    fileNavigatorStatus: FileNavigator.Status,
     @ApplicationContext context: Context
 ) : ViewModel() {
 
@@ -36,7 +36,7 @@ class NavigatorViewModel @Inject constructor(
         MutableStateFlow(context.isServiceRunning<FileNavigator>())
 
     init {
-        viewModelScope.collectFromFlow(fileNavigatorStatusChanged.isRunning) {
+        viewModelScope.collectFromFlow(fileNavigatorStatus.isRunning) {
             _isRunning.value = it
         }
     }
