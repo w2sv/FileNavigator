@@ -3,15 +3,14 @@ package com.w2sv.navigator.notifications.managers
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.w2sv.core.navigator.R
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
+import com.w2sv.navigator.shared.mainActivityPendingIntent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -42,14 +41,7 @@ internal class FileNavigatorIsRunningNotificationManager @Inject constructor(
                 foregroundServiceBehavior = NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE
 
                 setContentIntent(
-                    PendingIntent.getActivity(
-                        context,
-                        1,
-                        Intent.makeRestartActivityTask(
-                            ComponentName(context, "com.w2sv.filenavigator.MainActivity")
-                        ),
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
+                    mainActivityPendingIntent(context)
                 )
 
                 // add stop action

@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">File Navigator</string>
     <string name="move">Move</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
     <string name="stop">Stop</string>
