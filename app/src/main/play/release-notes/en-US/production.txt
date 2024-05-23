@@ -1,9 +1,10 @@
-- Fixes:
-    - Navigation bar button colors
-    - 'Move' notification action behaviour after file has already been manually moved
-    - File Type column sorting
+- Notification changes:
+  - No destination picking or file viewing if file has been moved/deleted in the meantime
+  - No triggering on trashed files
+  - Fixed missing trigger on long-written files
+  - Display image & video previews
+  - GIFs are titled as such
+- Fixed File Type column sorting
+- Navigation bar button colors align with theme
 - Slightly improved drawer UI
 - Improved navigator performance
-- Notification changes:
-    - Image & video previews are now displayed
-    - GIFs are now titled as such
