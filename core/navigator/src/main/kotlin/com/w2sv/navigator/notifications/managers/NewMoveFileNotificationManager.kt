@@ -43,7 +43,7 @@ import javax.inject.Singleton
 internal class NewMoveFileNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
-    private val navigatorRepository: NavigatorRepository,
+    navigatorRepository: NavigatorRepository,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope
 ) : MultiInstanceAppNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
     notificationChannel = AppNotificationChannel.NewNavigatableFile.getNotificationChannel(context),
@@ -61,18 +61,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     )
 
     private val sourceToLastMoveDestinationStateFlow =
-        mutableMapOf<FileType.Source, StateFlow<Uri?>>()
-
-    private fun getLastMoveDestination(source: FileType.Source): Uri? =
-        sourceToLastMoveDestinationStateFlow.getOrPut(
-            key = source,
-            defaultValue = {
-                navigatorRepository
-                    .getLastMoveDestinationFlow(source)
-                    .stateInWithSynchronousInitial(scope)
-            }
-        )
-            .value
+        SourceToLastMoveDestinationStateFlow(navigatorRepository, scope)
 
     override fun getBuilder(args: BuilderArgs): Builder =
         object : Builder() {
@@ -168,22 +157,23 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 
                 // Add quickMoveAction if lastMoveDestination present.
-                getLastMoveDestination(args.moveFile.source)?.let { lastMoveDestination ->
-                    // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
-                    getDocumentUriFileName(
-                        documentUri = lastMoveDestination,
-                        context = context
-                    )
-                        ?.let { fileName ->
-                            addAction(
-                                getQuickMoveAction(
-                                    requestCode = requestCodeIterator.next(),
-                                    lastMoveDestination = lastMoveDestination,
-                                    lastMoveDestinationFileName = fileName
+                sourceToLastMoveDestinationStateFlow.getLastMoveDestination(args.moveFile.source)
+                    ?.let { lastMoveDestination ->
+                        // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
+                        getDocumentUriFileName(
+                            documentUri = lastMoveDestination,
+                            context = context
+                        )
+                            ?.let { fileName ->
+                                addAction(
+                                    getQuickMoveAction(
+                                        requestCode = requestCodeIterator.next(),
+                                        lastMoveDestination = lastMoveDestination,
+                                        lastMoveDestinationFileName = fileName
+                                    )
                                 )
-                            )
-                        }
-                }
+                            }
+                    }
 
                 setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
 
@@ -305,4 +295,22 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             }
         }
     }
+}
+
+private class SourceToLastMoveDestinationStateFlow(
+    private val navigatorRepository: NavigatorRepository,
+    private val scope: CoroutineScope,
+    private val mutableMap: MutableMap<FileType.Source, StateFlow<Uri?>> = mutableMapOf()
+) : Map<FileType.Source, StateFlow<Uri?>> by mutableMap {
+
+    fun getLastMoveDestination(source: FileType.Source): Uri? =
+        mutableMap.getOrPut(
+            key = source,
+            defaultValue = {
+                navigatorRepository
+                    .getLastMoveDestinationFlow(source)
+                    .stateInWithSynchronousInitial(scope)
+            }
+        )
+            .value
 }
