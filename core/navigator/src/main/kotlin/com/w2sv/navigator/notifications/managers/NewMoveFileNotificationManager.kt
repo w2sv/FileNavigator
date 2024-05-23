@@ -23,6 +23,7 @@ import com.w2sv.common.utils.slashPrefixed
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.repository.NavigatorRepository
+import com.w2sv.navigator.model.MediaStoreColumnData
 import com.w2sv.navigator.moving.FileMoveActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.MoveFile
@@ -82,6 +83,45 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 return super.build()
             }
 
+            private fun getMoveFileTitle(): String =
+                when (val fileType = args.moveFile.source.fileType) {
+                    is FileType.Media -> {
+                        if (isGif(fileType, args.moveFile.mediaStoreFile.columnData)) {
+                            context.getString(R.string.gif)
+                        } else {
+                            when (val sourceKind =
+                                args.moveFile.mediaStoreFile.columnData.getSourceKind()) {
+                                FileType.Source.Kind.Recording, FileType.Source.Kind.Screenshot -> context.getString(
+                                    sourceKind.labelRes
+                                )
+
+                                FileType.Source.Kind.Camera -> context.getString(
+                                    when (args.moveFile.source.fileType) {
+                                        FileType.Image -> com.w2sv.core.domain.R.string.photo
+                                        FileType.Video -> com.w2sv.core.domain.R.string.video
+                                        else -> throw Error()
+                                    }
+                                )
+
+                                FileType.Source.Kind.Download -> "${context.getString(fileType.titleRes)} ${
+                                    context.getString(R.string.download)
+                                }"
+
+                                FileType.Source.Kind.OtherApp -> "${args.moveFile.mediaStoreFile.columnData.dirName} ${
+                                    context.getString(
+                                        fileType.titleRes
+                                    )
+                                }"
+                                    .slashPrefixed()
+                            }
+                        }
+                    }
+
+                    is FileType.NonMedia -> {
+                        context.getString(args.moveFile.source.fileType.titleRes)
+                    }
+                }
+
             private fun setContent() {
                 val bigPictureStyleSet = setBigPictureStyleIfImage()
                 if (!bigPictureStyleSet) {
@@ -113,41 +153,6 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         args.moveFile.mediaStoreFile.columnData.volumeRelativeDirPath.removeSlashSuffix()
                             .slashPrefixed()
                     )
-                }
-
-            private fun getMoveFileTitle(): String =
-                when (val fileType = args.moveFile.source.fileType) {
-                    is FileType.Media -> {
-                        when (val sourceKind =
-                            args.moveFile.mediaStoreFile.columnData.getSourceKind()) {
-                            FileType.Source.Kind.Recording, FileType.Source.Kind.Screenshot -> context.getString(
-                                sourceKind.labelRes
-                            )
-
-                            FileType.Source.Kind.Camera -> context.getString(
-                                when (args.moveFile.source.fileType) {
-                                    FileType.Image -> com.w2sv.core.domain.R.string.photo
-                                    FileType.Video -> com.w2sv.core.domain.R.string.video
-                                    else -> throw Error()
-                                }
-                            )
-
-                            FileType.Source.Kind.Download -> "${context.getString(fileType.titleRes)} ${
-                                context.getString(R.string.download)
-                            }"
-
-                            FileType.Source.Kind.OtherApp -> "${args.moveFile.mediaStoreFile.columnData.dirName} ${
-                                context.getString(
-                                    fileType.titleRes
-                                )
-                            }"
-                                .slashPrefixed()
-                        }
-                    }
-
-                    is FileType.NonMedia -> {
-                        context.getString(args.moveFile.source.fileType.titleRes)
-                    }
                 }
 
             private fun setActionsAndIntents() {
@@ -296,6 +301,9 @@ internal class NewMoveFileNotificationManager @Inject constructor(
         }
     }
 }
+
+private fun isGif(fileType: FileType, mediaStoreColumnData: MediaStoreColumnData): Boolean =
+    fileType is FileType.Image && mediaStoreColumnData.fileExtension.lowercase() == "gif"
 
 private class SourceToLastMoveDestinationStateFlow(
     private val navigatorRepository: NavigatorRepository,
