@@ -28,7 +28,7 @@ class NavigatorConfiguration(
     private val emitMakeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
     onStateSynced: () -> Unit,
 ) {
-    val sortedFileTypes: SnapshotStateList<FileType> =
+    val sortedFileTypes: SnapshotStateList<FileType> by lazy {
         FileType.values
             .toMutableStateList()
             .apply {
@@ -41,13 +41,16 @@ class NavigatorConfiguration(
                     }
                 )
             }
+    }
 
     val firstDisabledFileType: StateFlow<FileType?> get() = _firstDisabledFileType.asStateFlow()
-    private val _firstDisabledFileType = MutableStateFlow(
-        sortedFileTypes.firstDisabled {
-            navigatorRepository.fileTypeEnablementMap.getValue(it).value
-        }
-    )
+    private val _firstDisabledFileType by lazy {
+        MutableStateFlow(
+            sortedFileTypes.firstDisabled {
+                navigatorRepository.fileTypeEnablementMap.getValue(it).value
+            }
+        )
+    }
 
     val fileEnablementMap = ReversibleStateMap(
         appliedStateMap = navigatorRepository.fileTypeEnablementMap,
