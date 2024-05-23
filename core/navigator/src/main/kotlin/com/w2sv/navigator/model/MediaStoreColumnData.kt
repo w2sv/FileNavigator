@@ -7,7 +7,6 @@ import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore
 import com.w2sv.androidutils.generic.localDateTimeFromUnixTimeStamp
-import com.w2sv.androidutils.generic.milliSecondsToNow
 import com.w2sv.common.utils.getBooleanOrThrow
 import com.w2sv.common.utils.getLongOrThrow
 import com.w2sv.common.utils.getStringOrThrow
@@ -40,23 +39,23 @@ internal data class MediaStoreColumnData(
 //    @IgnoredOnParcel
 //    val recentlyAdded = !addedBeforeForMoreThan(RECENTLY_ADDED_MS_THRESHOLD)
 
-    fun addedBeforeForMoreThan(ms: Long): Boolean =
-        dateTimeAdded.milliSecondsToNow() > ms
+//    fun addedBeforeForMoreThan(ms: Long): Boolean =
+//        dateTimeAdded.milliSecondsToNow() > ms
 
     @IgnoredOnParcel
     val fileExtension: String by lazy {
         name.substringAfterLast(".")
     }
 
-    @IgnoredOnParcel
-    val nonIncrementedNameWOExtension: String by lazy {
-        name
-            .substringBeforeLast(".")  // remove file extension
-            .replace(  // remove trailing file incrementation parentheses
-                Regex("\\(\\d+\\)$"),
-                ""
-            )
-    }
+//    @IgnoredOnParcel
+//    val nonIncrementedNameWOExtension: String by lazy {
+//        name
+//            .substringBeforeLast(".")  // remove file extension
+//            .replace(  // remove trailing file incrementation parentheses
+//                Regex("\\(\\d+\\)$"),
+//                ""
+//            )
+//    }
 
     @IgnoredOnParcel
     val dirName: String by lazy {
