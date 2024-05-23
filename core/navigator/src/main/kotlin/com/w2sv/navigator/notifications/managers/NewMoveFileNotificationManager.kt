@@ -6,7 +6,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.text.SpannedString
+import android.util.Size
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -23,7 +25,6 @@ import com.w2sv.common.utils.slashPrefixed
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.repository.NavigatorRepository
-import com.w2sv.navigator.model.MediaStoreColumnData
 import com.w2sv.navigator.moving.FileMoveActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.MoveFile
@@ -37,6 +38,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -86,7 +88,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             private fun getMoveFileTitle(): String =
                 when (val fileType = args.moveFile.source.fileType) {
                     is FileType.Media -> {
-                        if (isGif(fileType, args.moveFile.mediaStoreFile.columnData)) {
+                        if (isGif(args.moveFile)) {
                             context.getString(R.string.gif)
                         } else {
                             when (val sourceKind =
@@ -133,15 +135,38 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             }
 
             private fun setBigPictureStyleIfImage(): Boolean {
-                if (args.moveFile.source.fileType is FileType.Image) {
-                    context.contentResolver.loadBitmap(args.moveFile.mediaStoreFile.uri)?.let {
+                when (args.moveFile.source.fileType) {
+                    FileType.Image -> context.contentResolver.loadBitmap(args.moveFile.mediaStoreFile.uri)
+                    FileType.Video -> {
+                        try {
+                            context.contentResolver.loadThumbnail(
+                                args.moveFile.mediaStoreFile.uri,
+                                Size(512, 512),
+                                null
+                            )
+                        } catch (_: IOException) {
+                            null
+                        }
+                    }
+
+                    else -> null
+                }
+                    ?.let {
                         setStyle(
                             NotificationCompat.BigPictureStyle()
                                 .bigPicture(it)
+                                .run {  // .apply {} strangely not working here; possibly kotlin 2.0-related issue
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                        setContentDescription(
+                                            getContentText()
+                                        )
+                                        showBigPictureWhenCollapsed(true)
+                                    } else
+                                        this
+                                }
                         )
                         return true
                     }
-                }
                 return false
             }
 
@@ -302,8 +327,8 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     }
 }
 
-private fun isGif(fileType: FileType, mediaStoreColumnData: MediaStoreColumnData): Boolean =
-    fileType is FileType.Image && mediaStoreColumnData.fileExtension.lowercase() == "gif"
+private fun isGif(moveFile: MoveFile): Boolean =
+    moveFile.source.fileType is FileType.Image && moveFile.mediaStoreFile.columnData.fileExtension.lowercase() == "gif"
 
 private class SourceToLastMoveDestinationStateFlow(
     private val navigatorRepository: NavigatorRepository,
