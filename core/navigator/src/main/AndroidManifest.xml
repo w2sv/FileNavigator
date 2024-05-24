@@ -23,7 +23,7 @@
         </service>
 
         <service
-            android:name="com.w2sv.navigator.tile.FileNavigatorTileService"
+            android:name="com.w2sv.navigator.quicktile.FileNavigatorTileService"
             android:exported="true"
             android:icon="@drawable/ic_app_logo_24"
             android:label="@string/app_name"

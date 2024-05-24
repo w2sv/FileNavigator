@@ -1,4 +1,4 @@
-package com.w2sv.navigator.tile
+package com.w2sv.navigator.quicktile
 
 import android.Manifest
 import android.annotation.SuppressLint
