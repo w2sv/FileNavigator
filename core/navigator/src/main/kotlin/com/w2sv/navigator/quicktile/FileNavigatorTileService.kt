@@ -33,6 +33,12 @@ internal class FileNavigatorTileService : TileService() {
     @Inject
     internal lateinit var fileNavigatorStatus: FileNavigator.Status
 
+    override fun onTileAdded() {
+        super.onTileAdded()
+
+        updateTileState(if (isServiceRunning<FileNavigator>()) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE)
+    }
+
     /**
      * Called every time the quick tile pan is expanded. onStopListening behaves vice-versa.
      */
