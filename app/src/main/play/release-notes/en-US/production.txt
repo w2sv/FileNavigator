@@ -1,10 +1,2 @@
-- Notification changes:
-  - No destination picking or file viewing if file has been moved/deleted in the meantime
-  - No triggering on trashed files
-  - Fixed missing trigger on long-written files
-  - Display image & video previews
-  - GIFs are titled as such
-- Fixed File Type column sorting
-- Navigation bar button colors align with theme
-- Slightly improved drawer UI
-- Improved navigator performance
+- Added a quick tile for enabling/disabling the navigator!
+- Reduced app size
