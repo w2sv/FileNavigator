@@ -24,8 +24,6 @@ android {
         versionCode = project.findProperty("versionCode")!!.toString().toInt()
         versionName = version.toString()
 
-        // Store bundles as "{versionName}-{buildFlavor}.aab"
-//        archivesName = versionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
