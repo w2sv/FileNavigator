@@ -6,43 +6,26 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.materialkolor.PaletteStyle
 import com.materialkolor.rememberDynamicColorScheme
-import com.w2sv.domain.model.Theme
+import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
 
 private val seedColor = Color(color = 0xFF00696E)
-
-@Composable
-fun rememberUseDarkTheme(theme: Theme): State<Boolean> {
-    val systemInDarkTheme = isSystemInDarkTheme()
-    return remember(theme, systemInDarkTheme) {
-        mutableStateOf(
-            when (theme) {
-                Theme.Light -> false
-                Theme.Dark -> true
-                Theme.Default -> systemInDarkTheme
-            }
-        )
-    }
-}
 
 @SuppressLint("NewApi")
 @Composable
 fun AppTheme(
-    useDynamicColors: Boolean = false,
-    useDarkTheme: Boolean = false,
+    useDarkTheme: Boolean = LocalUseDarkTheme.current,
     useAmoledBlackTheme: Boolean = false,
+    useDynamicColors: Boolean = false,
     context: Context = LocalContext.current,
     content: @Composable () -> Unit
 ) {

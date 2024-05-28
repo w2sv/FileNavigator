@@ -188,7 +188,10 @@ private fun AutoMoveBottomSheet(
         modifier = modifier,
         windowInsets = emptyWindowInsets,
     ) {
-        Row(modifier = Modifier.align(Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             FileTypeIcon(fileType = fileType, modifier = Modifier.padding(horizontal = 16.dp))
             Text(
                 text = "${stringResource(id = fileType.titleRes)} Auto Move",

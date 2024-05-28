@@ -14,7 +14,8 @@ internal object TestInstancesProvider {
         volumeRelativeDirPath: String = "",
         dateTimeAdded: LocalDateTime = LocalDateTime.now(),
         size: Long = 0L,
-        isPending: Boolean = false
+        isPending: Boolean = false,
+        isTrashed: Boolean = false
     ): MediaStoreColumnData =
         MediaStoreColumnData(
             rowId = rowId,
@@ -24,6 +25,7 @@ internal object TestInstancesProvider {
             dateTimeAdded = dateTimeAdded,
             size = size,
             isPending = isPending,
+            isTrashed = isTrashed
         )
 
     fun getMediaStoreFile(): MediaStoreFile =

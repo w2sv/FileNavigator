@@ -24,8 +24,6 @@ android {
         versionCode = project.findProperty("versionCode")!!.toString().toInt()
         versionName = version.toString()
 
-        // Store bundles as "{versionName}-{buildFlavor}.aab"
-//        archivesName = versionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -56,6 +54,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // isDebuggable = true
             signingConfig = signingConfigs.getByName("release")
         }
     }
@@ -111,10 +110,11 @@ play {
 }
 
 dependencies {
-    implementation(projects.core.datastorage)
     implementation(projects.core.domain)
     implementation(projects.core.common)
     implementation(projects.core.navigator)
+    implementation(projects.core.datastore)
+    implementation(projects.core.database)
 
     implementation(libs.androidutils)
     implementation(libs.kotlinutils)

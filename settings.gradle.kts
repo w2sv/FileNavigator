@@ -20,7 +20,8 @@ dependencyResolutionManagement {
 rootProject.name = "FileNavigator"
 
 include(":app")
-include(":core:datastorage")
+include(":core:datastore")
+include(":core:database")
 include(":core:domain")
 include(":core:common")
 include(":core:navigator")

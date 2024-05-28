@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">File Navigator</string>
     <string name="move">Move</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
     <string name="stop">Stop</string>
@@ -60,7 +59,7 @@
     <string name="delete_entry">Delete entry</string>
     <string name="applied_navigator_settings">Applied navigator settings.</string>
     <string name="support_the_app">Support the app</string>
-    <string name="report_a_bug">Report a bug / request a feature</string>
+    <string name="report_a_bug_request_a_feature">Report a bug / request a feature</string>
     <string name="source">Source</string>
     <string name="use_colors_derived_from_your_wallpaper">Use colors derived from your wallpaper</string>
     <string name="reset">Reset</string>
@@ -74,4 +73,5 @@
     <string name="required_permissions">Required Permissions</string>
     <string name="auto">Auto Move</string>
     <string name="add_auto_move_destination">Add auto move destination</string>
+    <string name="rate_the_app_in_the_playstore">Rate the app in the PlayStore</string>
 </resources>

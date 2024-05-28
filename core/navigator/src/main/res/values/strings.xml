@@ -9,14 +9,15 @@
 
     <string name="new_">New</string>
     <string name="new_navigatable_file">New navigatable file</string>
-    <string name="couldnt_move_manage_all_files_permission_missing">Couldn\'t move: Manage all files permission missing!</string>
+    <string name="couldnt_move_manage_all_files_permission_missing">Couldn\'t move: Manage all files permission missing</string>
     <string name="couldnt_move_file_internal_error">Couldn\'t move: Internal Error</string>
-    <string name="couldn_t_find_move_file">Couldn\'t find file!</string>
+    <string name="file_has_already_been_moved_or_deleted">File has already been moved or deleted</string>
     <string name="navigatable_file">%1$d navigatable file</string>
     <string name="navigatable_files">%1$d navigatable files</string>
     <string name="you_will_receive_a_notification_when_a_new_file_corresponding_to_your_selected_file_types_enters_the_file_system">You will be notified when a new file corresponding to the selected file types enters the file system.</string>
-    <string name="file_already_at_selected_location">File already at selected location!</string>
+    <string name="file_already_at_selected_location">File is already at the selected location</string>
     <string name="to">to /%1$s</string>
     <string name="download">Download</string>
-    <string name="name">Name</string>
+    <string name="gif">GIF</string>
+    <string name="starting_navigator">Launching File Navigator…</string>
 </resources>

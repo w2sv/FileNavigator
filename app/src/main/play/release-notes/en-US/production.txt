@@ -1,15 +1,2 @@
-- UI Rework
-    - enabled edge-to-edge mode
-    - revised the color scheme
-    - added AMOLED black theme
-    - fixed Landscape mode layout
-    - & more
-Move destination selection changes:
-    - translucent activity background
-    - close the picker immediately after destination selection
-- Move history changes:
-    - fixed dates
-    - indicate which files aren't present anymore
-    - present files are now immediately viewable
-- Improved notifications
-- Countless performance improvements
+- Added a quick tile for enabling/disabling the navigator!
+- Reduced app size

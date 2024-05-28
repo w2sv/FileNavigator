@@ -27,7 +27,7 @@ internal class NonMediaFileObserver(
 
     override fun getLogIdentifier(): String = this.javaClass.simpleName
 
-    override fun getMoveFileIfMatching(
+    override fun getMoveFileIfMatchingConstraints(
         mediaStoreFile: MediaStoreFile
     ): MoveFile? =
         fileTypes

@@ -7,7 +7,6 @@ import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore
 import com.w2sv.androidutils.generic.localDateTimeFromUnixTimeStamp
-import com.w2sv.androidutils.generic.milliSecondsToNow
 import com.w2sv.common.utils.getBooleanOrThrow
 import com.w2sv.common.utils.getLongOrThrow
 import com.w2sv.common.utils.getStringOrThrow
@@ -20,7 +19,7 @@ import slimber.log.i
 import java.io.File
 import java.time.LocalDateTime
 
-private const val RECENTLY_ADDED_MS_THRESHOLD = 5_000L
+//private const val RECENTLY_ADDED_MS_THRESHOLD = 5_000L
 
 /**
  * @param volumeRelativeDirPath Relative dir path from the storage volume, e.g. "Documents/", "DCIM/Camera/".
@@ -32,30 +31,31 @@ internal data class MediaStoreColumnData(
     val volumeRelativeDirPath: String,
     val name: String,
     val dateTimeAdded: LocalDateTime,
-    val size: Long,  // Seems to be always 0
-    val isPending: Boolean
+    val size: Long,  // Seems to be always 0 on images
+    val isPending: Boolean,
+    val isTrashed: Boolean
 ) : Parcelable {
 
-    @IgnoredOnParcel
-    val recentlyAdded = !addedBeforeForMoreThan(RECENTLY_ADDED_MS_THRESHOLD)
+//    @IgnoredOnParcel
+//    val recentlyAdded = !addedBeforeForMoreThan(RECENTLY_ADDED_MS_THRESHOLD)
 
-    fun addedBeforeForMoreThan(ms: Long): Boolean =
-        dateTimeAdded.milliSecondsToNow() > ms
+//    fun addedBeforeForMoreThan(ms: Long): Boolean =
+//        dateTimeAdded.milliSecondsToNow() > ms
 
     @IgnoredOnParcel
     val fileExtension: String by lazy {
         name.substringAfterLast(".")
     }
 
-    @IgnoredOnParcel
-    val nonIncrementedNameWOExtension: String by lazy {
-        name
-            .substringBeforeLast(".")  // remove file extension
-            .replace(  // remove trailing file incrementation parentheses
-                Regex("\\(\\d+\\)$"),
-                ""
-            )
-    }
+//    @IgnoredOnParcel
+//    val nonIncrementedNameWOExtension: String by lazy {
+//        name
+//            .substringBeforeLast(".")  // remove file extension
+//            .replace(  // remove trailing file incrementation parentheses
+//                Regex("\\(\\d+\\)$"),
+//                ""
+//            )
+//    }
 
     @IgnoredOnParcel
     val dirName: String by lazy {
@@ -102,6 +102,7 @@ internal data class MediaStoreColumnData(
                         MediaStore.MediaColumns.DATE_ADDED,
                         MediaStore.MediaColumns.SIZE,
                         MediaStore.MediaColumns.IS_PENDING,
+                        MediaStore.MediaColumns.IS_TRASHED,
                     )
                 ) {
                     MediaStoreColumnData(
@@ -113,7 +114,8 @@ internal data class MediaStoreColumnData(
                             it.getLongOrThrow(MediaStore.MediaColumns.DATE_ADDED)
                         ),
                         size = it.getLongOrThrow(MediaStore.MediaColumns.SIZE),
-                        isPending = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_PENDING)
+                        isPending = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_PENDING),
+                        isTrashed = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_TRASHED),
                     )
                         .also {
                             i { it.toString() }

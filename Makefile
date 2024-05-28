@@ -38,12 +38,12 @@ build-and-publish:
 	@./gradlew check
 	@$(MAKE) clean  # Required as 'publishBundle' publishes all .aab's in specified archive dir
 
-	@$(MAKE) build-aab
-	@$(MAKE) build-apk
-
 	@git add .; git commit -m "$(VERSION)"; git push;
 
+	@$(MAKE) build-apk
 	@$(MAKE) create-gh-release
+
+	@$(MAKE) build-aab
 	@$(MAKE) publish-bundle
 
 create-gh-release:

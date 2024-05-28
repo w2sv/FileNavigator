@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
-import com.w2sv.androidutils.coroutines.mapValuesToCurrentValue
+import com.w2sv.androidutils.coroutines.mapValuesToFirstBlocking
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
@@ -30,17 +30,13 @@ class FileNavigator : UnboundService() {
     internal lateinit var navigatorRepository: NavigatorRepository
 
     @Inject
-    internal lateinit var statusChanged: StatusChanged
+    internal lateinit var status: Status
 
     @Inject
     internal lateinit var fileNavigatorIsRunningNotificationManager: FileNavigatorIsRunningNotificationManager
 
     @Inject
     internal lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
-
-    @Inject
-    @GlobalScope(AppDispatcher.IO)
-    lateinit var ioScope: CoroutineScope
 
     private lateinit var fileObservers: List<FileObserver>
 
@@ -51,10 +47,9 @@ class FileNavigator : UnboundService() {
         if (!contentObserverHandlerThread.isAlive) {
             contentObserverHandlerThread.start()
         }
-        val handler = Handler(contentObserverHandlerThread.looper)
         return getFileObservers(
-            fileTypeEnablementMap = navigatorRepository.fileTypeEnablementMap.mapValuesToCurrentValue(),
-            mediaFileSourceEnablementMap = navigatorRepository.mediaFileSourceEnablementMap.mapValuesToCurrentValue(),
+            fileTypeEnablementMap = navigatorRepository.fileTypeEnablementMap.mapValuesToFirstBlocking(),
+            mediaFileSourceEnablementMap = navigatorRepository.mediaFileSourceEnablementMap.mapValuesToFirstBlocking(),
             contentResolver = contentResolver,
             onNewNavigatableFileListener = { moveFile ->
                 // with scope because construction of inner class BuilderArgs requires inner class scope
@@ -66,7 +61,7 @@ class FileNavigator : UnboundService() {
                     )
                 }
             },
-            handler
+            handler = Handler(contentObserverHandlerThread.looper)
         )
             .onEach {
                 contentResolver.registerContentObserver(
@@ -75,18 +70,18 @@ class FileNavigator : UnboundService() {
                     it
                 )
             }
-            .also { i { "Registered ${it.size} FileObservers" } }
+            .also { i { "Registered ${it.size} FileObserver(s)" } }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         i { "onStartCommand | action: ${intent?.action}" }
 
         when (intent?.action) {
-            ACTION_STOP_SERVICE -> {
+            Action.STOP_SERVICE -> {
                 stop()
             }
 
-            ACTION_REREGISTER_MEDIA_OBSERVERS -> {
+            Action.REREGISTER_MEDIA_OBSERVERS -> {
                 unregisterFileObservers()
                 fileObservers = getRegisteredFileObservers()
             }
@@ -111,13 +106,14 @@ class FileNavigator : UnboundService() {
         )
 
         fileObservers = getRegisteredFileObservers()
-        statusChanged.emitNewStatus(true)
+        status.emitNewStatus(true)
     }
 
     private fun stop() {
+        i { "FileNavigator.stop" }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        statusChanged.emitNewStatus(false)
+        status.emitNewStatus(false)
     }
 
     private fun unregisterFileObservers() {
@@ -140,7 +136,7 @@ class FileNavigator : UnboundService() {
     }
 
     @Singleton
-    class StatusChanged @Inject constructor(@GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope) {
+    class Status @Inject constructor(@GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope) {
         val isRunning get() = _isRunning.asSharedFlow()
         private val _isRunning: MutableSharedFlow<Boolean> = MutableSharedFlow()
 
@@ -151,9 +147,15 @@ class FileNavigator : UnboundService() {
         }
     }
 
+    private data object Action {
+        const val REREGISTER_MEDIA_OBSERVERS =
+            "com.w2sv.filenavigator.REREGISTER_MEDIA_OBSERVERS"
+        const val STOP_SERVICE = "com.w2sv.filenavigator.STOP"
+    }
+
     companion object {
         fun start(context: Context) {
-            context.startService(
+            context.startForegroundService(
                 getIntent(context)
             )
         }
@@ -167,23 +169,15 @@ class FileNavigator : UnboundService() {
         fun reregisterFileObservers(context: Context) {
             context.startService(
                 getIntent(context)
-                    .setAction(ACTION_REREGISTER_MEDIA_OBSERVERS)
+                    .setAction(Action.REREGISTER_MEDIA_OBSERVERS)
             )
         }
 
         fun getStopIntent(context: Context): Intent =
             getIntent(context)
-                .setAction(ACTION_STOP_SERVICE)
+                .setAction(Action.STOP_SERVICE)
 
         private fun getIntent(context: Context): Intent =
             Intent(context, FileNavigator::class.java)
-
-        // ===========
-        // Actions
-        // ===========
-
-        const val ACTION_REREGISTER_MEDIA_OBSERVERS =
-            "com.w2sv.filenavigator.REREGISTER_MEDIA_OBSERVERS"
-        const val ACTION_STOP_SERVICE = "com.w2sv.filenavigator.STOP"
     }
 }

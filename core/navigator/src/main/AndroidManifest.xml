@@ -22,6 +22,21 @@
                 android:value="A service that registers new files entering the file system and emits respective notifications, via which the user can move those new files to a chosen location." />
         </service>
 
+        <service
+            android:name="com.w2sv.navigator.quicktile.FileNavigatorTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_app_logo_24"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+
         <receiver
             android:name="com.w2sv.navigator.PowerSaveModeChangedReceiver"
             android:exported="true">
@@ -35,6 +50,12 @@
 
         <activity
             android:name="com.w2sv.navigator.moving.FileMoveActivity"
+            android:taskAffinity="com.w2sv.filenavigator.filemoving"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.w2sv.navigator.notifications.ViewFileIfPresentActivity"
+            android:noHistory="true"
+            android:taskAffinity="com.w2sv.filenavigator.fileviewing"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 

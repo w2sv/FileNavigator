@@ -12,23 +12,14 @@ import com.w2sv.filenavigator.R
 private val defaultTypography = Typography()
 
 private val railway = FontFamily(
-    Font(R.font.raleway_blackitalic, FontWeight.Black, FontStyle.Italic),
-    Font(R.font.raleway_lightitalic, FontWeight.Light, FontStyle.Italic),
     Font(R.font.raleway_black, FontWeight.Black, FontStyle.Normal),
     Font(R.font.raleway_light, FontWeight.Light, FontStyle.Normal),
-    Font(R.font.raleway_bolditalic, FontWeight.Bold, FontStyle.Italic),
-    Font(R.font.raleway_mediumitalic, FontWeight.Medium, FontStyle.Italic),
     Font(R.font.raleway_bold, FontWeight.Bold, FontStyle.Normal),
     Font(R.font.raleway_medium, FontWeight.Medium, FontStyle.Normal),
-    Font(R.font.raleway_extrabolditalic, FontWeight.ExtraBold, FontStyle.Italic),
     Font(R.font.raleway_regular, FontWeight.Normal, FontStyle.Normal),
     Font(R.font.raleway_extrabold, FontWeight.ExtraBold, FontStyle.Normal),
-    Font(R.font.raleway_semibolditalic, FontWeight.SemiBold, FontStyle.Italic),
-    Font(R.font.raleway_extralightitalic, FontWeight.ExtraLight, FontStyle.Italic),
     Font(R.font.raleway_semibold, FontWeight.SemiBold, FontStyle.Normal),
     Font(R.font.raleway_extralight, FontWeight.ExtraLight, FontStyle.Normal),
-    Font(R.font.raleway_thinitalic, FontWeight.Thin, FontStyle.Italic),
-    Font(R.font.raleway_italic, FontWeight.Normal, FontStyle.Italic),
     Font(R.font.raleway_thin, FontWeight.Thin, FontStyle.Normal)
 )
 

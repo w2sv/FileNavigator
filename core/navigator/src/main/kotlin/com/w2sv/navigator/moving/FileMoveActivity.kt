@@ -52,14 +52,16 @@ internal class FileMoveActivity : ComponentActivity() {
 
     private val viewModel by viewModels<ViewModel>()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.preemptiveExitReason()?.let {
-            terminateActivity(it.toastProperties, cancelNotification = it.cancelNotification)
+        when (val preemptiveExitReason = viewModel.preemptiveExitReason()) {
+            null -> destinationPickerLauncher.launch(viewModel.lastMoveDestination)
+            else -> terminateActivity(
+                toastProperties = preemptiveExitReason.toastProperties,
+                cancelNotification = preemptiveExitReason.cancelNotification
+            )
         }
-        destinationPickerLauncher.launch(viewModel.lastMoveDestination)
     }
 
     private val destinationPickerLauncher =
