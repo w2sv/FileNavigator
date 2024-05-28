@@ -38,10 +38,6 @@ class FileNavigator : UnboundService() {
     @Inject
     internal lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
 
-    @Inject
-    @GlobalScope(AppDispatcher.IO)
-    lateinit var ioScope: CoroutineScope
-
     private lateinit var fileObservers: List<FileObserver>
 
     private val contentObserverHandlerThread =
