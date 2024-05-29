@@ -25,7 +25,7 @@ hiltNavigationCompose = "1.2.0"
 
 # Owned
 androidutils = "com.github.w2sv:AndroidUtils:0.3.31-rc1"
-kotlinutils = "com.github.w2sv:KotlinUtils:0.0.7-rc2"
+kotlinutils = "com.github.w2sv:KotlinUtils:0.0.8-rc1"
 composed = { module = "com.github.w2sv.Composed:composed", version.ref = "composed" }
 composed-permissions = { module = "com.github.w2sv.Composed:permissions", version.ref = "composed" }
 

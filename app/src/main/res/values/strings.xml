@@ -74,4 +74,7 @@
     <string name="auto">Auto Move</string>
     <string name="add_auto_move_destination">Add auto move destination</string>
     <string name="rate_the_app_in_the_playstore">Rate the app in the PlayStore</string>
+    <string name="add_a_file_type">Add a file type.</string>
+    <string name="exclude">Exclude</string>
+    <string name="auto_move">Auto\nMove</string>
 </resources>

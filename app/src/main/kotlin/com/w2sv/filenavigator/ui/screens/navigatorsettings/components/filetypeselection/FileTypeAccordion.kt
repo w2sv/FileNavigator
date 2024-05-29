@@ -1,55 +1,53 @@
 package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection
 
+import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.documentfile.provider.DocumentFile
+import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.theme.onSurfaceDisabled
-import com.w2sv.filenavigator.ui.utils.orOnSurfaceDisabledIf
 
 @Composable
 fun FileTypeAccordion(
     fileType: FileType,
-    isEnabled: Boolean,
-    isFirstDisabled: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
+    excludeFileType: () -> Unit,
     mediaFileSourceEnabled: (FileType.Source) -> Boolean,
     onMediaFileSourceCheckedChange: (FileType.Source, Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -57,41 +55,35 @@ fun FileTypeAccordion(
     Column(
         modifier = modifier
     ) {
-        if (isFirstDisabled) {
-            Text(
-                text = stringResource(R.string.disabled),
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurfaceDisabled,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
-
         Header(
             fileType = fileType,
-            isEnabled = isEnabled,
-            onCheckedChange = onCheckedChange
+            excludeFileType = excludeFileType
         )
-        AnimatedVisibility(
-            visible = isEnabled
-        ) {
-            FileTypeSourcesSurface(
-                fileType = fileType,
-                mediaFileSourceEnabled = mediaFileSourceEnabled,
-                setMediaFileSourceEnabled = onMediaFileSourceCheckedChange
-            )
-        }
+        FileTypeSourcesSurface(
+            fileType = fileType,
+            mediaFileSourceEnabled = mediaFileSourceEnabled,
+            setMediaFileSourceEnabled = onMediaFileSourceCheckedChange
+        )
     }
 }
 
 @Composable
 private fun Header(
     fileType: FileType,
-    isEnabled: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
+    excludeFileType: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showAutoMoveRow by rememberSaveable {
-        mutableStateOf(isEnabled)
+    var autoMoveEnabled by rememberSaveable(fileType) {
+        mutableStateOf(true)
+    }
+    var autoMoveDestination by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    val context: Context = LocalContext.current
+    val autoMovePath by remember(autoMoveDestination) {
+        mutableStateOf(
+            autoMoveDestination?.let { getDocumentUriPath(it, context) }
+        )
     }
     Surface(
         tonalElevation = 2.dp,
@@ -101,98 +93,118 @@ private fun Header(
     ) {
         Column {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 FileTypeIcon(
                     fileType = fileType,
-                    tint = fileType.color.orOnSurfaceDisabledIf(condition = !isEnabled),
+                    tint = fileType.color,
                     modifier = Modifier
                         .padding(horizontal = 12.dp)
+                        .size(34.dp)
                 )
                 Text(
                     text = stringResource(id = fileType.titleRes),
                     fontSize = 18.sp,
-                    color = Color.Unspecified.orOnSurfaceDisabledIf(condition = !isEnabled)
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = { showAutoMoveRow = !showAutoMoveRow }, enabled = isEnabled) {
-                    Icon(
-                        imageVector = if (showAutoMoveRow) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = null,
-                    )
-                }
-                Switch(
-                    colors = SwitchDefaults.colors(checkedTrackColor = MaterialTheme.colorScheme.primary),
-                    modifier = Modifier.padding(8.dp),
-                    checked = isEnabled,
-                    onCheckedChange = onCheckedChange
-                )
-            }
-            AnimatedVisibility(visible = isEnabled && showAutoMoveRow) {
-                AutoMoveRow(path = "path/otherPath/folder/otherFolder", isEnabled = true)
-            }
-        }
-    }
-}
-
-@Composable
-private fun AutoMoveRow(path: String, isEnabled: Boolean, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        HorizontalDivider()
-        Column(modifier = Modifier.padding(horizontal = 12.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
                 Text(
-                    text = "Auto Move",
-                    fontWeight = FontWeight.SemiBold
+                    text = stringResource(id = R.string.auto_move),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 18.sp,
+                    modifier = Modifier.padding(end = 4.dp)
                 )
-                Spacer(modifier = Modifier.weight(1f))
                 Switch(
-                    checked = isEnabled,
-                    onCheckedChange = {},
-                    colors = SwitchDefaults.colors(
-                        checkedTrackColor = MaterialTheme.colorScheme.secondary,
-                        checkedThumbColor = MaterialTheme.colorScheme.onSecondary,
-                        checkedIconColor = MaterialTheme.colorScheme.onSecondaryContainer
-                    ),
+                    checked = autoMoveEnabled,
+                    onCheckedChange = { autoMoveEnabled = it },
+                    modifier = Modifier.padding(horizontal = 6.dp)
+                )
+                VerticalDivider(
+                    modifier = Modifier
+                        .height(32.dp)
+                        .padding(horizontal = 4.dp)
+                )
+                Text(
+                    text = stringResource(R.string.exclude),
+                    modifier = Modifier
+                        .padding(end = 6.dp)
+                        .clip(MaterialTheme.shapes.small)
+                        .clickable { excludeFileType() }
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp)
-            ) {
-                Text(path, modifier = Modifier.weight(1f), fontSize = 14.sp)
-                IconButton(onClick = { /*TODO*/ }, modifier = Modifier.size(38.dp)) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_configure_folder_24),
-                        contentDescription = null,
-                        modifier = Modifier.size(28.dp),
-                        tint = MaterialTheme.colorScheme.secondary
-                    )
-                }
+            AnimatedVisibility(visible = autoMoveEnabled) {
+                AutoMoveRow(
+                    destinationPath = autoMovePath,
+                    setDestination = { autoMoveDestination = it },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
 }
 
-@Preview
 @Composable
-private fun AutoMoveRowPrev() {
-    AppTheme {
-        Surface(
-            tonalElevation = 2.dp,
-            shape = MaterialTheme.shapes.small,
+private fun AutoMoveRow(
+    destinationPath: String?,
+    setDestination: (Uri) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context: Context = LocalContext.current
+    val selectDestination =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { optionalTreeUri ->
+            optionalTreeUri?.let {
+                setDestination(DocumentFile.fromTreeUri(context, it)!!.uri)
+            }
+        }
+    Column(modifier = modifier.padding(horizontal = 12.dp)) {
+        HorizontalDivider()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(start = 10.dp, bottom = 4.dp)
         ) {
-            AutoMoveRow(path = "/path/component/somefolder", isEnabled = true)
+            Icon(
+                painter = painterResource(id = R.drawable.ic_subdirectory_arrow_right_24),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = 6.dp)
+                    .size(20.dp)
+            )
+            Text(destinationPath ?: "-", modifier = Modifier.weight(1f), fontSize = 14.sp)
+            IconButton(
+                onClick = { selectDestination.launch(null) },
+                modifier = Modifier.size(38.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_configure_folder_24),
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
         }
     }
 }
+
+//@Preview
+//@Composable
+//private fun AutoMoveRowPrev() {
+//    AppTheme {
+//        Surface(
+//            tonalElevation = 2.dp,
+//            shape = MaterialTheme.shapes.small,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//        ) {
+//            AutoMoveRow(destinationPath = "/path/component/somefolder")
+//        }
+//    }
+//}
 
 @Composable
 private fun AddAutoMoveDestinationButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
