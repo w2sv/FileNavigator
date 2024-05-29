@@ -2,6 +2,7 @@ package com.w2sv.filenavigator.ui.screens.navigatorsettings.components
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -57,11 +58,13 @@ fun NavigatorConfigurationColumn(
                 SectionHeader(
                     text = stringResource(id = R.string.file_types),
                 )
-                FilledTonalIconButton(onClick = showAddFileTypesBottomSheet) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(R.string.add_a_file_type)
-                    )
+                AnimatedVisibility(visible = configuration.enabledFileTypes.isNotEmpty()) {
+                    FilledTonalIconButton(onClick = showAddFileTypesBottomSheet) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(R.string.add_a_file_type)
+                        )
+                    }
                 }
             }
         }

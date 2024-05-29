@@ -74,7 +74,7 @@ private fun Header(
     modifier: Modifier = Modifier,
 ) {
     var autoMoveEnabled by rememberSaveable(fileType) {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     var autoMoveDestination by remember {
         mutableStateOf<Uri?>(null)

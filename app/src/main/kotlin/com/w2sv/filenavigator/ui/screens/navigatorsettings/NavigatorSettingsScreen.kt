@@ -96,7 +96,7 @@ fun NavigatorSettingsScreen(
 
     val scope = rememberCoroutineScope()
     var showAddFileTypesBottomSheet by rememberSaveable {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     Scaffold(
