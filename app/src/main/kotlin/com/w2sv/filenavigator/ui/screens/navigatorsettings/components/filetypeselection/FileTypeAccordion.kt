@@ -2,6 +2,7 @@ package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypes
 
 import android.content.Context
 import android.net.Uri
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -68,6 +69,18 @@ fun FileTypeAccordion(
 }
 
 @Composable
+private fun rememberSelectAutoMoveDestination(onDestinationSelected: (Uri) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
+    val context: Context = LocalContext.current
+    return rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { optionalTreeUri ->
+        optionalTreeUri?.let {
+            onDestinationSelected(
+                DocumentFile.fromTreeUri(context, it)!!.uri
+            )
+        }
+    }
+}
+
+@Composable
 private fun Header(
     fileType: FileType,
     excludeFileType: () -> Unit,
@@ -78,6 +91,10 @@ private fun Header(
     }
     var autoMoveDestination by remember {
         mutableStateOf<Uri?>(null)
+    }
+    val selectAutoMoveDestination = rememberSelectAutoMoveDestination {
+        autoMoveEnabled = true
+        autoMoveDestination = it
     }
     val context: Context = LocalContext.current
     val autoMovePath by remember(autoMoveDestination) {
@@ -92,54 +109,23 @@ private fun Header(
             .fillMaxWidth()
     ) {
         Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            FileTypeRow(
+                fileType = fileType,
+                excludeFileType = excludeFileType,
+                autoMoveEnabled = autoMoveEnabled,
+                onAutoMoveEnabledSwitchCheckedChange = {
+                    if (it && autoMoveDestination == null) {
+                        selectAutoMoveDestination.launch(null)
+                    } else {
+                        autoMoveEnabled = it
+                    }
+                },
                 modifier = Modifier.padding(vertical = 4.dp)
-            ) {
-                FileTypeIcon(
-                    fileType = fileType,
-                    tint = fileType.color,
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .size(34.dp)
-                )
-                Text(
-                    text = stringResource(id = fileType.titleRes),
-                    fontSize = 18.sp,
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = stringResource(id = R.string.auto_move),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    lineHeight = 18.sp,
-                    modifier = Modifier.padding(end = 4.dp)
-                )
-                Switch(
-                    checked = autoMoveEnabled,
-                    onCheckedChange = { autoMoveEnabled = it },
-                    modifier = Modifier.padding(horizontal = 6.dp)
-                )
-                VerticalDivider(
-                    modifier = Modifier
-                        .height(32.dp)
-                        .padding(horizontal = 4.dp)
-                )
-                Text(
-                    text = stringResource(R.string.exclude),
-                    modifier = Modifier
-                        .padding(end = 6.dp)
-                        .clip(MaterialTheme.shapes.small)
-                        .clickable { excludeFileType() }
-                        .padding(horizontal = 6.dp, vertical = 2.dp),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            AnimatedVisibility(visible = autoMoveEnabled) {
+            )
+            AnimatedVisibility(visible = autoMoveEnabled && autoMovePath != null) {
                 AutoMoveRow(
-                    destinationPath = autoMovePath,
-                    setDestination = { autoMoveDestination = it },
+                    destinationPath = autoMovePath!!,
+                    changeDestination = { selectAutoMoveDestination.launch(autoMoveDestination) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -148,18 +134,65 @@ private fun Header(
 }
 
 @Composable
-private fun AutoMoveRow(
-    destinationPath: String?,
-    setDestination: (Uri) -> Unit,
+private fun FileTypeRow(
+    fileType: FileType,
+    excludeFileType: () -> Unit,
+    autoMoveEnabled: Boolean,
+    onAutoMoveEnabledSwitchCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context: Context = LocalContext.current
-    val selectDestination =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { optionalTreeUri ->
-            optionalTreeUri?.let {
-                setDestination(DocumentFile.fromTreeUri(context, it)!!.uri)
-            }
-        }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        FileTypeIcon(
+            fileType = fileType,
+            tint = fileType.color,
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .size(34.dp)
+        )
+        Text(
+            text = stringResource(id = fileType.titleRes),
+            fontSize = 18.sp,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = stringResource(id = R.string.auto_move),
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            lineHeight = 18.sp,
+            modifier = Modifier.padding(end = 4.dp)
+        )
+        Switch(
+            checked = autoMoveEnabled,
+            onCheckedChange = onAutoMoveEnabledSwitchCheckedChange,
+            modifier = Modifier.padding(horizontal = 6.dp)
+        )
+        VerticalDivider(
+            modifier = Modifier
+                .height(32.dp)
+                .padding(horizontal = 4.dp)
+        )
+        Text(
+            text = stringResource(R.string.exclude),
+            modifier = Modifier
+                .padding(end = 6.dp)
+                .clip(MaterialTheme.shapes.small)
+                .clickable { excludeFileType() }
+                .padding(horizontal = 6.dp, vertical = 2.dp),
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun AutoMoveRow(
+    destinationPath: String,
+    changeDestination: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(modifier = modifier.padding(horizontal = 12.dp)) {
         HorizontalDivider()
         Row(
@@ -175,10 +208,10 @@ private fun AutoMoveRow(
                     .padding(end = 6.dp)
                     .size(20.dp)
             )
-            Text(destinationPath ?: "-", modifier = Modifier.weight(1f), fontSize = 14.sp)
+            Text(destinationPath, modifier = Modifier.weight(1f), fontSize = 14.sp)
             IconButton(
-                onClick = { selectDestination.launch(null) },
-                modifier = Modifier.size(38.dp)
+                onClick = { changeDestination() },
+                modifier = Modifier.size(34.dp)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_configure_folder_24),

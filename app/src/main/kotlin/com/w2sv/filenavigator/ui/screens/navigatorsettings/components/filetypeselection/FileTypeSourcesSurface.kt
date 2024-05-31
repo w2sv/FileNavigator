@@ -1,10 +1,11 @@
 package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -60,31 +61,24 @@ private fun SourceRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
     ) {
-        // Icon
-        Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
-            Icon(
-                painter = painterResource(id = source.kind.iconRes),
-                contentDescription = null,
-                tint = source.fileType.color
-                    .orOnSurfaceDisabledIf(condition = !isEnabled)
+        Icon(
+            painter = painterResource(id = source.kind.iconRes),
+            contentDescription = null,
+            tint = source.fileType.color
+                .orOnSurfaceDisabledIf(condition = !isEnabled),
+            modifier = Modifier.padding(start = 26.dp, end = 18.dp)
+        )
+        Text(
+            text = stringResource(id = source.kind.labelRes),
+            color = MaterialTheme.colorScheme.onSurface
+                .orOnSurfaceDisabledIf(condition = !isEnabled)
+        )
+        if (source.fileType.isMediaType) {
+            Spacer(modifier = Modifier.weight(1f))
+            Checkbox(
+                checked = isEnabled,
+                onCheckedChange = onCheckedChange
             )
-        }
-        // Label
-        Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.CenterStart) {
-            Text(
-                text = stringResource(id = source.kind.labelRes),
-                color = MaterialTheme.colorScheme.onSurface
-                    .orOnSurfaceDisabledIf(condition = !isEnabled)
-            )
-        }
-
-        Box(modifier = Modifier.weight(0.15f), contentAlignment = Alignment.Center) {
-            if (source.fileType.isMediaType) {
-                Checkbox(
-                    checked = isEnabled,
-                    onCheckedChange = onCheckedChange
-                )
-            }
         }
     }
 }
