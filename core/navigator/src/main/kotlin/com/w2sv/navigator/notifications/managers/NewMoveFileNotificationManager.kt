@@ -23,7 +23,9 @@ import com.w2sv.common.utils.loadBitmap
 import com.w2sv.common.utils.removeSlashSuffix
 import com.w2sv.common.utils.slashPrefixed
 import com.w2sv.core.navigator.R
-import com.w2sv.domain.model.FileTypeKind
+import com.w2sv.domain.model.FileAndSourceType
+import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.moving.FileMoveActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
@@ -76,8 +78,8 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 )
                 // Set file source icon
                 setLargeIcon(
-                    AppCompatResources.getDrawable(context, args.moveFile.source.getIconRes())
-                        ?.apply { setTint(args.moveFile.source.fileType.colorInt) }
+                    AppCompatResources.getDrawable(context, args.moveFile.fileAndSourceType.iconRes)
+                        ?.apply { setTint(args.moveFile.fileType.colorInt) }
                         ?.toBitmap()
                 )
                 setContent()
@@ -87,30 +89,30 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             }
 
             private fun getMoveFileTitle(): String =
-                when (val fileType = args.moveFile.source.fileType) {
-                    is FileTypeKind.Media -> {
+                when (val fileType = args.moveFile.fileType) {
+                    is FileType.Media -> {
                         if (isGif(args.moveFile)) {
                             context.getString(R.string.gif)
                         } else {
-                            when (val sourceKind =
-                                args.moveFile.mediaStoreFile.columnData.getSourceKind()) {
-                                FileTypeKind.Source.Kind.Recording, FileTypeKind.Source.Kind.Screenshot -> context.getString(
-                                    sourceKind.labelRes
+                            when (val sourceType =
+                                args.moveFile.sourceType) {
+                                SourceType.Recording, SourceType.Screenshot -> context.getString(
+                                    sourceType.labelRes
                                 )
 
-                                FileTypeKind.Source.Kind.Camera -> context.getString(
-                                    when (args.moveFile.source.fileType) {
-                                        FileTypeKind.Image -> com.w2sv.core.domain.R.string.photo
-                                        FileTypeKind.Video -> com.w2sv.core.domain.R.string.video
+                                SourceType.Camera -> context.getString(
+                                    when (args.moveFile.fileType) {
+                                        FileType.Image -> com.w2sv.core.domain.R.string.photo
+                                        FileType.Video -> com.w2sv.core.domain.R.string.video
                                         else -> throw Error()
                                     }
                                 )
 
-                                FileTypeKind.Source.Kind.Download -> "${context.getString(fileType.titleRes)} ${
+                                SourceType.Download -> "${context.getString(fileType.titleRes)} ${
                                     context.getString(R.string.download)
                                 }"
 
-                                FileTypeKind.Source.Kind.OtherApp -> "${args.moveFile.mediaStoreFile.columnData.dirName} ${
+                                SourceType.OtherApp -> "${args.moveFile.mediaStoreFile.columnData.dirName} ${
                                     context.getString(
                                         fileType.titleRes
                                     )
@@ -120,8 +122,8 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         }
                     }
 
-                    is FileTypeKind.NonMedia -> {
-                        context.getString(args.moveFile.source.fileType.titleRes)
+                    is FileType.NonMedia -> {
+                        context.getString(args.moveFile.fileType.titleRes)
                     }
                 }
 
@@ -136,9 +138,9 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             }
 
             private fun setBigPictureStyleIfImage(): Boolean {
-                when (args.moveFile.source.fileType) {
-                    FileTypeKind.Image -> context.contentResolver.loadBitmap(args.moveFile.mediaStoreFile.uri)
-                    FileTypeKind.Video -> {
+                when (args.moveFile.fileType) {
+                    FileType.Image -> context.contentResolver.loadBitmap(args.moveFile.mediaStoreFile.uri)
+                    FileType.Video -> {
                         try {
                             context.contentResolver.loadThumbnail(
                                 args.moveFile.mediaStoreFile.uri,
@@ -188,22 +190,22 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 
                 // Add quickMoveAction if lastMoveDestination present.
-                sourceToLastMoveDestinationStateFlow.getLastMoveDestination(args.moveFile.source)
-                    ?.let { lastMoveDestination ->
-                        // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
-                        getDocumentUriFileName(
-                            documentUri = lastMoveDestination,
-                            context = context
-                        )
-                            ?.let { fileName ->
-                                addAction(
-                                    getQuickMoveAction(
-                                        requestCode = requestCodeIterator.next(),
-                                        lastMoveDestination = lastMoveDestination,
-                                        lastMoveDestinationFileName = fileName
-                                    )
-                                )
-                            }
+                sourceToLastMoveDestinationStateFlow.lastMoveDestinations(args.moveFile.fileAndSourceType)
+                    ?.let { lastMoveDestination ->  // TODO
+//                        // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
+//                        getDocumentUriFileName(
+//                            documentUri = lastMoveDestination,
+//                            context = context
+//                        )
+//                            ?.let { fileName ->
+//                                addAction(
+//                                    getQuickMoveAction(
+//                                        requestCode = requestCodeIterator.next(),
+//                                        lastMoveDestination = lastMoveDestination,
+//                                        lastMoveDestinationFileName = fileName
+//                                    )
+//                                )
+//                            }
                     }
 
                 setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
@@ -224,7 +226,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         context = context,
                         mediaUri = args.moveFile.mediaStoreFile.uri,
                         absPath = args.moveFile.mediaStoreFile.columnData.absPath,
-                        mimeType = args.moveFile.source.fileType.simpleStorageMediaType.mimeType,
+                        mimeType = args.moveFile.fileType.simpleStorageMediaType.mimeType,
                         notificationResources = args.resources
                     ),
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -330,20 +332,20 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 }
 
 private fun isGif(moveFile: MoveFile): Boolean =
-    moveFile.source.fileType is FileTypeKind.Image && moveFile.mediaStoreFile.columnData.fileExtension.lowercase() == "gif"
+    moveFile.fileType is FileType.Image && moveFile.mediaStoreFile.columnData.fileExtension.lowercase() == "gif"
 
 private class SourceToLastMoveDestinationStateFlow(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val scope: CoroutineScope,
-    private val mutableMap: MutableMap<FileTypeKind.Source, StateFlow<Uri?>> = mutableMapOf()
-) : Map<FileTypeKind.Source, StateFlow<Uri?>> by mutableMap {
+    private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<Uri>>> = mutableMapOf()
+) : Map<FileAndSourceType, StateFlow<List<Uri>>> by mutableMap {
 
-    fun getLastMoveDestination(source: FileTypeKind.Source): Uri? =
+    fun lastMoveDestinations(fileAndSourceType: FileAndSourceType): List<Uri> =
         mutableMap.getOrPut(
-            key = source,
+            key = fileAndSourceType,
             defaultValue = {
                 navigatorConfigDataSource
-                    .getLastMoveDestinationFlow(source)
+                    .lastMoveDestinations(fileAndSourceType)
                     .stateInWithSynchronousInitial(scope)
             }
         )

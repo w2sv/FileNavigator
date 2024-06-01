@@ -2,14 +2,14 @@ package com.w2sv.navigator.fileobservers
 
 import android.content.ContentResolver
 import android.os.Handler
-import com.w2sv.domain.model.FileTypeKind
+import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.moving.MoveFile
 import slimber.log.i
 
 internal class MediaFileObserver(
-    private val fileType: FileTypeKind.Media,
-    private val sourceKinds: Set<FileTypeKind.Source.Kind>,
+    private val fileType: FileType.Media,
+    private val sourceKinds: Set<SourceType.Kind>,
     contentResolver: ContentResolver,
     onNewMoveFile: (MoveFile) -> Unit,
     handler: Handler
@@ -32,7 +32,7 @@ internal class MediaFileObserver(
         mediaStoreFile: MediaStoreFile
     ): MoveFile? {
         if (fileType.matchesFileExtension(mediaStoreFile.columnData.fileExtension)) {
-            val sourceKind = mediaStoreFile.columnData.getSourceKind()
+            val sourceKind = mediaStoreFile.columnData.getSourceType()
 
             if (sourceKinds.contains(sourceKind)) {
                 return MoveFile(

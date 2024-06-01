@@ -1,31 +1,31 @@
 package com.w2sv.database.typeconverter
 
 import androidx.room.TypeConverter
-import com.w2sv.domain.model.FileTypeKind
+import com.w2sv.domain.model.FileType
 
 object FileTypeConverter {
     @TypeConverter
-    fun fromFileType(fileType: FileTypeKind): String =
+    fun fromFileType(fileType: FileType): String =
         when (fileType) {
-            FileTypeKind.Image -> "Image"
-            FileTypeKind.Audio -> "Audio"
-            FileTypeKind.Video -> "Video"
-            FileTypeKind.PDF -> "PDF"
-            FileTypeKind.APK -> "APK"
-            FileTypeKind.Text -> "Text"
-            FileTypeKind.Archive -> "Archive"
+            FileType.Image -> "Image"
+            FileType.Audio -> "Audio"
+            FileType.Video -> "Video"
+            FileType.PDF -> "PDF"
+            FileType.APK -> "APK"
+            FileType.Text -> "Text"
+            FileType.Archive -> "Archive"
         }
 
     @TypeConverter
-    fun toFileType(name: String): FileTypeKind =
+    fun toFileType(name: String): FileType =
         when (name) {
-            "Image" -> FileTypeKind.Image
-            "Audio" -> FileTypeKind.Audio
-            "Video" -> FileTypeKind.Video
-            "PDF" -> FileTypeKind.PDF
-            "APK" -> FileTypeKind.APK
-            "Text" -> FileTypeKind.Text
-            "Archive" -> FileTypeKind.Archive
+            "Image" -> FileType.Image
+            "Audio" -> FileType.Audio
+            "Video" -> FileType.Video
+            "PDF" -> FileType.PDF
+            "APK" -> FileType.APK
+            "Text" -> FileType.Text
+            "Archive" -> FileType.Archive
             else -> throw NoSuchElementException()
         }
 }

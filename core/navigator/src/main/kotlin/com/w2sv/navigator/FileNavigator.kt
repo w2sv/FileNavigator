@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
+import com.w2sv.androidutils.coroutines.firstBlocking
 import com.w2sv.androidutils.coroutines.mapValuesToFirstBlocking
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.common.di.AppDispatcher
@@ -18,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import slimber.log.i
 import javax.inject.Inject
@@ -48,8 +50,7 @@ class FileNavigator : UnboundService() {
             contentObserverHandlerThread.start()
         }
         return getFileObservers(
-            fileTypeEnablementMap = navigatorConfigDataSource.fileTypeEnablementMap.mapValuesToFirstBlocking(),
-            mediaFileSourceEnablementMap = navigatorConfigDataSource.mediaFileSourceEnablementMap.mapValuesToFirstBlocking(),
+            fileTypeConfigs = navigatorConfigDataSource.navigatorConfig.map { it.fileTypeConfigs }.firstBlocking(),
             contentResolver = contentResolver,
             onNewNavigatableFileListener = { moveFile ->
                 // with scope because construction of inner class BuilderArgs requires inner class scope

@@ -18,16 +18,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.InterElementDividedColumn
-import com.w2sv.domain.model.FileTypeKind
+import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.utils.orOnSurfaceDisabledIf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun FileTypeSourcesSurface(
-    fileType: FileTypeKind,
-    mediaFileSourceEnabled: (FileTypeKind.Source) -> Boolean,
-    setMediaFileSourceEnabled: (FileTypeKind.Source, Boolean) -> Unit,
+    fileType: FileType,
+    mediaFileSourceEnabled: (SourceType) -> Boolean,
+    setMediaFileSourceEnabled: (SourceType, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -36,7 +36,7 @@ fun FileTypeSourcesSurface(
         modifier = modifier.fillMaxWidth()
     ) {
         InterElementDividedColumn(
-            elements = fileType.sources.toImmutableList(),
+            elements = SourceTypes.toImmutableList(),
             makeElement = { source ->
                 SourceRow(
                     source = source,
@@ -51,7 +51,7 @@ fun FileTypeSourcesSurface(
 
 @Composable
 private fun SourceRow(
-    source: FileTypeKind.Source,
+    source: SourceType,
     isEnabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier

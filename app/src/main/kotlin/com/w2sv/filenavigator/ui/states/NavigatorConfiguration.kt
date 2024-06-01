@@ -8,7 +8,7 @@ import com.w2sv.androidutils.ui.reversible_state.ReversibleStateMap
 import com.w2sv.androidutils.ui.reversible_state.ReversibleStatesComposition
 import com.w2sv.common.utils.increment
 import com.w2sv.composed.extensions.toMutableStateMap
-import com.w2sv.domain.model.FileTypeKind
+import com.w2sv.domain.model.FileType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -36,29 +36,29 @@ class NavigatorConfiguration(
             navigatorConfigDataSource.fileTypeEnablementMap.save(it)
         },
         onStateSynced = { syncedMap ->
-            enabledFileTypes.updateFrom(FileTypeKind.values.filter { syncedMap.getValue(it) })
-            disabledFileTypes.updateFrom(FileTypeKind.values.filter { !syncedMap.getValue(it) })
+            enabledFileTypes.updateFrom(FileType.values.filter { syncedMap.getValue(it) })
+            disabledFileTypes.updateFrom(FileType.values.filter { !syncedMap.getValue(it) })
         },
         onStateReset = { resetMap ->
-            enabledFileTypes.updateFrom(FileTypeKind.values.filter { resetMap.getValue(it) })
-            disabledFileTypes.updateFrom(FileTypeKind.values.filter { !resetMap.getValue(it) })
+            enabledFileTypes.updateFrom(FileType.values.filter { resetMap.getValue(it) })
+            disabledFileTypes.updateFrom(FileType.values.filter { !resetMap.getValue(it) })
         },
         appliedStateMapBasedStateAlignmentAssuranceScope = scope
     )
 
-    val enabledFileTypes: SnapshotStateList<FileTypeKind> by lazy {
-        FileTypeKind.values
+    val enabledFileTypes: SnapshotStateList<FileType> by lazy {
+        FileType.values
             .filter { navigatorConfigDataSource.fileTypeEnablementMap.getValue(it).value }
             .toMutableStateList()
     }
     val disabledFileTypes by lazy {
-        FileTypeKind.values
+        FileType.values
             .filter { !navigatorConfigDataSource.fileTypeEnablementMap.getValue(it).value }
             .toMutableStateList()
     }
 
     fun onFileTypeCheckedChange(
-        fileType: FileTypeKind,
+        fileType: FileType,
         checkedNew: Boolean
     ) {
         if (!checkedNew && enabledFileTypes.size <= 1) {
@@ -83,7 +83,7 @@ class NavigatorConfiguration(
     }
 
     // =======================
-    // MediaFileType.Source Enablement
+    // MediaSourceType Enablement
     // =======================
 
     val mediaFileSourceEnablementMap = ReversibleStateMap(
@@ -95,7 +95,7 @@ class NavigatorConfiguration(
         appliedStateMapBasedStateAlignmentAssuranceScope = scope
     )
 
-    fun onMediaFileSourceCheckedChange(source: FileTypeKind.Source, checkedNew: Boolean) {
+    fun onMediaFileSourceCheckedChange(source: SourceType, checkedNew: Boolean) {
         if (!checkedNew && fileTypeToNCheckedSources.value.getValue(source.fileType) <= 1) {
             emitMakeSnackbarVisuals {
                 AppSnackbarVisuals(
@@ -109,11 +109,11 @@ class NavigatorConfiguration(
         }
     }
 
-    private val fileTypeToNCheckedSources: ReversibleValue<MutableMap<FileTypeKind, Int>> by lazy {
+    private val fileTypeToNCheckedSources: ReversibleValue<MutableMap<FileType, Int>> by lazy {
         ReversibleValue(
-            FileTypeKind.Media.values
+            FileType.Media.values
                 .associateWith { fileType ->
-                    fileType.sources.count { source ->
+                    SourceTypes.count { source ->
                         mediaFileSourceEnablementMap.getOrDefault(
                             source,
                             true

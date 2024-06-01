@@ -1,6 +1,6 @@
 package com.w2sv.navigator
 
-import com.w2sv.domain.model.FileTypeKind
+import com.w2sv.domain.model.FileType
 import com.w2sv.navigator.moving.MoveFile
 import com.w2sv.navigator.utils.TestInstancesProvider
 import com.w2sv.test.testParceling
@@ -15,8 +15,8 @@ internal class MoveFileTest {
     fun testParceling() {
         MoveFile(
             mediaStoreFile = TestInstancesProvider.getMediaStoreFile(),
-            fileType = FileTypeKind.Image,
-            sourceKind = FileTypeKind.Source.Kind.Screenshot
+            fileType = FileType.Image,
+            sourceKind = SourceType.Kind.Screenshot
         )
             .testParceling()
     }

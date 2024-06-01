@@ -23,7 +23,7 @@ fun MoveEntry.launchViewActivity(context: Context) {
             .setAction(Intent.ACTION_VIEW)
             .setDataAndType(
                 movedFileMediaUri,
-                fileType.simpleStorageMediaType.mimeType
+                fileTypeConfig.simpleStorageMediaType.mimeType
             )
     )
 }

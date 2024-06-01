@@ -9,7 +9,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.w2sv.datastore.NavigatorConfigProto
-import com.w2sv.datastore.navigatorconfig.NavigatorConfigProtoSerializer
+import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigProtoSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

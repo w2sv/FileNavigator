@@ -113,7 +113,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
                         if (updateLastMoveDestination) {
                             navigatorConfigDataSource.saveLastMoveDestination(
-                                source = moveFile.source,
+                                fileAndSourceType = moveFile.fileAndSourceType,
                                 destination = moveDestinationDocumentFile.uri
                             )
                         }
@@ -196,22 +196,22 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
 //    return mediaUri
 //}
 
-private fun movedFileMediaUri(
-    moveDestinationDocumentUri: Uri,
-    fileName: String,
-    context: Context
-): Uri? {
-    val movedFileDocumentUri =
-        Uri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
-
-    return MediaStore.getMediaUri(
-        context,
-        movedFileDocumentUri
-    )
-}
+//private fun movedFileMediaUri(
+//    moveDestinationDocumentUri: Uri,
+//    fileName: String,
+//    context: Context
+//): Uri? {
+//    val movedFileDocumentUri =
+//        Uri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
+//
+//    return MediaStore.getMediaUri(
+//        context,
+//        movedFileDocumentUri
+//    )
+//}
 
 private fun onMoveException(moveException: MoveException, context: Context, intent: Intent) {
-    moveException.toastProperties?.let {
+    moveException.toastProperties.let {
         context.showToast(it)
     }
     if (moveException.cancelNotification) {

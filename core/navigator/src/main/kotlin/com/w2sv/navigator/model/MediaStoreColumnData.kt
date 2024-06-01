@@ -11,7 +11,7 @@ import com.w2sv.common.utils.getBooleanOrThrow
 import com.w2sv.common.utils.getLongOrThrow
 import com.w2sv.common.utils.getStringOrThrow
 import com.w2sv.common.utils.query
-import com.w2sv.domain.model.FileTypeKind
+import com.w2sv.domain.model.SourceType
 import com.w2sv.navigator.fileobservers.emitDiscardedLog
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -31,7 +31,7 @@ internal data class MediaStoreColumnData(
     val volumeRelativeDirPath: String,
     val name: String,
     val dateTimeAdded: LocalDateTime,
-    val size: Long,  // Seems to be always 0 on images
+    val size: Long,
     val isPending: Boolean,
     val isTrashed: Boolean
 ) : Parcelable {
@@ -70,17 +70,17 @@ internal data class MediaStoreColumnData(
     val fileExists: Boolean
         get() = getFile().exists()
 
-    fun getSourceKind(): FileTypeKind.Source.Kind =
+    fun getSourceType(): SourceType =
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && volumeRelativeDirPath.contains(
                 Environment.DIRECTORY_RECORDINGS
-            ) || volumeRelativeDirPath.contains("Recordings") -> FileTypeKind.Source.Kind.Recording
+            ) || volumeRelativeDirPath.contains("Recordings") -> SourceType.Recording
             // NOTE: Don't change the order of the Screenshot and Camera branches, as Environment.DIRECTORY_SCREENSHOTS
             // may be a child dir of Environment.DIRECTORY_DCIM
-            volumeRelativeDirPath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileTypeKind.Source.Kind.Screenshot
-            volumeRelativeDirPath.contains(Environment.DIRECTORY_DCIM) -> FileTypeKind.Source.Kind.Camera
-            volumeRelativeDirPath.contains(Environment.DIRECTORY_DOWNLOADS) -> FileTypeKind.Source.Kind.Download
-            else -> FileTypeKind.Source.Kind.OtherApp
+            volumeRelativeDirPath.contains(Environment.DIRECTORY_SCREENSHOTS) -> SourceType.Screenshot
+            volumeRelativeDirPath.contains(Environment.DIRECTORY_DCIM) -> SourceType.Camera
+            volumeRelativeDirPath.contains(Environment.DIRECTORY_DOWNLOADS) -> SourceType.Download
+            else -> SourceType.OtherApp
         }
             .also {
                 i { "Determined Source.Kind: ${it.name}" }

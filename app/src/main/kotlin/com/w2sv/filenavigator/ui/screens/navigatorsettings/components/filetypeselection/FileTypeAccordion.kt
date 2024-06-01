@@ -40,17 +40,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.documentfile.provider.DocumentFile
 import com.w2sv.common.utils.getDocumentUriPath
-import com.w2sv.domain.model.FileTypeKind
+import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
 import com.w2sv.filenavigator.ui.model.color
 
 @Composable
 fun FileTypeAccordion(
-    fileType: FileTypeKind,
+    fileType: FileType,
     excludeFileType: () -> Unit,
-    mediaFileSourceEnabled: (FileTypeKind.Source) -> Boolean,
-    onMediaFileSourceCheckedChange: (FileTypeKind.Source, Boolean) -> Unit,
+    mediaFileSourceEnabled: (SourceType) -> Boolean,
+    onMediaFileSourceCheckedChange: (SourceType, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -82,7 +82,7 @@ private fun rememberSelectAutoMoveDestination(onDestinationSelected: (Uri) -> Un
 
 @Composable
 private fun Header(
-    fileType: FileTypeKind,
+    fileType: FileType,
     excludeFileType: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -135,7 +135,7 @@ private fun Header(
 
 @Composable
 private fun FileTypeRow(
-    fileType: FileTypeKind,
+    fileType: FileType,
     excludeFileType: () -> Unit,
     autoMoveEnabled: Boolean,
     onAutoMoveEnabledSwitchCheckedChange: (Boolean) -> Unit,
