@@ -40,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.composed.extensions.toMutableStateMap
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.FileTypeKind
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
@@ -53,8 +53,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddFileTypesBottomSheet(
-    disabledFileTypes: ImmutableList<FileType>,
-    addFileTypes: (List<FileType>) -> Unit,
+    disabledFileTypes: ImmutableList<FileTypeKind>,
+    addFileTypes: (List<FileTypeKind>) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -135,7 +135,7 @@ private class EnabledKeysTrackingSnapshotStateMap<K>(private val map: SnapshotSt
 }
 
 @Composable
-private fun FileTypeCard(fileType: FileType, isSelected: Boolean, onClick: () -> Unit) {
+private fun FileTypeCard(fileType: FileTypeKind, isSelected: Boolean, onClick: () -> Unit) {
     val borderAnimationState = rememberBorderAnimationState(
         enabled = isSelected,
         startWidth = 0.dp,

@@ -8,7 +8,7 @@ import com.w2sv.androidutils.coroutines.mapValuesToFirstBlocking
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.domain.repository.NavigatorRepository
+import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
 import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
@@ -27,7 +27,7 @@ import javax.inject.Singleton
 class FileNavigator : UnboundService() {
 
     @Inject
-    internal lateinit var navigatorRepository: NavigatorRepository
+    internal lateinit var navigatorConfigDataSource: NavigatorConfigDataSource
 
     @Inject
     internal lateinit var status: Status
@@ -48,8 +48,8 @@ class FileNavigator : UnboundService() {
             contentObserverHandlerThread.start()
         }
         return getFileObservers(
-            fileTypeEnablementMap = navigatorRepository.fileTypeEnablementMap.mapValuesToFirstBlocking(),
-            mediaFileSourceEnablementMap = navigatorRepository.mediaFileSourceEnablementMap.mapValuesToFirstBlocking(),
+            fileTypeEnablementMap = navigatorConfigDataSource.fileTypeEnablementMap.mapValuesToFirstBlocking(),
+            mediaFileSourceEnablementMap = navigatorConfigDataSource.mediaFileSourceEnablementMap.mapValuesToFirstBlocking(),
             contentResolver = contentResolver,
             onNewNavigatableFileListener = { moveFile ->
                 // with scope because construction of inner class BuilderArgs requires inner class scope

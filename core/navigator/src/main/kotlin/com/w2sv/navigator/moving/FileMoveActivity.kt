@@ -15,7 +15,7 @@ import com.w2sv.common.utils.ToastProperties
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.showToast
 import com.w2sv.core.navigator.R
-import com.w2sv.domain.repository.NavigatorRepository
+import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putMoveFileExtra
@@ -31,7 +31,7 @@ internal class FileMoveActivity : ComponentActivity() {
     @HiltViewModel
     class ViewModel @Inject constructor(
         savedStateHandle: SavedStateHandle,
-        navigatorRepository: NavigatorRepository
+        navigatorConfigDataSource: NavigatorConfigDataSource
     ) :
         androidx.lifecycle.ViewModel() {
 
@@ -46,7 +46,7 @@ internal class FileMoveActivity : ComponentActivity() {
             }
 
         val lastMoveDestination by lazy {
-            navigatorRepository.getLastMoveDestinationFlow(moveFile.source).firstBlocking()
+            navigatorConfigDataSource.getLastMoveDestinationFlow(moveFile.source).firstBlocking()
         }
     }
 

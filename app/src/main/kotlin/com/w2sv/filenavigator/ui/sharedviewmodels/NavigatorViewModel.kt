@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.services.isServiceRunning
-import com.w2sv.domain.repository.NavigatorRepository
+import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +23,7 @@ typealias MakeSnackbarVisuals = (Context) -> SnackbarVisuals
 
 @HiltViewModel
 class NavigatorViewModel @Inject constructor(
-    navigatorRepository: NavigatorRepository,
+    navigatorConfigDataSource: NavigatorConfigDataSource,
     fileNavigatorStatus: FileNavigator.Status,
     @ApplicationContext context: Context
 ) : ViewModel() {
@@ -43,7 +43,7 @@ class NavigatorViewModel @Inject constructor(
 
     val configuration = NavigatorConfiguration(
         scope = viewModelScope,
-        navigatorRepository = navigatorRepository,
+        navigatorConfigDataSource = navigatorConfigDataSource,
         emitMakeSnackbarVisuals = {
             viewModelScope.launch {
                 _makeSnackbarVisuals.emit(it)

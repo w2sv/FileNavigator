@@ -1,15 +1,15 @@
 package com.w2sv.filenavigator.ui.model
 
 import androidx.compose.ui.graphics.Color
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.FileTypeKind
 
 /**
  * Returns previously cached Color.
  */
-val FileType.color: Color
+val FileTypeKind.color: Color
     get() = fileTypeColors.getValue(this)
 
 private val fileTypeColors =
-    FileType
+    FileTypeKind
         .values
         .associateWith { Color(it.colorInt) }

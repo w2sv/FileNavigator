@@ -23,8 +23,8 @@ import com.w2sv.common.utils.loadBitmap
 import com.w2sv.common.utils.removeSlashSuffix
 import com.w2sv.common.utils.slashPrefixed
 import com.w2sv.core.navigator.R
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.repository.NavigatorRepository
+import com.w2sv.domain.model.FileTypeKind
+import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.moving.FileMoveActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.MoveFile
@@ -47,7 +47,7 @@ import javax.inject.Singleton
 internal class NewMoveFileNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
-    navigatorRepository: NavigatorRepository,
+    navigatorConfigDataSource: NavigatorConfigDataSource,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope
 ) : MultiInstanceAppNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
     notificationChannel = AppNotificationChannel.NewNavigatableFile.getNotificationChannel(context),
@@ -65,7 +65,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     )
 
     private val sourceToLastMoveDestinationStateFlow =
-        SourceToLastMoveDestinationStateFlow(navigatorRepository, scope)
+        SourceToLastMoveDestinationStateFlow(navigatorConfigDataSource, scope)
 
     override fun getBuilder(args: BuilderArgs): Builder =
         object : Builder() {
@@ -88,29 +88,29 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun getMoveFileTitle(): String =
                 when (val fileType = args.moveFile.source.fileType) {
-                    is FileType.Media -> {
+                    is FileTypeKind.Media -> {
                         if (isGif(args.moveFile)) {
                             context.getString(R.string.gif)
                         } else {
                             when (val sourceKind =
                                 args.moveFile.mediaStoreFile.columnData.getSourceKind()) {
-                                FileType.Source.Kind.Recording, FileType.Source.Kind.Screenshot -> context.getString(
+                                FileTypeKind.Source.Kind.Recording, FileTypeKind.Source.Kind.Screenshot -> context.getString(
                                     sourceKind.labelRes
                                 )
 
-                                FileType.Source.Kind.Camera -> context.getString(
+                                FileTypeKind.Source.Kind.Camera -> context.getString(
                                     when (args.moveFile.source.fileType) {
-                                        FileType.Image -> com.w2sv.core.domain.R.string.photo
-                                        FileType.Video -> com.w2sv.core.domain.R.string.video
+                                        FileTypeKind.Image -> com.w2sv.core.domain.R.string.photo
+                                        FileTypeKind.Video -> com.w2sv.core.domain.R.string.video
                                         else -> throw Error()
                                     }
                                 )
 
-                                FileType.Source.Kind.Download -> "${context.getString(fileType.titleRes)} ${
+                                FileTypeKind.Source.Kind.Download -> "${context.getString(fileType.titleRes)} ${
                                     context.getString(R.string.download)
                                 }"
 
-                                FileType.Source.Kind.OtherApp -> "${args.moveFile.mediaStoreFile.columnData.dirName} ${
+                                FileTypeKind.Source.Kind.OtherApp -> "${args.moveFile.mediaStoreFile.columnData.dirName} ${
                                     context.getString(
                                         fileType.titleRes
                                     )
@@ -120,7 +120,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         }
                     }
 
-                    is FileType.NonMedia -> {
+                    is FileTypeKind.NonMedia -> {
                         context.getString(args.moveFile.source.fileType.titleRes)
                     }
                 }
@@ -137,8 +137,8 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun setBigPictureStyleIfImage(): Boolean {
                 when (args.moveFile.source.fileType) {
-                    FileType.Image -> context.contentResolver.loadBitmap(args.moveFile.mediaStoreFile.uri)
-                    FileType.Video -> {
+                    FileTypeKind.Image -> context.contentResolver.loadBitmap(args.moveFile.mediaStoreFile.uri)
+                    FileTypeKind.Video -> {
                         try {
                             context.contentResolver.loadThumbnail(
                                 args.moveFile.mediaStoreFile.uri,
@@ -330,19 +330,19 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 }
 
 private fun isGif(moveFile: MoveFile): Boolean =
-    moveFile.source.fileType is FileType.Image && moveFile.mediaStoreFile.columnData.fileExtension.lowercase() == "gif"
+    moveFile.source.fileType is FileTypeKind.Image && moveFile.mediaStoreFile.columnData.fileExtension.lowercase() == "gif"
 
 private class SourceToLastMoveDestinationStateFlow(
-    private val navigatorRepository: NavigatorRepository,
+    private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val scope: CoroutineScope,
-    private val mutableMap: MutableMap<FileType.Source, StateFlow<Uri?>> = mutableMapOf()
-) : Map<FileType.Source, StateFlow<Uri?>> by mutableMap {
+    private val mutableMap: MutableMap<FileTypeKind.Source, StateFlow<Uri?>> = mutableMapOf()
+) : Map<FileTypeKind.Source, StateFlow<Uri?>> by mutableMap {
 
-    fun getLastMoveDestination(source: FileType.Source): Uri? =
+    fun getLastMoveDestination(source: FileTypeKind.Source): Uri? =
         mutableMap.getOrPut(
             key = source,
             defaultValue = {
-                navigatorRepository
+                navigatorConfigDataSource
                     .getLastMoveDestinationFlow(source)
                     .stateInWithSynchronousInitial(scope)
             }

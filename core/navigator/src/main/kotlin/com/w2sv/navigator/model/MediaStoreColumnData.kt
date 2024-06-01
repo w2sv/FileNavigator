@@ -11,7 +11,7 @@ import com.w2sv.common.utils.getBooleanOrThrow
 import com.w2sv.common.utils.getLongOrThrow
 import com.w2sv.common.utils.getStringOrThrow
 import com.w2sv.common.utils.query
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.FileTypeKind
 import com.w2sv.navigator.fileobservers.emitDiscardedLog
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -70,17 +70,17 @@ internal data class MediaStoreColumnData(
     val fileExists: Boolean
         get() = getFile().exists()
 
-    fun getSourceKind(): FileType.Source.Kind =
+    fun getSourceKind(): FileTypeKind.Source.Kind =
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && volumeRelativeDirPath.contains(
                 Environment.DIRECTORY_RECORDINGS
-            ) || volumeRelativeDirPath.contains("Recordings") -> FileType.Source.Kind.Recording
+            ) || volumeRelativeDirPath.contains("Recordings") -> FileTypeKind.Source.Kind.Recording
             // NOTE: Don't change the order of the Screenshot and Camera branches, as Environment.DIRECTORY_SCREENSHOTS
             // may be a child dir of Environment.DIRECTORY_DCIM
-            volumeRelativeDirPath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileType.Source.Kind.Screenshot
-            volumeRelativeDirPath.contains(Environment.DIRECTORY_DCIM) -> FileType.Source.Kind.Camera
-            volumeRelativeDirPath.contains(Environment.DIRECTORY_DOWNLOADS) -> FileType.Source.Kind.Download
-            else -> FileType.Source.Kind.OtherApp
+            volumeRelativeDirPath.contains(Environment.DIRECTORY_SCREENSHOTS) -> FileTypeKind.Source.Kind.Screenshot
+            volumeRelativeDirPath.contains(Environment.DIRECTORY_DCIM) -> FileTypeKind.Source.Kind.Camera
+            volumeRelativeDirPath.contains(Environment.DIRECTORY_DOWNLOADS) -> FileTypeKind.Source.Kind.Download
+            else -> FileTypeKind.Source.Kind.OtherApp
         }
             .also {
                 i { "Determined Source.Kind: ${it.name}" }

@@ -8,8 +8,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.w2sv.androidutils.datastorage.preferences_datastore.DataStoreEntry
 import com.w2sv.androidutils.datastorage.preferences_datastore.PreferencesDataStoreRepository
 import com.w2sv.androidutils.datastorage.preferences_datastore.flow.DataStoreStateFlowMap
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.repository.NavigatorRepository
+import com.w2sv.domain.model.FileTypeKind
+import com.w2sv.domain.repository.NavigatorConfigDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -19,9 +19,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NavigatorRepositoryImpl @Inject constructor(dataStore: DataStore<Preferences>) :
+class NavigatorConfigDataSourceImpl @Inject constructor(dataStore: DataStore<Preferences>) :
     PreferencesDataStoreRepository(dataStore),
-    NavigatorRepository {
+    NavigatorConfigDataSource {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -30,16 +30,16 @@ class NavigatorRepositoryImpl @Inject constructor(dataStore: DataStore<Preferenc
         true
     )
 
-    override val fileTypeEnablementMap: DataStoreStateFlowMap<FileType, Boolean> =
-        dataStoreFlowMap(FileType.values.associateWith { it.isEnabledDSE })
+    override val fileTypeEnablementMap: DataStoreStateFlowMap<FileTypeKind, Boolean> =
+        dataStoreFlowMap(FileTypeKind.values.associateWith { it.isEnabledDSE })
             .stateIn(
                 scope,
                 SharingStarted.Eagerly
             )
 
-    override val mediaFileSourceEnablementMap: DataStoreStateFlowMap<FileType.Source, Boolean> =
+    override val mediaFileSourceEnablementMap: DataStoreStateFlowMap<FileTypeKind.Source, Boolean> =
         dataStoreFlowMap(
-            FileType.Media.values
+            FileTypeKind.Media.values
                 .flatMap { it.sources }
                 .associateWith { it.isEnabledDSE }
         )
@@ -49,34 +49,34 @@ class NavigatorRepositoryImpl @Inject constructor(dataStore: DataStore<Preferenc
     // Last move destination
     // =======================
 
-    override fun getLastMoveDestinationFlow(source: FileType.Source): Flow<Uri?> =
+    override fun getLastMoveDestinationFlow(source: FileTypeKind.Source): Flow<Uri?> =
         getUriFlow(source.lastMoveDestinationDSE)
 
     override suspend fun saveLastMoveDestination(
-        source: FileType.Source,
+        source: FileTypeKind.Source,
         destination: Uri?
     ) {
         saveStringRepresentation(source.lastMoveDestinationDSE.preferencesKey, destination)
     }
 }
 
-private val FileType.isEnabledDSE
+private val FileTypeKind.isEnabledDSE
     get() = DataStoreEntry.UniType.Impl(
         preferencesKey = booleanPreferencesKey(name = name),
         defaultValue = true
     )
 
-private val FileType.Source.isEnabledDSE
+private val FileTypeKind.Source.isEnabledDSE
     get() = DataStoreEntry.UniType.Impl(
         booleanPreferencesKey(getPreferencesKeyContent("IS_ENABLED")),
         true
     )
 
-private val FileType.Source.lastMoveDestinationDSE
+private val FileTypeKind.Source.lastMoveDestinationDSE
     get() = DataStoreEntry.UriValued.Impl(
         stringPreferencesKey(getPreferencesKeyContent("LAST_MOVE_DESTINATION")),
         null
     )
 
-private fun FileType.Source.getPreferencesKeyContent(keySuffix: String): String =
+private fun FileTypeKind.Source.getPreferencesKeyContent(keySuffix: String): String =
     "${fileType.name}.$kind.$keySuffix"

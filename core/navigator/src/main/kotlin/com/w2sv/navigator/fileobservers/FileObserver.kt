@@ -6,7 +6,7 @@ import android.net.Uri
 import android.os.Handler
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.generic.milliSecondsTo
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.FileTypeKind
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.model.MediaStoreFileProvider
 import com.w2sv.navigator.moving.MoveFile
@@ -105,15 +105,15 @@ internal fun emitDiscardedLog(reason: () -> String) {
 }
 
 internal fun getFileObservers(
-    fileTypeEnablementMap: Map<FileType, Boolean>,
-    mediaFileSourceEnablementMap: Map<FileType.Source, Boolean>,
+    fileTypeEnablementMap: Map<FileTypeKind, Boolean>,
+    mediaFileSourceEnablementMap: Map<FileTypeKind.Source, Boolean>,
     contentResolver: ContentResolver,
     onNewNavigatableFileListener: (MoveFile) -> Unit,
     handler: Handler
 ): List<FileObserver> {
     return buildList {
         addAll(
-            FileType.Media.values
+            FileTypeKind.Media.values
                 .filter { fileTypeEnablementMap.getValue(it) }
                 .map { mediaType ->
                     MediaFileObserver(
@@ -129,7 +129,7 @@ internal fun getFileObservers(
                     )
                 }
         )
-        FileType.NonMedia.values
+        FileTypeKind.NonMedia.values
             .filter { fileTypeEnablementMap.getValue(it) }
             .run {
                 if (isNotEmpty()) {

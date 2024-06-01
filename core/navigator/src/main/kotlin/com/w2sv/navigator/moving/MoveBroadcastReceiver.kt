@@ -14,7 +14,7 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.showToast
-import com.w2sv.domain.repository.NavigatorRepository
+import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
@@ -34,7 +34,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     internal lateinit var insertMoveEntryUseCase: InsertMoveEntryUseCase
 
     @Inject
-    internal lateinit var navigatorRepository: NavigatorRepository
+    internal lateinit var navigatorConfigDataSource: NavigatorConfigDataSource
 
     @Inject
     @GlobalScope(AppDispatcher.IO)
@@ -112,7 +112,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                         )
 
                         if (updateLastMoveDestination) {
-                            navigatorRepository.saveLastMoveDestination(
+                            navigatorConfigDataSource.saveLastMoveDestination(
                                 source = moveFile.source,
                                 destination = moveDestinationDocumentFile.uri
                             )

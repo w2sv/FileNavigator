@@ -7,6 +7,7 @@ kotlin = "2.0.0"
 java = "17"
 ksp = "2.0.0-1.0.21"
 triplet-play = "3.9.1"
+protobuf-plugin = "0.9.4"
 
 compose-tooling = "1.6.7"
 compose-material3 = "1.2.1"
@@ -16,10 +17,11 @@ lifecycle = "2.7.0"
 room = "2.6.1"
 compose-lint-checks = "1.3.1"
 kotlinxCollectionsImmutable = "0.3.7"
-composed = "0.0.5-rc1"
+composed = "0.0.5-rc2"
 materialKolor = "1.5.1"
 compose-destinations = "2.0.0-beta01"
 hiltNavigationCompose = "1.2.0"
+protobuf = "4.26.1"
 
 [libraries]
 
@@ -30,7 +32,7 @@ composed = { module = "com.github.w2sv.Composed:composed", version.ref = "compos
 composed-permissions = { module = "com.github.w2sv.Composed:permissions", version.ref = "composed" }
 
 # Androidx
-androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
+androidx-appcompat = "androidx.appcompat:appcompat:1.7.0"
 androidx-core = "androidx.core:core-ktx:1.13.1"
 androidx-splashscreen = "androidx.core:core-splashscreen:1.0.1"
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
@@ -49,13 +51,17 @@ androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", vers
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
-#.Room
+# .Room
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 # Google
 google-guava = "com.google.guava:guava:33.2.0-jre"
+
+#. Protobuf
+protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
+protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 
 # .Hilt
 google-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
@@ -93,6 +99,7 @@ kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 play = { id = "com.github.triplet.play", version.ref = "triplet-play" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 
 # Plugins defined by the project
 filenavigator-library = { id = "filenavigator.library", version = "unspecified" }
