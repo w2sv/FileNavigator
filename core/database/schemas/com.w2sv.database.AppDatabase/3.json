@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "472c0ae511de2e54c39601ac684f0db6",
+    "identityHash": "3b26bbe448dc94e99a329d453767f31c",
     "entities": [
       {
         "tableName": "MoveEntryEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fileName` TEXT NOT NULL, `fileType` TEXT NOT NULL, `fileSourceKind` TEXT NOT NULL, `destinationDocumentUri` TEXT NOT NULL, `movedFileDocumentUri` TEXT NOT NULL, `movedFileMediaUri` TEXT NOT NULL, `dateTime` TEXT NOT NULL, PRIMARY KEY(`dateTime`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fileName` TEXT NOT NULL, `fileType` TEXT NOT NULL, `sourceType` TEXT NOT NULL, `destinationDocumentUri` TEXT NOT NULL, `movedFileDocumentUri` TEXT NOT NULL, `movedFileMediaUri` TEXT NOT NULL, `dateTime` TEXT NOT NULL, PRIMARY KEY(`dateTime`))",
         "fields": [
           {
             "fieldPath": "fileName",
@@ -21,8 +21,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "fileSourceKind",
-            "columnName": "fileSourceKind",
+            "fieldPath": "sourceType",
+            "columnName": "sourceType",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -64,7 +64,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '472c0ae511de2e54c39601ac684f0db6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3b26bbe448dc94e99a329d453767f31c')"
     ]
   }
 }

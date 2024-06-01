@@ -6,11 +6,14 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType) : Parcelable {
-
     @get:DrawableRes
     val iconRes: Int
-        get() = when (sourceType) {
-            SourceType.Screenshot, SourceType.Camera -> fileType.iconRes
-            else -> fileType.iconRes
-        }
+        get() = combinedFileAndSourceTypeIconRes(fileType, sourceType)
 }
+
+@DrawableRes
+fun combinedFileAndSourceTypeIconRes(fileType: FileType, sourceType: SourceType): Int =
+    when (sourceType) {
+        SourceType.Screenshot, SourceType.Camera -> fileType.iconRes
+        else -> fileType.iconRes
+    }

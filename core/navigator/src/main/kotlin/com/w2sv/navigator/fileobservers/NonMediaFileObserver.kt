@@ -3,7 +3,9 @@ package com.w2sv.navigator.fileobservers
 import android.content.ContentResolver
 import android.os.Handler
 import com.anggrayudi.storage.media.MediaType
+import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.SourceType
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.moving.MoveFile
 import slimber.log.i
@@ -35,8 +37,7 @@ internal class NonMediaFileObserver(
             ?.let { fileType ->
                 MoveFile(
                     mediaStoreFile = mediaStoreFile,
-                    fileType = fileType,
-                    sourceKind = SourceType.Kind.Download
+                    fileAndSourceType = FileAndSourceType(fileType, SourceType.Download),
                 )
             }
 }

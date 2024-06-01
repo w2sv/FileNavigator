@@ -3,8 +3,8 @@ package com.w2sv.datastore.proto.navigatorconfig
 import android.net.Uri
 import androidx.datastore.core.DataStore
 import com.w2sv.datastore.NavigatorConfigProto
-import com.w2sv.datastore.copy
-import com.w2sv.domain.model.FileAndSourceType
+import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import kotlinx.coroutines.flow.Flow
@@ -26,21 +26,38 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
     }
 
     override suspend fun saveLastMoveDestination(
-        fileAndSourceType: FileAndSourceType,
+        fileType: FileType,
+        sourceType: SourceType,
         destination: Uri
     ) {
-        navigatorConfigProtoDataStore.updateData {
-            it.copy {}  // TODO
+        navigatorConfigProtoDataStore.updateData { configProto ->
+            NavigatorConfigMapper.toProto(
+                NavigatorConfigMapper
+                    .toExternal(configProto)
+                    .copyWithAlteredSourceConfig(
+                        fileType,
+                        sourceType
+                    ) {
+                        it.copy(lastMoveDestinations = listOf(destination))
+                    }
+            )
+//            it.copy {
+//                fileTypeToConfig[FileType.values.indexOf(fileType)] =
+//                    fileTypeToConfig.getValue(FileType.values.indexOf(fileType)).copy {
+//                        sourceTypeToConfig[sourceType.ordinal] =
+//                            sourceTypeToConfig.getValue(sourceType.ordinal).copy {
+//                                lastMoveDestination[0] = destination.toString()
+//                            }
+//                    }
+//            }
         }
     }
 
-    override fun lastMoveDestinations(fileAndSourceType: FileAndSourceType): Flow<List<Uri>> =
-        navigatorConfig.map {
-            it
-                .fileTypeConfigs.find { it.fileType == fileAndSourceType.fileType }!!
-                .sourceConfigs.find { it.type == fileAndSourceType.sourceType }!!
-                .lastMoveDestinations
-        }
+    override fun lastMoveDestination(
+        fileType: FileType,
+        sourceType: SourceType
+    ): Flow<List<Uri>> =
+        navigatorConfig.map { it.sourceConfig(fileType, sourceType).lastMoveDestinations }
 }
 
 

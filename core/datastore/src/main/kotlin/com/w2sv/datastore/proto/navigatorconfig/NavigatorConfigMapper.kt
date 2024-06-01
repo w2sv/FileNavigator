@@ -3,7 +3,6 @@ package com.w2sv.datastore.proto.navigatorconfig
 import android.net.Uri
 import com.w2sv.datastore.AutoMoveConfigProto
 import com.w2sv.datastore.FileTypeConfigProto
-import com.w2sv.datastore.FileTypeProto
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.SourceConfigProto
 import com.w2sv.datastore.SourceTypeProto
@@ -22,16 +21,19 @@ import com.w2sv.domain.model.navigatorconfig.SourceConfig
 internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, NavigatorConfig> {
     override fun toExternal(proto: NavigatorConfigProto): NavigatorConfig =
         NavigatorConfig(
-            fileTypeConfigs = proto.fileTypeConfigsList.map { FileTypeConfigMapper.toExternal(it) },
+            fileTypeConfigMap = proto.fileTypeToConfigMap.entries.associate { (fileTypeIndex, configProto) ->
+                FileType.values[fileTypeIndex] to FileTypeConfigMapper.toExternal(configProto)
+            },
             disableOnLowBattery = proto.disableOnLowBattery
         )
 
     override fun toProto(external: NavigatorConfig): NavigatorConfigProto =
         navigatorConfigProto {
-            fileTypeConfigs.apply {
-                clear()
-                addAll(external.fileTypeConfigs.map { FileTypeConfigMapper.toProto(it) })
-            }
+            fileTypeToConfig.putAll(
+                external.fileTypeConfigMap.entries.associate { (fileType, config) ->
+                    FileType.values.indexOf(fileType) to FileTypeConfigMapper.toProto(config)
+                }
+            )
             disableOnLowBattery = external.disableOnLowBattery
         }
 }
@@ -39,54 +41,54 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
 private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeConfig> {
     override fun toExternal(proto: FileTypeConfigProto): FileTypeConfig =
         FileTypeConfig(
-            fileType = FileTypeMapper.toExternal(proto.type),
             enabled = proto.enabled,
-            sourceConfigs = proto.sourceConfigsList.map { SourceConfigMapper.toExternal(it) },
+            sourceTypeToConfig = proto.sourceTypeToConfigMap.entries.associate { (sourceTypeIndex, config) ->
+                SourceType.entries[sourceTypeIndex] to SourceConfigMapper.toExternal(config)
+            },
             autoMoveConfig = AutoMoveConfigMapper.toExternal(proto.autoMoveConfig)
         )
 
     override fun toProto(external: FileTypeConfig): FileTypeConfigProto =
         fileTypeConfigProto {
-            type = FileTypeMapper.toProto(external.fileType)
             enabled = external.enabled
-            sourceConfigs.apply {
-                clear()
-                addAll(external.sourceConfigs.map { SourceConfigMapper.toProto(it) })
-            }
+            sourceTypeToConfig.putAll(
+                external.sourceTypeToConfig.entries.associate { (type, config) ->
+                    type.ordinal to SourceConfigMapper.toProto(config)
+                }
+            )
             autoMoveConfig = AutoMoveConfigMapper.toProto(external.autoMoveConfig)
         }
 }
 
-private object FileTypeMapper : ProtoMapper<FileTypeProto, FileType> {
-    override fun toExternal(proto: FileTypeProto): FileType =
-        when (proto) {
-            FileTypeProto.Image -> FileType.Image
-            FileTypeProto.Video -> FileType.Video
-            FileTypeProto.Audio -> FileType.Audio
-            FileTypeProto.PDF -> FileType.PDF
-            FileTypeProto.Text -> FileType.Text
-            FileTypeProto.Archive -> FileType.Archive
-            FileTypeProto.APK -> FileType.APK
-            FileTypeProto.UNRECOGNIZED -> throw IllegalArgumentException("Unrecognized FileTypeProto")
-        }
-
-    override fun toProto(external: FileType): FileTypeProto =
-        when (external) {
-            FileType.Image -> FileTypeProto.Image
-            FileType.Video -> FileTypeProto.Video
-            FileType.Audio -> FileTypeProto.Audio
-            FileType.PDF -> FileTypeProto.PDF
-            FileType.Text -> FileTypeProto.Text
-            FileType.Archive -> FileTypeProto.Archive
-            FileType.APK -> FileTypeProto.APK
-        }
-}
+//private object FileTypeMapper : ProtoMapper<FileTypeProto, FileType> {
+//    override fun toExternal(proto: FileTypeProto): FileType =
+//        when (proto) {
+//            FileTypeProto.Image -> FileType.Image
+//            FileTypeProto.Video -> FileType.Video
+//            FileTypeProto.Audio -> FileType.Audio
+//            FileTypeProto.PDF -> FileType.PDF
+//            FileTypeProto.Text -> FileType.Text
+//            FileTypeProto.Archive -> FileType.Archive
+//            FileTypeProto.APK -> FileType.APK
+//            FileTypeProto.UNRECOGNIZED -> throw IllegalArgumentException("Unrecognized FileTypeProto")
+//        }
+//
+//    override fun toProto(external: FileType): FileTypeProto =
+//        when (external) {
+//            FileType.Image -> FileTypeProto.Image
+//            FileType.Video -> FileTypeProto.Video
+//            FileType.Audio -> FileTypeProto.Audio
+//            FileType.PDF -> FileTypeProto.PDF
+//            FileType.Text -> FileTypeProto.Text
+//            FileType.Archive -> FileTypeProto.Archive
+//            FileType.APK -> FileTypeProto.APK
+//        }
+//}
 
 private object SourceConfigMapper :
     ProtoMapper<SourceConfigProto, SourceConfig> {
     override fun toExternal(proto: SourceConfigProto): SourceConfig =
         SourceConfig(
-            type = SourceTypeMapper.toExternal(proto.type),
             enabled = proto.enabled,
             lastMoveDestinations = proto.lastMoveDestinationsList.map { Uri.parse(it) },
             autoMoveConfig = AutoMoveConfigMapper.toExternal(proto.autoMoveConfig)
@@ -94,7 +96,6 @@ private object SourceConfigMapper :
 
     override fun toProto(external: SourceConfig): SourceConfigProto =
         sourceConfigProto {
-            this.type = SourceTypeMapper.toProto(external.type)
             this.enabled = external.enabled
             this.lastMoveDestinations.apply {
                 clear()

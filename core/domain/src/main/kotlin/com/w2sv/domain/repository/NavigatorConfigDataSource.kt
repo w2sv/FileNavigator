@@ -1,7 +1,6 @@
 package com.w2sv.domain.repository
 
 import android.net.Uri
-import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -12,9 +11,13 @@ interface NavigatorConfigDataSource {
     suspend fun saveNavigatorConfig(config: NavigatorConfig)
 
     suspend fun saveLastMoveDestination(
-        fileAndSourceType: FileAndSourceType,
+        fileType: FileType,
+        sourceType: SourceType,
         destination: Uri
     )
 
-    fun lastMoveDestinations(fileAndSourceType: FileAndSourceType): Flow<List<Uri>>
+    fun lastMoveDestination(
+        fileType: FileType,
+        sourceType: SourceType
+    ): Flow<List<Uri>>
 }

@@ -4,15 +4,14 @@ option java_package = "com.w2sv.datastore";
 option java_multiple_files = true;
 
 message NavigatorConfigProto {
-  repeated FileTypeConfigProto file_type_configs = 1;
+  map<int32, FileTypeConfigProto> file_type_to_config = 1;
   bool disable_on_low_battery = 2;
 }
 
 message FileTypeConfigProto {
-  FileTypeProto type = 1;
-  bool enabled = 2;
-  repeated SourceConfigProto source_configs = 3;
-  AutoMoveConfigProto auto_move_config = 4;
+  bool enabled = 1;
+  map<int32, SourceConfigProto> source_type_to_config = 2;
+  AutoMoveConfigProto auto_move_config = 3;
 }
 
 enum FileTypeProto {
@@ -26,7 +25,6 @@ enum FileTypeProto {
 }
 
 message SourceConfigProto {
-  SourceTypeProto type = 1;
   bool enabled = 2;
   repeated string last_move_destinations = 3;
   AutoMoveConfigProto auto_move_config = 4;

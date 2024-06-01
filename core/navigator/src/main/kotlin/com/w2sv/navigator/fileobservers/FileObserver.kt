@@ -106,7 +106,7 @@ internal fun emitDiscardedLog(reason: () -> String) {
 }
 
 internal fun getFileObservers(
-    fileTypeConfigs: List<FileTypeConfig>,
+    fileTypeConfigMap: Map<FileType, FileTypeConfig>,
     contentResolver: ContentResolver,
     onNewNavigatableFileListener: (MoveFile) -> Unit,
     handler: Handler
@@ -114,15 +114,11 @@ internal fun getFileObservers(
     return buildList {
         addAll(
             FileType.Media.values
-                .filter { fileTypeEnablementMap.getValue(it) }
-                .map { mediaType ->
+                .filter { fileTypeConfigMap.getValue(it).enabled }
+                .map { mediaFileType ->
                     MediaFileObserver(
-                        fileType = mediaType,
-                        sourceKinds = mediaType
-                            .sources
-                            .filter { source -> mediaFileSourceEnablementMap.getValue(source) }
-                            .map { source -> source.kind }
-                            .toSet(),
+                        fileType = mediaFileType,
+                        sourceKinds = fileTypeConfigMap.getValue(mediaFileType).sourceTypeToConfig.keys,
                         contentResolver = contentResolver,
                         onNewMoveFile = onNewNavigatableFileListener,
                         handler = handler
@@ -130,7 +126,7 @@ internal fun getFileObservers(
                 }
         )
         FileType.NonMedia.values
-            .filter { fileTypeEnablementMap.getValue(it) }
+            .filter { fileTypeConfigMap.getValue(it).enabled }
             .run {
                 if (isNotEmpty()) {
                     add(

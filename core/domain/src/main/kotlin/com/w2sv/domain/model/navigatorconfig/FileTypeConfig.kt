@@ -1,10 +1,18 @@
 package com.w2sv.domain.model.navigatorconfig
 
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.SourceType
 
 data class FileTypeConfig(
-    val fileType: FileType,
     val enabled: Boolean,
-    val sourceConfigs: List<SourceConfig>,
+    val sourceTypeToConfig: Map<SourceType, SourceConfig>,
     val autoMoveConfig: AutoMoveConfig
-)
+) {
+    companion object {
+        fun default(sourceTypes: List<SourceType> = emptyList()): FileTypeConfig =
+            FileTypeConfig(
+                enabled = true,
+                sourceTypeToConfig = sourceTypes.associateWith { SourceConfig() },
+                autoMoveConfig = AutoMoveConfig()
+            )
+    }
+}

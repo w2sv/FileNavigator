@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
+import com.w2sv.filenavigator.ui.states.EditableNavigatorConfig
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -41,7 +41,7 @@ class NavigatorViewModel @Inject constructor(
         }
     }
 
-    val configuration = NavigatorConfiguration(
+    val configuration = EditableNavigatorConfig(
         scope = viewModelScope,
         navigatorConfigDataSource = navigatorConfigDataSource,
         emitMakeSnackbarVisuals = {

@@ -13,8 +13,8 @@ internal fun getMoveEntry(
 ): MoveEntry =
     MoveEntry(
         fileName = moveFile.mediaStoreFile.columnData.name,
-        fileTypeConfig = moveFile.source.fileType,
-        fileSourceKindConfig = moveFile.source.kind,
+        fileType = moveFile.fileType,
+        sourceType = moveFile.sourceType,
         destinationDocumentUri = destinationDocumentUri,
         movedFileDocumentUri = movedFileDocumentUri,
         movedFileMediaUri = movedFileMediaUri,

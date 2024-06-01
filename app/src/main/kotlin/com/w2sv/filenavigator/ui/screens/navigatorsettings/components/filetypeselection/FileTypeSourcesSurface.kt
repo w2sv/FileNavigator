@@ -19,13 +19,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.InterElementDividedColumn
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.utils.orOnSurfaceDisabledIf
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 fun FileTypeSourcesSurface(
     fileType: FileType,
+    sourceTypes: ImmutableList<SourceType>,
     mediaFileSourceEnabled: (SourceType) -> Boolean,
     setMediaFileSourceEnabled: (SourceType, Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -36,12 +40,13 @@ fun FileTypeSourcesSurface(
         modifier = modifier.fillMaxWidth()
     ) {
         InterElementDividedColumn(
-            elements = SourceTypes.toImmutableList(),
-            makeElement = { source ->
+            elements = sourceTypes,
+            makeElement = { sourceType ->
                 SourceRow(
-                    source = source,
-                    isEnabled = mediaFileSourceEnabled(source),
-                    onCheckedChange = { setMediaFileSourceEnabled(source, it) },
+                    fileType = fileType,
+                    sourceType = sourceType,
+                    isEnabled = mediaFileSourceEnabled(sourceType),
+                    onCheckedChange = { setMediaFileSourceEnabled(sourceType, it) },
                     modifier = Modifier.height(44.dp)
                 )
             }
@@ -51,7 +56,8 @@ fun FileTypeSourcesSurface(
 
 @Composable
 private fun SourceRow(
-    source: SourceType,
+    fileType: FileType,
+    sourceType: SourceType,
     isEnabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -62,18 +68,18 @@ private fun SourceRow(
         modifier = modifier
     ) {
         Icon(
-            painter = painterResource(id = source.kind.iconRes),
+            painter = painterResource(id = sourceType.iconRes),
             contentDescription = null,
-            tint = source.fileType.color
+            tint = fileType.color
                 .orOnSurfaceDisabledIf(condition = !isEnabled),
             modifier = Modifier.padding(start = 26.dp, end = 18.dp)
         )
         Text(
-            text = stringResource(id = source.kind.labelRes),
+            text = stringResource(id = sourceType.labelRes),
             color = MaterialTheme.colorScheme.onSurface
                 .orOnSurfaceDisabledIf(condition = !isEnabled)
         )
-        if (source.fileType.isMediaType) {
+        if (fileType.isMediaType) {
             Spacer(modifier = Modifier.weight(1f))
             Checkbox(
                 checked = isEnabled,

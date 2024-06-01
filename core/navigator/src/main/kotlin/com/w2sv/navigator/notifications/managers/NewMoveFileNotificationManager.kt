@@ -190,22 +190,22 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 
                 // Add quickMoveAction if lastMoveDestination present.
-                sourceToLastMoveDestinationStateFlow.lastMoveDestinations(args.moveFile.fileAndSourceType)
-                    ?.let { lastMoveDestination ->  // TODO
-//                        // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
-//                        getDocumentUriFileName(
-//                            documentUri = lastMoveDestination,
-//                            context = context
-//                        )
-//                            ?.let { fileName ->
-//                                addAction(
-//                                    getQuickMoveAction(
-//                                        requestCode = requestCodeIterator.next(),
-//                                        lastMoveDestination = lastMoveDestination,
-//                                        lastMoveDestinationFileName = fileName
-//                                    )
-//                                )
-//                            }
+                sourceToLastMoveDestinationStateFlow.lastMoveDestination(args.moveFile.fileAndSourceType)
+                    ?.let { lastMoveDestination ->
+                        // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
+                        getDocumentUriFileName(
+                            documentUri = lastMoveDestination,
+                            context = context
+                        )
+                            ?.let { fileName ->
+                                addAction(
+                                    getQuickMoveAction(
+                                        requestCode = requestCodeIterator.next(),
+                                        lastMoveDestination = lastMoveDestination,
+                                        lastMoveDestinationFileName = fileName
+                                    )
+                                )
+                            }
                     }
 
                 setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
@@ -340,14 +340,18 @@ private class SourceToLastMoveDestinationStateFlow(
     private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<Uri>>> = mutableMapOf()
 ) : Map<FileAndSourceType, StateFlow<List<Uri>>> by mutableMap {
 
-    fun lastMoveDestinations(fileAndSourceType: FileAndSourceType): List<Uri> =
+    fun lastMoveDestination(fileAndSourceType: FileAndSourceType): Uri? =
         mutableMap.getOrPut(
             key = fileAndSourceType,
             defaultValue = {
                 navigatorConfigDataSource
-                    .lastMoveDestinations(fileAndSourceType)
+                    .lastMoveDestination(
+                        fileType = fileAndSourceType.fileType,
+                        sourceType = fileAndSourceType.sourceType
+                    )
                     .stateInWithSynchronousInitial(scope)
             }
         )
             .value
+            .firstOrNull()
 }

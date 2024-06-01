@@ -76,7 +76,7 @@ fun NavigatorSettingsScreen(
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
-    val configurationHasChanged by navigatorVM.configuration.unconfirmedStates.statesDissimilar.collectAsStateWithLifecycle()
+    val configHasChanged by navigatorVM.configuration.editable.statesDissimilar.collectAsStateWithLifecycle()
 
     CollectLatestFromFlow(
         flow = navigatorVM.makeSnackbarVisuals,
@@ -87,7 +87,7 @@ fun NavigatorSettingsScreen(
 
     val onBack: () -> Unit = remember {
         {
-            navigatorVM.configuration.unconfirmedStates.reset()
+            navigatorVM.configuration.editable.reset()
             navigator.popBackStack()
         }
     }
@@ -120,11 +120,11 @@ fun NavigatorSettingsScreen(
         },
         floatingActionButton = {
             ConfigurationButtonRow(
-                configurationHasChanged = configurationHasChanged,
-                resetConfiguration = remember { { navigatorVM.configuration.unconfirmedStates.reset() } },
+                configurationHasChanged = configHasChanged,
+                resetConfiguration = remember { { navigatorVM.configuration.editable.reset() } },
                 syncConfiguration = remember {
                     {
-                        navigatorVM.configuration.unconfirmedStates.launchSync()
+                        navigatorVM.configuration.editable.launchSync()
                             .invokeOnCompletion {
                                 scope.launch {
                                     delay(500)  // Wait until fab button row has disappeared
@@ -158,7 +158,7 @@ fun NavigatorSettingsScreen(
 
         if (showAddFileTypesBottomSheet) {
             AddFileTypesBottomSheet(
-                disabledFileTypes = navigatorVM.configuration.disabledFileTypes.toPersistentList(),
+                disabledFileTypes = navigatorVM.configuration.disabledFileTypes.collectAsStateWithLifecycle().value.toPersistentList(),
                 addFileTypes = remember {
                     {
                         it.forEach { fileType ->

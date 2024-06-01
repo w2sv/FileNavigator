@@ -5,13 +5,14 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveEntry
+import com.w2sv.domain.model.SourceType
 import java.time.LocalDateTime
 
 @Entity
 data class MoveEntryEntity(
     val fileName: String,
     val fileType: FileType,
-    val fileSourceKind: SourceType.Kind,
+    val sourceType: SourceType,
     val destinationDocumentUri: Uri,
     val movedFileDocumentUri: Uri,
     val movedFileMediaUri: Uri,
@@ -19,8 +20,8 @@ data class MoveEntryEntity(
 ) {
     constructor(moveEntry: MoveEntry) : this(
         fileName = moveEntry.fileName,
-        fileType = moveEntry.fileTypeConfig,
-        fileSourceKind = moveEntry.fileSourceKindConfig,
+        fileType = moveEntry.fileType,
+        sourceType = moveEntry.sourceType,
         destinationDocumentUri = moveEntry.destinationDocumentUri,
         movedFileDocumentUri = moveEntry.movedFileDocumentUri,
         movedFileMediaUri = moveEntry.movedFileMediaUri,
@@ -30,8 +31,8 @@ data class MoveEntryEntity(
     fun asExternalModel(): MoveEntry =
         MoveEntry(
             fileName = fileName,
-            fileTypeConfig = fileType,
-            fileSourceKindConfig = fileSourceKind,
+            fileType = fileType,
+            sourceType = sourceType,
             destinationDocumentUri = destinationDocumentUri,
             movedFileDocumentUri = movedFileDocumentUri,
             movedFileMediaUri = movedFileMediaUri,

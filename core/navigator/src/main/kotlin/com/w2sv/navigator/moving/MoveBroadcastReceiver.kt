@@ -113,7 +113,8 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
                         if (updateLastMoveDestination) {
                             navigatorConfigDataSource.saveLastMoveDestination(
-                                fileAndSourceType = moveFile.fileAndSourceType,
+                                fileType = moveFile.fileType,
+                                sourceType = moveFile.sourceType,
                                 destination = moveDestinationDocumentFile.uri
                             )
                         }

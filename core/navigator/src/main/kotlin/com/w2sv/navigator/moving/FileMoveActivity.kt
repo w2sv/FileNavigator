@@ -46,7 +46,9 @@ internal class FileMoveActivity : ComponentActivity() {
             }
 
         val lastMoveDestination by lazy {
-            navigatorConfigDataSource.getLastMoveDestinationFlow(moveFile.source).firstBlocking()
+            navigatorConfigDataSource.lastMoveDestination(moveFile.fileType, moveFile.sourceType)
+                .firstBlocking()
+                .firstOrNull()
         }
     }
 
