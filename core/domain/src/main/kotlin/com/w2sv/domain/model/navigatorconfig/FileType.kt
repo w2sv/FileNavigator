@@ -15,7 +15,7 @@ data class FileType(
     val kind: Kind,
     val enabled: Boolean,
     val sources: List<Source>,
-    val autoMoveConfig: AutoMoveConfig?
+    val autoMoveConfig: AutoMoveConfig
 ) {
     @DrawableRes
     fun getSourceIconRes(source: Source): Int =
@@ -28,7 +28,7 @@ data class FileType(
         val kind: Kind,
         val enabled: Boolean,
         val lastMoveDestinations: List<Uri>,
-        val autoMoveConfig: AutoMoveConfig?
+        val autoMoveConfig: AutoMoveConfig
     ) {
 
         enum class Kind(

@@ -12,7 +12,7 @@ message FileTypeProto {
   Kind kind = 1;
   bool enabled = 2;
   repeated Source sources = 3;
-  optional AutoMoveConfigProto auto_move_settings = 4;
+  AutoMoveConfigProto auto_move_config = 4;
 
   enum Kind {
     Image = 0;
@@ -28,7 +28,7 @@ message FileTypeProto {
     Kind kind = 1;
     bool enabled = 2;
     repeated string last_move_destinations = 3;
-    optional AutoMoveConfigProto auto_move_settings = 4;
+    AutoMoveConfigProto auto_move_config = 4;
 
     enum Kind {
       Camera = 0;

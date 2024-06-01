@@ -15,6 +15,9 @@ build-apk:
 compose-compiler-reports:
 	@echo ./gradlew assembleRelease -PcomposeCompilerReports=true
 
+generate-proto:
+	@./gradlew generateDebugProto
+
 # ==============
 # Publishing
 # ==============

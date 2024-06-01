@@ -3,14 +3,14 @@ package com.w2sv.datastore.navigatorconfig
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.google.protobuf.InvalidProtocolBufferException
-import com.whoami.datastore.user.FileTypeProto
-import com.whoami.datastore.user.NavigatorConfigProto
-import com.whoami.datastore.user.fileTypeProto
-import com.whoami.datastore.user.navigatorConfigProto
+import com.w2sv.datastore.FileTypeProto
+import com.w2sv.datastore.NavigatorConfigProto
+import com.w2sv.datastore.fileTypeProto
+import com.w2sv.datastore.navigatorConfigProto
 import java.io.InputStream
 import java.io.OutputStream
 
-internal class NavigatorConfigProtoSerializer : Serializer<NavigatorConfigProto> {
+internal object NavigatorConfigProtoSerializer : Serializer<NavigatorConfigProto> {
     override val defaultValue: NavigatorConfigProto
         get() = navigatorConfigProto {
             fileTypes.addAll(

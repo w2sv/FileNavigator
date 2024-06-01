@@ -2,16 +2,17 @@ package com.w2sv.datastore.navigatorconfig
 
 import android.net.Uri
 import androidx.datastore.core.DataStore
+import com.w2sv.common.utils.reset
+import com.w2sv.datastore.AutoMoveConfigProto
+import com.w2sv.datastore.FileTypeProto
+import com.w2sv.datastore.NavigatorConfigProto
+import com.w2sv.datastore.autoMoveConfigProto
+import com.w2sv.datastore.fileTypeProto
+import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.whoami.datastore.user.AutoMoveSettingsProto
-import com.whoami.datastore.user.FileTypeProto
-import com.whoami.datastore.user.NavigatorConfigProto
-import com.whoami.datastore.user.autoMoveSettingsProto
-import com.whoami.datastore.user.fileTypeProto
-import com.whoami.datastore.user.navigatorConfigProto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -54,7 +55,7 @@ private fun FileType.toProto(): FileTypeProto =
             clear()
             addAll(this@toProto.sources.map { it.toProto() })
         }
-        autoMoveSettings = this@toProto.autoMoveConfig?.toProto()
+        autoMoveConfig = this@toProto.autoMoveConfig.toProto()
     }
 
 private fun FileTypeProto.toExternal(): FileType =
@@ -62,7 +63,7 @@ private fun FileTypeProto.toExternal(): FileType =
         kind = kind.toExternal(),
         enabled = enabled,
         sources = sourcesList.map { it.toExternal() },
-        autoMoveConfig = autoMoveSettings.toExternal()
+        autoMoveConfig = autoMoveConfig.toExternal()
     )
 
 private fun FileType.Kind.toProto(): FileTypeProto.Kind = when (this) {
@@ -91,11 +92,8 @@ private fun FileType.Source.toProto(): FileTypeProto.Source =
         .apply {
             this.kind = this@toProto.kind.toProto()
             this.enabled = this@toProto.enabled
-            this.lastMoveDestinationsList.apply {
-                clear()
-                addAll(this@toProto.lastMoveDestinations.map { it.toString() })
-            }
-            this.autoMoveSettings = this@toProto.autoMoveConfig.toProto()
+            this.lastMoveDestinationsList.reset(this@toProto.lastMoveDestinations.map { it.toString() })
+            this.autoMoveConfig = this@toProto.autoMoveConfig.toProto()
         }
         .build()
 
@@ -104,7 +102,7 @@ private fun FileTypeProto.Source.toExternal(): FileType.Source =
         kind = kind.toExternal(),
         enabled = enabled,
         lastMoveDestinations = lastMoveDestinationsList.map { Uri.parse(it) },
-        autoMoveConfig = autoMoveSettings.toExternal()
+        autoMoveConfig = autoMoveConfig.toExternal()
     )
 
 private fun FileType.Source.Kind.toProto(): FileTypeProto.Source.Kind = when (this) {
@@ -124,14 +122,18 @@ private fun FileTypeProto.Source.Kind.toExternal(): FileType.Source.Kind = when 
     FileTypeProto.Source.Kind.UNRECOGNIZED -> throw IllegalArgumentException("Unrecognized FileTypeProto.Source.Kind")
 }
 
-private fun AutoMoveConfig.toProto(): AutoMoveSettingsProto =
-    autoMoveSettingsProto {
+private fun AutoMoveConfig.toProto(): AutoMoveConfigProto =
+    autoMoveConfigProto {
         this.enabled = this@toProto.enabled
-        this.destination = this@toProto.destination.toString()
+        this.destination = this@toProto.destination?.toString() ?: ""
     }
 
-private fun AutoMoveSettingsProto.toExternal(): AutoMoveConfig =
+private fun AutoMoveConfigProto.toExternal(): AutoMoveConfig =
     AutoMoveConfig(
-        enabled,
-        Uri.parse(destination)
+        enabled = enabled,
+        destination = if (destination.isNotEmpty()) {
+            Uri.parse(destination)
+        } else {
+            null
+        }
     )
