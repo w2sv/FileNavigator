@@ -26,9 +26,9 @@ class EditableNavigatorConfig(
     val editable = ReversibleStateFlow(
         scope = scope,
         appliedState = navigatorConfigDataSource.navigatorConfig.stateIn(
-            scope,
-            SharingStarted.Eagerly,
-            NavigatorConfig.default
+            scope = scope,
+            started = SharingStarted.Eagerly,
+            initialValue = NavigatorConfig.default
         ),
         syncState = {
             navigatorConfigDataSource.saveNavigatorConfig(it)
@@ -36,23 +36,13 @@ class EditableNavigatorConfig(
         },
     )
 
-    val enabledFileTypes =
-        editable.mapState { config -> config.fileTypeConfigMap.run { keys.filter { getValue(it).enabled } } }
-
-    val disabledFileTypes = enabledFileTypes.mapState {
-        (FileType.values.toSet() - it.toSet())
-            .sortedBy { fileType ->
-                FileType.values.indexOf(fileType)
-            }
-    }
-
     fun onFileTypeCheckedChange(
         fileType: FileType,
         checkedNew: Boolean
     ) {
         updateOrEmitSnackbar(
             checkedNew = checkedNew,
-            checkedCount = enabledFileTypes.value.size,
+            checkedCount = editable.value.enabledFileTypes.size,
             update = {
                 editable.update { config ->
                     config.copyWithAlteredFileConfig(fileType) { it.copy(enabled = checkedNew) }
@@ -76,7 +66,7 @@ class EditableNavigatorConfig(
     ) {
         updateOrEmitSnackbar(
             checkedNew = checkedNew,
-            checkedCount = editable.value.fileTypeConfigMap.getValue(fileType).sourceTypeToConfig.values.count { it.enabled },
+            checkedCount = editable.value.enabledSourceTypesCount(fileType),
             update = {
                 editable.update { config ->
                     config.copyWithAlteredSourceConfig(
@@ -109,31 +99,3 @@ class EditableNavigatorConfig(
         }
     }
 }
-
-//private fun <T> SnapshotStateList<T>.updateFrom(other: List<T>) {  // TODO: export to composed
-//    other.forEachIndexed { index, venue ->
-//        try {
-//            if (venue != get(index)) {
-//                this[index] = venue
-//            }
-//        } catch (e: IndexOutOfBoundsException) {
-//            add(venue)
-//        }
-//    }
-//    if (size > other.size) {
-//        removeRange(other.size, size)
-//    }
-//}
-//
-//private data class ReversibleValue<T>(var value: T) {
-//    var previous: T = value
-//        private set
-//
-//    fun sync() {
-//        previous = value
-//    }
-//
-//    fun reset() {
-//        value = previous
-//    }
-//}

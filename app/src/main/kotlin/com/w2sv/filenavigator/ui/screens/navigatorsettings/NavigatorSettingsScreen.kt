@@ -158,7 +158,7 @@ fun NavigatorSettingsScreen(
 
         if (showAddFileTypesBottomSheet) {
             AddFileTypesBottomSheet(
-                disabledFileTypes = navigatorVM.configuration.disabledFileTypes.collectAsStateWithLifecycle().value.toPersistentList(),
+                disabledFileTypes = navigatorVM.configuration.editable.collectAsStateWithLifecycle().value.disabledFileTypes.toPersistentList(),
                 addFileTypes = remember {
                     {
                         it.forEach { fileType ->

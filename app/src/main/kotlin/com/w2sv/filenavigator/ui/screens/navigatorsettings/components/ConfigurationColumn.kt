@@ -49,9 +49,7 @@ fun NavigatorConfigurationColumn(
     showAddFileTypesBottomSheet: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val enabledFileTypes by configuration.enabledFileTypes.collectAsStateWithLifecycle()
-    val disabledFileTypes by configuration.disabledFileTypes.collectAsStateWithLifecycle()
-    val editableConfig by configuration.editable.collectAsStateWithLifecycle()
+    val config by configuration.editable.collectAsStateWithLifecycle()
 
     LazyColumn(
         modifier = modifier
@@ -65,7 +63,7 @@ fun NavigatorConfigurationColumn(
                 SectionHeader(
                     text = stringResource(id = R.string.file_types),
                 )
-                AnimatedVisibility(visible = disabledFileTypes.isNotEmpty()) {
+                AnimatedVisibility(visible = config.disabledFileTypes.isNotEmpty()) {
                     FilledTonalIconButton(onClick = showAddFileTypesBottomSheet) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -75,7 +73,7 @@ fun NavigatorConfigurationColumn(
                 }
             }
         }
-        items(enabledFileTypes, key = { it }) { fileType ->
+        items(config.enabledFileTypes, key = { it }) { fileType ->
             i { "Laying out ${fileType.name}" }
 
             FileTypeAccordion(
@@ -88,10 +86,10 @@ fun NavigatorConfigurationColumn(
                         )
                     } 
                 },
-                sourceTypes = editableConfig.fileTypeConfigMap.getValue(fileType).sourceTypeToConfig.keys.toPersistentList(),
+                sourceTypes = config.fileTypeConfigMap.getValue(fileType).sourceTypeToConfig.keys.toPersistentList(),
                 mediaFileSourceEnabled = remember(fileType) {
                     { sourceType ->
-                        editableConfig.fileTypeConfigMap.getValue(fileType).sourceTypeToConfig[sourceType]?.enabled
+                        config.fileTypeConfigMap.getValue(fileType).sourceTypeToConfig[sourceType]?.enabled
                             ?: true
                     }
                 },
@@ -114,7 +112,7 @@ fun NavigatorConfigurationColumn(
                 text = stringResource(id = R.string.more),
             )
             MoreColumnItems(
-                disableOnLowBattery = editableConfig.disableOnLowBattery,
+                disableOnLowBattery = config.disableOnLowBattery,
                 setDisableOnLowBattery = { checked ->
                     configuration.editable.update { it.copy(disableOnLowBattery = checked) }
                 },

@@ -7,11 +7,33 @@ data class NavigatorConfig(
     val fileTypeConfigMap: Map<FileType, FileTypeConfig>,
     val disableOnLowBattery: Boolean
 ) {
+    val enabledFileTypes: List<FileType> by lazy {
+        fileTypeConfigMap.run { keys.filter { getValue(it).enabled } }
+    }
+
+    val disabledFileTypes: List<FileType> by lazy {
+        (fileTypeConfigMap.keys - enabledFileTypes.toSet())
+            .sortedBy { fileType ->
+                FileType.values.indexOf(fileType)
+            }
+    }
+
+    // ================
+    // Access Helpers
+    // ================
+
+    fun enabledSourceTypesCount(fileType: FileType): Int =
+        fileTypeConfig(fileType).sourceTypeToConfig.values.count { it.enabled }
+
     fun fileTypeConfig(fileType: FileType): FileTypeConfig =
         fileTypeConfigMap.getValue(fileType)
 
     fun sourceConfig(fileType: FileType, sourceType: SourceType): SourceConfig =
         fileTypeConfig(fileType).sourceTypeToConfig.getValue(sourceType)
+
+    // ================
+    // Copying
+    // ================
 
     fun copyWithAlteredFileConfig(
         fileType: FileType,
