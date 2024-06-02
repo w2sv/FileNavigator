@@ -17,7 +17,7 @@ import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import slimber.log.i
@@ -31,7 +31,7 @@ class FileNavigator : UnboundService() {
     internal lateinit var navigatorConfigDataSource: NavigatorConfigDataSource
 
     @Inject
-    internal lateinit var status: Status
+    internal lateinit var isRunningSharedFlow: IsRunningSharedFlow
 
     @Inject
     internal lateinit var fileNavigatorIsRunningNotificationManager: FileNavigatorIsRunningNotificationManager
@@ -49,7 +49,8 @@ class FileNavigator : UnboundService() {
             contentObserverHandlerThread.start()
         }
         return getFileObservers(
-            fileTypeConfigMap = navigatorConfigDataSource.navigatorConfig.map { it.fileTypeConfigMap }.firstBlocking(),
+            fileTypeConfigMap = navigatorConfigDataSource.navigatorConfig.map { it.fileTypeConfigMap }
+                .firstBlocking(),
             contentResolver = contentResolver,
             onNewNavigatableFileListener = { moveFile ->
                 // with scope because construction of inner class BuilderArgs requires inner class scope
@@ -106,14 +107,14 @@ class FileNavigator : UnboundService() {
         )
 
         fileObservers = getRegisteredFileObservers()
-        status.emitNewStatus(true)
+        isRunningSharedFlow.emit(true)
     }
 
     private fun stop() {
         i { "FileNavigator.stop" }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        status.emitNewStatus(false)
+        isRunningSharedFlow.emit(false)
     }
 
     private fun unregisterFileObservers() {
@@ -136,13 +137,14 @@ class FileNavigator : UnboundService() {
     }
 
     @Singleton
-    class Status @Inject constructor(@GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope) {
-        val isRunning get() = _isRunning.asSharedFlow()
-        private val _isRunning: MutableSharedFlow<Boolean> = MutableSharedFlow()
+    class IsRunningSharedFlow @Inject constructor(
+        @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
+        private val mutableFlow: MutableSharedFlow<Boolean> = MutableSharedFlow()
+    ) : SharedFlow<Boolean> by mutableFlow {
 
-        internal fun emitNewStatus(isRunning: Boolean) {
+        internal fun emit(isRunning: Boolean) {
             scope.launch {
-                _isRunning.emit(isRunning)
+                mutableFlow.emit(isRunning)
             }
         }
     }

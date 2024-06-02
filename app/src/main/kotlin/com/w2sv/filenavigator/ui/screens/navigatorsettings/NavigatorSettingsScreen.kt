@@ -76,7 +76,8 @@ fun NavigatorSettingsScreen(
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
-    val configHasChanged by navigatorVM.configuration.editable.statesDissimilar.collectAsStateWithLifecycle()
+    val navigatorConfig by navigatorVM.reversibleConfig.collectAsStateWithLifecycle()
+    val navigatorConfigHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
 
     CollectLatestFromFlow(
         flow = navigatorVM.makeSnackbarVisuals,
@@ -87,7 +88,7 @@ fun NavigatorSettingsScreen(
 
     val onBack: () -> Unit = remember {
         {
-            navigatorVM.configuration.editable.reset()
+            navigatorVM.reversibleConfig.reset()
             navigator.popBackStack()
         }
     }
@@ -120,11 +121,11 @@ fun NavigatorSettingsScreen(
         },
         floatingActionButton = {
             ConfigurationButtonRow(
-                configurationHasChanged = configHasChanged,
-                resetConfiguration = remember { { navigatorVM.configuration.editable.reset() } },
+                configurationHasChanged = navigatorConfigHasChanged,
+                resetConfiguration = remember { { navigatorVM.reversibleConfig.reset() } },
                 syncConfiguration = remember {
                     {
-                        navigatorVM.configuration.editable.launchSync()
+                        navigatorVM.reversibleConfig.launchSync()
                             .invokeOnCompletion {
                                 scope.launch {
                                     delay(500)  // Wait until fab button row has disappeared
@@ -148,7 +149,7 @@ fun NavigatorSettingsScreen(
         }
     ) { paddingValues ->
         NavigatorConfigurationColumn(
-            configuration = navigatorVM.configuration,
+            configuration = navigatorVM.reversibleConfig,
             showAddFileTypesBottomSheet = remember { { showAddFileTypesBottomSheet = true } },
             modifier = Modifier
                 .padding(top = paddingValues.calculateTopPadding())
@@ -158,11 +159,11 @@ fun NavigatorSettingsScreen(
 
         if (showAddFileTypesBottomSheet) {
             AddFileTypesBottomSheet(
-                disabledFileTypes = navigatorVM.configuration.editable.collectAsStateWithLifecycle().value.disabledFileTypes.toPersistentList(),
+                disabledFileTypes = navigatorConfig.disabledFileTypes.toPersistentList(),
                 addFileTypes = remember {
                     {
                         it.forEach { fileType ->
-                            navigatorVM.configuration.onFileTypeCheckedChange(fileType, true)
+                            navigatorVM.reversibleConfig.onFileTypeCheckedChange(fileType, true)
                         }
                     }
                 },

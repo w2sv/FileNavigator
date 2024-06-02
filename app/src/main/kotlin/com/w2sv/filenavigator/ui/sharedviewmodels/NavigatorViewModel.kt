@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.filenavigator.ui.states.EditableNavigatorConfig
+import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,7 +24,7 @@ typealias MakeSnackbarVisuals = (Context) -> SnackbarVisuals
 @HiltViewModel
 class NavigatorViewModel @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
-    fileNavigatorStatus: FileNavigator.Status,
+    fileNavigatorIsRunningSharedFlow: FileNavigator.IsRunningSharedFlow,
     @ApplicationContext context: Context
 ) : ViewModel() {
 
@@ -36,12 +36,12 @@ class NavigatorViewModel @Inject constructor(
         MutableStateFlow(context.isServiceRunning<FileNavigator>())
 
     init {
-        viewModelScope.collectFromFlow(fileNavigatorStatus.isRunning) {
+        viewModelScope.collectFromFlow(fileNavigatorIsRunningSharedFlow) {
             _isRunning.value = it
         }
     }
 
-    val configuration = EditableNavigatorConfig(
+    val reversibleConfig = ReversibleNavigatorConfig(
         scope = viewModelScope,
         navigatorConfigDataSource = navigatorConfigDataSource,
         emitMakeSnackbarVisuals = {

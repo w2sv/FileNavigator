@@ -31,7 +31,7 @@ internal class FileNavigatorTileService : TileService() {
     internal lateinit var scope: CoroutineScope
 
     @Inject
-    internal lateinit var fileNavigatorStatus: FileNavigator.Status
+    internal lateinit var fileNavigatorIsRunningSharedFlow: FileNavigator.IsRunningSharedFlow
 
     override fun onTileAdded() {
         super.onTileAdded()
@@ -48,7 +48,7 @@ internal class FileNavigatorTileService : TileService() {
         i { "onStartListening" }
 
         // Update tile state reactively on navigator status change
-        scope.collectFromFlow(fileNavigatorStatus.isRunning) { isRunning ->
+        scope.collectFromFlow(fileNavigatorIsRunningSharedFlow) { isRunning ->
             updateTileState(if (isRunning) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE)
         }
 

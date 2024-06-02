@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FilledTonalIconButton
@@ -34,7 +33,7 @@ import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
-import com.w2sv.filenavigator.ui.states.EditableNavigatorConfig
+import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.update
@@ -45,7 +44,7 @@ private val verticalPadding = 16.dp
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavigatorConfigurationColumn(
-    configuration: EditableNavigatorConfig,
+    configuration: ReversibleNavigatorConfig,
     showAddFileTypesBottomSheet: () -> Unit,
     modifier: Modifier = Modifier
 ) {
