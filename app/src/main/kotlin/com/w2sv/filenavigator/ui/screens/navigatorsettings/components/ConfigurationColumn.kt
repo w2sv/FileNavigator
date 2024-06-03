@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FilledTonalIconButton
@@ -44,11 +45,11 @@ private val verticalPadding = 16.dp
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavigatorConfigurationColumn(
-    configuration: ReversibleNavigatorConfig,
+    reversibleConfig: ReversibleNavigatorConfig,
     showAddFileTypesBottomSheet: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val config by configuration.editable.collectAsStateWithLifecycle()
+    val config by reversibleConfig.collectAsStateWithLifecycle()
 
     LazyColumn(
         modifier = modifier
@@ -79,7 +80,7 @@ fun NavigatorConfigurationColumn(
                 fileType = fileType,
                 excludeFileType = remember(fileType) {
                     {
-                        configuration.onFileTypeCheckedChange(
+                        reversibleConfig.onFileTypeCheckedChange(
                             fileType = fileType,
                             checkedNew = false
                         )
@@ -94,7 +95,7 @@ fun NavigatorConfigurationColumn(
                 },
                 onMediaFileSourceCheckedChange = remember(fileType) {
                     { source, checked ->
-                        configuration.onMediaFileSourceCheckedChange(
+                        reversibleConfig.onMediaFileSourceCheckedChange(
                             fileType = fileType,
                             sourceType = source,
                             checkedNew = checked
@@ -113,7 +114,7 @@ fun NavigatorConfigurationColumn(
             MoreColumnItems(
                 disableOnLowBattery = config.disableOnLowBattery,
                 setDisableOnLowBattery = { checked ->
-                    configuration.editable.update { it.copy(disableOnLowBattery = checked) }
+                    reversibleConfig.update { it.copy(disableOnLowBattery = checked) }
                 },
                 modifier = Modifier.padding(bottom = if (isPortraitModeActive) 132.dp else 92.dp)
             )

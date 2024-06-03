@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.navigatorsettings.components
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,7 +51,9 @@ import com.w2sv.kotlinutils.extensions.toggle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun AddFileTypesBottomSheet(
     disabledFileTypes: ImmutableList<FileType>,
@@ -91,7 +94,8 @@ fun AddFileTypesBottomSheet(
                 FileTypeCard(
                     fileType = fileType,
                     isSelected = selectionMap.getValue(fileType),
-                    onClick = { selectionMap.toggle(fileType) }
+                    onClick = { selectionMap.toggle(fileType) },
+                    modifier = Modifier.animateItemPlacement()
                 )
             }
         }
@@ -135,7 +139,12 @@ private class EnabledKeysTrackingSnapshotStateMap<K>(private val map: SnapshotSt
 }
 
 @Composable
-private fun FileTypeCard(fileType: FileType, isSelected: Boolean, onClick: () -> Unit) {
+private fun FileTypeCard(
+    fileType: FileType,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val borderAnimationState = rememberBorderAnimationState(
         enabled = isSelected,
         startWidth = 0.dp,
@@ -145,7 +154,7 @@ private fun FileTypeCard(fileType: FileType, isSelected: Boolean, onClick: () ->
     )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .width(62.dp)
             .clip(MaterialTheme.shapes.small)
             .border(borderAnimationState.borderStroke)

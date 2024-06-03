@@ -42,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -125,7 +126,9 @@ fun NavigatorSettingsScreen(
                 resetConfiguration = remember { { navigatorVM.reversibleConfig.reset() } },
                 syncConfiguration = remember {
                     {
-                        navigatorVM.reversibleConfig.launchSync()
+                        navigatorVM.viewModelScope.launch {
+                            navigatorVM.reversibleConfig.sync()
+                        }
                             .invokeOnCompletion {
                                 scope.launch {
                                     delay(500)  // Wait until fab button row has disappeared
@@ -149,7 +152,7 @@ fun NavigatorSettingsScreen(
         }
     ) { paddingValues ->
         NavigatorConfigurationColumn(
-            configuration = navigatorVM.reversibleConfig,
+            reversibleConfig = navigatorVM.reversibleConfig,
             showAddFileTypesBottomSheet = remember { { showAddFileTypesBottomSheet = true } },
             modifier = Modifier
                 .padding(top = paddingValues.calculateTopPadding())

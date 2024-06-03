@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun CoroutineScope.collectFromFlows() {
-        collectFromFlow(navigatorVM.reversibleConfig.editable.appliedState) {
+        collectFromFlow(navigatorVM.appliedConfig) {
             val intent =
                 PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity)
 

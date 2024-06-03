@@ -6,8 +6,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import com.w2sv.androidutils.coroutines.firstBlocking
 import com.w2sv.androidutils.services.UnboundService
-import com.w2sv.common.di.AppDispatcher
-import com.w2sv.common.di.GlobalScope
+import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
@@ -15,11 +14,9 @@ import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificat
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import slimber.log.i
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,7 +28,7 @@ class FileNavigator : UnboundService() {
     internal lateinit var navigatorConfigDataSource: NavigatorConfigDataSource
 
     @Inject
-    internal lateinit var isRunningSharedFlow: IsRunningSharedFlow
+    internal lateinit var isRunningStateFlow: IsRunningStateFlow
 
     @Inject
     internal lateinit var fileNavigatorIsRunningNotificationManager: FileNavigatorIsRunningNotificationManager
@@ -107,14 +104,14 @@ class FileNavigator : UnboundService() {
         )
 
         fileObservers = getRegisteredFileObservers()
-        isRunningSharedFlow.emit(true)
+        isRunningStateFlow.value = true
     }
 
     private fun stop() {
         i { "FileNavigator.stop" }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        isRunningSharedFlow.emit(false)
+        isRunningStateFlow.value = false
     }
 
     private fun unregisterFileObservers() {
@@ -137,17 +134,9 @@ class FileNavigator : UnboundService() {
     }
 
     @Singleton
-    class IsRunningSharedFlow @Inject constructor(
-        @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
-        private val mutableFlow: MutableSharedFlow<Boolean> = MutableSharedFlow()
-    ) : SharedFlow<Boolean> by mutableFlow {
-
-        internal fun emit(isRunning: Boolean) {
-            scope.launch {
-                mutableFlow.emit(isRunning)
-            }
-        }
-    }
+    class IsRunningStateFlow @Inject constructor(
+        @ApplicationContext context: Context
+    ) : MutableStateFlow<Boolean> by MutableStateFlow(context.isServiceRunning<FileNavigator>())
 
     private data object Action {
         const val REREGISTER_MEDIA_OBSERVERS =
