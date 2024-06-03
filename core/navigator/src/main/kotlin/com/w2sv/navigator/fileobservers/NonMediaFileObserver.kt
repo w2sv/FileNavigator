@@ -24,7 +24,7 @@ internal class NonMediaFileObserver(
     ) {
 
     init {
-        i { "Initialized NonMediaFileObserver with fileTypes: ${fileTypes.map { it.name }}" }
+        i { "Initialized NonMediaFileObserver with fileTypes: ${fileTypes.map { it.logIdentifier }}" }
     }
 
     override fun getLogIdentifier(): String = this.javaClass.simpleName

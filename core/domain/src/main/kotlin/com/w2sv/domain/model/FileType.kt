@@ -17,7 +17,8 @@ sealed class FileType(
     val simpleStorageMediaType: MediaType,
 ) : Parcelable {
 
-    val name: String = this::class.java.simpleName
+    val logIdentifier: String
+        get() = this::class.java.simpleName
 
     @IgnoredOnParcel
     val isMediaType: Boolean

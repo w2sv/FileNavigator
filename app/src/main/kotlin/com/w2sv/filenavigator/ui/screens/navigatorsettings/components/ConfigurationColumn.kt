@@ -70,7 +70,7 @@ fun NavigatorConfigurationColumn(
             }
         }
         items(config.enabledFileTypes, key = { it }) { fileType ->
-            i { "Laying out ${fileType.name}" }
+            i { "Laying out ${fileType.logIdentifier}" }
 
             FileTypeAccordion(
                 fileType = fileType,
