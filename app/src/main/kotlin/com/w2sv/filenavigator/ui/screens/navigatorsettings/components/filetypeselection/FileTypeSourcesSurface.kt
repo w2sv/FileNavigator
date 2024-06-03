@@ -20,16 +20,12 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.composed.InterElementDividedColumn
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
-import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.utils.orOnSurfaceDisabledIf
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 fun FileTypeSourcesSurface(
     fileType: FileType,
-    sourceTypes: ImmutableList<SourceType>,
     mediaFileSourceEnabled: (SourceType) -> Boolean,
     setMediaFileSourceEnabled: (SourceType, Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -40,7 +36,7 @@ fun FileTypeSourcesSurface(
         modifier = modifier.fillMaxWidth()
     ) {
         InterElementDividedColumn(
-            elements = sourceTypes,
+            elements = fileType.sourceTypes,
             makeElement = { sourceType ->
                 SourceRow(
                     fileType = fileType,

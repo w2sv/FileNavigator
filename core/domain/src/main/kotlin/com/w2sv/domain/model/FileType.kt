@@ -15,6 +15,7 @@ sealed class FileType(
     @DrawableRes val iconRes: Int,
     @ColorInt val colorInt: Int,
     val simpleStorageMediaType: MediaType,
+    val sourceTypes: List<SourceType>
 ) : Parcelable {
 
     val logIdentifier: String
@@ -31,11 +32,13 @@ sealed class FileType(
         @DrawableRes iconRes: Int,
         @ColorLong colorLong: Long,
         mediaType: MediaType,
+        sourceTypes: List<SourceType>
     ) : FileType(
         titleRes = labelRes,
         iconRes = iconRes,
         colorInt = colorLong.toInt(),
-        simpleStorageMediaType = mediaType
+        simpleStorageMediaType = mediaType,
+        sourceTypes = sourceTypes
     ) {
 
         override fun matchesFileExtension(extension: String): Boolean =
@@ -52,12 +55,13 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
         @ColorLong colorLong: Long,
-        private val fileExtensions: Set<String>
+        private val fileExtensions: Set<String>,
     ) : FileType(
         titleRes = labelRes,
         iconRes = iconRes,
         colorInt = colorLong.toInt(),
-        simpleStorageMediaType = MediaType.DOWNLOADS
+        simpleStorageMediaType = MediaType.DOWNLOADS,
+        sourceTypes = listOf(SourceType.Download)
     ) {
 
         override fun matchesFileExtension(extension: String): Boolean =
@@ -76,6 +80,12 @@ sealed class FileType(
         iconRes = R.drawable.ic_image_24,
         colorLong = 0xFFBF1A2F,
         mediaType = MediaType.IMAGE,
+        sourceTypes = listOf(
+            SourceType.Camera,
+            SourceType.Screenshot,
+            SourceType.OtherApp,
+            SourceType.Download
+        )
     )
 
     @Parcelize
@@ -84,6 +94,7 @@ sealed class FileType(
         iconRes = R.drawable.ic_video_file_24,
         colorLong = 0xFFFFCB77,
         mediaType = MediaType.VIDEO,
+        sourceTypes = listOf(SourceType.Camera, SourceType.OtherApp, SourceType.Download)
     )
 
     @Parcelize
@@ -92,6 +103,7 @@ sealed class FileType(
         iconRes = R.drawable.ic_audio_file_24,
         colorLong = 0xFFF26430,
         mediaType = MediaType.AUDIO,
+        sourceTypes = listOf(SourceType.Recording, SourceType.OtherApp, SourceType.Download)
     )
 
     @Parcelize

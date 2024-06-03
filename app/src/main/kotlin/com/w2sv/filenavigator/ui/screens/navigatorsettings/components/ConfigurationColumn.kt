@@ -33,7 +33,6 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.update
 import slimber.log.i
 
@@ -82,7 +81,6 @@ fun NavigatorConfigurationColumn(
                         )
                     }
                 },
-                sourceTypes = config.fileTypeConfigMap.getValue(fileType).sourceTypeToConfig.keys.toPersistentList(),
                 mediaFileSourceEnabled = remember(fileType) {
                     { sourceType ->
                         config.fileTypeConfigMap.getValue(fileType).sourceTypeToConfig[sourceType]?.enabled

@@ -45,13 +45,11 @@ import com.w2sv.domain.model.SourceType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
 import com.w2sv.filenavigator.ui.model.color
-import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun FileTypeAccordion(
     fileType: FileType,
     excludeFileType: () -> Unit,
-    sourceTypes: ImmutableList<SourceType>,
     mediaFileSourceEnabled: (SourceType) -> Boolean,
     onMediaFileSourceCheckedChange: (SourceType, Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -65,7 +63,6 @@ fun FileTypeAccordion(
         )
         FileTypeSourcesSurface(
             fileType = fileType,
-            sourceTypes = sourceTypes,
             mediaFileSourceEnabled = mediaFileSourceEnabled,
             setMediaFileSourceEnabled = onMediaFileSourceCheckedChange
         )
