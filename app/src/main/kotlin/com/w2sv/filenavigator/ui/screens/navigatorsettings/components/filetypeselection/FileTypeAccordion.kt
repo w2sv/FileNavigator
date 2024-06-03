@@ -161,23 +161,18 @@ private fun FileTypeRow(
             fontSize = 18.sp,
         )
         Spacer(modifier = Modifier.weight(1f))
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 6.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.auto_move),
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                lineHeight = 18.sp,
-                modifier = Modifier.padding(end = 4.dp)
-            )
-            TweakedSwitch(
-                checked = autoMoveEnabled,
-                onCheckedChange = onAutoMoveEnabledSwitchCheckedChange,
-                modifier = Modifier.padding(top = 4.dp, bottom = 6.dp)
-            )
-        }
+        Text(
+            text = stringResource(id = R.string.auto_move),
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            lineHeight = 18.sp,
+            modifier = Modifier.padding(end = 2.dp)
+        )
+        TweakedSwitch(
+            checked = autoMoveEnabled,
+            onCheckedChange = onAutoMoveEnabledSwitchCheckedChange,
+            modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp)
+        )
         VerticalDivider(
             modifier = Modifier
                 .height(32.dp)
