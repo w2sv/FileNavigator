@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.home.components.movehistory
 
 import android.content.Context
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -44,7 +43,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MoveHistory(
     history: ImmutableList<MoveEntry>,
@@ -70,7 +68,7 @@ fun MoveHistory(
                 onClick = onRowClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .animateItemPlacement()
+                    .animateItem()
                     .padding(bottom = 8.dp)
             )
         }

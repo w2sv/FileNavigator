@@ -3,8 +3,6 @@ package com.w2sv.filenavigator.ui.screens.navigatorsettings.components
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,14 +33,12 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
-import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.update
 import slimber.log.i
 
 private val verticalPadding = 16.dp
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavigatorConfigurationColumn(
     reversibleConfig: ReversibleNavigatorConfig,
@@ -84,7 +80,7 @@ fun NavigatorConfigurationColumn(
                             fileType = fileType,
                             checkedNew = false
                         )
-                    } 
+                    }
                 },
                 sourceTypes = config.fileTypeConfigMap.getValue(fileType).sourceTypeToConfig.keys.toPersistentList(),
                 mediaFileSourceEnabled = remember(fileType) {
@@ -104,7 +100,7 @@ fun NavigatorConfigurationColumn(
                 },
                 modifier = Modifier
                     .padding(vertical = 4.dp)
-                    .animateItemPlacement(remember { tween(DefaultAnimationDuration) })  // Animate upon reordering
+                    .animateItem()
             )
         }
         item {

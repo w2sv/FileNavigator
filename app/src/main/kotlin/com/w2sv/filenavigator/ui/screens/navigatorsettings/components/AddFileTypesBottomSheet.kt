@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.navigatorsettings.components
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,9 +50,7 @@ import com.w2sv.kotlinutils.extensions.toggle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class,
-    ExperimentalFoundationApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddFileTypesBottomSheet(
     disabledFileTypes: ImmutableList<FileType>,
@@ -95,7 +92,7 @@ fun AddFileTypesBottomSheet(
                     fileType = fileType,
                     isSelected = selectionMap.getValue(fileType),
                     onClick = { selectionMap.toggle(fileType) },
-                    modifier = Modifier.animateItemPlacement()
+                    modifier = Modifier.animateItem()
                 )
             }
         }
