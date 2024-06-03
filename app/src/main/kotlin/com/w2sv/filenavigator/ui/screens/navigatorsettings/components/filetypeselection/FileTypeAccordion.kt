@@ -20,7 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -42,6 +41,7 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.TweakedSwitch
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
 import com.w2sv.filenavigator.ui.model.color
 
@@ -161,18 +161,23 @@ private fun FileTypeRow(
             fontSize = 18.sp,
         )
         Spacer(modifier = Modifier.weight(1f))
-        Text(
-            text = stringResource(id = R.string.auto_move),
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            lineHeight = 18.sp,
-            modifier = Modifier.padding(end = 4.dp)
-        )
-        Switch(
-            checked = autoMoveEnabled,
-            onCheckedChange = onAutoMoveEnabledSwitchCheckedChange,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(horizontal = 6.dp)
-        )
+        ) {
+            Text(
+                text = stringResource(id = R.string.auto_move),
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                lineHeight = 18.sp,
+                modifier = Modifier.padding(end = 4.dp)
+            )
+            TweakedSwitch(
+                checked = autoMoveEnabled,
+                onCheckedChange = onAutoMoveEnabledSwitchCheckedChange,
+                modifier = Modifier.padding(top = 4.dp, bottom = 6.dp)
+            )
+        }
         VerticalDivider(
             modifier = Modifier
                 .height(32.dp)
