@@ -44,6 +44,14 @@ data class NavigatorConfig(
                 .apply { put(fileType, alterFileConfig(getValue(fileType))) }
         )
 
+    fun copyWithAlteredFileAutoMoveConfig(
+        fileType: FileType,
+        autoMoveConfig: AutoMoveConfig
+    ): NavigatorConfig =
+        copyWithAlteredFileConfig(fileType) {
+            it.copy(autoMoveConfig = autoMoveConfig)
+        }
+
     fun copyWithAlteredSourceConfig(
         fileType: FileType,
         sourceType: SourceType,

@@ -81,6 +81,15 @@ fun NavigatorConfigurationColumn(
                         )
                     }
                 },
+                autoMoveConfig = config.fileTypeConfig(fileType).autoMoveConfig,
+                setAutoMoveConfig = { autoMoveConfig ->
+                    reversibleConfig.update {
+                        it.copyWithAlteredFileAutoMoveConfig(
+                            fileType = fileType,
+                            autoMoveConfig = autoMoveConfig
+                        )
+                    }
+                },
                 mediaFileSourceEnabled = remember(fileType) {
                     { sourceType ->
                         config.fileTypeConfigMap.getValue(fileType).sourceTypeToConfig[sourceType]?.enabled

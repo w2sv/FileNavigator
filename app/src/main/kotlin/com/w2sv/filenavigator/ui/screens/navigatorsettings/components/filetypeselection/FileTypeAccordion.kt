@@ -26,8 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +40,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
 import com.w2sv.filenavigator.ui.model.color
@@ -50,6 +49,8 @@ import com.w2sv.filenavigator.ui.model.color
 fun FileTypeAccordion(
     fileType: FileType,
     excludeFileType: () -> Unit,
+    autoMoveConfig: AutoMoveConfig,
+    setAutoMoveConfig: (AutoMoveConfig) -> Unit,
     mediaFileSourceEnabled: (SourceType) -> Boolean,
     onMediaFileSourceCheckedChange: (SourceType, Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -59,7 +60,9 @@ fun FileTypeAccordion(
     ) {
         Header(
             fileType = fileType,
-            excludeFileType = excludeFileType
+            excludeFileType = excludeFileType,
+            autoMoveConfig = autoMoveConfig,
+            setAutoMoveConfig = setAutoMoveConfig
         )
         FileTypeSourcesSurface(
             fileType = fileType,
@@ -85,22 +88,19 @@ private fun rememberSelectAutoMoveDestination(onDestinationSelected: (Uri) -> Un
 private fun Header(
     fileType: FileType,
     excludeFileType: () -> Unit,
+    autoMoveConfig: AutoMoveConfig,
+    setAutoMoveConfig: (AutoMoveConfig) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var autoMoveEnabled by rememberSaveable(fileType) {
-        mutableStateOf(false)
-    }
-    var autoMoveDestination by remember {
-        mutableStateOf<Uri?>(null)
-    }
-    val selectAutoMoveDestination = rememberSelectAutoMoveDestination {
-        autoMoveEnabled = true
-        autoMoveDestination = it
-    }
+    val selectAutoMoveDestination = rememberSelectAutoMoveDestination(
+        onDestinationSelected = {
+            setAutoMoveConfig(AutoMoveConfig(enabled = true, destination = it))
+        }
+    )
     val context: Context = LocalContext.current
-    val autoMovePath by remember(autoMoveDestination) {
+    val autoMovePath by remember(autoMoveConfig.destination) {
         mutableStateOf(
-            autoMoveDestination?.let { getDocumentUriPath(it, context) }
+            autoMoveConfig.destination?.let { getDocumentUriPath(it, context) }
         )
     }
     Surface(
@@ -113,20 +113,20 @@ private fun Header(
             FileTypeRow(
                 fileType = fileType,
                 excludeFileType = excludeFileType,
-                autoMoveEnabled = autoMoveEnabled,
+                autoMoveEnabled = autoMoveConfig.enabled,
                 onAutoMoveEnabledSwitchCheckedChange = {
-                    if (it && autoMoveDestination == null) {
+                    if (it && autoMoveConfig.destination == null) {
                         selectAutoMoveDestination.launch(null)
                     } else {
-                        autoMoveEnabled = it
+                        setAutoMoveConfig(autoMoveConfig.copy(enabled = it))
                     }
                 },
                 modifier = Modifier.padding(vertical = 4.dp)
             )
-            AnimatedVisibility(visible = autoMoveEnabled && autoMovePath != null) {
+            AnimatedVisibility(visible = autoMoveConfig.enabled && autoMovePath != null) {
                 AutoMoveRow(
                     destinationPath = autoMovePath!!,
-                    changeDestination = { selectAutoMoveDestination.launch(autoMoveDestination) },
+                    changeDestination = { selectAutoMoveDestination.launch(autoMoveConfig.destination) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
