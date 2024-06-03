@@ -78,4 +78,5 @@
     <string name="exclude">Exclude</string>
     <string name="auto_move">Auto\nMove</string>
     <string name="add_file_types">Add File Types</string>
+    <string name="select_the_auto_move_destination">Select the auto move destination.</string>
 </resources>

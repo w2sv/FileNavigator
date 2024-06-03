@@ -92,8 +92,7 @@ fun NavigatorConfigurationColumn(
                 },
                 mediaFileSourceEnabled = remember(fileType) {
                     { sourceType ->
-                        config.fileTypeConfigMap.getValue(fileType).sourceTypeToConfig[sourceType]?.enabled
-                            ?: true
+                        config.optionalSourceConfig(fileType, sourceType)?.enabled ?: true
                     }
                 },
                 onMediaFileSourceCheckedChange = remember(fileType) {

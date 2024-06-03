@@ -17,12 +17,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,8 +34,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.documentfile.provider.DocumentFile
@@ -124,11 +124,14 @@ private fun Header(
                 modifier = Modifier.padding(vertical = 4.dp)
             )
             AnimatedVisibility(visible = autoMoveConfig.enabled && autoMovePath != null) {
-                AutoMoveRow(
-                    destinationPath = autoMovePath!!,
-                    changeDestination = { selectAutoMoveDestination.launch(autoMoveConfig.destination) },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+                    HorizontalDivider()
+                    AutoMoveRow(
+                        destinationPath = autoMovePath!!,
+                        changeDestination = { selectAutoMoveDestination.launch(autoMoveConfig.destination) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }
@@ -194,12 +197,10 @@ private fun AutoMoveRow(
     changeDestination: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.padding(horizontal = 12.dp)) {
-        HorizontalDivider()
+    CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = modifier
                 .padding(start = 10.dp, bottom = 4.dp)
         ) {
             Icon(
@@ -216,9 +217,8 @@ private fun AutoMoveRow(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_configure_folder_24),
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.select_the_auto_move_destination),
                     modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.secondary
                 )
             }
         }
@@ -239,24 +239,3 @@ private fun AutoMoveRow(
 //        }
 //    }
 //}
-
-@Composable
-private fun AddAutoMoveDestinationButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val contentDescription = stringResource(R.string.add_auto_move_destination)
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .clip(MaterialTheme.shapes.small)
-            .clickable { onClick() }
-            .padding(horizontal = 4.dp)
-            .semantics {
-                this.contentDescription = contentDescription
-            }
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_new_folder_24),
-            contentDescription = null,
-        )
-        Text(text = stringResource(R.string.auto), fontSize = 12.sp)
-    }
-}
