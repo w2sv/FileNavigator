@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -129,7 +132,8 @@ private fun Header(
                     AutoMoveRow(
                         destinationPath = autoMovePath!!,
                         changeDestination = { selectAutoMoveDestination.launch(autoMoveConfig.destination) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                     )
                 }
             }
@@ -206,19 +210,21 @@ private fun AutoMoveRow(
             Icon(
                 painter = painterResource(id = R.drawable.ic_subdirectory_arrow_right_24),
                 contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .padding(end = 6.dp)
+                    .padding(end = 16.dp)
                     .size(20.dp)
             )
             Text(destinationPath, modifier = Modifier.weight(1f), fontSize = 14.sp)
             IconButton(
                 onClick = { changeDestination() },
-                modifier = Modifier.size(34.dp)
+                modifier = Modifier.size(28.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_configure_folder_24),
+                    painter = painterResource(id = R.drawable.ic_folder_edit_24),
                     contentDescription = stringResource(R.string.select_the_auto_move_destination),
                     modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
