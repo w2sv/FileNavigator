@@ -23,16 +23,16 @@ data class NavigatorConfig(
     // ================
 
     fun enabledSourceTypesCount(fileType: FileType): Int =
-        fileTypeConfig(fileType).sourceTypeToConfig.values.count { it.enabled }
+        fileTypeConfig(fileType).sourceTypeConfigMap.values.count { it.enabled }
 
     fun fileTypeConfig(fileType: FileType): FileTypeConfig =
         fileTypeConfigMap.getValue(fileType)
 
     fun sourceConfig(fileType: FileType, sourceType: SourceType): SourceConfig =
-        fileTypeConfig(fileType).sourceTypeToConfig.getValue(sourceType)
+        fileTypeConfig(fileType).sourceTypeConfigMap.getValue(sourceType)
 
     fun optionalSourceConfig(fileType: FileType, sourceType: SourceType): SourceConfig? =
-        fileTypeConfig(fileType).sourceTypeToConfig[sourceType]
+        fileTypeConfig(fileType).sourceTypeConfigMap[sourceType]
 
     // ================
     // Copying
@@ -64,8 +64,17 @@ data class NavigatorConfig(
             fileType = fileType,
         ) {
             it.copy(
-                sourceTypeToConfig = it.sourceTypeToConfig.toMutableMap()
+                sourceTypeConfigMap = it.sourceTypeConfigMap.toMutableMap()
                     .apply { put(sourceType, alterSourceConfig(getValue(sourceType))) })
+        }
+
+    fun copyWithAlteredSourceAutoMoveConfig(
+        fileType: FileType,
+        sourceType: SourceType,
+        alterSourceAutoMoveConfig: (AutoMoveConfig) -> AutoMoveConfig
+    ): NavigatorConfig =
+        copyWithAlteredSourceConfig(fileType, sourceType) {
+            it.copy(autoMoveConfig = alterSourceAutoMoveConfig(it.autoMoveConfig))
         }
 
     companion object {

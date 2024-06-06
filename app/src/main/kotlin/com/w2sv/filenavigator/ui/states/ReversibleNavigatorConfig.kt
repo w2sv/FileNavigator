@@ -68,7 +68,7 @@ class ReversibleNavigatorConfig(
         )
     }
 
-    fun onMediaFileSourceCheckedChange(
+    fun onFileSourceCheckedChange(
         fileType: FileType,
         sourceType: SourceType,
         checkedNew: Boolean

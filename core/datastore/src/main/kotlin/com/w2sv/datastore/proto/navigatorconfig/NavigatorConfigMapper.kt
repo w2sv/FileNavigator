@@ -42,7 +42,7 @@ private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeC
     override fun toExternal(proto: FileTypeConfigProto): FileTypeConfig =
         FileTypeConfig(
             enabled = proto.enabled,
-            sourceTypeToConfig = proto.sourceTypeToConfigMap.entries.associate { (sourceTypeIndex, config) ->
+            sourceTypeConfigMap = proto.sourceTypeToConfigMap.entries.associate { (sourceTypeIndex, config) ->
                 SourceType.entries[sourceTypeIndex] to SourceConfigMapper.toExternal(config)
             },
             autoMoveConfig = AutoMoveConfigMapper.toExternal(proto.autoMoveConfig)
@@ -52,7 +52,7 @@ private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeC
         fileTypeConfigProto {
             enabled = external.enabled
             sourceTypeToConfig.putAll(
-                external.sourceTypeToConfig.entries.associate { (type, config) ->
+                external.sourceTypeConfigMap.entries.associate { (type, config) ->
                     type.ordinal to SourceConfigMapper.toProto(config)
                 }
             )

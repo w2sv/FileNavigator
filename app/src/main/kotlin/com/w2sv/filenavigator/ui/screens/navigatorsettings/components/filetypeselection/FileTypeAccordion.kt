@@ -1,10 +1,5 @@
 package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection
 
-import android.content.Context
-import android.net.Uri
-import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -15,37 +10,31 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.documentfile.provider.DocumentFile
-import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
+import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.TweakedSwitch
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.AutoMoveRow
+import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.SourceAutoMoveBottomSheetParameters
+import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.rememberAutoMoveDestinationPath
+import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.rememberSelectAutoMoveDestination
+import kotlinx.collections.immutable.ImmutableMap
 
 @Composable
 fun FileTypeAccordion(
@@ -53,8 +42,10 @@ fun FileTypeAccordion(
     excludeFileType: () -> Unit,
     autoMoveConfig: AutoMoveConfig,
     setAutoMoveConfig: (AutoMoveConfig) -> Unit,
-    mediaFileSourceEnabled: (SourceType) -> Boolean,
-    onMediaFileSourceCheckedChange: (SourceType, Boolean) -> Unit,
+    sourceTypeConfigMap: ImmutableMap<SourceType, SourceConfig>,
+    onSourceCheckedChange: (SourceType, Boolean) -> Unit,
+    deleteSourceAutoMoveDestination: (SourceType) -> Unit,
+    setSourceAutoMoveBottomSheetParameters: (SourceAutoMoveBottomSheetParameters) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -68,21 +59,11 @@ fun FileTypeAccordion(
         )
         FileTypeSourcesSurface(
             fileType = fileType,
-            mediaFileSourceEnabled = mediaFileSourceEnabled,
-            setMediaFileSourceEnabled = onMediaFileSourceCheckedChange
+            sourceTypeConfigMap = sourceTypeConfigMap,
+            onSourceCheckedChange = onSourceCheckedChange,
+            deleteSourceAutoMoveDestination = deleteSourceAutoMoveDestination,
+            setSourceAutoMoveBottomSheetParameters = setSourceAutoMoveBottomSheetParameters
         )
-    }
-}
-
-@Composable
-private fun rememberSelectAutoMoveDestination(onDestinationSelected: (Uri) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
-    val context: Context = LocalContext.current
-    return rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { optionalTreeUri ->
-        optionalTreeUri?.let {
-            onDestinationSelected(
-                DocumentFile.fromTreeUri(context, it)!!.uri
-            )
-        }
     }
 }
 
@@ -99,12 +80,8 @@ private fun Header(
             setAutoMoveConfig(AutoMoveConfig(enabled = true, destination = it))
         }
     )
-    val context: Context = LocalContext.current
-    val autoMovePath by remember(autoMoveConfig.destination) {
-        mutableStateOf(
-            autoMoveConfig.destination?.let { getDocumentUriPath(it, context) }
-        )
-    }
+    val autoMovePath by rememberAutoMoveDestinationPath(destination = autoMoveConfig.destination)
+
     Surface(
         tonalElevation = 2.dp,
         shape = MaterialTheme.shapes.small,
@@ -191,42 +168,6 @@ private fun FileTypeRow(
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-    }
-}
-
-@Composable
-private fun AutoMoveRow(
-    destinationPath: String,
-    changeDestination: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier
-                .padding(start = 10.dp, bottom = 4.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_subdirectory_arrow_right_24),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .padding(end = 16.dp)
-                    .size(20.dp)
-            )
-            Text(destinationPath, modifier = Modifier.weight(1f), fontSize = 14.sp)
-            IconButton(
-                onClick = { changeDestination() },
-                modifier = Modifier.size(28.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_folder_edit_24),
-                    contentDescription = stringResource(R.string.select_the_auto_move_destination),
-                    modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
     }
 }
 

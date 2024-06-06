@@ -118,7 +118,7 @@ internal fun getFileObservers(
                 .map { mediaFileType ->
                     MediaFileObserver(
                         fileType = mediaFileType,
-                        sourceKinds = fileTypeConfigMap.getValue(mediaFileType).sourceTypeToConfig.keys,
+                        sourceKinds = fileTypeConfigMap.getValue(mediaFileType).sourceTypeConfigMap.keys,
                         contentResolver = contentResolver,
                         onNewMoveFile = onNewNavigatableFileListener,
                         handler = handler
