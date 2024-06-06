@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.domain.model.FileType
@@ -35,6 +37,7 @@ import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
 import com.w2sv.filenavigator.ui.model.color
+import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.SubDirectoryIcon
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.rememberSelectAutoMoveDestination
 import kotlinx.collections.immutable.ImmutableMap
 
@@ -56,7 +59,7 @@ fun FileTypeAccordion(
             excludeFileType = excludeFileType,
             setSourceAutoMoveConfigs = setSourceAutoMoveConfigs
         )
-        FileTypeSourcesSurface(
+        SourcesSurface(
             fileType = fileType,
             sourceTypeConfigMap = sourceTypeConfigMap,
             onSourceCheckedChange = onSourceCheckedChange,
@@ -116,27 +119,7 @@ private fun FileTypeRow(
             fontSize = 18.sp,
         )
         Spacer(modifier = Modifier.weight(1f))
-        var expanded by rememberSaveable {
-            mutableStateOf(false)
-        }
-        Box {
-            IconButton(onClick = { expanded = !expanded }, modifier = Modifier.size(36.dp)) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_more_vert_24),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                DropdownMenuItem(
-                    text = { Text(text = "Set Auto Move destination for all sources") },
-                    onClick = {
-                        expanded = false
-                        setSourceAutoMoveConfigs()
-                    }
-                )
-            }
-        }
+        MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = setSourceAutoMoveConfigs)
         Text(
             text = stringResource(R.string.exclude),
             modifier = Modifier
@@ -147,6 +130,45 @@ private fun FileTypeRow(
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+@Composable
+private fun MoreIconButtonWithDropdownMenu(
+    setSourceAutoMoveConfigs: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by rememberSaveable {
+        mutableStateOf(false)
+    }
+    Box(modifier = modifier) {
+        IconButton(onClick = { expanded = !expanded }, modifier = Modifier.size(36.dp)) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_more_vert_24),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.border(
+                width = Dp.Hairline,
+                color = MaterialTheme.colorScheme.secondary,
+                shape = MaterialTheme.shapes.small
+            )
+        ) {
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.set_auto_move_destination_for_all_sources)) },
+                onClick = {
+                    expanded = false
+                    setSourceAutoMoveConfigs()
+                },
+                leadingIcon = {
+                    SubDirectoryIcon()
+                }
+            )
+        }
     }
 }
 

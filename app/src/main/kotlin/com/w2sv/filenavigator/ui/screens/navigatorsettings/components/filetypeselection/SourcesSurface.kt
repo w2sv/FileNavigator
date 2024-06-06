@@ -41,7 +41,7 @@ import com.w2sv.filenavigator.ui.utils.orOnSurfaceDisabledIf
 import kotlinx.collections.immutable.ImmutableMap
 
 @Composable
-fun FileTypeSourcesSurface(
+fun SourcesSurface(
     fileType: FileType,
     sourceTypeConfigMap: ImmutableMap<SourceType, SourceConfig>,
     onSourceCheckedChange: (SourceType, Boolean) -> Unit,
