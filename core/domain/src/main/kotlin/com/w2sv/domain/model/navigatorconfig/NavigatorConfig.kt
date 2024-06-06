@@ -68,6 +68,23 @@ data class NavigatorConfig(
                     .apply { put(sourceType, alterSourceConfig(getValue(sourceType))) })
         }
 
+    fun copyWithAlteredSourceAutoMoveConfigs(
+        fileType: FileType,
+        autoMoveConfig: AutoMoveConfig
+    ): NavigatorConfig =
+        copyWithAlteredFileConfig(
+            fileType = fileType,
+        ) {
+            it.copy(
+                sourceTypeConfigMap = it.sourceTypeConfigMap.toMutableMap()
+                    .apply {
+                        forEach { (sourceType, sourceConfig) ->
+                            this[sourceType] = sourceConfig.copy(autoMoveConfig = autoMoveConfig)
+                        }
+                    }
+            )
+        }
+
     fun copyWithAlteredSourceAutoMoveConfig(
         fileType: FileType,
         sourceType: SourceType,

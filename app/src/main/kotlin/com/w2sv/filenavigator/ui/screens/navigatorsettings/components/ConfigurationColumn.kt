@@ -200,10 +200,9 @@ fun NavigatorConfigurationColumn(
                         )
                     }
                 },
-                autoMoveConfig = config.fileTypeConfig(fileType).autoMoveConfig,
-                setAutoMoveConfig = { autoMoveConfig ->
+                setSourceAutoMoveConfigs = { autoMoveConfig ->
                     reversibleConfig.update {
-                        it.copyWithAlteredFileAutoMoveConfig(
+                        it.copyWithAlteredSourceAutoMoveConfigs(
                             fileType = fileType,
                             autoMoveConfig = autoMoveConfig
                         )
@@ -219,21 +218,15 @@ fun NavigatorConfigurationColumn(
                         )
                     }
                 },
-                deleteSourceAutoMoveDestination = { sourceType ->
+                onAutoMoveEnabledCheckedChange = { sourceType, enabled ->
                     reversibleConfig.update {
                         it.copyWithAlteredSourceAutoMoveConfig(
                             fileType,
                             sourceType
                         ) { autoMoveConfig ->
-                            autoMoveConfig.copy(
-                                enabled = it.fileTypeConfig(fileType).autoMoveConfig.enabled,
-                                destination = null
-                            )
+                            autoMoveConfig.copy(enabled = enabled)
                         }
                     }
-                },
-                setSourceAutoMoveBottomSheetParameters = {
-                    sourceAutoMoveBottomSheetParameters = it
                 },
                 modifier = Modifier
                     .padding(vertical = 4.dp)
