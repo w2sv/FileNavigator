@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.update
 class ReversibleNavigatorConfig(
     reversibleStateFlow: ReversibleStateFlow<NavigatorConfig>,
     private val emitMakeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
+    private val cancelSnackbar: () -> Unit,
 ) : ReversibleState by reversibleStateFlow,
     MutableStateFlow<NavigatorConfig> by reversibleStateFlow {
 
@@ -28,6 +29,7 @@ class ReversibleNavigatorConfig(
         scope: CoroutineScope,
         navigatorConfigDataSource: NavigatorConfigDataSource,
         emitMakeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
+        cancelSnackbar: () -> Unit,
         onStateSynced: () -> Unit
     ) : this(
         reversibleStateFlow = ReversibleStateFlow(
@@ -41,9 +43,18 @@ class ReversibleNavigatorConfig(
                 navigatorConfigDataSource.saveNavigatorConfig(it)
                 onStateSynced()
             },
+            onStateReset = {
+                cancelSnackbar()
+            }
         ),
-        emitMakeSnackbarVisuals = emitMakeSnackbarVisuals
+        emitMakeSnackbarVisuals = emitMakeSnackbarVisuals,
+        cancelSnackbar = cancelSnackbar
     )
+
+    fun updateAndCancelSnackbar(function: (NavigatorConfig) -> NavigatorConfig) {
+        update(function)
+        cancelSnackbar()
+    }
 
     fun onFileTypeCheckedChange(
         fileType: FileType,
@@ -53,7 +64,7 @@ class ReversibleNavigatorConfig(
             checkedNew = checkedNew,
             checkedCount = value.enabledFileTypes.size,
             update = {
-                update { config ->
+                updateAndCancelSnackbar { config ->
                     config.copyWithAlteredFileConfig(fileType) { it.copy(enabled = checkedNew) }
                 }
             },
@@ -77,7 +88,7 @@ class ReversibleNavigatorConfig(
             checkedNew = checkedNew,
             checkedCount = value.enabledSourceTypesCount(fileType),
             update = {
-                update { config ->
+                updateAndCancelSnackbar { config ->
                     config.copyWithAlteredSourceConfig(
                         fileType = fileType,
                         sourceType = sourceType

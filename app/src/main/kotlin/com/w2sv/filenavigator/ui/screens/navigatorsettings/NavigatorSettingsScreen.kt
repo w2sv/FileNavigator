@@ -87,6 +87,10 @@ fun NavigatorSettingsScreen(
         snackbarHostState.dismissCurrentSnackbarAndShow(makeSnackbarVisuals(context))
     }
 
+    CollectLatestFromFlow(flow = navigatorVM.cancelSnackbar, key1 = snackbarHostState) {
+        snackbarHostState.currentSnackbarData?.dismiss()
+    }
+
     val onBack: () -> Unit = remember {
         {
             navigatorVM.reversibleConfig.reset()

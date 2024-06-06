@@ -51,7 +51,6 @@ import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
 import kotlinx.collections.immutable.toImmutableMap
-import kotlinx.coroutines.flow.update
 import slimber.log.i
 
 private val verticalPadding = 16.dp
@@ -171,7 +170,7 @@ fun NavigatorConfigurationColumn(
                     }
                 },
                 setSourceAutoMoveConfigs = { autoMoveConfig ->
-                    reversibleConfig.update {
+                    reversibleConfig.updateAndCancelSnackbar {
                         it.copyWithAlteredSourceAutoMoveConfigs(
                             fileType = fileType,
                             autoMoveConfig = autoMoveConfig
@@ -189,7 +188,7 @@ fun NavigatorConfigurationColumn(
                     }
                 },
                 setSourceAutoMoveConfig = { sourceType, autoMoveConfig ->
-                    reversibleConfig.update {
+                    reversibleConfig.updateAndCancelSnackbar {
                         it.copyWithAlteredSourceAutoMoveConfig(fileType, sourceType) {
                             autoMoveConfig
                         }
@@ -207,7 +206,7 @@ fun NavigatorConfigurationColumn(
             MoreColumnItems(
                 disableOnLowBattery = config.disableOnLowBattery,
                 setDisableOnLowBattery = { checked ->
-                    reversibleConfig.update { it.copy(disableOnLowBattery = checked) }
+                    reversibleConfig.updateAndCancelSnackbar { it.copy(disableOnLowBattery = checked) }
                 },
                 modifier = Modifier.padding(bottom = if (isPortraitModeActive) 132.dp else 92.dp)
             )
