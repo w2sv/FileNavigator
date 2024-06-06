@@ -45,7 +45,7 @@ fun FileTypeAccordion(
     setSourceAutoMoveConfigs: (AutoMoveConfig) -> Unit,
     sourceTypeConfigMap: ImmutableMap<SourceType, SourceConfig>,
     onSourceCheckedChange: (SourceType, Boolean) -> Unit,
-    onAutoMoveEnabledCheckedChange: (SourceType, Boolean) -> Unit,
+    setSourceAutoMoveConfig: (SourceType, AutoMoveConfig) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -60,7 +60,7 @@ fun FileTypeAccordion(
             fileType = fileType,
             sourceTypeConfigMap = sourceTypeConfigMap,
             onSourceCheckedChange = onSourceCheckedChange,
-            onAutoMoveEnabledCheckedChange = onAutoMoveEnabledCheckedChange
+            setSourceAutoMoveConfig = setSourceAutoMoveConfig,
         )
     }
 }

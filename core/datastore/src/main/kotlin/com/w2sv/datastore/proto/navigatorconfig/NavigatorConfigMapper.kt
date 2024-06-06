@@ -5,7 +5,6 @@ import com.w2sv.datastore.AutoMoveConfigProto
 import com.w2sv.datastore.FileTypeConfigProto
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.SourceConfigProto
-import com.w2sv.datastore.SourceTypeProto
 import com.w2sv.datastore.autoMoveConfigProto
 import com.w2sv.datastore.fileTypeConfigProto
 import com.w2sv.datastore.navigatorConfigProto
@@ -45,7 +44,6 @@ private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeC
             sourceTypeConfigMap = proto.sourceTypeToConfigMap.entries.associate { (sourceTypeIndex, config) ->
                 SourceType.entries[sourceTypeIndex] to SourceConfigMapper.toExternal(config)
             },
-            autoMoveConfig = AutoMoveConfigMapper.toExternal(proto.autoMoveConfig)
         )
 
     override fun toProto(external: FileTypeConfig): FileTypeConfigProto =
@@ -56,7 +54,6 @@ private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeC
                     type.ordinal to SourceConfigMapper.toProto(config)
                 }
             )
-            autoMoveConfig = AutoMoveConfigMapper.toProto(external.autoMoveConfig)
         }
 }
 
@@ -105,27 +102,27 @@ private object SourceConfigMapper :
         }
 }
 
-private object SourceTypeMapper :
-    ProtoMapper<SourceTypeProto, SourceType> {
-    override fun toExternal(proto: SourceTypeProto): SourceType =
-        when (proto) {
-            SourceTypeProto.Camera -> SourceType.Camera
-            SourceTypeProto.Screenshot -> SourceType.Screenshot
-            SourceTypeProto.Recording -> SourceType.Recording
-            SourceTypeProto.Download -> SourceType.Download
-            SourceTypeProto.OtherApp -> SourceType.OtherApp
-            SourceTypeProto.UNRECOGNIZED -> throw IllegalArgumentException("Unrecognized SourceTypeProto")
-        }
-
-    override fun toProto(external: SourceType): SourceTypeProto =
-        when (external) {
-            SourceType.Camera -> SourceTypeProto.Camera
-            SourceType.Screenshot -> SourceTypeProto.Screenshot
-            SourceType.Recording -> SourceTypeProto.Recording
-            SourceType.Download -> SourceTypeProto.Download
-            SourceType.OtherApp -> SourceTypeProto.OtherApp
-        }
-}
+//private object SourceTypeMapper :
+//    ProtoMapper<SourceTypeProto, SourceType> {
+//    override fun toExternal(proto: SourceTypeProto): SourceType =
+//        when (proto) {
+//            SourceTypeProto.Camera -> SourceType.Camera
+//            SourceTypeProto.Screenshot -> SourceType.Screenshot
+//            SourceTypeProto.Recording -> SourceType.Recording
+//            SourceTypeProto.Download -> SourceType.Download
+//            SourceTypeProto.OtherApp -> SourceType.OtherApp
+//            SourceTypeProto.UNRECOGNIZED -> throw IllegalArgumentException("Unrecognized SourceTypeProto")
+//        }
+//
+//    override fun toProto(external: SourceType): SourceTypeProto =
+//        when (external) {
+//            SourceType.Camera -> SourceTypeProto.Camera
+//            SourceType.Screenshot -> SourceTypeProto.Screenshot
+//            SourceType.Recording -> SourceTypeProto.Recording
+//            SourceType.Download -> SourceTypeProto.Download
+//            SourceType.OtherApp -> SourceTypeProto.OtherApp
+//        }
+//}
 
 private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveConfig> {
     override fun toExternal(proto: AutoMoveConfigProto): AutoMoveConfig = AutoMoveConfig(

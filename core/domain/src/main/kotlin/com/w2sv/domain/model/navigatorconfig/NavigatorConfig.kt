@@ -47,14 +47,6 @@ data class NavigatorConfig(
                 .apply { put(fileType, alterFileConfig(getValue(fileType))) }
         )
 
-    fun copyWithAlteredFileAutoMoveConfig(
-        fileType: FileType,
-        autoMoveConfig: AutoMoveConfig
-    ): NavigatorConfig =
-        copyWithAlteredFileConfig(fileType) {
-            it.copy(autoMoveConfig = autoMoveConfig)
-        }
-
     fun copyWithAlteredSourceConfig(
         fileType: FileType,
         sourceType: SourceType,
@@ -120,10 +112,10 @@ data class NavigatorConfig(
                             SourceType.Download,
                         )
                     ),
-                    FileType.PDF to FileTypeConfig.default(),
-                    FileType.Text to FileTypeConfig.default(),
-                    FileType.Archive to FileTypeConfig.default(),
-                    FileType.APK to FileTypeConfig.default()
+                    FileType.PDF to FileTypeConfig.default(listOf(SourceType.Download)),
+                    FileType.Text to FileTypeConfig.default(listOf(SourceType.Download)),
+                    FileType.Archive to FileTypeConfig.default(listOf(SourceType.Download)),
+                    FileType.APK to FileTypeConfig.default(listOf(SourceType.Download))
                 ),
                 disableOnLowBattery = false
             )
