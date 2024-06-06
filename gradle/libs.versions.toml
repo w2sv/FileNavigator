@@ -5,7 +5,7 @@ compileSdk = "34"
 agp = "8.4.1"
 kotlin = "2.0.0"
 java = "17"
-ksp = "2.0.0-1.0.21"
+ksp = "2.0.0-1.0.22"
 triplet-play = "3.9.1"
 
 compose-tooling = "1.6.7"
