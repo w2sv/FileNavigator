@@ -29,7 +29,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.RequiredPermissionsScreenDestination
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
@@ -123,7 +122,7 @@ class MainActivity : ComponentActivity() {
                                 dependenciesContainerBuilder = {
                                     dependency(postNotificationsPermissionState)
                                 },
-                                startRoute = NavigatorSettingsScreenDestination
+//                                startRoute = NavigatorSettingsScreenDestination
                             )
                         }
                     }

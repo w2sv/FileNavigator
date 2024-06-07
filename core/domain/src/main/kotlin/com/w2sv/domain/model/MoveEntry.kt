@@ -10,7 +10,8 @@ data class MoveEntry(
     val destinationDocumentUri: Uri,
     val movedFileDocumentUri: Uri,
     val movedFileMediaUri: Uri,
-    val dateTime: LocalDateTime
+    val dateTime: LocalDateTime,
+    val autoMoved: Boolean
 ) {
     val combinedFileAndSourceTypeIconRes: Int
         get() = combinedFileAndSourceTypeIconRes(fileType, sourceType)

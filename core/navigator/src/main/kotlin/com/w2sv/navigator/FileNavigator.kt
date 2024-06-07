@@ -10,6 +10,7 @@ import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
+import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
@@ -50,13 +51,17 @@ class FileNavigator : UnboundService() {
                 .firstBlocking(),
             contentResolver = contentResolver,
             onNewNavigatableFileListener = { moveFile ->
-                // with scope because construction of inner class BuilderArgs requires inner class scope
-                with(newMoveFileNotificationManager) {
-                    buildAndEmit(
-                        BuilderArgs(
-                            moveFile = moveFile
+                if (moveFile.autoMoveDestination != null) {
+                    MoveBroadcastReceiver.getIntent()
+                } else {
+                    // with scope because construction of inner class BuilderArgs requires inner class scope
+                    with(newMoveFileNotificationManager) {
+                        buildAndEmit(
+                            BuilderArgs(
+                                moveFile = moveFile
+                            )
                         )
-                    )
+                    }
                 }
             },
             handler = Handler(contentObserverHandlerThread.looper)

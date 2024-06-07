@@ -16,7 +16,8 @@ data class MoveEntryEntity(
     val destinationDocumentUri: Uri,
     val movedFileDocumentUri: Uri,
     val movedFileMediaUri: Uri,
-    @PrimaryKey val dateTime: LocalDateTime
+    @PrimaryKey val dateTime: LocalDateTime,
+    val autoMoved: Boolean
 ) {
     constructor(moveEntry: MoveEntry) : this(
         fileName = moveEntry.fileName,
@@ -25,7 +26,8 @@ data class MoveEntryEntity(
         destinationDocumentUri = moveEntry.destinationDocumentUri,
         movedFileDocumentUri = moveEntry.movedFileDocumentUri,
         movedFileMediaUri = moveEntry.movedFileMediaUri,
-        dateTime = moveEntry.dateTime
+        dateTime = moveEntry.dateTime,
+        autoMoved = moveEntry.autoMoved
     )
 
     fun asExternalModel(): MoveEntry =
@@ -36,6 +38,7 @@ data class MoveEntryEntity(
             destinationDocumentUri = destinationDocumentUri,
             movedFileDocumentUri = movedFileDocumentUri,
             movedFileMediaUri = movedFileMediaUri,
-            dateTime = dateTime
+            dateTime = dateTime,
+            autoMoved = autoMoved
         )
 }

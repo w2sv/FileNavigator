@@ -1,6 +1,7 @@
 package com.w2sv.navigator.moving
 
 import android.content.Context
+import android.net.Uri
 import android.os.Parcelable
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
@@ -13,7 +14,8 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 internal data class MoveFile(
     val mediaStoreFile: MediaStoreFile,
-    val fileAndSourceType: FileAndSourceType
+    val fileAndSourceType: FileAndSourceType,
+    val autoMoveDestination: Uri?
 ) : Parcelable {
 
     fun getSimpleStorageMediaFile(context: Context): MediaFile? =

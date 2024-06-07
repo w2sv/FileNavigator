@@ -99,8 +99,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                         val movedFileDocumentUri =
                             Uri.parse("${moveDestinationDocumentFile.uri}%2F${Uri.encode(moveFile.mediaStoreFile.columnData.name)}")
                         insertMoveEntryUseCase(
-                            getMoveEntry(
-                                moveFile = moveFile,
+                            moveFile.getMoveEntry(
                                 destinationDocumentUri = moveDestinationDocumentFile.uri,
                                 movedFileDocumentUri = movedFileDocumentUri,
                                 movedFileMediaUri = MediaStore.getMediaUri(

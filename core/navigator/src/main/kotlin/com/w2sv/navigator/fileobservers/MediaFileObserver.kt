@@ -5,13 +5,14 @@ import android.os.Handler
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.moving.MoveFile
 import slimber.log.i
 
 internal class MediaFileObserver(
     private val fileType: FileType.Media,
-    private val sourceKinds: Set<SourceType>,
+    private val enabledSourceTypeToAutoMoveConfig: Map<SourceType, AutoMoveConfig>,
     contentResolver: ContentResolver,
     onNewMoveFile: (MoveFile) -> Unit,
     handler: Handler
@@ -24,7 +25,7 @@ internal class MediaFileObserver(
     ) {
 
     init {
-        i { "Initialized ${fileType.logIdentifier} MediaFileObserver with sourceKinds: ${sourceKinds.map { it.name }}" }
+        i { "Initialized ${fileType.logIdentifier} MediaFileObserver with types: ${enabledSourceTypeToAutoMoveConfig.keys.map { it.name }}" }
     }
 
     override fun getLogIdentifier(): String =
@@ -36,10 +37,13 @@ internal class MediaFileObserver(
         if (fileType.matchesFileExtension(mediaStoreFile.columnData.fileExtension)) {
             val sourceType = mediaStoreFile.columnData.getSourceType()
 
-            if (sourceKinds.contains(sourceType)) {
+            if (enabledSourceTypeToAutoMoveConfig.contains(sourceType)) {
                 return MoveFile(
                     mediaStoreFile = mediaStoreFile,
-                    fileAndSourceType = FileAndSourceType(fileType, sourceType)
+                    fileAndSourceType = FileAndSourceType(fileType, sourceType),
+                    autoMoveDestination = enabledSourceTypeToAutoMoveConfig
+                        .getValue(sourceType)
+                        .enabledDestination
                 )
             }
         }

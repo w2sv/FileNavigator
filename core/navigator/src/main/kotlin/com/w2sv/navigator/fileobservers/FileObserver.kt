@@ -7,6 +7,7 @@ import android.os.Handler
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.generic.milliSecondsTo
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.model.MediaStoreFileProvider
@@ -118,7 +119,11 @@ internal fun getFileObservers(
                 .map { mediaFileType ->
                     MediaFileObserver(
                         fileType = mediaFileType,
-                        sourceKinds = fileTypeConfigMap.getValue(mediaFileType).sourceTypeConfigMap.keys,
+                        enabledSourceTypeToAutoMoveConfig = fileTypeConfigMap
+                            .getValue(mediaFileType)
+                            .sourceTypeConfigMap
+                            .filterValues { it.enabled }
+                            .mapValues { it.value.autoMoveConfig },
                         contentResolver = contentResolver,
                         onNewMoveFile = onNewNavigatableFileListener,
                         handler = handler
@@ -141,3 +146,6 @@ internal fun getFileObservers(
             }
     }
 }
+
+internal val AutoMoveConfig.enabledDestination: Uri?
+    get() = if (enabled) destination else null

@@ -4,19 +4,20 @@ import android.net.Uri
 import com.w2sv.domain.model.MoveEntry
 import java.time.LocalDateTime
 
-internal fun getMoveEntry(
-    moveFile: MoveFile,
+internal fun MoveFile.getMoveEntry(
     destinationDocumentUri: Uri,
     movedFileDocumentUri: Uri,
     movedFileMediaUri: Uri,
-    dateTime: LocalDateTime
+    dateTime: LocalDateTime,
+    autoMoved: Boolean
 ): MoveEntry =
     MoveEntry(
-        fileName = moveFile.mediaStoreFile.columnData.name,
-        fileType = moveFile.fileType,
-        sourceType = moveFile.sourceType,
+        fileName = mediaStoreFile.columnData.name,
+        fileType = fileType,
+        sourceType = sourceType,
         destinationDocumentUri = destinationDocumentUri,
         movedFileDocumentUri = movedFileDocumentUri,
         movedFileMediaUri = movedFileMediaUri,
-        dateTime = dateTime
+        dateTime = dateTime,
+        autoMoved = autoMoved
     )
