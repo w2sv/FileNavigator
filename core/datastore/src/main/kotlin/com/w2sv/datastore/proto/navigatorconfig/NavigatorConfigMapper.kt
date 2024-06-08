@@ -23,7 +23,8 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
             fileTypeConfigMap = proto.fileTypeToConfigMap.entries.associate { (fileTypeIndex, configProto) ->
                 FileType.values[fileTypeIndex] to FileTypeConfigMapper.toExternal(configProto)
             },
-            disableOnLowBattery = proto.disableOnLowBattery
+            disableOnLowBattery = proto.disableOnLowBattery,
+            startOnBoot = proto.startOnBoot
         )
 
     override fun toProto(external: NavigatorConfig): NavigatorConfigProto =
@@ -34,6 +35,7 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
                 }
             )
             disableOnLowBattery = external.disableOnLowBattery
+            startOnBoot = external.startOnBoot
         }
 }
 

@@ -210,7 +210,14 @@ fun NavigatorConfigurationColumn(
                 setDisableOnLowBattery = { checked ->
                     reversibleConfig.updateAndCancelSnackbar { it.copy(disableOnLowBattery = checked) }
                 },
-                modifier = Modifier.padding(bottom = if (isPortraitModeActive) 132.dp else 92.dp)
+                startOnBoot = config.startOnBoot,
+                setStartOnBoot = { checked ->
+                    reversibleConfig.updateAndCancelSnackbar { it.copy(startOnBoot = checked) }
+                },
+                modifier = Modifier
+                    .padding(bottom = if (isPortraitModeActive) 132.dp else 92.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp)
             )
         }
     }
@@ -231,17 +238,25 @@ private val defaultSectionHeaderModifier = Modifier.padding(vertical = verticalP
 private fun MoreColumnItems(
     disableOnLowBattery: Boolean,
     setDisableOnLowBattery: (Boolean) -> Unit,
+    startOnBoot: Boolean,
+    setStartOnBoot: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         SwitchItemRow(
             iconRes = R.drawable.ic_battery_low_24,
             textRes = R.string.disable_on_low_battery,
             checked = disableOnLowBattery,
-            onCheckedChange = setDisableOnLowBattery,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp)
+            onCheckedChange = setDisableOnLowBattery
+        )
+        SwitchItemRow(
+            iconRes = R.drawable.ic_restart_24,
+            textRes = R.string.start_on_system_boot,
+            checked = startOnBoot,
+            onCheckedChange = setStartOnBoot
         )
     }
 }

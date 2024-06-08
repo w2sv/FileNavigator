@@ -17,15 +17,12 @@ class PowerSaveModeChangedReceiver : BroadcastReceiver() {
     lateinit var powerManager: PowerManager
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        if (intent?.action != PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) return
+        if (intent == null || intent.action != PowerManager.ACTION_POWER_SAVE_MODE_CHANGED || context == null) return
 
         i { "Received makeRestartActivityIntent $intent" }
 
-        context?.run {
-            when (powerManager.isPowerSaveMode) {
-                true -> FileNavigator.stop(applicationContext)
-                false -> FileNavigator.start(applicationContext)
-            }
+        if (powerManager.isPowerSaveMode) {
+            FileNavigator.stop(context)
         }
     }
 

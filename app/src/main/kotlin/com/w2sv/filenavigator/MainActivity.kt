@@ -43,6 +43,7 @@ import com.w2sv.filenavigator.ui.states.rememberObservedPostNotificationsPermiss
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.utils.LocalNavHostController
 import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
+import com.w2sv.navigator.BootCompletedReceiver
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.PowerSaveModeChangedReceiver
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,6 +66,8 @@ class MainActivity : ComponentActivity() {
         )
 
         super.onCreate(savedInstanceState)
+
+        BootCompletedReceiver().register(this)
 
         lifecycleScope.collectFromFlows()
 
@@ -133,21 +136,48 @@ class MainActivity : ComponentActivity() {
 
     private fun CoroutineScope.collectFromFlows() {
         collectFromFlow(navigatorVM.appliedConfig) {
-            val intent =
-                PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity)
+            setPowerModeChangedReceiverHostService(it.disableOnLowBattery)
+            setBootCompletedReceiver(it.startOnBoot)
+        }
+    }
 
-            i { "Collected disableListenerOnLowBattery=$it" }
+    private fun setPowerModeChangedReceiverHostService(disableOnLowBattery: Boolean) {
+        val intent =
+            PowerSaveModeChangedReceiver.HostService.getIntent(this)
 
-            when (it.disableOnLowBattery) {
+        i { "Collected disableOnLowBattery=$disableOnLowBattery" }
+
+        when (disableOnLowBattery) {
+            true -> {
+                startService(intent)
+            }
+
+            false -> {
+                stopService(intent)
+            }
+        }
+    }
+
+    private fun setBootCompletedReceiver(startOnBootCompleted: Boolean) {
+        i { "Collected startOnBootCompleted=$startOnBootCompleted" }
+
+        try {
+            when (startOnBootCompleted) {
                 true -> {
-                    startService(intent)
+                    bootCompletedReceiver.register(this)
                 }
 
                 false -> {
-                    stopService(intent)
+                    bootCompletedReceiver.unregister(this)
                 }
             }
+        } catch (e: IllegalArgumentException) {
+            i(e)
         }
+    }
+
+    private val bootCompletedReceiver by lazy {
+        BootCompletedReceiver()
     }
 
     override fun onStart() {

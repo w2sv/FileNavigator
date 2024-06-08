@@ -5,7 +5,8 @@ import com.w2sv.domain.model.SourceType
 
 data class NavigatorConfig(
     val fileTypeConfigMap: Map<FileType, FileTypeConfig>,
-    val disableOnLowBattery: Boolean
+    val disableOnLowBattery: Boolean,
+    val startOnBoot: Boolean
 ) {
     val enabledFileTypes: List<FileType> by lazy {
         fileTypeConfigMap.run { keys.filter { getValue(it).enabled } }
@@ -119,7 +120,8 @@ data class NavigatorConfig(
                     FileType.APK to nonMediaFileTypeConfig,
                     FileType.EBook to nonMediaFileTypeConfig
                 ),
-                disableOnLowBattery = false
+                disableOnLowBattery = false,
+                startOnBoot = false
             )
         }
     }
