@@ -41,9 +41,9 @@ internal class MediaFileObserver(
                 return MoveFile(
                     mediaStoreFile = mediaStoreFile,
                     fileAndSourceType = FileAndSourceType(fileType, sourceType),
-                    autoMoveDestination = enabledSourceTypeToAutoMoveConfig
+                    moveMode = enabledSourceTypeToAutoMoveConfig
                         .getValue(sourceType)
-                        .enabledDestination
+                        .moveMode
                 )
             }
         }

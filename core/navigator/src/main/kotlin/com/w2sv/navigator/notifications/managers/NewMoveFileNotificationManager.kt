@@ -30,6 +30,7 @@ import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.moving.FileMoveActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.MoveFile
+import com.w2sv.navigator.moving.MoveMode
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.NotificationResourcesCleanupBroadcastReceiver
@@ -40,7 +41,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
-import slimber.log.i
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -262,10 +262,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         context,
                         requestCode,
                         MoveBroadcastReceiver.getIntent(
-                            moveFile = args.moveFile,
-                            moveDestinationDocumentUri = lastMoveDestination.also {
-                                i { "MoveDestination Extra: $it" }
-                            },
+                            moveFile = args.moveFile.copy(moveMode = MoveMode.Quick(destination = lastMoveDestination)),
                             notificationResources = args.resources,
                             context = context
                         ),

@@ -7,11 +7,13 @@ import android.os.Handler
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.generic.milliSecondsTo
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.model.MediaStoreFileProvider
 import com.w2sv.navigator.moving.MoveFile
+import com.w2sv.navigator.moving.MoveMode
 import slimber.log.i
 import java.time.LocalDateTime
 
@@ -136,7 +138,12 @@ internal fun getFileObservers(
                 if (isNotEmpty()) {
                     add(
                         NonMediaFileObserver(
-                            fileTypes = this,
+                            enabledFileTypeToAutoMoveConfig = associateWith { fileType ->
+                                fileTypeConfigMap.getValue(
+                                    fileType
+                                )
+                                    .sourceTypeConfigMap.getValue(SourceType.Download).autoMoveConfig
+                            },
                             contentResolver = contentResolver,
                             onNewMoveFile = onNewNavigatableFileListener,
                             handler = handler
@@ -146,6 +153,10 @@ internal fun getFileObservers(
             }
     }
 }
+
+internal val AutoMoveConfig.moveMode: MoveMode?
+    get() = enabledDestination
+        ?.let { MoveMode.Auto(it) }
 
 internal val AutoMoveConfig.enabledDestination: Uri?
     get() = if (enabled) destination else null

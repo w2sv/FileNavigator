@@ -1,21 +1,25 @@
 package com.w2sv.navigator.moving
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Parcelable
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
+import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.model.SourceType
 import com.w2sv.navigator.model.MediaStoreFile
 import kotlinx.parcelize.Parcelize
+import java.time.LocalDateTime
 
 @Parcelize
 internal data class MoveFile(
     val mediaStoreFile: MediaStoreFile,
     val fileAndSourceType: FileAndSourceType,
-    val autoMoveDestination: Uri?
+    val moveMode: MoveMode?
 ) : Parcelable {
 
     fun getSimpleStorageMediaFile(context: Context): MediaFile? =
@@ -31,7 +35,28 @@ internal data class MoveFile(
     val sourceType: SourceType
         get() = fileAndSourceType.sourceType
 
+    fun getMoveEntry(
+        destinationDocumentUri: Uri,
+        movedFileDocumentUri: Uri,
+        movedFileMediaUri: Uri,
+        dateTime: LocalDateTime,
+        autoMoved: Boolean
+    ): MoveEntry =
+        MoveEntry(
+            fileName = mediaStoreFile.columnData.name,
+            fileType = fileType,
+            sourceType = sourceType,
+            destinationDocumentUri = destinationDocumentUri,
+            movedFileDocumentUri = movedFileDocumentUri,
+            movedFileMediaUri = movedFileMediaUri,
+            dateTime = dateTime,
+            autoMoved = autoMoved
+        )
+
     companion object {
         const val EXTRA = "com.w2sv.filenavigator.extra.MOVE_FILE"
+
+        fun fromIntent(intent: Intent): MoveFile =
+            intent.getParcelableCompat<MoveFile>(EXTRA)!!
     }
 }

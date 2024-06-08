@@ -3,7 +3,6 @@ package com.w2sv.navigator.notifications
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 
 internal abstract class NotificationResourcesCleanupBroadcastReceiver : BroadcastReceiver() {
@@ -11,11 +10,15 @@ internal abstract class NotificationResourcesCleanupBroadcastReceiver : Broadcas
     abstract val multiInstanceAppNotificationManager: MultiInstanceAppNotificationManager<*>
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        multiInstanceAppNotificationManager.cancelNotificationAndFreeResources(
-            intent?.getParcelableCompat<NotificationResources>(
-                NotificationResources.EXTRA
-            )!!
-        )
+        intent
+            ?.let {
+                NotificationResources.fromIntent(it)
+                    ?.let { notificationResources ->
+                        multiInstanceAppNotificationManager.cancelNotificationAndFreeResources(
+                            notificationResources
+                        )
+                    }
+            }
     }
 
     companion object {

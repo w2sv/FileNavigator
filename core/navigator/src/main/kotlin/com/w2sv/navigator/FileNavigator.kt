@@ -11,6 +11,7 @@ import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
+import com.w2sv.navigator.moving.MoveMode
 import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
@@ -51,16 +52,22 @@ class FileNavigator : UnboundService() {
                 .firstBlocking(),
             contentResolver = contentResolver,
             onNewNavigatableFileListener = { moveFile ->
-                if (moveFile.autoMoveDestination != null) {
-                    MoveBroadcastReceiver.getIntent()
-                } else {
-                    // with scope because construction of inner class BuilderArgs requires inner class scope
-                    with(newMoveFileNotificationManager) {
-                        buildAndEmit(
-                            BuilderArgs(
-                                moveFile = moveFile
-                            )
+                when (moveFile.moveMode) {
+                    is MoveMode.Auto -> {
+                        MoveBroadcastReceiver.sendBroadcast(
+                            context = applicationContext,
+                            moveFile = moveFile
                         )
+                    }
+                    else -> {
+                        // with scope because construction of inner class BuilderArgs requires inner class scope
+                        with(newMoveFileNotificationManager) {
+                            buildAndEmit(
+                                BuilderArgs(
+                                    moveFile = moveFile
+                                )
+                            )
+                        }
                     }
                 }
             },

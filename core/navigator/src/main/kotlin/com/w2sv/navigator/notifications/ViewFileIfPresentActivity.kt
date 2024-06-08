@@ -66,6 +66,6 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
                 .putExtra(Extra.MIME_TYPE, mimeType)
                 .putExtra(Extra.MEDIA_URI, mediaUri)
                 .putExtra(Extra.ABS_PATH, absPath)
-                .putNotificationResourcesExtra(notificationResources)
+                .putOptionalNotificationResourcesExtra(notificationResources)
     }
 }

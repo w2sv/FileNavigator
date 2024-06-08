@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.common.utils.getDocumentUriPath
+import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
@@ -118,9 +119,10 @@ fun AutoMoveRow(
 fun rememberSelectAutoMoveDestination(onDestinationSelected: (Uri) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
     val context: Context = LocalContext.current
     return rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { optionalTreeUri ->
-        optionalTreeUri?.let {
+        optionalTreeUri?.let { treeUri ->
+            context.contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
             onDestinationSelected(
-                DocumentFile.fromTreeUri(context, it)!!.uri
+                DocumentFile.fromTreeUri(context, treeUri)!!.uri
             )
         }
     }
