@@ -14,6 +14,7 @@ object FileTypeConverter {
             FileType.APK -> "APK"
             FileType.Text -> "Text"
             FileType.Archive -> "Archive"
+            FileType.EBook -> "EBook"
         }
 
     @TypeConverter
@@ -26,6 +27,7 @@ object FileTypeConverter {
             "APK" -> FileType.APK
             "Text" -> FileType.Text
             "Archive" -> FileType.Archive
+            "EBook" -> FileType.EBook
             else -> throw NoSuchElementException()
         }
 }

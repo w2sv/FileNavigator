@@ -70,7 +70,7 @@ sealed class FileType(
         companion object {
             @JvmStatic
             val values: List<NonMedia>
-                get() = listOf(PDF, Text, Archive, APK)
+                get() = listOf(PDF, Text, Archive, APK, EBook)
         }
     }
 
@@ -174,6 +174,42 @@ sealed class FileType(
         R.drawable.ic_apk_file_24,
         0xFF14db7e,
         setOf("apk")
+    )
+
+    @Parcelize
+    data object EBook : NonMedia(
+        R.string.ebook,
+        R.drawable.ic_book_24,
+        0xFFa89532,
+        setOf(
+            "epub",
+            "azw",
+            "azw1",
+            "azw2",
+            "azw3",
+            "mobi",
+            "iba",
+            "rtf",
+            "tpz",
+            "mart",
+            "tk3",
+            "aep",
+            "dnl",
+            "ybk",
+            "lit",
+            "ebk",
+            "prc",
+            "kfx",
+            "ava",
+            "orb",
+            "koob",
+            "epub",
+            "bpnueb",
+            "pef",
+            "vbk",
+            "fkb",
+            "bkk",
+        )
     )
 
     companion object {

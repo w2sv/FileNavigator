@@ -88,6 +88,7 @@ data class NavigatorConfig(
 
     companion object {
         val default by lazy {
+            val nonMediaFileTypeConfig = FileTypeConfig.default(listOf(SourceType.Download))
             NavigatorConfig(
                 fileTypeConfigMap = mapOf(
                     FileType.Image to FileTypeConfig.default(
@@ -112,10 +113,11 @@ data class NavigatorConfig(
                             SourceType.Download,
                         )
                     ),
-                    FileType.PDF to FileTypeConfig.default(listOf(SourceType.Download)),
-                    FileType.Text to FileTypeConfig.default(listOf(SourceType.Download)),
-                    FileType.Archive to FileTypeConfig.default(listOf(SourceType.Download)),
-                    FileType.APK to FileTypeConfig.default(listOf(SourceType.Download))
+                    FileType.PDF to nonMediaFileTypeConfig,
+                    FileType.Text to nonMediaFileTypeConfig,
+                    FileType.Archive to nonMediaFileTypeConfig,
+                    FileType.APK to nonMediaFileTypeConfig,
+                    FileType.EBook to nonMediaFileTypeConfig
                 ),
                 disableOnLowBattery = false
             )
