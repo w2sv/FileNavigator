@@ -155,8 +155,8 @@ private fun MoreIconButtonWithDropdownMenu(
             modifier = Modifier.border(
                 width = Dp.Hairline,
                 color = MaterialTheme.colorScheme.secondary,
-                shape = MaterialTheme.shapes.small
-            )
+                shape = MaterialTheme.shapes.extraSmall
+            ),
         ) {
             DropdownMenuItem(
                 text = { Text(text = stringResource(R.string.set_auto_move_destination_for_all_sources)) },
