@@ -28,7 +28,7 @@ object DatabaseModule {
             .addMigrations(
                 Migrations.Migration2to3(context = context)
             )
-            .fallbackToDestructiveMigration()
+//            .fallbackToDestructiveMigration()
             .build()
 
     @Provides
