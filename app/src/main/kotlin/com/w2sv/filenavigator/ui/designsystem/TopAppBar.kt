@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,7 +32,7 @@ import com.w2sv.filenavigator.R
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun NavigationDrawerScreenTopBar(
+fun NavigationDrawerScreenTopAppBar(
     title: String,
     modifier: Modifier = Modifier,
     onNavigationIconClick: () -> Unit
@@ -86,4 +88,26 @@ fun TopAppBarAboveHorizontalDivider(
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BackArrowTopAppBar(title: String, onBack: () -> Unit, modifier: Modifier = Modifier) {
+    TopAppBarAboveHorizontalDivider(
+        title = title,
+        modifier = modifier,
+        navigationIcon = {
+            FilledTonalIconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .size(38.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.return_to_main_screen)
+                )
+            }
+        }
+    )
 }

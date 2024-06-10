@@ -32,7 +32,7 @@ class NavigatorViewModel @Inject constructor(
     val cancelSnackbar get() = _cancelSnackbar.asSharedFlow()
     private val _cancelSnackbar = MutableSharedFlow<Unit>()
 
-    val appliedConfig by navigatorConfigDataSource::navigatorConfig
+    private val appliedConfig by navigatorConfigDataSource::navigatorConfig
 
     val disabledOnLowBatteryDistinctUntilChanged =
         appliedConfig.map { it.disableOnLowBattery }.distinctUntilChanged()

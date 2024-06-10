@@ -8,4 +8,5 @@ interface PreferencesRepository {
     val useAmoledBlackTheme: DataStoreFlow<Boolean>
     val useDynamicColors: DataStoreFlow<Boolean>
     val postNotificationsPermissionRequested: DataStoreFlow<Boolean>
+    val showStorageVolumeNames: DataStoreFlow<Boolean>
 }

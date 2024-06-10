@@ -21,6 +21,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
+import androidx.navigation.NavController
+import com.ramcosta.composedestinations.generated.destinations.AppSettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
+import com.ramcosta.composedestinations.navigation.navigate
 import com.w2sv.androidutils.generic.appPlayStoreUrl
 import com.w2sv.androidutils.generic.dynamicColorsSupported
 import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundExceptionHandling
@@ -43,15 +48,21 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.designsystem.drawer.model.NavigationDrawerItemState
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
+import com.w2sv.filenavigator.ui.utils.LocalNavHostController
 import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.utils.OptionalAnimatedVisibility
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun NavigationDrawerSheetItemColumn(
     itemState: NavigationDrawerItemState,
+    closeDrawer: suspend () -> Unit,
     modifier: Modifier = Modifier,
+    scope: CoroutineScope = rememberCoroutineScope(),
     useDarkTheme: Boolean = LocalUseDarkTheme.current,
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
+    navHostController: NavController = LocalNavHostController.current
 ) {
     var useDarkThemeLocal by remember {
         mutableStateOf(useDarkTheme)
@@ -63,6 +74,31 @@ internal fun NavigationDrawerSheetItemColumn(
     Column(modifier = modifier) {
         remember {
             listOf(
+                NavigationDrawerSheetElement.Header(
+                    titleRes = R.string.settings,
+                    modifier = Modifier
+                ),
+                NavigationDrawerSheetElement.Item(
+                    iconRes = com.w2sv.core.navigator.R.drawable.ic_settings_24,
+                    labelRes = R.string.app_settings,
+                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
+                        scope.launch {
+                            closeDrawer()
+                            navHostController.navigate(AppSettingsScreenDestination)
+                        }
+                    },
+                ),
+                NavigationDrawerSheetElement.Item(
+                    iconRes = com.w2sv.core.navigator.R.drawable.ic_app_logo_24,
+                    labelRes = R.string.navigator_settings,
+                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
+                        scope.launch {
+                            closeDrawer()
+                            navHostController.navigate(NavigatorSettingsScreenDestination)
+                        }
+                    },
+                    modifier = NavigationDrawerSheetElement.Item.DefaultModifier.padding(bottom = 14.dp)
+                ),
                 NavigationDrawerSheetElement.Header(
                     titleRes = R.string.appearance,
                     modifier = Modifier
@@ -224,11 +260,15 @@ private sealed interface NavigationDrawerSheetElement {
         val labelRes: Int,
         val explanationRes: Int? = null,
         val visible: (() -> Boolean)? = null,
-        override val modifier: Modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
+        override val modifier: Modifier = DefaultModifier,
         val type: Type
     ) : NavigationDrawerSheetElement {
+
+        companion object {
+            val DefaultModifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp)
+        }
 
         @Immutable
         sealed interface Type {

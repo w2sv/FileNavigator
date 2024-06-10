@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.w2sv.androidutils.datastorage.preferences_datastore.PreferencesDataStoreRepository
+import com.w2sv.androidutils.datastorage.preferences_datastore.flow.DataStoreFlow
 import com.w2sv.androidutils.generic.dynamicColorsSupported
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
@@ -31,6 +32,11 @@ class PreferencesRepositoryImpl @Inject constructor(dataStore: DataStore<Prefere
 
     override val postNotificationsPermissionRequested = dataStoreFlow(
         booleanPreferencesKey("postNotificationsPermissionRequested"),
+        false
+    )
+
+    override val showStorageVolumeNames: DataStoreFlow<Boolean> = dataStoreFlow(
+        booleanPreferencesKey("showStorageVolumeNames"),
         false
     )
 }

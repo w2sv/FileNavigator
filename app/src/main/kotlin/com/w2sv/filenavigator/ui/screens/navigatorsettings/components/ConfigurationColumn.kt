@@ -5,18 +5,14 @@ import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -26,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -48,7 +43,7 @@ import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.designsystem.RightAligned
+import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
 import kotlinx.collections.immutable.toImmutableMap
@@ -258,32 +253,5 @@ private fun MoreColumnItems(
             checked = startOnBoot,
             onCheckedChange = setStartOnBoot
         )
-    }
-}
-
-@Composable
-private fun SwitchItemRow(
-    @DrawableRes iconRes: Int,
-    @StringRes textRes: Int,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-    ) {
-        Icon(
-            painter = painterResource(id = iconRes),
-            contentDescription = null
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = stringResource(id = textRes))
-        RightAligned {
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange
-            )
-        }
     }
 }

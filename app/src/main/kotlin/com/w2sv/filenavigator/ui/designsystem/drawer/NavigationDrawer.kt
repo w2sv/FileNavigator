@@ -42,7 +42,10 @@ fun NavigationDrawer(
     ModalNavigationDrawer(
         modifier = modifier,
         drawerContent = {
-            NavigationDrawerSheet(itemState = itemState)
+            NavigationDrawerSheet(
+                itemState = itemState,
+                closeDrawer = state::close
+            )
         },
         drawerState = state,
         content = content
@@ -52,6 +55,7 @@ fun NavigationDrawer(
 @Composable
 private fun NavigationDrawerSheet(
     itemState: NavigationDrawerItemState,
+    closeDrawer: suspend () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ModalDrawerSheet(
@@ -71,6 +75,7 @@ private fun NavigationDrawerSheet(
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             NavigationDrawerSheetItemColumn(
                 itemState = itemState,
+                closeDrawer = closeDrawer,
                 modifier = Modifier.padding(horizontal = horizontalPadding)
             )
         }

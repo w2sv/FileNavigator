@@ -105,4 +105,19 @@ class AppViewModel @Inject constructor(
             preferencesRepository.useDynamicColors.save(value)
         }
     }
+
+    // ==============
+    // Other
+    // ==============
+
+    val showStorageVolumeNames = preferencesRepository.showStorageVolumeNames.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed()
+    )
+
+    fun saveShowStorageVolumeNames(value: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.showStorageVolumeNames.save(value)
+        }
+    }
 }

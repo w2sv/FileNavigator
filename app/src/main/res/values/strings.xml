@@ -81,4 +81,9 @@
     <string name="select_the_auto_move_destination">Select the auto move destination.</string>
     <string name="set_auto_move_destination_for_all_sources">Set Auto Move destination for all sources</string>
     <string name="start_on_system_boot">Start on system boot</string>
+    <string name="app_settings">App Settings</string>
+    <string name="show_storage_volume_names">Show storage volume names</string>
+    <string name="show_storage_volume_names_explanation">E.g. primary:Folder/OtherFolder instead of Folder/OtherFolder</string>
+    <string name="navigation">Navigation</string>
+    <string name="settings">Settings</string>
 </resources>

@@ -14,14 +14,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -53,11 +50,11 @@ import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
+import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.AddFileTypesBottomSheet
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
@@ -107,21 +104,9 @@ fun NavigatorSettingsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBarAboveHorizontalDivider(
+            BackArrowTopAppBar(
                 title = stringResource(id = R.string.navigator_settings),
-                navigationIcon = {
-                    FilledTonalIconButton(
-                        onClick = onBack,
-                        modifier = Modifier
-                            .padding(start = 12.dp)
-                            .size(38.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.return_to_main_screen)
-                        )
-                    }
-                }
+                onBack = onBack
             )
         },
         floatingActionButton = {

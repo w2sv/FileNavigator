@@ -36,7 +36,7 @@ class ReversibleNavigatorConfig(
             scope = scope,
             appliedStateFlow = navigatorConfigDataSource.navigatorConfig.stateIn(
                 scope = scope,
-                started = SharingStarted.Eagerly,
+                started = SharingStarted.WhileSubscribed(),
                 initialValue = NavigatorConfig.default
             ),
             syncState = {
