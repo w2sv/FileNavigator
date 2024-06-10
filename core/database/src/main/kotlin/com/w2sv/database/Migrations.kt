@@ -86,4 +86,11 @@ internal object Migrations {
             }
         }
     }
+
+    val Migration3to4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE MoveEntryEntity ADD COLUMN autoMoved INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE MoveEntryEntity RENAME COLUMN fileSourceKind TO sourceType")
+        }
+    }
 }

@@ -14,6 +14,6 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
 @DrawableRes
 fun combinedFileAndSourceTypeIconRes(fileType: FileType, sourceType: SourceType): Int =
     when (sourceType) {
-        SourceType.Screenshot, SourceType.Camera -> fileType.iconRes
+        SourceType.Screenshot, SourceType.Camera -> sourceType.iconRes
         else -> fileType.iconRes
     }

@@ -2,9 +2,9 @@ package com.w2sv.database.di
 
 import android.content.Context
 import androidx.room.Room
+import com.w2sv.database.AppDatabase
 import com.w2sv.database.Migrations
 import com.w2sv.database.dao.MoveEntryDao
-import com.w2sv.database.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,9 +26,10 @@ object DatabaseModule {
                 "app-database"
             )
             .addMigrations(
-                Migrations.Migration2to3(context = context)
+                Migrations.Migration2to3(context = context),
+                Migrations.Migration3to4
             )
-//            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration()
             .build()
 
     @Provides
