@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -18,11 +17,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,40 +33,28 @@ import com.ramcosta.composedestinations.generated.destinations.AppSettingsScreen
 import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.w2sv.androidutils.generic.appPlayStoreUrl
-import com.w2sv.androidutils.generic.dynamicColorsSupported
 import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundExceptionHandling
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.AppUrl
 import com.w2sv.common.utils.startActivityWithActivityNotFoundExceptionHandling
-import com.w2sv.composed.OnChange
 import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
-import com.w2sv.filenavigator.ui.designsystem.drawer.model.NavigationDrawerItemState
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.utils.LocalNavHostController
-import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.utils.OptionalAnimatedVisibility
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun NavigationDrawerSheetItemColumn(
-    itemState: NavigationDrawerItemState,
     closeDrawer: suspend () -> Unit,
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
-    useDarkTheme: Boolean = LocalUseDarkTheme.current,
     context: Context = LocalContext.current,
     navHostController: NavController = LocalNavHostController.current
 ) {
-    var useDarkThemeLocal by remember {
-        mutableStateOf(useDarkTheme)
-    }
-    OnChange(value = useDarkTheme) {
-        useDarkThemeLocal = useDarkTheme
-    }
-
     Column(modifier = modifier) {
         remember {
             listOf(
@@ -97,46 +81,6 @@ internal fun NavigationDrawerSheetItemColumn(
                             navHostController.navigate(NavigatorSettingsScreenDestination)
                         }
                     },
-                    modifier = NavigationDrawerSheetElement.Item.DefaultModifier.padding(bottom = 14.dp)
-                ),
-                NavigationDrawerSheetElement.Header(
-                    titleRes = R.string.appearance,
-                    modifier = Modifier
-                ),
-                NavigationDrawerSheetElement.Item(
-                    iconRes = R.drawable.ic_nightlight_24,
-                    labelRes = R.string.theme,
-                    type = NavigationDrawerSheetElement.Item.Type.Custom {
-                        ThemeSelectionRow(
-                            selected = itemState.theme(),
-                            onSelected = itemState.setTheme,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 22.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        )
-                    }
-                ),
-                NavigationDrawerSheetElement.Item(
-                    iconRes = R.drawable.ic_contrast_24,
-                    labelRes = R.string.amoled_black,
-                    visible = { useDarkThemeLocal },
-                    type = NavigationDrawerSheetElement.Item.Type.Switch(
-                        checked = itemState.useAmoledBlackTheme,
-                        onCheckedChange = itemState.setUseAmoledBlackTheme
-                    )
-                ),
-                NavigationDrawerSheetElement.Item(
-                    iconRes = R.drawable.ic_palette_24,
-                    labelRes = R.string.dynamic_colors,
-                    explanationRes = R.string.use_colors_derived_from_your_wallpaper,
-                    visible = {
-                        dynamicColorsSupported
-                    },
-                    type = NavigationDrawerSheetElement.Item.Type.Switch(
-                        checked = itemState.useDynamicColors,
-                        onCheckedChange = itemState.setUseDynamicColors
-                    )
                 ),
                 NavigationDrawerSheetElement.Header(
                     titleRes = R.string.legal
@@ -318,15 +262,12 @@ private fun Item(
             Text(
                 text = stringResource(id = it),
                 color = MaterialTheme.colorScheme.onSurfaceVariantDecreasedAlpha,
-                modifier = Modifier.padding(start = iconSize + labelStartPadding),
+                modifier = Modifier.padding(start = IconSize.Big + ItemRowDefaults.IconTextSpacing),
                 fontSize = 14.sp
             )
         }
     }
 }
-
-private val iconSize = 28.dp
-private val labelStartPadding = 16.dp
 
 @Composable
 private fun MainItemRow(
@@ -339,7 +280,7 @@ private fun MainItemRow(
     ) {
         Icon(
             modifier = Modifier
-                .size(size = iconSize),
+                .size(size = IconSize.Big),
             painter = painterResource(id = item.iconRes),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
@@ -347,7 +288,7 @@ private fun MainItemRow(
 
         Text(
             text = stringResource(id = item.labelRes),
-            modifier = Modifier.padding(start = labelStartPadding),
+            modifier = Modifier.padding(start = ItemRowDefaults.IconTextSpacing),
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
         )

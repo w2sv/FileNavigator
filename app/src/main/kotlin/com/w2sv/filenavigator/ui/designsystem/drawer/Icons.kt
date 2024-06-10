@@ -11,10 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.ui.model.color
+
+object IconSize {
+    val Default = 24.dp
+    val Big = 28.dp
+}
 
 @Composable
 fun FileTypeIcon(fileType: FileType, modifier: Modifier = Modifier, tint: Color = fileType.color) {

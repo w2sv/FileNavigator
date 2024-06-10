@@ -10,7 +10,9 @@ import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 
 @Stable
-data class NavigationDrawerItemState(
+data class AppPreferences(
+    val showStorageVolumeNames: () -> Boolean,
+    val setShowStorageVolumeNames: (Boolean) -> Unit,
     val theme: () -> Theme,
     val setTheme: (Theme) -> Unit,
     val useAmoledBlackTheme: () -> Boolean,
@@ -20,13 +22,16 @@ data class NavigationDrawerItemState(
 )
 
 @Composable
-fun rememberNavigationDrawerItemState(appVM: AppViewModel = activityViewModel()): NavigationDrawerItemState {
+fun rememberAppPreferences(appVM: AppViewModel = activityViewModel()): AppPreferences {
+    val showStorageVolumeNames by appVM.showStorageVolumeNames.collectAsStateWithLifecycle()
     val theme by appVM.theme.collectAsStateWithLifecycle()
     val useAmoledBlackTheme by appVM.useAmoledBlackTheme.collectAsStateWithLifecycle()
     val useDynamicColors by appVM.useDynamicColors.collectAsStateWithLifecycle()
 
     return remember {
-        NavigationDrawerItemState(
+        AppPreferences(
+            showStorageVolumeNames = { showStorageVolumeNames },
+            setShowStorageVolumeNames = appVM::saveShowStorageVolumeNames,
             theme = { theme },
             setTheme = appVM::saveTheme,
             useAmoledBlackTheme = { useAmoledBlackTheme },

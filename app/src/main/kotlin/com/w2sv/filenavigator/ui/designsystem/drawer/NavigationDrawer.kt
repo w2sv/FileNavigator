@@ -27,8 +27,6 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.SystemBarsIgnoringVisibilityPaddedColumn
-import com.w2sv.filenavigator.ui.designsystem.drawer.model.NavigationDrawerItemState
-import com.w2sv.filenavigator.ui.designsystem.drawer.model.rememberNavigationDrawerItemState
 import com.w2sv.filenavigator.ui.designsystem.emptyWindowInsets
 import java.time.LocalDate
 
@@ -36,14 +34,12 @@ import java.time.LocalDate
 fun NavigationDrawer(
     state: DrawerState,
     modifier: Modifier = Modifier,
-    itemState: NavigationDrawerItemState = rememberNavigationDrawerItemState(),
     content: @Composable () -> Unit
 ) {
     ModalNavigationDrawer(
         modifier = modifier,
         drawerContent = {
             NavigationDrawerSheet(
-                itemState = itemState,
                 closeDrawer = state::close
             )
         },
@@ -54,7 +50,6 @@ fun NavigationDrawer(
 
 @Composable
 private fun NavigationDrawerSheet(
-    itemState: NavigationDrawerItemState,
     closeDrawer: suspend () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -74,7 +69,6 @@ private fun NavigationDrawerSheet(
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             NavigationDrawerSheetItemColumn(
-                itemState = itemState,
                 closeDrawer = closeDrawer,
                 modifier = Modifier.padding(horizontal = horizontalPadding)
             )

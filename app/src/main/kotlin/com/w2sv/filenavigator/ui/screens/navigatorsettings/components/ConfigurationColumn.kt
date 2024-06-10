@@ -43,6 +43,8 @@ import com.w2sv.common.utils.getDocumentUriPath
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.DefaultItemRowIcon
+import com.w2sv.filenavigator.ui.designsystem.Spacing
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
@@ -239,17 +241,17 @@ private fun MoreColumnItems(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(Spacing.VerticalItemRow)
     ) {
         SwitchItemRow(
-            iconRes = R.drawable.ic_battery_low_24,
-            textRes = R.string.disable_on_low_battery,
+            icon = { DefaultItemRowIcon(res = R.drawable.ic_battery_low_24) },
+            labelRes = R.string.disable_on_low_battery,
             checked = disableOnLowBattery,
             onCheckedChange = setDisableOnLowBattery
         )
         SwitchItemRow(
-            iconRes = R.drawable.ic_restart_24,
-            textRes = R.string.start_on_system_boot,
+            icon = { DefaultItemRowIcon(res = R.drawable.ic_restart_24) },
+            labelRes = R.string.start_on_system_boot,
             checked = startOnBoot,
             onCheckedChange = setStartOnBoot
         )
