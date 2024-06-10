@@ -117,7 +117,6 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                                         fileType.titleRes
                                     )
                                 }"
-                                    .slashPrefixed()
                             }
                         }
                     }
