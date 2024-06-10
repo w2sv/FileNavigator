@@ -12,6 +12,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,6 +33,11 @@ class NavigatorViewModel @Inject constructor(
     private val _cancelSnackbar = MutableSharedFlow<Unit>()
 
     val appliedConfig by navigatorConfigDataSource::navigatorConfig
+
+    val disabledOnLowBatteryDistinctUntilChanged =
+        appliedConfig.map { it.disableOnLowBattery }.distinctUntilChanged()
+    val startOnBootDistinctUntilChanged =
+        appliedConfig.map { it.startOnBoot }.distinctUntilChanged()
 
     val reversibleConfig = ReversibleNavigatorConfig(
         scope = viewModelScope,

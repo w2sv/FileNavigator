@@ -41,7 +41,7 @@
         <!-- System Broadcast Receivers -->
 
         <receiver
-            android:name="com.w2sv.navigator.PowerSaveModeChangedReceiver"
+            android:name="com.w2sv.navigator.system_action_broadcastreceiver.PowerSaveModeChangedReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.os.action.POWER_SAVE_MODE_CHANGED" />
@@ -49,7 +49,7 @@
         </receiver>
 
         <receiver
-            android:name="com.w2sv.navigator.BootCompletedReceiver"
+            android:name="com.w2sv.navigator.system_action_broadcastreceiver.BootCompletedReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

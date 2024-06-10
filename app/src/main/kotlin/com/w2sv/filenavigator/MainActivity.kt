@@ -43,9 +43,9 @@ import com.w2sv.filenavigator.ui.states.rememberObservedPostNotificationsPermiss
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.utils.LocalNavHostController
 import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
-import com.w2sv.navigator.BootCompletedReceiver
+import com.w2sv.navigator.system_action_broadcastreceiver.BootCompletedReceiver
 import com.w2sv.navigator.FileNavigator
-import com.w2sv.navigator.PowerSaveModeChangedReceiver
+import com.w2sv.navigator.system_action_broadcastreceiver.PowerSaveModeChangedReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import slimber.log.i
@@ -66,8 +66,6 @@ class MainActivity : ComponentActivity() {
         )
 
         super.onCreate(savedInstanceState)
-
-        BootCompletedReceiver().register(this)
 
         lifecycleScope.collectFromFlows()
 
@@ -135,44 +133,37 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun CoroutineScope.collectFromFlows() {
-        collectFromFlow(navigatorVM.appliedConfig) {
-            setPowerModeChangedReceiverHostService(it.disableOnLowBattery)
-            setBootCompletedReceiver(it.startOnBoot)
-        }
-    }
+        collectFromFlow(navigatorVM.disabledOnLowBatteryDistinctUntilChanged) {
+            i { "Collected disableOnLowBattery=$it" }
+            val intent =
+                PowerSaveModeChangedReceiver.HostService.getIntent(applicationContext)
 
-    private fun setPowerModeChangedReceiverHostService(disableOnLowBattery: Boolean) {
-        val intent =
-            PowerSaveModeChangedReceiver.HostService.getIntent(this)
-
-        i { "Collected disableOnLowBattery=$disableOnLowBattery" }
-
-        when (disableOnLowBattery) {
-            true -> {
-                startService(intent)
-            }
-
-            false -> {
-                stopService(intent)
-            }
-        }
-    }
-
-    private fun setBootCompletedReceiver(startOnBootCompleted: Boolean) {
-        i { "Collected startOnBootCompleted=$startOnBootCompleted" }
-
-        try {
-            when (startOnBootCompleted) {
+            when (it) {
                 true -> {
-                    bootCompletedReceiver.register(this)
+                    startService(intent)
                 }
 
                 false -> {
-                    bootCompletedReceiver.unregister(this)
+                    stopService(intent)
                 }
             }
-        } catch (e: IllegalArgumentException) {
-            i(e)
+        }
+        collectFromFlow(navigatorVM.startOnBootDistinctUntilChanged) {
+            i { "Collected startOnBootCompleted=$it" }
+
+            try {
+                when (it) {
+                    true -> {
+                        bootCompletedReceiver.register(applicationContext)
+                    }
+
+                    false -> {
+                        bootCompletedReceiver.unregister(applicationContext)
+                    }
+                }
+            } catch (e: IllegalArgumentException) {
+                i(e)
+            }
         }
     }
 
