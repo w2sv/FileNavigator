@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,6 +29,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.androidutils.generic.dynamicColorsSupported
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.DefaultItemRowIcon
 import com.w2sv.filenavigator.ui.designsystem.ItemRow
@@ -137,7 +137,7 @@ private fun SettingsCard(
 ) {
     ElevatedCard(
         modifier = modifier,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+        elevation = AppCardDefaults.moreElevatedCardElevation
     ) {
         Column(
             modifier = Modifier

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -38,10 +39,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
-import com.w2sv.filenavigator.ui.designsystem.MoreElevatedCard
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.model.launchViewActivity
@@ -70,8 +71,9 @@ fun MoveHistoryCard(
         )
     }
 
-    MoreElevatedCard(
-        modifier = modifier
+    ElevatedCard(
+        modifier = modifier,
+        elevation = AppCardDefaults.moreElevatedCardElevation
     ) {
         Column(
             modifier = Modifier

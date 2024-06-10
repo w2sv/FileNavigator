@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.rememberStyledTextResource
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
-import com.w2sv.filenavigator.ui.designsystem.MoreElevatedCard
 import com.w2sv.filenavigator.ui.theme.AppTheme
 
 @Preview
@@ -53,8 +54,9 @@ fun PermissionCard(
     properties: PermissionCardProperties,
     modifier: Modifier = Modifier
 ) {
-    MoreElevatedCard(
+    ElevatedCard(
         modifier = modifier,
+        elevation = AppCardDefaults.moreElevatedCardElevation
     ) {
         Column(
             modifier = Modifier

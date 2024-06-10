@@ -29,7 +29,7 @@ import com.w2sv.filenavigator.ui.designsystem.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.designsystem.drawer.drawerRepelledAnimation
 import com.w2sv.filenavigator.ui.designsystem.drawer.rememberDrawerRepelledAnimationState
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.MoveHistoryCard
-import com.w2sv.filenavigator.ui.screens.home.components.statusdisplay.StatusDisplayCard
+import com.w2sv.filenavigator.ui.screens.home.components.statusdisplay.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.utils.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.utils.rememberMovableContentOf
 import kotlinx.coroutines.CoroutineScope
@@ -72,7 +72,7 @@ fun HomeScreen(
                     )
 
             val statusDisplayCard: ModifierReceivingComposable = rememberMovableContentOf {
-                StatusDisplayCard(it)
+                NavigatorStatusCard(it)
             }
             val moveHistoryCard: ModifierReceivingComposable = rememberMovableContentOf {
                 MoveHistoryCard(it)

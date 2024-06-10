@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +43,7 @@ import androidx.navigation.NavController
 import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.designsystem.MoreElevatedCard
+import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
@@ -52,7 +53,7 @@ import com.w2sv.filenavigator.ui.utils.activityViewModel
 import com.w2sv.navigator.FileNavigator
 
 @Composable
-fun StatusDisplayCard(
+fun NavigatorStatusCard(
     modifier: Modifier = Modifier,
     navigatorVM: NavigatorViewModel = activityViewModel(),
     navController: NavController = LocalNavHostController.current,
@@ -91,8 +92,9 @@ fun StatusDisplayCard(
         navigatorIsRunningDependentPropertiesMap.getValue(navigatorIsRunning)
     }
 
-    MoreElevatedCard(
+    ElevatedCard(
         modifier = modifier.fillMaxSize(),
+        elevation = AppCardDefaults.moreElevatedCardElevation
     ) {
         Column(
             modifier = Modifier

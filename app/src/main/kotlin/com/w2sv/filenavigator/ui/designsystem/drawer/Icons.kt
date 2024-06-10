@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.core.navigator.R
@@ -32,16 +33,15 @@ fun FileTypeIcon(fileType: FileType, modifier: Modifier = Modifier, tint: Color 
     )
 }
 
-@Composable
-fun AutoMoveIcon(modifier: Modifier = Modifier, tint: Color = LocalContentColor.current) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-        CompositionLocalProvider(LocalContentColor provides tint) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_app_logo_24),
-                contentDescription = null
-            )
-            Text(text = "Auto", fontSize = 12.sp, lineHeight = 6.sp, fontWeight = FontWeight.Medium)
-        }
-    }
-}
-
+//@Composable
+//fun AutoMoveIcon(modifier: Modifier = Modifier, tint: Color = LocalContentColor.current) {
+//    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+//        CompositionLocalProvider(LocalContentColor provides tint) {
+//            Icon(
+//                painter = painterResource(id = R.drawable.ic_app_logo_24),
+//                contentDescription = null
+//            )
+//            Text(text = "Auto", fontSize = 12.sp, lineHeight = 6.sp, fontWeight = FontWeight.Medium)
+//        }
+//    }
+//}
