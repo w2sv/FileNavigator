@@ -5,8 +5,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.core.filesystem)
-
     implementation(libs.androidutils)
     implementation(libs.slimber)
     implementation(libs.simplestorage)
@@ -15,5 +13,4 @@ dependencies {
 
     // Unit tests
     testImplementation(libs.bundles.unitTest)
-    testImplementation(projects.core.test)
 }

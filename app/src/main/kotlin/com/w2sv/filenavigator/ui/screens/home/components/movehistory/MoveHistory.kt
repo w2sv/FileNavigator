@@ -127,9 +127,9 @@ private fun MoveEntryRow(
         }
         WeightedBox(weight = 0.5f) {
             MoveEntryRowText(
-                text = remember(moveEntry.destinationDocumentUri) {
+                text = remember(moveEntry.destination) {
                     documentUriToPathConverter.invoke(
-                        moveEntry.destinationDocumentUri,
+                        moveEntry.destination,
                         context
                     )
                 },

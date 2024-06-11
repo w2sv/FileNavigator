@@ -46,8 +46,8 @@ internal data class MoveFile(
             fileName = mediaStoreFile.columnData.name,
             fileType = fileType,
             sourceType = sourceType,
-            destinationDocumentUri = destinationDocumentUri,
-            movedFileDocumentUri = movedFileDocumentUri,
+            destination = destinationDocumentUri,
+            movedFileUri = movedFileDocumentUri,
             movedFileMediaUri = movedFileMediaUri,
             dateTime = dateTime,
             autoMoved = autoMoved

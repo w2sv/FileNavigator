@@ -23,8 +23,8 @@ data class MoveEntryEntity(
         fileName = moveEntry.fileName,
         fileType = moveEntry.fileType,
         sourceType = moveEntry.sourceType,
-        destinationDocumentUri = moveEntry.destinationDocumentUri,
-        movedFileDocumentUri = moveEntry.movedFileDocumentUri,
+        destinationDocumentUri = moveEntry.destination.uri,
+        movedFileDocumentUri = moveEntry.movedFileUri.uri,
         movedFileMediaUri = moveEntry.movedFileMediaUri,
         dateTime = moveEntry.dateTime,
         autoMoved = moveEntry.autoMoved
@@ -35,8 +35,8 @@ data class MoveEntryEntity(
             fileName = fileName,
             fileType = fileType,
             sourceType = sourceType,
-            destinationDocumentUri = destinationDocumentUri,
-            movedFileDocumentUri = movedFileDocumentUri,
+            destination = DocumentUri(destinationDocumentUri),
+            movedFileUri = movedFileDocumentUri,
             movedFileMediaUri = movedFileMediaUri,
             dateTime = dateTime,
             autoMoved = autoMoved

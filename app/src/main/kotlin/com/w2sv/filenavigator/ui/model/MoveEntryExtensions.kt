@@ -9,7 +9,7 @@ fun MoveEntry.movedFileExists(context: Context): Boolean {
     return try {
         DocumentFile.fromSingleUri(
             context,
-            movedFileDocumentUri
+            movedFileUri
         )
             ?.exists() == true  // prints "java.lang.IllegalArgumentException: Failed to determine if ... is child of ...: java.io.FileNotFoundException: Missing file for ... at ..." to console without actually raising it
     } catch (e: IllegalArgumentException) {

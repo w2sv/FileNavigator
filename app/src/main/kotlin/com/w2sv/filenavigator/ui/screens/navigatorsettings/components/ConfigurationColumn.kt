@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.common.DocumentUriToPathConverter
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.R
@@ -69,7 +70,7 @@ fun SubDirectoryIcon(
 
 @Composable
 fun rememberAutoMoveDestinationPath(
-    destination: Uri?,
+    destination: DocumentUri?,
     context: Context = LocalContext.current,
     documentUriToPathConverter: DocumentUriToPathConverter = LocalDocumentUriToPathConverter.current,
 ): State<String?> =

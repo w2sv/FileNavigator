@@ -26,6 +26,7 @@
             <option value="$PROJECT_DIR$/core/database" />
             <option value="$PROJECT_DIR$/core/datastore" />
             <option value="$PROJECT_DIR$/core/domain" />
+            <option value="$PROJECT_DIR$/core/filesystem" />
             <option value="$PROJECT_DIR$/core/navigator" />
             <option value="$PROJECT_DIR$/core/test" />
             <option value="$PROJECT_DIR$/plugins" />

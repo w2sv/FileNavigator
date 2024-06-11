@@ -1,12 +1,15 @@
-package com.w2sv.common.utils
+package com.w2sv.filesystem
 
 import android.content.Context
 import android.net.Uri
+import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.getSimplePath
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @JvmInline
-value class DocumentUri(val uri: Uri) {
+value class DocumentUri(val uri: Uri) : Parcelable {
 
     fun isValidDocumentUri(context: Context): Boolean =
         DocumentFile.isDocumentUri(context, uri)
