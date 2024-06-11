@@ -46,7 +46,6 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.composed.CollectLatestFromFlow
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
-import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -145,7 +144,7 @@ fun NavigatorSettingsScreen(
             showAddFileTypesBottomSheet = remember { { showAddFileTypesBottomSheet = true } },
             modifier = Modifier
                 .padding(top = paddingValues.calculateTopPadding())
-                .padding(horizontal = if (isPortraitModeActive) Padding.defaultHorizontal else 52.dp)
+                .padding(horizontal = Padding.defaultHorizontal)
                 .fillMaxSize()
         )
 
