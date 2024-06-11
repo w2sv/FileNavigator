@@ -95,8 +95,10 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                     context.showFileSuccessfullyMovedToast(moveDestinationDocumentFile)
 
                     scope.launch {
-                        val movedFileDocumentUri =
-                            Uri.parse("${moveDestinationDocumentFile.uri}%2F${Uri.encode(moveFile.mediaStoreFile.columnData.name)}")
+                        val movedFileDocumentUri = movedFileDocumentUri(
+                            moveDestinationDocumentUri = moveDestinationDocumentFile.uri,
+                            fileName = moveFile.mediaStoreFile.columnData.name
+                        )
                         insertMoveEntryUseCase(
                             moveFile.getMoveEntry(
                                 destinationDocumentUri = moveDestinationDocumentFile.uri,
@@ -173,40 +175,8 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     }
 }
 
-//private fun movedFileMediaUri(
-//    moveDestinationDocumentFile: DocumentFile,
-//    fileName: String,
-//    context: Context
-//): Uri? {
-//    val documentFile = moveDestinationDocumentFile
-//        .child(context, fileName, false)
-//        ?: return null
-//
-//    i { "URI movedFileDocumentUri: ${documentFile.uri}" }
-//
-//    val mediaUri = MediaStore.getMediaUri(
-//        context,
-//        documentFile.uri
-//    )
-//
-//    i { "URI moved Media: $mediaUri" }
-//
-//    return mediaUri
-//}
-
-//private fun movedFileMediaUri(
-//    moveDestinationDocumentUri: Uri,
-//    fileName: String,
-//    context: Context
-//): Uri? {
-//    val movedFileDocumentUri =
-//        Uri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
-//
-//    return MediaStore.getMediaUri(
-//        context,
-//        movedFileDocumentUri
-//    )
-//}
+private fun movedFileDocumentUri(moveDestinationDocumentUri: Uri, fileName: String): Uri =
+    Uri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
 
 private fun Context.showFileSuccessfullyMovedToast(targetDirectory: DocumentFile) {
     showToast(
