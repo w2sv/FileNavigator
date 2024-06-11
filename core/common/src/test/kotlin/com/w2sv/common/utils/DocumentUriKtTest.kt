@@ -19,7 +19,10 @@ class DocumentUriKtTest {
 
     @Test
     fun getDocumentUriPath() {
-        assertEquals("primary:Moved/Screenshots", getDocumentUriPath(treeDocumentUri, context))
+        assertEquals(
+            "primary:Moved/Screenshots",
+            DocumentUri(treeDocumentUri).documentFilePath(context)
+        )
     }
 
     @Test

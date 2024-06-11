@@ -37,12 +37,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.common.DocumentUriToPathConverter
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.composed.isPortraitModeActive
+import com.w2sv.domain.usecase.DocumentUriToPathConverter
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.DefaultItemRowIcon
 import com.w2sv.filenavigator.ui.designsystem.Spacing
@@ -116,13 +115,13 @@ fun AutoMoveRow(
 }
 
 @Composable
-fun rememberSelectAutoMoveDestination(onDestinationSelected: (Uri) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
+fun rememberSelectAutoMoveDestination(onDestinationSelected: (DocumentUri) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
     val context: Context = LocalContext.current
     return rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { optionalTreeUri ->
         optionalTreeUri?.let { treeUri ->
             context.contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
             onDestinationSelected(
-                DocumentFile.fromTreeUri(context, treeUri)!!.uri
+                DocumentUri.fromTreeUri(context, treeUri)!!  // TODO: null case possible?
             )
         }
     }

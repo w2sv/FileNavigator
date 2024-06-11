@@ -7,6 +7,7 @@ import android.os.Parcelable
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
 import com.w2sv.androidutils.generic.getParcelableCompat
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveEntry
@@ -36,8 +37,8 @@ internal data class MoveFile(
         get() = fileAndSourceType.sourceType
 
     fun getMoveEntry(
-        destinationDocumentUri: Uri,
-        movedFileDocumentUri: Uri,
+        destinationDocumentUri: DocumentUri,
+        movedFileDocumentUri: DocumentUri,
         movedFileMediaUri: Uri,
         dateTime: LocalDateTime,
         autoMoved: Boolean
@@ -46,8 +47,8 @@ internal data class MoveFile(
             fileName = mediaStoreFile.columnData.name,
             fileType = fileType,
             sourceType = sourceType,
-            destination = destinationDocumentUri,
-            movedFileUri = movedFileDocumentUri,
+            destinationDocumentUri = destinationDocumentUri,
+            movedFileDocumentUri = movedFileDocumentUri,
             movedFileMediaUri = movedFileMediaUri,
             dateTime = dateTime,
             autoMoved = autoMoved

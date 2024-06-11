@@ -5,8 +5,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.core.domain)
-
     implementation(libs.androidutils)
     implementation(libs.slimber)
     implementation(libs.simplestorage)

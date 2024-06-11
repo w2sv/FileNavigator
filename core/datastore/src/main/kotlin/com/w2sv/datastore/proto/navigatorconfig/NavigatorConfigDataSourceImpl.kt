@@ -1,7 +1,7 @@
 package com.w2sv.datastore.proto.navigatorconfig
 
-import android.net.Uri
 import androidx.datastore.core.DataStore
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
@@ -28,7 +28,7 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
     override suspend fun saveLastMoveDestination(
         fileType: FileType,
         sourceType: SourceType,
-        destination: Uri
+        destination: DocumentUri
     ) {
         navigatorConfigProtoDataStore.updateData { configProto ->
             NavigatorConfigMapper.toProto(
@@ -41,22 +41,13 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
                         it.copy(lastMoveDestinations = listOf(destination))
                     }
             )
-//            it.copy {
-//                fileTypeToConfig[FileType.values.indexOf(fileType)] =
-//                    fileTypeToConfig.getValue(FileType.values.indexOf(fileType)).copy {
-//                        sourceTypeToConfig[sourceType.ordinal] =
-//                            sourceTypeToConfig.getValue(sourceType.ordinal).copy {
-//                                lastMoveDestination[0] = destination.toString()
-//                            }
-//                    }
-//            }
         }
     }
 
     override fun lastMoveDestination(
         fileType: FileType,
         sourceType: SourceType
-    ): Flow<List<Uri>> =
+    ): Flow<List<DocumentUri>> =
         navigatorConfig.map { it.sourceConfig(fileType, sourceType).lastMoveDestinations }
 }
 

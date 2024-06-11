@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.core.filesystem)
+    implementation(projects.core.common)
 
     implementation(libs.androidutils)
     implementation(libs.slimber)

@@ -30,10 +30,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
-import com.w2sv.common.DocumentUriToPathConverter
 import com.w2sv.composed.OnLifecycleEvent
 import com.w2sv.composed.extensions.thenIf
 import com.w2sv.domain.model.MoveEntry
+import com.w2sv.domain.usecase.DocumentUriToPathConverter
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.movedFileExists
@@ -127,11 +127,11 @@ private fun MoveEntryRow(
         }
         WeightedBox(weight = 0.5f) {
             MoveEntryRowText(
-                text = remember(moveEntry.destination) {
+                text = remember(moveEntry.destinationDocumentUri) {
                     documentUriToPathConverter.invoke(
-                        moveEntry.destination,
+                        moveEntry.destinationDocumentUri,
                         context
-                    )
+                    )!!
                 },
             )
         }

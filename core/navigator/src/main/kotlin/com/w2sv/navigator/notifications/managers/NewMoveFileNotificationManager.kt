@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.text.SpannedString
 import android.util.Size
@@ -17,7 +16,7 @@ import androidx.core.text.buildSpannedString
 import com.w2sv.androidutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.common.utils.getDocumentUriFileName
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.lineBreakSuffixed
 import com.w2sv.common.utils.loadBitmap
 import com.w2sv.common.utils.removeSlashSuffix
@@ -192,19 +191,15 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 sourceToLastMoveDestinationStateFlow.lastMoveDestination(args.moveFile.fileAndSourceType)
                     ?.let { lastMoveDestination ->
                         // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
-                        getDocumentUriFileName(
-                            documentUri = lastMoveDestination,
-                            context = context
-                        )
-                            ?.let { fileName ->
-                                addAction(
-                                    getQuickMoveAction(
-                                        requestCode = requestCodeIterator.next(),
-                                        lastMoveDestination = lastMoveDestination,
-                                        lastMoveDestinationFileName = fileName
-                                    )
+                        lastMoveDestination.documentFile(context)?.name?.let { directoryName ->
+                            addAction(
+                                getQuickMoveAction(
+                                    requestCode = requestCodeIterator.next(),
+                                    lastMoveDestination = lastMoveDestination,
+                                    lastMoveDestinationDirectoryName = directoryName
                                 )
-                            }
+                            )
+                        }
                     }
 
                 setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
@@ -251,12 +246,12 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun getQuickMoveAction(
                 requestCode: Int,
-                lastMoveDestination: Uri,
-                lastMoveDestinationFileName: String
+                lastMoveDestination: DocumentUri,
+                lastMoveDestinationDirectoryName: String
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
                     R.drawable.ic_app_logo_24,
-                    context.getString(R.string.to, lastMoveDestinationFileName),
+                    context.getString(R.string.to, lastMoveDestinationDirectoryName),
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,
@@ -333,10 +328,10 @@ private fun isGif(moveFile: MoveFile): Boolean =
 private class SourceToLastMoveDestinationStateFlow(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val scope: CoroutineScope,
-    private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<Uri>>> = mutableMapOf()
-) : Map<FileAndSourceType, StateFlow<List<Uri>>> by mutableMap {
+    private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<DocumentUri>>> = mutableMapOf()
+) : Map<FileAndSourceType, StateFlow<List<DocumentUri>>> by mutableMap {
 
-    fun lastMoveDestination(fileAndSourceType: FileAndSourceType): Uri? =
+    fun lastMoveDestination(fileAndSourceType: FileAndSourceType): DocumentUri? =
         mutableMap.getOrPut(
             key = fileAndSourceType,
             defaultValue = {

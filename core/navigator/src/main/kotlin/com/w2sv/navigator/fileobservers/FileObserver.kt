@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Handler
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.generic.milliSecondsTo
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
@@ -158,5 +159,5 @@ internal val AutoMoveConfig.moveMode: MoveMode?
     get() = enabledDestination
         ?.let { MoveMode.Auto(it) }
 
-internal val AutoMoveConfig.enabledDestination: Uri?
+internal val AutoMoveConfig.enabledDestination: DocumentUri?
     get() = if (enabled) destination else null

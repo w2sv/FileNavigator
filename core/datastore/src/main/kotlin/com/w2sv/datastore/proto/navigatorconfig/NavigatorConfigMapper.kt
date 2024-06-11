@@ -1,6 +1,6 @@
 package com.w2sv.datastore.proto.navigatorconfig
 
-import android.net.Uri
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.datastore.AutoMoveConfigProto
 import com.w2sv.datastore.FileTypeConfigProto
 import com.w2sv.datastore.NavigatorConfigProto
@@ -89,7 +89,7 @@ private object SourceConfigMapper :
     override fun toExternal(proto: SourceConfigProto): SourceConfig =
         SourceConfig(
             enabled = proto.enabled,
-            lastMoveDestinations = proto.lastMoveDestinationsList.map { Uri.parse(it) },
+            lastMoveDestinations = proto.lastMoveDestinationsList.map { DocumentUri.parse(it) },
             autoMoveConfig = AutoMoveConfigMapper.toExternal(proto.autoMoveConfig)
         )
 
@@ -130,7 +130,7 @@ private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveC
     override fun toExternal(proto: AutoMoveConfigProto): AutoMoveConfig = AutoMoveConfig(
         enabled = proto.enabled,
         destination = if (proto.destination.isNotEmpty()) {
-            Uri.parse(proto.destination)
+            DocumentUri.parse(proto.destination)
         } else {
             null
         }

@@ -1,4 +1,4 @@
-package com.w2sv.common
+package com.w2sv.domain.usecase
 
 import android.content.Context
 import com.w2sv.common.di.AppDispatcher
@@ -18,9 +18,9 @@ class DocumentUriToPathConverter @Inject constructor(
     private val showStorageVolumeNames =
         preferencesRepository.showStorageVolumeNames.stateIn(scope, SharingStarted.Eagerly)
 
-    operator fun invoke(documentUri: DocumentUri, context: Context): String =
+    operator fun invoke(documentUri: DocumentUri, context: Context): String? =
         documentUri.documentFilePath(context)
-            .run {
+            ?.run {
                 if (showStorageVolumeNames.value) {
                     this
                 } else {

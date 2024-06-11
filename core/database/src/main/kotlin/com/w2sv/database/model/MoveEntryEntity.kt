@@ -3,6 +3,7 @@ package com.w2sv.database.model
 import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.model.SourceType
@@ -23,8 +24,8 @@ data class MoveEntryEntity(
         fileName = moveEntry.fileName,
         fileType = moveEntry.fileType,
         sourceType = moveEntry.sourceType,
-        destinationDocumentUri = moveEntry.destination.uri,
-        movedFileDocumentUri = moveEntry.movedFileUri.uri,
+        destinationDocumentUri = moveEntry.destinationDocumentUri.uri,
+        movedFileDocumentUri = moveEntry.movedFileDocumentUri.uri,
         movedFileMediaUri = moveEntry.movedFileMediaUri,
         dateTime = moveEntry.dateTime,
         autoMoved = moveEntry.autoMoved
@@ -35,8 +36,8 @@ data class MoveEntryEntity(
             fileName = fileName,
             fileType = fileType,
             sourceType = sourceType,
-            destination = DocumentUri(destinationDocumentUri),
-            movedFileUri = movedFileDocumentUri,
+            destinationDocumentUri = DocumentUri(destinationDocumentUri),
+            movedFileDocumentUri = DocumentUri(movedFileDocumentUri),
             movedFileMediaUri = movedFileMediaUri,
             dateTime = dateTime,
             autoMoved = autoMoved

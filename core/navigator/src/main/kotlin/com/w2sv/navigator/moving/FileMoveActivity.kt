@@ -8,9 +8,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.SavedStateHandle
 import com.w2sv.androidutils.coroutines.firstBlocking
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.ToastProperties
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.showToast
@@ -59,7 +59,7 @@ internal class FileMoveActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         when (val preemptiveExitReason = viewModel.preemptiveExitReason()) {
-            null -> destinationPickerLauncher.launch(viewModel.lastMoveDestination)
+            null -> destinationPickerLauncher.launch(viewModel.lastMoveDestination?.uri)
             else -> terminateActivity(
                 toastProperties = preemptiveExitReason.toastProperties,
                 cancelNotification = preemptiveExitReason.cancelNotification
@@ -86,16 +86,16 @@ internal class FileMoveActivity : ComponentActivity() {
         // Required for quick move
         contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
 
-        // Build DocumentFile, exit if unsuccessful
-        val moveDestinationDocumentFile =
-            DocumentFile.fromTreeUri(this, treeUri)
+        // Build DocumentUri, exit if unsuccessful
+        val moveDestinationDocumentUri =
+            DocumentUri.fromTreeUri(this, treeUri)
                 ?: return terminateActivity(ToastProperties(getString(R.string.couldnt_move_file_internal_error)))
 
         MoveBroadcastReceiver.sendBroadcast(
             context = applicationContext,
             fileMoveActivityIntent = intent.putMoveFileExtra(
                 MoveFile.fromIntent(intent)
-                    .copy(moveMode = MoveMode.Manual(moveDestinationDocumentFile.uri))
+                    .copy(moveMode = MoveMode.Manual(moveDestinationDocumentUri))
             ),
         )
         terminateActivity()
