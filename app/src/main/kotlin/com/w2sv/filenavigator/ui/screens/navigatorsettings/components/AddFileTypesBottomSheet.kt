@@ -8,15 +8,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -33,7 +34,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.w2sv.composed.extensions.toMutableStateMap
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.emptyWindowInsets
@@ -60,7 +61,7 @@ fun AddFileTypesBottomSheet(
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
     val scope = rememberCoroutineScope()
-    val selectionMap = remember {
+    val selectionMap = remember(disabledFileTypes) {
         EnabledKeysTrackingSnapshotStateMap(
             disabledFileTypes
                 .associateWith { false }
@@ -79,20 +80,21 @@ fun AddFileTypesBottomSheet(
             fontSize = 22.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier
-                .padding(bottom = 16.dp)
+                .padding(bottom = 20.dp)
                 .align(Alignment.CenterHorizontally)
         )
         LazyVerticalGrid(
             columns = GridCells.FixedSize(92.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
+            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
         ) {
             items(disabledFileTypes) { fileType ->
                 FileTypeCard(
                     fileType = fileType,
                     isSelected = selectionMap.getValue(fileType),
                     onClick = { selectionMap.toggle(fileType) },
-                    modifier = Modifier.animateItem()
+                    modifier = Modifier
+                        .padding(bottom = 12.dp)
+                        .animateItem()
                 )
             }
         }
@@ -109,7 +111,7 @@ fun AddFileTypesBottomSheet(
             },
             enabled = selectionMap.enabledKeys.isNotEmpty(),
             modifier = Modifier
-                .padding(top = 12.dp, end = 16.dp)
+                .padding(end = 16.dp)
                 .animateContentSize()
                 .padding(horizontal = 8.dp)
                 .align(Alignment.End)
@@ -148,19 +150,27 @@ private fun FileTypeCard(
         startWidth = 0.dp,
         endWidth = 3.dp,
         startColor = Color.Transparent,
-        endColor = MaterialTheme.colorScheme.primary
+        endColor = MaterialTheme.colorScheme.primary,
+        key1 = fileType
     )
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+    ElevatedCard(
         modifier = modifier
-            .width(62.dp)
-            .clip(MaterialTheme.shapes.small)
-            .border(borderAnimationState.borderStroke)
-            .clickable { onClick() }
-            .padding(12.dp)
+            .border(
+                border = borderAnimationState.borderStroke,
+                shape = MaterialTheme.shapes.medium
+            ),
+        elevation = AppCardDefaults.moreElevatedCardElevation
     ) {
-        FileTypeIcon(fileType, modifier = Modifier.size(46.dp))
-        Spacer(modifier = Modifier.height(6.dp))
-        Text(text = stringResource(id = fileType.titleRes))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { onClick() }
+                .padding(12.dp)
+        ) {
+            FileTypeIcon(fileType, modifier = Modifier.size(46.dp))
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(text = stringResource(id = fileType.titleRes))
+        }
     }
 }

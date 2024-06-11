@@ -26,7 +26,9 @@ fun rememberBorderAnimationState(
     endWidth: Dp,
     startColor: Color,
     endColor: Color,
-    duration: Int = 500
+    duration: Int = 500,
+    key1: Any? = null,
+    key2: Any? = null,
 ): BorderAnimationState {
     val transition = updateTransition(targetState = enabled, label = "")
 
@@ -66,7 +68,7 @@ fun rememberBorderAnimationState(
         if (state) endColor else startColor
     }
 
-    return remember {
+    return remember(key1, key2) {
         BorderAnimationState(width = { borderWidth }, color = { borderColor })
     }
 }
