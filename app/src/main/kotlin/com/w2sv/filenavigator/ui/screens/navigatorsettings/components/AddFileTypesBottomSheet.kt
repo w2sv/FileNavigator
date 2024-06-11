@@ -34,7 +34,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,9 +45,9 @@ import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.emptyWindowInsets
-import com.w2sv.filenavigator.ui.designsystem.rememberBorderAnimationState
 import com.w2sv.kotlinutils.extensions.toggle
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -58,9 +57,9 @@ fun AddFileTypesBottomSheet(
     addFileTypes: (List<FileType>) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+    scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val scope = rememberCoroutineScope()
     val selectionMap = remember(disabledFileTypes) {
         EnabledKeysTrackingSnapshotStateMap(
             disabledFileTypes
@@ -145,18 +144,11 @@ private fun FileTypeCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val borderAnimationState = rememberBorderAnimationState(
-        enabled = isSelected,
-        startWidth = 0.dp,
-        endWidth = 3.dp,
-        startColor = Color.Transparent,
-        endColor = MaterialTheme.colorScheme.primary,
-        key1 = fileType
-    )
     ElevatedCard(
         modifier = modifier
             .border(
-                border = borderAnimationState.borderStroke,
+                color = MaterialTheme.colorScheme.primary,
+                width = if (isSelected) 3.dp else 0.dp,
                 shape = MaterialTheme.shapes.medium
             ),
         elevation = AppCardDefaults.moreElevatedCardElevation
