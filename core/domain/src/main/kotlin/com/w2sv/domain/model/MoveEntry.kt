@@ -1,7 +1,7 @@
 package com.w2sv.domain.model
 
-import android.net.Uri
 import com.w2sv.common.utils.DocumentUri
+import com.w2sv.common.utils.MediaUri
 import java.time.LocalDateTime
 
 data class MoveEntry(
@@ -10,7 +10,7 @@ data class MoveEntry(
     val sourceType: SourceType,
     val destinationDocumentUri: DocumentUri,
     val movedFileDocumentUri: DocumentUri,
-    val movedFileMediaUri: Uri,
+    val movedFileMediaUri: MediaUri,
     val dateTime: LocalDateTime,
     val autoMoved: Boolean
 ) {

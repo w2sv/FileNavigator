@@ -8,6 +8,7 @@ import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
 import com.w2sv.androidutils.generic.getParcelableCompat
 import com.w2sv.common.utils.DocumentUri
+import com.w2sv.common.utils.MediaUri
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveEntry
@@ -39,7 +40,7 @@ internal data class MoveFile(
     fun getMoveEntry(
         destinationDocumentUri: DocumentUri,
         movedFileDocumentUri: DocumentUri,
-        movedFileMediaUri: Uri,
+        movedFileMediaUri: MediaUri,
         dateTime: LocalDateTime,
         autoMoved: Boolean
     ): MoveEntry =

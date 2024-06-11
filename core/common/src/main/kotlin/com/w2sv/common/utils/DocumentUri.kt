@@ -3,7 +3,6 @@ package com.w2sv.common.utils
 import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
-import android.provider.MediaStore
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.getSimplePath
 import kotlinx.parcelize.Parcelize
@@ -27,11 +26,8 @@ value class DocumentUri(val uri: Uri) : Parcelable {
     fun documentFilePath(context: Context): String? =
         documentFile(context)?.getSimplePath(context)
 
-    fun mediaUri(context: Context): Uri? =
-        MediaStore.getMediaUri(
-            context,
-            uri
-        )
+    fun mediaUri(context: Context): MediaUri? =
+        MediaUri.fromDocumentUri(context, this)
 
     override fun toString(): String =
         uri.toString()
@@ -45,6 +41,9 @@ value class DocumentUri(val uri: Uri) : Parcelable {
 
         fun fromTreeUri(context: Context, treeUri: Uri): DocumentUri? =
             DocumentFile.fromTreeUri(context, treeUri)?.let { fromDocumentFile(it) }
+
+        fun fromMediaUri(context: Context, mediaUri: MediaUri): DocumentUri? =
+            mediaUri.documentUri(context)
 
         fun fromFile(file: File): DocumentUri =
             fromDocumentFile(DocumentFile.fromFile(file))
