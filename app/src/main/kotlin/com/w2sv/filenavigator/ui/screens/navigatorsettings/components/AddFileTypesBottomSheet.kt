@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.w2sv.composed.extensions.thenIf
 import com.w2sv.composed.extensions.toMutableStateMap
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
@@ -146,11 +147,13 @@ private fun FileTypeCard(
 ) {
     ElevatedCard(
         modifier = modifier
-            .border(
-                color = MaterialTheme.colorScheme.primary,
-                width = if (isSelected) 3.dp else 0.dp,
-                shape = MaterialTheme.shapes.medium
-            ),
+            .thenIf(isSelected) {
+                border(
+                    color = MaterialTheme.colorScheme.primary,
+                    width = 3.dp,
+                    shape = MaterialTheme.shapes.medium
+                )
+            },
         elevation = AppCardDefaults.moreElevatedCardElevation
     ) {
         Column(
