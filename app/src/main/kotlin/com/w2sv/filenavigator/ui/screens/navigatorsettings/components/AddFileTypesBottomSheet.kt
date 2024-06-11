@@ -109,10 +109,11 @@ fun AddFileTypesBottomSheet(
             },
             enabled = selectionMap.enabledKeys.isNotEmpty(),
             modifier = Modifier
-                .padding(top = 12.dp, bottom = 6.dp, end = 16.dp)
+                .padding(top = 12.dp, end = 16.dp)
                 .animateContentSize()
                 .padding(horizontal = 8.dp)
                 .align(Alignment.End)
+                .padding(bottom = 12.dp)  // To prevent elevation shadow cutoff
         )
         Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility))
     }
