@@ -131,7 +131,10 @@ fun NavigatorSettingsScreen(
                     }
                 },
                 modifier = Modifier
-                    .padding(top = 8.dp, end = if (isLandscapeModeActive) 38.dp else 0.dp)
+                    .padding(
+                        top = 8.dp,  // Snackbar padding
+                        end = if (isLandscapeModeActive) 38.dp else 0.dp
+                    )
                     .height(70.dp)
             )
         },

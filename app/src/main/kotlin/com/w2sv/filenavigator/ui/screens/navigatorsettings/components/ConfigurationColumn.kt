@@ -40,12 +40,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
-import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.domain.usecase.DocumentUriToPathConverter
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.DefaultItemRowIcon
+import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.Spacing
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
+import com.w2sv.filenavigator.ui.designsystem.drawer.IconSize
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
 import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
@@ -100,12 +101,12 @@ fun AutoMoveRow(
             Text(destinationPath, modifier = Modifier.weight(1f), fontSize = 14.sp)
             IconButton(
                 onClick = { changeDestination() },
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(IconSize.Big)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_folder_edit_24),
                     contentDescription = stringResource(R.string.select_the_auto_move_destination),
-                    modifier = Modifier.size(28.dp),
+                    modifier = Modifier.size(IconSize.Big),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -214,7 +215,7 @@ fun NavigatorConfigurationColumn(
                     reversibleConfig.updateAndCancelSnackbar { it.copy(startOnBoot = checked) }
                 },
                 modifier = Modifier
-                    .padding(bottom = if (isPortraitModeActive) 132.dp else 92.dp)
+                    .padding(bottom = Padding.fabButtonBottomPadding)
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp)
             )
