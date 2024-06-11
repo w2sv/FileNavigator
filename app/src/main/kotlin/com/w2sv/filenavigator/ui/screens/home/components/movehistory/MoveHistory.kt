@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
-import com.w2sv.common.utils.getDocumentUriPath
+import com.w2sv.common.DocumentUriToPathConverter
 import com.w2sv.composed.OnLifecycleEvent
 import com.w2sv.composed.extensions.thenIf
 import com.w2sv.domain.model.MoveEntry
@@ -39,6 +39,7 @@ import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.movedFileExists
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.rememberFirstDateRepresentations
 import com.w2sv.filenavigator.ui.theme.onSurfaceDisabled
+import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -81,6 +82,7 @@ private fun MoveEntryRow(
     onClick: suspend (MoveEntry, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
+    documentUriToPathConverter: DocumentUriToPathConverter = LocalDocumentUriToPathConverter.current,
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     var movedFileExists by remember(moveEntry) {
@@ -126,10 +128,10 @@ private fun MoveEntryRow(
         WeightedBox(weight = 0.5f) {
             MoveEntryRowText(
                 text = remember(moveEntry.destinationDocumentUri) {
-                    getDocumentUriPath(
+                    documentUriToPathConverter.invoke(
                         moveEntry.destinationDocumentUri,
                         context
-                    )!!
+                    )
                 },
             )
         }

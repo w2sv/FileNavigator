@@ -11,8 +11,8 @@ import com.anggrayudi.storage.file.getSimplePath
  *
  * Does not depend on the file corresponding to [documentUri] being present.
  */
-fun getDocumentUriPath(documentUri: Uri, context: Context): String? =
-    DocumentFile.fromSingleUri(context, documentUri)?.getSimplePath(context)
+fun getDocumentUriPath(documentUri: Uri, context: Context): String =
+    DocumentFile.fromSingleUri(context, documentUri)!!.getSimplePath(context)
 
 /**
  * Returns null if file corresponding to [documentUri] not present.

@@ -10,9 +10,12 @@ import com.anggrayudi.storage.callback.FileCallback
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
+import com.w2sv.common.utils.fileName
+import com.w2sv.common.utils.getText
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.showToast
+import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.notifications.NotificationResources
@@ -204,6 +207,15 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
 //        movedFileDocumentUri
 //    )
 //}
+
+private fun Context.showFileSuccessfullyMovedToast(targetDirectory: DocumentFile) {
+    showToast(
+        getText(
+            R.string.moved_file_to,
+            "/${targetDirectory.fileName(this@showFileSuccessfullyMovedToast)}"
+        )
+    )
+}
 
 private fun onMoveException(moveException: MoveException, context: Context, intent: Intent) {
     moveException.toastProperties.let {

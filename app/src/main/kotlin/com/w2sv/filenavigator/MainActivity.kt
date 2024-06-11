@@ -29,7 +29,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.generated.destinations.AppSettingsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.RequiredPermissionsScreenDestination
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
@@ -42,10 +41,11 @@ import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.states.rememberObservedPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
 import com.w2sv.filenavigator.ui.utils.LocalNavHostController
 import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
-import com.w2sv.navigator.system_action_broadcastreceiver.BootCompletedReceiver
 import com.w2sv.navigator.FileNavigator
+import com.w2sv.navigator.system_action_broadcastreceiver.BootCompletedReceiver
 import com.w2sv.navigator.system_action_broadcastreceiver.PowerSaveModeChangedReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -116,7 +116,10 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    CompositionLocalProvider(LocalNavHostController provides navController) {
+                    CompositionLocalProvider(
+                        LocalNavHostController provides navController,
+                        LocalDocumentUriToPathConverter provides appVM.documentUriToPathConverter
+                    ) {
                         Surface(modifier = Modifier.fillMaxSize()) {
                             DestinationsNavHost(
                                 navGraph = NavGraphs.root,

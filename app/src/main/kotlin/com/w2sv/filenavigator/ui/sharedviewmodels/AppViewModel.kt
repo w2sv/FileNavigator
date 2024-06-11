@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.coroutines.combineStates
 import com.w2sv.androidutils.permissions.hasPermission
+import com.w2sv.common.DocumentUriToPathConverter
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.postNotificationsPermissionRequired
 import com.w2sv.domain.model.Theme
@@ -21,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
+    val documentUriToPathConverter: DocumentUriToPathConverter,
     @ApplicationContext context: Context
 ) :
     ViewModel() {

@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.common.utils.getDocumentUriPath
+import com.w2sv.common.DocumentUriToPathConverter
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.R
@@ -48,6 +48,7 @@ import com.w2sv.filenavigator.ui.designsystem.Spacing
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
+import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
 import kotlinx.collections.immutable.toImmutableMap
 import slimber.log.i
 
@@ -69,11 +70,12 @@ fun SubDirectoryIcon(
 @Composable
 fun rememberAutoMoveDestinationPath(
     destination: Uri?,
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
+    documentUriToPathConverter: DocumentUriToPathConverter = LocalDocumentUriToPathConverter.current,
 ): State<String?> =
     remember(destination) {
         mutableStateOf(
-            destination?.let { getDocumentUriPath(it, context) }
+            destination?.let { documentUriToPathConverter.invoke(it, context) }
         )
     }
 
