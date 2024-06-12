@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -38,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.annotation.Destination
@@ -46,10 +50,12 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.composed.CollectLatestFromFlow
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
+import com.w2sv.composed.rememberStyledTextResource
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
+import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
@@ -75,6 +81,14 @@ fun NavigatorSettingsScreen(
 ) {
     val navigatorConfig by navigatorVM.reversibleConfig.collectAsStateWithLifecycle()
     val navigatorConfigHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
+
+    var showAutoMoveIntroduction by remember {
+        mutableStateOf(true)
+    }
+
+    if (showAutoMoveIntroduction) {
+        AutoMoveIntroduction(onDismissRequest = remember { { showAutoMoveIntroduction = false } })
+    }
 
     CollectLatestFromFlow(
         flow = navigatorVM.makeSnackbarVisuals,
@@ -164,6 +178,49 @@ fun NavigatorSettingsScreen(
                 onDismissRequest = remember { { showAddFileTypesBottomSheet = false } }
             )
         }
+    }
+}
+
+@Composable
+private fun AutoMoveIntroduction(onDismissRequest: () -> Unit, modifier: Modifier = Modifier) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text(text = stringResource(R.string.introducing_auto_move)) },
+        icon = { Text(text = "🎉", fontSize = 28.sp) },
+        confirmButton = {
+            DialogButton(
+                text = stringResource(R.string.awesome),
+                onClick = onDismissRequest
+            )
+        },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Text(
+                    text = stringResource(R.string.you_can_now_enable_file_source_specific_auto_moving_by),
+                    modifier = Modifier.padding(bottom = TextSectionBottomPadding)
+                )
+                Text(
+                    text = rememberStyledTextResource(R.string._1_clicking_on_the_auto_button_of_an_enabled_file_source_2_selecting_a_destination_3_saving_the_changes),
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp)
+                        .padding(bottom = TextSectionBottomPadding)
+                )
+                Text(
+                    text = stringResource(R.string.now_whenever_a_new_file_corresponding_to_the_file_source_is_discovered_it_will_be_automatically_moved_to_the_selected_destination_without_you_needing_to_do_anything_else)
+                )
+            }
+        },
+        modifier = modifier
+    )
+}
+
+private val TextSectionBottomPadding = 6.dp
+
+@Preview
+@Composable
+private fun AutoMoveIntroductionPrev() {
+    AppTheme {
+        AutoMoveIntroduction(onDismissRequest = {})
     }
 }
 

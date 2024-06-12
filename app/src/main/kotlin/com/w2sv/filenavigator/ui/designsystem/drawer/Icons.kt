@@ -33,15 +33,15 @@ fun FileTypeIcon(fileType: FileType, modifier: Modifier = Modifier, tint: Color 
     )
 }
 
-//@Composable
-//fun AutoMoveIcon(modifier: Modifier = Modifier, tint: Color = LocalContentColor.current) {
-//    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-//        CompositionLocalProvider(LocalContentColor provides tint) {
-//            Icon(
-//                painter = painterResource(id = R.drawable.ic_app_logo_24),
-//                contentDescription = null
-//            )
-//            Text(text = "Auto", fontSize = 12.sp, lineHeight = 6.sp, fontWeight = FontWeight.Medium)
-//        }
-//    }
-//}
+@Composable
+fun AutoMoveIcon(modifier: Modifier = Modifier, tint: Color = LocalContentColor.current) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+        CompositionLocalProvider(LocalContentColor provides tint) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_app_logo_24),
+                contentDescription = null
+            )
+            Text(text = "Auto", fontSize = 12.sp, lineHeight = 6.sp, fontWeight = FontWeight.Medium)
+        }
+    }
+}
