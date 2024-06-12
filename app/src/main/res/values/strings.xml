@@ -71,7 +71,7 @@
     <string name="support_development">Support development</string>
     <string name="buy_me_a_coffee_as_a_sign_of_gratitude">Buy me a coffee as a sign of gratitude if you feel like I\'ve deserved one</string>
     <string name="required_permissions">Required Permissions</string>
-    <string name="auto">Auto Move</string>
+    <string name="auto">Auto</string>
     <string name="add_auto_move_destination">Add auto move destination</string>
     <string name="rate_the_app_in_the_playstore">Rate the app in the PlayStore</string>
     <string name="add_a_file_type">Add a file type.</string>
@@ -92,4 +92,5 @@
     <string name="_1_clicking_on_the_auto_button_of_an_enabled_file_source_2_selecting_a_destination_3_saving_the_changes"><b>1.</b> Clicking on the <b>Auto</b> button of an enabled file source\n<b>2.</b> Selecting a destination\n<b>3.</b> Saving the changes</string>
     <string name="awesome">Awesome!</string>
     <string name="introducing_auto_move">Introducing Auto Move</string>
+    <string name="notify">Notify</string>
 </resources>

@@ -33,6 +33,7 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
+import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.AutoMoveRow
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.rememberAutoMoveDestinationPath
@@ -133,13 +134,13 @@ private fun SourceRow(
                         selected = !sourceConfig.autoMoveConfig.enabled,
                         onClick = { onAutoMoveEnabledCheckedChange(false) },
                         shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
-                        text = "Notify"
+                        text = stringResource(R.string.notify)
                     )
                     MoveModeSegmentedButton(
                         selected = sourceConfig.autoMoveConfig.enabled,
                         onClick = { onAutoMoveEnabledCheckedChange(true) },
                         shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
-                        text = "Auto"
+                        text = stringResource(id = R.string.auto)
                     )
                 }
             }
