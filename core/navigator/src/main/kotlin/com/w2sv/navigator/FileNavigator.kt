@@ -59,6 +59,7 @@ class FileNavigator : UnboundService() {
                             moveFile = moveFile
                         )
                     }
+
                     else -> {
                         // with scope because construction of inner class BuilderArgs requires inner class scope
                         with(newMoveFileNotificationManager) {

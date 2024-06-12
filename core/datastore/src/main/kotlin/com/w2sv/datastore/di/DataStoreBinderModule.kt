@@ -1,7 +1,7 @@
 package com.w2sv.datastore.di
 
-import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigDataSourceImpl
 import com.w2sv.datastore.preferences.PreferencesRepositoryImpl
+import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigDataSourceImpl
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.PreferencesRepository
 import dagger.Binds

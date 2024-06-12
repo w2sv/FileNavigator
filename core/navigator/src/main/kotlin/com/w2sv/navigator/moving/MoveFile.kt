@@ -2,7 +2,6 @@ package com.w2sv.navigator.moving
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Parcelable
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
