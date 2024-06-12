@@ -125,7 +125,7 @@ class AppViewModel @Inject constructor(
 
     val showAutoMoveIntroduction = preferencesRepository.showAutoMoveIntroduction.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed()
+        SharingStarted.Eagerly
     )
 
     fun saveShowAutoMoveIntroduction(value: Boolean) {

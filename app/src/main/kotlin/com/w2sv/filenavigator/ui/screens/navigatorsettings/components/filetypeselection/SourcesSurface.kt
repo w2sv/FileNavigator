@@ -13,7 +13,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SingleChoiceSegmentedButtonRowScope
@@ -34,6 +33,7 @@ import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.TweakedSegmentedButton
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.AutoMoveRow
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.rememberAutoMoveDestinationPath
@@ -129,7 +129,7 @@ private fun SourceRow(
         Spacer(modifier = Modifier.weight(1f))
         AnimatedVisibility(visible = sourceConfig.enabled) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                SingleChoiceSegmentedButtonRow(modifier = Modifier.height(32.dp)) {
+                SingleChoiceSegmentedButtonRow(modifier = Modifier.height(30.dp)) {
                     MoveModeSegmentedButton(
                         selected = !sourceConfig.autoMoveConfig.enabled,
                         onClick = { onAutoMoveEnabledCheckedChange(false) },
@@ -162,14 +162,14 @@ private fun SingleChoiceSegmentedButtonRowScope.MoveModeSegmentedButton(
     shape: Shape,
     text: String
 ) {
-    SegmentedButton(
+    TweakedSegmentedButton(
         selected = selected,
         onClick = onClick,
         shape = shape,
         icon = {},
         modifier = Modifier
             .fillMaxHeight()
-            .width(72.dp)
+            .width(70.dp)
     ) {
         Text(text = text, fontSize = 13.sp)
     }
