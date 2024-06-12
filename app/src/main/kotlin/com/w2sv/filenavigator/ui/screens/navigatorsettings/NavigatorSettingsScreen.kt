@@ -68,6 +68,7 @@ import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.utils.Easing
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -79,10 +80,15 @@ fun NavigatorSettingsScreen(
     navigatorVM: NavigatorViewModel = activityViewModel(),
     appVM: AppViewModel = activityViewModel(),
     context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
     val navigatorConfig by navigatorVM.reversibleConfig.collectAsStateWithLifecycle()
-    val navigatorConfigHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
+    val navigatorConfigHasChangedWithDelay by navigatorVM.reversibleConfig.hasChangedWithDelay(
+        scope = scope,
+        delayMillis = 250L
+    )
+        .collectAsStateWithLifecycle()
 
     val showAutoMoveIntroduction by appVM.showAutoMoveIntroduction.collectAsStateWithLifecycle()
 
@@ -118,7 +124,6 @@ fun NavigatorSettingsScreen(
 
     BackHandler(onBack = onBack)
 
-    val scope = rememberCoroutineScope()
     var showAddFileTypesBottomSheet by rememberSaveable {
         mutableStateOf(false)
     }
@@ -132,7 +137,7 @@ fun NavigatorSettingsScreen(
         },
         floatingActionButton = {
             ConfigurationButtonRow(
-                configurationHasChanged = navigatorConfigHasChanged,
+                configurationHasChanged = navigatorConfigHasChangedWithDelay,
                 resetConfiguration = remember { { navigatorVM.reversibleConfig.reset() } },
                 syncConfiguration = remember {
                     {
@@ -246,13 +251,13 @@ private fun ConfigurationButtonRow(
         visible = configurationHasChanged,
         enter = remember {
             slideInHorizontally(
-                tween(easing = Easing.Anticipate),
+                animationSpec = tween(easing = Easing.Anticipate),
                 initialOffsetX = { it / 2 }
             ) + fadeIn()
         },
         exit = remember {
             slideOutHorizontally(
-                tween(easing = Easing.Anticipate),
+                animationSpec = tween(easing = Easing.Anticipate),
                 targetOffsetX = { it / 2 }
             ) + fadeOut()
         },

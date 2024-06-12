@@ -12,8 +12,11 @@ import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.sharedviewmodels.MakeSnackbarVisuals
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
@@ -50,6 +53,11 @@ class ReversibleNavigatorConfig(
         emitMakeSnackbarVisuals = emitMakeSnackbarVisuals,
         cancelSnackbar = cancelSnackbar
     )
+
+    fun hasChangedWithDelay(scope: CoroutineScope, delayMillis: Long): StateFlow<Boolean> =
+        statesDissimilar
+            .onEach { delay(delayMillis) }
+            .stateIn(scope, SharingStarted.Eagerly, statesDissimilar.value)
 
     fun updateAndCancelSnackbar(function: (NavigatorConfig) -> NavigatorConfig) {
         update(function)
