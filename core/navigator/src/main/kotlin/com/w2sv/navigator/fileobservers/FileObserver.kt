@@ -15,6 +15,7 @@ import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.model.MediaStoreFileProvider
 import com.w2sv.navigator.moving.MoveFile
 import com.w2sv.navigator.moving.MoveMode
+import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 import java.time.LocalDateTime
 
@@ -110,7 +111,7 @@ internal fun emitDiscardedLog(reason: () -> String) {
 }
 
 internal fun getFileObservers(
-    fileTypeConfigMap: Map<FileType, FileTypeConfig>,
+    fileTypeConfigMapStateFlow: StateFlow<Map<FileType, FileTypeConfig>>,
     contentResolver: ContentResolver,
     onNewNavigatableFileListener: (MoveFile) -> Unit,
     handler: Handler
@@ -118,7 +119,7 @@ internal fun getFileObservers(
     return buildList {
         addAll(
             FileType.Media.values
-                .filter { fileTypeConfigMap.getValue(it).enabled }
+                .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
                 .map { mediaFileType ->
                     MediaFileObserver(
                         fileType = mediaFileType,
@@ -134,7 +135,7 @@ internal fun getFileObservers(
                 }
         )
         FileType.NonMedia.values
-            .filter { fileTypeConfigMap.getValue(it).enabled }
+            .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
             .run {
                 if (isNotEmpty()) {
                     add(

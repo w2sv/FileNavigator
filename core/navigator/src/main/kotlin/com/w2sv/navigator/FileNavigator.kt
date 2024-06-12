@@ -5,8 +5,11 @@ import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
 import com.w2sv.androidutils.coroutines.firstBlocking
+import com.w2sv.androidutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.androidutils.services.isServiceRunning
+import com.w2sv.common.di.AppDispatcher
+import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.getFileObservers
@@ -17,6 +20,7 @@ import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import slimber.log.i
@@ -38,18 +42,24 @@ class FileNavigator : UnboundService() {
     @Inject
     internal lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
 
+    @GlobalScope(AppDispatcher.Default)
+    internal lateinit var scope: CoroutineScope
+
     private lateinit var fileObservers: List<FileObserver>
 
     private val contentObserverHandlerThread =
         HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
+
+    private val fileTypeConfigMapStateFlow by lazy {
+        navigatorConfigDataSource.navigatorConfig.map { it.fileTypeConfigMap }.stateInWithSynchronousInitial(scope)
+    }
 
     private fun getRegisteredFileObservers(): List<FileObserver> {
         if (!contentObserverHandlerThread.isAlive) {
             contentObserverHandlerThread.start()
         }
         return getFileObservers(
-            fileTypeConfigMap = navigatorConfigDataSource.navigatorConfig.map { it.fileTypeConfigMap }
-                .firstBlocking(),
+            fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
             contentResolver = contentResolver,
             onNewNavigatableFileListener = { moveFile ->
                 when (moveFile.moveMode) {
