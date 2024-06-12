@@ -128,13 +128,13 @@ private fun SourceRow(
         AnimatedVisibility(visible = sourceConfig.enabled) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 SingleChoiceSegmentedButtonRow {
-                    MoveModeSegmentedButton(
+                    SegmentedMoveModeButton(
                         selected = !sourceConfig.autoMoveConfig.enabled,
                         onClick = { onAutoMoveEnabledCheckedChange(false) },
                         shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
                         text = stringResource(R.string.notify)
                     )
-                    MoveModeSegmentedButton(
+                    SegmentedMoveModeButton(
                         selected = sourceConfig.autoMoveConfig.enabled,
                         onClick = { onAutoMoveEnabledCheckedChange(true) },
                         shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
@@ -154,7 +154,7 @@ private fun SourceRow(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SingleChoiceSegmentedButtonRowScope.MoveModeSegmentedButton(
+private fun SingleChoiceSegmentedButtonRowScope.SegmentedMoveModeButton(
     selected: Boolean,
     onClick: () -> Unit,
     shape: Shape,

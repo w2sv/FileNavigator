@@ -9,7 +9,7 @@ internal sealed interface MoveMode : Parcelable {
     val destination: DocumentUri
 
     @Parcelize
-    data class Manual(override val destination: DocumentUri) : MoveMode
+    data class ManualSelection(override val destination: DocumentUri) : MoveMode
 
     @Parcelize
     data class Quick(override val destination: DocumentUri) : MoveMode
@@ -19,7 +19,7 @@ internal sealed interface MoveMode : Parcelable {
 
     val updateLastMoveDestinations: Boolean
         get() = when (this) {
-            is Manual -> true
+            is ManualSelection -> true
             else -> false
         }
 }

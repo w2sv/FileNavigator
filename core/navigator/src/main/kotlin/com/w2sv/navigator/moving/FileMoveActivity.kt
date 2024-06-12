@@ -95,7 +95,7 @@ internal class FileMoveActivity : ComponentActivity() {
             context = applicationContext,
             fileMoveActivityIntent = intent.putMoveFileExtra(
                 MoveFile.fromIntent(intent)
-                    .copy(moveMode = MoveMode.Manual(moveDestinationDocumentUri))
+                    .copy(moveMode = MoveMode.ManualSelection(moveDestinationDocumentUri))
             ),
         )
         terminateActivity()
