@@ -25,7 +25,7 @@ enum class SourceType(
         R.drawable.ic_file_download_24
     ),
     OtherApp(
-        R.string.third_party_app,
+        R.string.other_app,
         R.drawable.ic_apps_24
     )
 }

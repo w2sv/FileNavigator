@@ -8,7 +8,7 @@
     <string name="text">Text</string>
 
     <string name="download">Download</string>
-    <string name="third_party_app">Other Apps</string>
+    <string name="other_app">Other App</string>
     <string name="screenshot">Screenshot</string>
     <string name="recording">Recording</string>
     <string name="camera">Camera</string>

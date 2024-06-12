@@ -3,12 +3,10 @@ package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -124,12 +122,12 @@ private fun SourceRow(
         Text(
             text = stringResource(id = sourceType.labelRes),
             color = MaterialTheme.colorScheme.onSurface
-                .orOnSurfaceDisabledIf(condition = !sourceConfig.enabled)
+                .orOnSurfaceDisabledIf(condition = !sourceConfig.enabled),
+            modifier = Modifier.weight(1f)
         )
-        Spacer(modifier = Modifier.weight(1f))
         AnimatedVisibility(visible = sourceConfig.enabled) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                SingleChoiceSegmentedButtonRow(modifier = Modifier.height(30.dp)) {
+                SingleChoiceSegmentedButtonRow {
                     MoveModeSegmentedButton(
                         selected = !sourceConfig.autoMoveConfig.enabled,
                         onClick = { onAutoMoveEnabledCheckedChange(false) },
@@ -168,8 +166,7 @@ private fun SingleChoiceSegmentedButtonRowScope.MoveModeSegmentedButton(
         shape = shape,
         icon = {},
         modifier = Modifier
-            .fillMaxHeight()
-            .width(70.dp)
+            .size(width = 70.dp, height = 30.dp)
     ) {
         Text(text = text, fontSize = 13.sp)
     }
