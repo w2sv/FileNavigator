@@ -133,7 +133,7 @@ private fun SourceRow(
                         selected = !sourceConfig.autoMoveConfig.enabled,
                         onClick = { onAutoMoveEnabledCheckedChange(false) },
                         shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
-                        text = "Manual"
+                        text = "Notify"
                     )
                     MoveModeSegmentedButton(
                         selected = sourceConfig.autoMoveConfig.enabled,

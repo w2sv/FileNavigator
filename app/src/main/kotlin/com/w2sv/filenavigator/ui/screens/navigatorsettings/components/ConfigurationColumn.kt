@@ -9,7 +9,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -84,8 +83,7 @@ fun rememberAutoMoveDestinationPath(
 fun AutoMoveRow(
     destinationPath: String,
     changeDestination: () -> Unit,
-    modifier: Modifier = Modifier,
-    trailing: (@Composable RowScope.() -> Unit)? = null
+    modifier: Modifier = Modifier
 ) {
     CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
         Row(
@@ -110,7 +108,6 @@ fun AutoMoveRow(
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
-            trailing?.invoke(this)
         }
     }
 }
