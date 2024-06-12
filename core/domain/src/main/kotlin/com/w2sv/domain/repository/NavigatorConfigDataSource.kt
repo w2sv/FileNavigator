@@ -10,6 +10,8 @@ interface NavigatorConfigDataSource {
     val navigatorConfig: Flow<NavigatorConfig>
     suspend fun saveNavigatorConfig(config: NavigatorConfig)
 
+    suspend fun unsetAutoMoveConfig(fileType: FileType, sourceType: SourceType)
+
     suspend fun saveLastMoveDestination(
         fileType: FileType,
         sourceType: SourceType,

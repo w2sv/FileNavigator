@@ -39,6 +39,9 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     internal lateinit var navigatorConfigDataSource: NavigatorConfigDataSource
 
     @Inject
+    internal lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
+
+    @Inject
     @GlobalScope(AppDispatcher.IO)
     internal lateinit var scope: CoroutineScope
 
@@ -98,7 +101,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                                 movedFileDocumentUri = movedFileDocumentUri,
                                 movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!,
                                 dateTime = LocalDateTime.now(),
-                                autoMoved = moveFile.moveMode is MoveMode.Auto
+                                autoMoved = moveFile.moveMode.isAuto
                             )
                         )
 
@@ -121,7 +124,33 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
                 override fun onFailed(errorCode: ErrorCode) {
                     i { errorCode.toString() }
-                    context.showToast(errorCode.name)
+
+                    if (errorCode == ErrorCode.TARGET_FOLDER_NOT_FOUND && moveFile.moveMode.isAuto) {
+                        scope.launch {
+                            navigatorConfigDataSource.unsetAutoMoveConfig(
+                                fileType = moveFile.fileType,
+                                sourceType = moveFile.sourceType
+                            )
+                        }
+                        with(newMoveFileNotificationManager) {
+                            buildAndEmit(
+                                BuilderArgs(
+                                    moveFile = moveFile.copy(moveMode = null)
+                                )
+                            )
+                        }
+                        context.showToast(
+                            context.getText(
+                                R.string.auto_move_destination_invalid,
+                                moveDestinationRepresentation(
+                                    context,
+                                    moveDestinationDocumentFile
+                                )
+                            )
+                        )
+                    } else {
+                        context.showToast(errorCode.name)
+                    }
                 }
             }
         )
@@ -171,14 +200,23 @@ private fun movedFileDocumentUri(
 ): DocumentUri =
     DocumentUri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
 
-private fun Context.showFileSuccessfullyMovedToast(targetDirectory: DocumentFile) {
+private fun Context.showFileSuccessfullyMovedToast(moveDestinationDocumentFile: DocumentFile) {
     showToast(
         getText(
             R.string.moved_file_to,
-            "/${targetDirectory.fileName(this@showFileSuccessfullyMovedToast)}"
+            moveDestinationRepresentation(
+                this@showFileSuccessfullyMovedToast,
+                moveDestinationDocumentFile
+            )
         )
     )
 }
+
+private fun moveDestinationRepresentation(
+    context: Context,
+    moveDestinationDocumentFile: DocumentFile
+): String =
+    "/${moveDestinationDocumentFile.fileName(context)}"
 
 private fun onMoveException(moveException: MoveException, context: Context, intent: Intent) {
     moveException.toastProperties.let {

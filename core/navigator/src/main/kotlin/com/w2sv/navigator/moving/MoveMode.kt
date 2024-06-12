@@ -2,6 +2,7 @@ package com.w2sv.navigator.moving
 
 import android.os.Parcelable
 import com.w2sv.common.utils.DocumentUri
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -16,6 +17,10 @@ internal sealed interface MoveMode : Parcelable {
 
     @Parcelize
     data class Auto(override val destination: DocumentUri) : MoveMode
+
+    @IgnoredOnParcel
+    val isAuto: Boolean
+        get() = this is Auto
 
     val updateLastMoveDestinations: Boolean
         get() = when (this) {

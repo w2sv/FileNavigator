@@ -5,6 +5,7 @@ import com.w2sv.common.utils.DocumentUri
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,17 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
 
     override val navigatorConfig: Flow<NavigatorConfig> =
         navigatorConfigProtoDataStore.data.map { NavigatorConfigMapper.toExternal(it) }
+
+    override suspend fun unsetAutoMoveConfig(fileType: FileType, sourceType: SourceType) {
+        navigatorConfigProtoDataStore.updateData {
+            NavigatorConfigMapper
+                .toExternal(it)
+                .copyWithAlteredSourceAutoMoveConfig(fileType, sourceType) {
+                    AutoMoveConfig()
+                }
+                .let { external -> NavigatorConfigMapper.toProto(external) }
+        }
+    }
 
     override suspend fun saveNavigatorConfig(config: NavigatorConfig) {
         navigatorConfigProtoDataStore.updateData {

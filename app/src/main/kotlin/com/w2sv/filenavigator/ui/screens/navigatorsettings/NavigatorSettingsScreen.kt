@@ -83,13 +83,6 @@ fun NavigatorSettingsScreen(
     scope: CoroutineScope = rememberCoroutineScope(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
-    val navigatorConfig by navigatorVM.reversibleConfig.collectAsStateWithLifecycle()
-    val navigatorConfigHasChangedWithDelay by navigatorVM.reversibleConfig.hasChangedWithDelay(
-        scope = scope,
-        delayMillis = 250L
-    )
-        .collectAsStateWithLifecycle()
-
     val showAutoMoveIntroduction by appVM.showAutoMoveIntroduction.collectAsStateWithLifecycle()
 
     if (showAutoMoveIntroduction) {
@@ -136,6 +129,13 @@ fun NavigatorSettingsScreen(
             )
         },
         floatingActionButton = {
+            // Delay slightly to prevent fab from moving up the just disappearing Snackbar, which results in an unpleasant UX
+            val navigatorConfigHasChangedWithDelay by navigatorVM.reversibleConfig.hasChangedWithDelay(
+                scope = scope,
+                delayMillis = 250L
+            )
+                .collectAsStateWithLifecycle()
+
             ConfigurationButtonRow(
                 configurationHasChanged = navigatorConfigHasChangedWithDelay,
                 resetConfiguration = remember { { navigatorVM.reversibleConfig.reset() } },
@@ -180,7 +180,7 @@ fun NavigatorSettingsScreen(
 
         if (showAddFileTypesBottomSheet) {
             AddFileTypesBottomSheet(
-                disabledFileTypes = navigatorConfig.disabledFileTypes.toPersistentList(),
+                disabledFileTypes = navigatorVM.reversibleConfig.collectAsStateWithLifecycle().value.disabledFileTypes.toPersistentList(),
                 addFileTypes = remember {
                     {
                         it.forEach { fileType ->
