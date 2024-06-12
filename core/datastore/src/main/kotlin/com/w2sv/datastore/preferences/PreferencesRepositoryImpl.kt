@@ -39,4 +39,9 @@ class PreferencesRepositoryImpl @Inject constructor(dataStore: DataStore<Prefere
         booleanPreferencesKey("showStorageVolumeNames"),
         false
     )
+
+    override val showAutoMoveIntroduction: DataStoreFlow<Boolean> = dataStoreFlow(
+        booleanPreferencesKey("showAutoMoveIntroduction"),
+        true
+    )
 }

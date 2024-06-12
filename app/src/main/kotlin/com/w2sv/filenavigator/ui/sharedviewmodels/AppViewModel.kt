@@ -122,4 +122,15 @@ class AppViewModel @Inject constructor(
             preferencesRepository.showStorageVolumeNames.save(value)
         }
     }
+
+    val showAutoMoveIntroduction = preferencesRepository.showAutoMoveIntroduction.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed()
+    )
+
+    fun saveShowAutoMoveIntroduction(value: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.showAutoMoveIntroduction.save(value)
+        }
+    }
 }

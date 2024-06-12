@@ -62,6 +62,7 @@ import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.AddFileTypesBottomSheet
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.NavigatorConfigurationColumn
+import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.utils.Easing
@@ -76,18 +77,25 @@ import kotlinx.coroutines.launch
 fun NavigatorSettingsScreen(
     navigator: DestinationsNavigator,
     navigatorVM: NavigatorViewModel = activityViewModel(),
+    appVM: AppViewModel = activityViewModel(),
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
     val navigatorConfig by navigatorVM.reversibleConfig.collectAsStateWithLifecycle()
     val navigatorConfigHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
 
-    var showAutoMoveIntroduction by remember {
-        mutableStateOf(true)
-    }
+    val showAutoMoveIntroduction by appVM.showAutoMoveIntroduction.collectAsStateWithLifecycle()
 
     if (showAutoMoveIntroduction) {
-        AutoMoveIntroduction(onDismissRequest = remember { { showAutoMoveIntroduction = false } })
+        AutoMoveIntroductionDialog(
+            onDismissRequest = remember {
+                {
+                    appVM.saveShowAutoMoveIntroduction(
+                        false
+                    )
+                }
+            }
+        )
     }
 
     CollectLatestFromFlow(
@@ -182,11 +190,14 @@ fun NavigatorSettingsScreen(
 }
 
 @Composable
-private fun AutoMoveIntroduction(onDismissRequest: () -> Unit, modifier: Modifier = Modifier) {
+private fun AutoMoveIntroductionDialog(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = { Text(text = stringResource(R.string.introducing_auto_move)) },
-        icon = { Text(text = "🎉", fontSize = 28.sp) },
+        icon = { Text(text = "🎉", fontSize = 30.sp) },
         confirmButton = {
             DialogButton(
                 text = stringResource(R.string.awesome),
@@ -220,7 +231,7 @@ private val TextSectionBottomPadding = 6.dp
 @Composable
 private fun AutoMoveIntroductionPrev() {
     AppTheme {
-        AutoMoveIntroduction(onDismissRequest = {})
+        AutoMoveIntroductionDialog(onDismissRequest = {})
     }
 }
 

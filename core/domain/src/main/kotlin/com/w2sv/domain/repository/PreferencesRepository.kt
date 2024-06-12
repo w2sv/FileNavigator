@@ -9,4 +9,5 @@ interface PreferencesRepository {
     val useDynamicColors: DataStoreFlow<Boolean>
     val postNotificationsPermissionRequested: DataStoreFlow<Boolean>
     val showStorageVolumeNames: DataStoreFlow<Boolean>
+    val showAutoMoveIntroduction: DataStoreFlow<Boolean>
 }
