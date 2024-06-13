@@ -11,6 +11,7 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.MediaTypeToFileObserver
+import com.w2sv.navigator.mediastore.MediaStoreFileProvider
 import com.w2sv.navigator.moving.MoveFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
@@ -20,7 +21,8 @@ import javax.inject.Singleton
 @Singleton
 internal class FileObserverProvider @Inject constructor(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
-    @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope
+    @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
+    private val mediaStoreFileProvider: MediaStoreFileProvider
 ) {
     private val fileTypeConfigMapStateFlow by lazy {
         navigatorConfigDataSource.navigatorConfig
@@ -71,6 +73,7 @@ internal class FileObserverProvider @Inject constructor(
                         },
                     contentResolver = contentResolver,
                     onNewMoveFile = onNewMoveFile,
+                    mediaStoreFileProvider = mediaStoreFileProvider,
                     handler = handler
                 )
             }
@@ -95,6 +98,7 @@ internal class FileObserverProvider @Inject constructor(
                         },
                         contentResolver = contentResolver,
                         onNewMoveFile = onNewMoveFile,
+                        mediaStoreFileProvider = mediaStoreFileProvider,
                         handler = handler
                     )
                 } else {

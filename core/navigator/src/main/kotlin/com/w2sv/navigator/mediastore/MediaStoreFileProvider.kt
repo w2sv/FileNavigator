@@ -7,8 +7,9 @@ import com.w2sv.navigator.shared.emitDiscardedLog
 import slimber.log.i
 import java.io.FileNotFoundException
 import java.security.MessageDigest
+import javax.inject.Inject
 
-internal class MediaStoreFileProvider {
+internal class MediaStoreFileProvider @Inject constructor() {
 
     sealed interface Result {
         data class Success(val mediaStoreFile: MediaStoreFile) : Result

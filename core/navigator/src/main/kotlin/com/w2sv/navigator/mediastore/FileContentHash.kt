@@ -1,12 +1,10 @@
 package com.w2sv.navigator.mediastore
 
-import androidx.annotation.VisibleForTesting
 import java.io.File
 import java.io.FileInputStream
 import java.security.MessageDigest
 
 @OptIn(ExperimentalStdlibApi::class)
-@VisibleForTesting
 internal fun File.contentHash(
     messageDigest: MessageDigest,
     bufferSize: Int = 8192,

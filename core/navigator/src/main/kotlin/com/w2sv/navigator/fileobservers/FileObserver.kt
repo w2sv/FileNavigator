@@ -16,11 +16,10 @@ import java.time.LocalDateTime
 internal abstract class FileObserver(
     private val contentResolver: ContentResolver,
     private val onNewMoveFileListener: (MoveFile) -> Unit,
+    private val mediaStoreFileProvider: MediaStoreFileProvider,
     handler: Handler
 ) :
     ContentObserver(handler) {
-
-    private val mediaStoreFileProvider: MediaStoreFileProvider = MediaStoreFileProvider()
 
     protected abstract val logIdentifier: String
 
