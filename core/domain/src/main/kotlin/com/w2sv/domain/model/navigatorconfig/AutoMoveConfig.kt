@@ -6,7 +6,11 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AutoMoveConfig(
-    val enabled: Boolean = false,
-    val destination: DocumentUri? = null
-) :
-    Parcelable
+    val enabled: Boolean,
+    val destination: DocumentUri?
+) : Parcelable {
+
+    companion object {
+        val Empty = AutoMoveConfig(enabled = false, destination = null)
+    }
+}
