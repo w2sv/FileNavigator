@@ -119,7 +119,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                     }
 
                     if (intent.hasExtra(NotificationResources.EXTRA)) {
-                        NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+                        NotificationResources.CleanupBroadcastReceiver.startFromResourcesComprisingIntent(
                             context = context,
                             intent = intent
                         )
@@ -226,7 +226,7 @@ private fun onMoveException(moveException: MoveException, context: Context, inte
         context.showToast(it)
     }
     if (moveException.cancelNotification) {
-        NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+        NotificationResources.CleanupBroadcastReceiver.startFromResourcesComprisingIntent(
             context,
             intent
         )

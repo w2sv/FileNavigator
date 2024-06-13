@@ -3,6 +3,7 @@ package com.w2sv.navigator.notifications.managers.abstrct
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import androidx.annotation.CallSuper
 import com.w2sv.androidutils.notifying.UniqueIds
@@ -20,6 +21,8 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
     notificationManager = notificationManager,
     context = context
 ) {
+    val identifier: String
+        get() = this::class.java.simpleName
 
     data class SummaryProperties(val id: Int)
 
@@ -41,6 +44,20 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
 
             return super.build()
         }
+
+        protected fun getCleanupNotificationResourcesPendingIntent(
+            requestCode: Int,
+            notificationResources: NotificationResources
+        ): PendingIntent =
+            PendingIntent.getBroadcast(
+                context,
+                requestCode,
+                NotificationResources.CleanupBroadcastReceiver.getIntent(
+                    context,
+                    notificationResources
+                ),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+            )
     }
 
     abstract class BuilderArgs(val resources: NotificationResources) :
@@ -51,7 +68,8 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
             id = notificationIds.addNewId(),
             pendingIntentRequestCodes = pendingIntentRequestCodes.addMultipleNewIds(
                 pendingIntentRequestCodeCount
-            )
+            ),
+            notificationManagerIdentifier = identifier.also { i { "Putting identifier=$identifier" } }
         )
 
     fun buildAndEmit(args: A) {

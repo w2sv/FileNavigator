@@ -4,7 +4,6 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.text.SpannedString
 import android.util.Size
@@ -31,11 +30,8 @@ import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.MoveFile
 import com.w2sv.navigator.moving.MoveMode
 import com.w2sv.navigator.notifications.AppNotificationChannel
-import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.notifications.NotificationResourcesCleanupBroadcastReceiver
 import com.w2sv.navigator.notifications.ViewFileIfPresentActivity
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -136,11 +132,11 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun setBigPictureStyleIfImage(): Boolean {
                 when (args.moveFile.fileType) {
-                    FileType.Image -> context.contentResolver.loadBitmap(args.moveFile.mediaStoreFile.uri)
+                    FileType.Image -> context.contentResolver.loadBitmap(args.moveFile.mediaStoreFile.mediaUri.uri)
                     FileType.Video -> {
                         try {
                             context.contentResolver.loadThumbnail(
-                                args.moveFile.mediaStoreFile.uri,
+                                args.moveFile.mediaStoreFile.mediaUri.uri,
                                 Size(512, 512),
                                 null
                             )
@@ -206,6 +202,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 setDeleteIntent(
                     getCleanupNotificationResourcesPendingIntent(
                         requestCode = requestCodeIterator.next(),
+                        notificationResources = args.resources
                     )
                 )
             }
@@ -217,9 +214,11 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                     requestCode,
                     ViewFileIfPresentActivity.makeRestartActivityIntent(
                         context = context,
-                        mediaUri = args.moveFile.mediaStoreFile.uri,
-                        absPath = args.moveFile.mediaStoreFile.columnData.absPath,
-                        mimeType = args.moveFile.fileType.simpleStorageMediaType.mimeType,
+                        args = ViewFileIfPresentActivity.Args(
+                            mediaUri = args.moveFile.mediaStoreFile.mediaUri,
+                            absPath = args.moveFile.mediaStoreFile.columnData.absPath,
+                            mimeType = args.moveFile.fileType.simpleStorageMediaType.mimeType,
+                        ),
                         notificationResources = args.resources
                     ),
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -262,19 +261,6 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )
-
-            private fun getCleanupNotificationResourcesPendingIntent(
-                requestCode: Int
-            ): PendingIntent =
-                PendingIntent.getBroadcast(
-                    context,
-                    requestCode,
-                    ResourcesCleanupBroadcastReceiver.getIntent(
-                        context,
-                        args.resources
-                    ),
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-                )
         }
 
     override fun buildSummaryNotification(): Notification =
@@ -288,37 +274,6 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             .setOnlyAlertOnce(true)
             .setGroupSummary(true)
             .build()
-
-    @AndroidEntryPoint
-    class ResourcesCleanupBroadcastReceiver : NotificationResourcesCleanupBroadcastReceiver() {
-
-        @Inject
-        lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
-
-        override val multiInstanceAppNotificationManager: MultiInstanceAppNotificationManager<*>
-            get() = newMoveFileNotificationManager
-
-        companion object {
-            fun getIntent(
-                context: Context,
-                notificationResources: NotificationResources
-            ): Intent =
-                getIntent<ResourcesCleanupBroadcastReceiver>(
-                    context,
-                    notificationResources
-                )
-
-            fun startFromResourcesComprisingIntent(
-                context: Context,
-                intent: Intent
-            ) {
-                startFromResourcesComprisingIntent<ResourcesCleanupBroadcastReceiver>(
-                    context,
-                    intent
-                )
-            }
-        }
-    }
 }
 
 private fun isGif(moveFile: MoveFile): Boolean =

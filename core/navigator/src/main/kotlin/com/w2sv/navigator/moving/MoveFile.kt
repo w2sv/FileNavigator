@@ -55,7 +55,7 @@ internal data class MoveFile(
         )
 
     companion object {
-        const val EXTRA = "com.w2sv.filenavigator.extra.MOVE_FILE"
+        const val EXTRA = "com.w2sv.filenavigator.extra.MoveFile"
 
         fun fromIntent(intent: Intent): MoveFile =
             intent.getParcelableCompat<MoveFile>(EXTRA)!!

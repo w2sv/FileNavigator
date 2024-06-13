@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Handler
 import com.google.common.collect.EvictingQueue
 import com.w2sv.androidutils.generic.milliSecondsTo
+import com.w2sv.common.utils.MediaUri
 import com.w2sv.navigator.mediastore.MediaStoreFile
 import com.w2sv.navigator.mediastore.MediaStoreFileProvider
 import com.w2sv.navigator.moving.MoveFile
@@ -30,18 +31,18 @@ internal abstract class FileObserver(
 
         i { "$logIdentifier onChange | Uri: $uri" }
 
-        uri ?: return
+        val mediaUri = uri?.let { MediaUri(it) } ?: return
 
         val changeObservationDateTime = LocalDateTime.now()
         val manualMoveCandidate by lazy {
             ManualMoveCandidate(
-                uri = uri,
+                mediaUri = mediaUri,
                 changeObservationDateTime = changeObservationDateTime
             )
         }
         val mediaStoreFileProvisionResult =
             mediaStoreFileProvider.getMediaStoreFileIfNotPendingAndNotAlreadySeen(
-                mediaUri = uri,
+                mediaUri = mediaUri,
                 contentResolver = contentResolver
             )
 
@@ -92,8 +93,10 @@ internal abstract class FileObserver(
     ): MoveFile?
 }
 
-private data class ManualMoveCandidate(val uri: Uri, val changeObservationDateTime: LocalDateTime) {
-
+private data class ManualMoveCandidate(
+    val mediaUri: MediaUri,
+    val changeObservationDateTime: LocalDateTime
+) {
     fun matches(other: ManualMoveCandidate, milliSecondsThreshold: Int): Boolean =
-        uri != other.uri && changeObservationDateTime.milliSecondsTo(other.changeObservationDateTime) < milliSecondsThreshold
+        mediaUri != other.mediaUri && changeObservationDateTime.milliSecondsTo(other.changeObservationDateTime) < milliSecondsThreshold
 }

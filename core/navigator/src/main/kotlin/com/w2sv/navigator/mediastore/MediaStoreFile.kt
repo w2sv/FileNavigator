@@ -1,12 +1,12 @@
 package com.w2sv.navigator.mediastore
 
-import android.net.Uri
 import android.os.Parcelable
+import com.w2sv.common.utils.MediaUri
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 internal data class MediaStoreFile(
-    val uri: Uri,
+    val mediaUri: MediaUri,
     val columnData: MediaStoreColumnData,
     val sha256: String
 ) : Parcelable {
@@ -16,5 +16,5 @@ internal data class MediaStoreFile(
      * if they have the identical content and file name (=> same file that has been moved to a different location).
      */
     fun isIdenticalFileAs(other: MediaStoreFile): Boolean =
-        uri == other.uri || (sha256 == other.sha256 && columnData.name == other.columnData.name)
+        mediaUri == other.mediaUri || (sha256 == other.sha256 && columnData.name == other.columnData.name)
 }

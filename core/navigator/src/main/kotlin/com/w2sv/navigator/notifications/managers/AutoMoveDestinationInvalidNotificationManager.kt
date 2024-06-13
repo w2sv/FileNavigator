@@ -34,7 +34,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
         val autoMoveDestination: DocumentUri
     ) : MultiInstanceAppNotificationManager.BuilderArgs(
         resources = getNotificationResources(
-            pendingIntentRequestCodeCount = 0
+            pendingIntentRequestCodeCount = 1
         )
     )
 
@@ -69,6 +69,14 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
                         }
                     }
                 )
+
+                setDeleteIntent(
+                    getCleanupNotificationResourcesPendingIntent(
+                        requestCode = args.resources.pendingIntentRequestCodes.first(),
+                        notificationResources = args.resources
+                    )
+                )
+
                 return super.build()
             }
         }

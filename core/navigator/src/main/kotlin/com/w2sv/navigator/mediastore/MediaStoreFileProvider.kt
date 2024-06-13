@@ -1,8 +1,8 @@
 package com.w2sv.navigator.mediastore
 
 import android.content.ContentResolver
-import android.net.Uri
 import com.google.common.collect.EvictingQueue
+import com.w2sv.common.utils.MediaUri
 import com.w2sv.navigator.shared.emitDiscardedLog
 import slimber.log.i
 import java.io.FileNotFoundException
@@ -19,12 +19,12 @@ internal class MediaStoreFileProvider @Inject constructor() {
         data object AlreadySeen : Result
     }
 
-    private data class SeenParameters(val uri: Uri, val fileSize: Long)
+    private data class SeenParameters(val uri: MediaUri, val fileSize: Long)
 
     private val seenParametersCache = EvictingQueue.create<SeenParameters>(5)
 
     fun getMediaStoreFileIfNotPendingAndNotAlreadySeen(
-        mediaUri: Uri,
+        mediaUri: MediaUri,
         contentResolver: ContentResolver
     ): Result {
         // Fetch MediaStoreColumnData; exit if impossible
@@ -65,7 +65,7 @@ internal class MediaStoreFileProvider @Inject constructor() {
         seenParametersCache.add(seenParameters)
         return Result.Success(
             MediaStoreFile(
-                uri = mediaUri,
+                mediaUri = mediaUri,
                 columnData = columnData,
                 sha256 = sha256
             )
