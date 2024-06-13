@@ -9,10 +9,13 @@ import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.navigator.model.MediaStoreFile
 import com.w2sv.navigator.moving.MoveFile
+import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
+typealias FileTypeToAutoMoveConfig = Map<FileType.NonMedia, AutoMoveConfig>
+
 internal class NonMediaFileObserver(
-    private val enabledFileTypeToAutoMoveConfig: Map<FileType.NonMedia, AutoMoveConfig>,
+    private val enabledFileTypeToAutoMoveConfigStateFlow: StateFlow<FileTypeToAutoMoveConfig>,
     contentResolver: ContentResolver,
     onNewMoveFile: (MoveFile) -> Unit,
     handler: Handler
@@ -28,7 +31,11 @@ internal class NonMediaFileObserver(
         i { "Initialized NonMediaFileObserver with fileTypes: ${enabledFileTypeToAutoMoveConfig.keys.map { it.logIdentifier }}" }
     }
 
-    override fun getLogIdentifier(): String = this.javaClass.simpleName
+    private val enabledFileTypeToAutoMoveConfig: FileTypeToAutoMoveConfig
+        get() = enabledFileTypeToAutoMoveConfigStateFlow.value
+
+    override val logIdentifier: String
+        get() = this.javaClass.simpleName
 
     override fun getMoveFileIfMatchingConstraints(
         mediaStoreFile: MediaStoreFile

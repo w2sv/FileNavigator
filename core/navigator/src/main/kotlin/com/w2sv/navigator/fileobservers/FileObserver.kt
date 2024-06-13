@@ -5,6 +5,7 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Handler
 import com.google.common.collect.EvictingQueue
+import com.w2sv.androidutils.coroutines.mapState
 import com.w2sv.androidutils.generic.milliSecondsTo
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.domain.model.FileType
@@ -29,14 +30,14 @@ internal abstract class FileObserver(
 
     private val mediaStoreFileProvider: MediaStoreFileProvider = MediaStoreFileProvider()
 
-    protected abstract fun getLogIdentifier(): String
+    protected abstract val logIdentifier: String
 
     override fun deliverSelfNotifications(): Boolean = false
 
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
 
-        i { "${getLogIdentifier()} onChange | Uri: $uri" }
+        i { "$logIdentifier onChange | Uri: $uri" }
 
         uri ?: return
 
@@ -113,48 +114,80 @@ internal fun emitDiscardedLog(reason: () -> String) {
 internal fun getFileObservers(
     fileTypeConfigMapStateFlow: StateFlow<Map<FileType, FileTypeConfig>>,
     contentResolver: ContentResolver,
-    onNewNavigatableFileListener: (MoveFile) -> Unit,
+    onNewMoveFile: (MoveFile) -> Unit,
     handler: Handler
-): List<FileObserver> {
-    return buildList {
+): List<FileObserver> =
+    buildList {
         addAll(
-            FileType.Media.values
-                .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
-                .map { mediaFileType ->
-                    MediaFileObserver(
-                        fileType = mediaFileType,
-                        enabledSourceTypeToAutoMoveConfig = fileTypeConfigMap
+            getMediaFileObservers(
+                fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
+                contentResolver = contentResolver,
+                onNewMoveFile = onNewMoveFile,
+                handler = handler
+            )
+        )
+        getNonMediaFileObserver(
+            fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
+            contentResolver = contentResolver,
+            onNewMoveFile = onNewMoveFile,
+            handler = handler
+        )?.let {
+            add(it)
+        }
+    }
+
+private fun getMediaFileObservers(
+    fileTypeConfigMapStateFlow: StateFlow<Map<FileType, FileTypeConfig>>,
+    contentResolver: ContentResolver,
+    onNewMoveFile: (MoveFile) -> Unit,
+    handler: Handler
+): List<MediaFileObserver> =
+    FileType.Media.values
+        .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
+        .map { mediaFileType ->
+            MediaFileObserver(
+                fileType = mediaFileType,
+                enabledSourceTypeToAutoMoveConfigStateFlow = fileTypeConfigMapStateFlow
+                    .mapState { fileTypeConfigMap ->
+                        fileTypeConfigMap
                             .getValue(mediaFileType)
                             .sourceTypeConfigMap
                             .filterValues { it.enabled }
-                            .mapValues { it.value.autoMoveConfig },
-                        contentResolver = contentResolver,
-                        onNewMoveFile = onNewNavigatableFileListener,
-                        handler = handler
-                    )
-                }
-        )
-        FileType.NonMedia.values
-            .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
-            .run {
-                if (isNotEmpty()) {
-                    add(
-                        NonMediaFileObserver(
-                            enabledFileTypeToAutoMoveConfig = associateWith { fileType ->
-                                fileTypeConfigMap.getValue(
-                                    fileType
-                                )
-                                    .sourceTypeConfigMap.getValue(SourceType.Download).autoMoveConfig
-                            },
-                            contentResolver = contentResolver,
-                            onNewMoveFile = onNewNavigatableFileListener,
-                            handler = handler
-                        )
-                    )
-                }
+                            .mapValues { it.value.autoMoveConfig }
+                    },
+                contentResolver = contentResolver,
+                onNewMoveFile = onNewMoveFile,
+                handler = handler
+            )
+        }
+
+private fun getNonMediaFileObserver(
+    fileTypeConfigMapStateFlow: StateFlow<Map<FileType, FileTypeConfig>>,
+    contentResolver: ContentResolver,
+    onNewMoveFile: (MoveFile) -> Unit,
+    handler: Handler
+): NonMediaFileObserver? =
+    FileType.NonMedia.values
+        .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
+        .let { enabledFileTypes ->
+            if (enabledFileTypes.isNotEmpty()) {
+                NonMediaFileObserver(
+                    enabledFileTypeToAutoMoveConfigStateFlow = fileTypeConfigMapStateFlow.mapState { fileTypeConfigMap ->
+                        enabledFileTypes.associateWith { fileType ->
+                            fileTypeConfigMap.getValue(fileType)
+                                .sourceTypeConfigMap
+                                .getValue(SourceType.Download)
+                                .autoMoveConfig
+                        }
+                    },
+                    contentResolver = contentResolver,
+                    onNewMoveFile = onNewMoveFile,
+                    handler = handler
+                )
+            } else {
+                null
             }
-    }
-}
+        }
 
 internal val AutoMoveConfig.moveMode: MoveMode?
     get() = enabledDestination

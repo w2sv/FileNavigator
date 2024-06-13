@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
-import com.w2sv.androidutils.coroutines.firstBlocking
 import com.w2sv.androidutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.androidutils.services.isServiceRunning
@@ -42,6 +41,7 @@ class FileNavigator : UnboundService() {
     @Inject
     internal lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
 
+    @Inject
     @GlobalScope(AppDispatcher.Default)
     internal lateinit var scope: CoroutineScope
 
@@ -51,7 +51,8 @@ class FileNavigator : UnboundService() {
         HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
 
     private val fileTypeConfigMapStateFlow by lazy {
-        navigatorConfigDataSource.navigatorConfig.map { it.fileTypeConfigMap }.stateInWithSynchronousInitial(scope)
+        navigatorConfigDataSource.navigatorConfig.map { it.fileTypeConfigMap }
+            .stateInWithSynchronousInitial(scope)
     }
 
     private fun getRegisteredFileObservers(): List<FileObserver> {
@@ -61,7 +62,7 @@ class FileNavigator : UnboundService() {
         return getFileObservers(
             fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
             contentResolver = contentResolver,
-            onNewNavigatableFileListener = { moveFile ->
+            onNewMoveFile = { moveFile ->
                 when (moveFile.moveMode) {
                     is MoveMode.Auto -> {
                         MoveBroadcastReceiver.sendBroadcast(
@@ -126,6 +127,7 @@ class FileNavigator : UnboundService() {
             )
         )
 
+        i { "Registering file observers" }
         fileObservers = getRegisteredFileObservers()
         isRunningStateFlow.value = true
     }

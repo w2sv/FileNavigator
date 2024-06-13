@@ -1,6 +1,6 @@
 <resources>
     <string name="moved_file_to"><![CDATA[Moved file to <b>%1$s</b>]]></string>
-    <string name="auto_move_destination_invalid"><![CDATA[Auto Move destination <b>%1$s invalid</b>]]></string>
+    <string name="auto_move_destination_invalid"><![CDATA[Auto Move destination <b>%1$s</b> invalid]]></string>
     <string name="move">Move</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
     <string name="stop">Stop</string>
