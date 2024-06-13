@@ -33,13 +33,13 @@ internal class FileObserverProvider @Inject constructor(
     ): List<FileObserver> {
         return buildList {
             addAll(
-                getMediaFileObservers(
+                mediaFileObservers(
                     contentResolver = contentResolver,
                     onNewMoveFile = onNewMoveFile,
                     handler = handler
                 )
             )
-            getNonMediaFileObserver(
+            nonMediaFileObserver(
                 contentResolver = contentResolver,
                 onNewMoveFile = onNewMoveFile,
                 handler = handler
@@ -49,7 +49,7 @@ internal class FileObserverProvider @Inject constructor(
         }
     }
 
-    private fun getMediaFileObservers(
+    private fun mediaFileObservers(
         contentResolver: ContentResolver,
         onNewMoveFile: (MoveFile) -> Unit,
         handler: Handler
@@ -73,7 +73,7 @@ internal class FileObserverProvider @Inject constructor(
                 )
             }
 
-    private fun getNonMediaFileObserver(
+    private fun nonMediaFileObserver(
         contentResolver: ContentResolver,
         onNewMoveFile: (MoveFile) -> Unit,
         handler: Handler
