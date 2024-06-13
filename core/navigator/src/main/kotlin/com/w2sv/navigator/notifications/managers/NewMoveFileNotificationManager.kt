@@ -54,13 +54,13 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     notificationManager = notificationManager,
     context = context,
     resourcesBaseSeed = 1,
-    summaryId = 999,
+    summaryProperties = SummaryProperties(999)
 ) {
     inner class BuilderArgs(
         val moveFile: MoveFile,
     ) : MultiInstanceAppNotificationManager.BuilderArgs(
         resources = getNotificationResources(
-            nPendingRequestCodes = 4
+            pendingIntentRequestCodeCount = 4
         )
     )
 
@@ -106,13 +106,13 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                                     }
                                 )
 
-                                SourceType.Download -> "${context.getString(fileType.titleRes)} ${
+                                SourceType.Download -> "${context.getString(fileType.labelRes)} ${
                                     context.getString(R.string.download)
                                 }"
 
                                 SourceType.OtherApp -> "${args.moveFile.mediaStoreFile.columnData.dirName} ${
                                     context.getString(
-                                        fileType.titleRes
+                                        fileType.labelRes
                                     )
                                 }"
                             }
@@ -120,7 +120,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                     }
 
                     is FileType.NonMedia -> {
-                        context.getString(args.moveFile.fileType.titleRes)
+                        context.getString(args.moveFile.fileType.labelRes)
                     }
                 }
 
@@ -182,7 +182,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun setActionsAndIntents() {
                 // Set actions & intents
-                val requestCodeIterator = args.resources.actionRequestCodes.iterator()
+                val requestCodeIterator = args.resources.pendingIntentRequestCodes.iterator()
 
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 

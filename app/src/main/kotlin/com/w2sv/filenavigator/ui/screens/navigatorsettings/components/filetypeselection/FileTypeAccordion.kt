@@ -115,7 +115,7 @@ private fun FileTypeRow(
                 .size(34.dp)
         )
         Text(
-            text = stringResource(id = fileType.titleRes),
+            text = stringResource(id = fileType.labelRes),
             fontSize = 18.sp,
         )
         Spacer(modifier = Modifier.weight(1f))

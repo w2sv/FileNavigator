@@ -1,6 +1,5 @@
 <resources>
     <string name="moved_file_to"><![CDATA[Moved file to <b>%1$s</b>]]></string>
-    <string name="auto_move_destination_invalid"><![CDATA[Auto Move destination <b>%1$s</b> invalid]]></string>
     <string name="move">Move</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
     <string name="stop">Stop</string>
@@ -21,4 +20,6 @@
     <string name="download">Download</string>
     <string name="gif">GIF</string>
     <string name="starting_navigator">Launching File Navigator…</string>
+    <string name="auto_move_destination_invalid">Auto Move Destination invalid</string>
+    <string name="has_been_deleted_and_got_therefore_removed_from">"has been deleted and got therefore removed from"</string>
 </resources>

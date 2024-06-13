@@ -14,8 +14,14 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
     notificationManager: NotificationManager,
     context: Context,
     resourcesBaseSeed: Int,
-    private val summaryId: Int,
-) : AppNotificationManager<A>(notificationChannel, notificationManager, context) {
+    private val summaryProperties: SummaryProperties? = null,
+) : AppNotificationManager<A>(
+    notificationChannel = notificationChannel,
+    notificationManager = notificationManager,
+    context = context
+) {
+
+    data class SummaryProperties(val id: Int)
 
     private val notificationIds = UniqueIds(resourcesBaseSeed)
     private val pendingIntentRequestCodes = UniqueIds(resourcesBaseSeed)
@@ -40,25 +46,29 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
     abstract class BuilderArgs(val resources: NotificationResources) :
         AppNotificationManager.BuilderArgs
 
-    protected fun getNotificationResources(nPendingRequestCodes: Int): NotificationResources =
+    protected fun getNotificationResources(pendingIntentRequestCodeCount: Int): NotificationResources =
         NotificationResources(
             id = notificationIds.addNewId(),
-            actionRequestCodes = pendingIntentRequestCodes.addMultipleNewIds(nPendingRequestCodes)
+            pendingIntentRequestCodes = pendingIntentRequestCodes.addMultipleNewIds(
+                pendingIntentRequestCodeCount
+            )
         )
 
     fun buildAndEmit(args: A) {
         super.buildAndEmit(args.resources.id, args)
 
-        if (nActiveNotifications >= 2) {
+        if (nActiveNotifications >= 2 && summaryProperties != null) {
             emitSummaryNotification()
         }
     }
 
     private fun emitSummaryNotification() {
-        notificationManager.notify(summaryId, buildSummaryNotification())
+        requireNotNull(summaryProperties)
+
+        notificationManager.notify(summaryProperties.id, buildSummaryNotification())
     }
 
-    abstract fun buildSummaryNotification(): Notification
+    open fun buildSummaryNotification(): Notification? = null
 
     // ================
     // Cancelling
@@ -67,8 +77,8 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
     fun cancelNotificationAndFreeResources(resources: NotificationResources) {
         notificationManager.cancel(resources.id)
         freeNotificationResources(resources)
-        if (nActiveNotifications == 0) {
-            notificationManager.cancel(summaryId)
+        if (nActiveNotifications == 0 && summaryProperties != null) {
+            notificationManager.cancel(summaryProperties.id)
         } else {
             emitSummaryNotification()
         }
@@ -76,7 +86,7 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
 
     private fun freeNotificationResources(resources: NotificationResources) {
         notificationIds.remove(resources.id)
-        pendingIntentRequestCodes.removeAll(resources.actionRequestCodes.toSet())
+        pendingIntentRequestCodes.removeAll(resources.pendingIntentRequestCodes.toSet())
 
         i { "Post-freeNotificationResources: NotificationIds: $notificationIds | pendingIntentRequestCodes: $pendingIntentRequestCodes" }
     }

@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 internal data class NotificationResources(
     val id: Int,
-    val actionRequestCodes: ArrayList<Int>
+    val pendingIntentRequestCodes: ArrayList<Int>
 ) : Parcelable {
 
     companion object {

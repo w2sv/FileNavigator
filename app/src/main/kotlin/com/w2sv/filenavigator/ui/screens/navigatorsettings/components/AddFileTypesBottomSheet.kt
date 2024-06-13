@@ -165,7 +165,7 @@ private fun FileTypeCard(
         ) {
             FileTypeIcon(fileType, modifier = Modifier.size(46.dp))
             Spacer(modifier = Modifier.height(6.dp))
-            Text(text = stringResource(id = fileType.titleRes))
+            Text(text = stringResource(id = fileType.labelRes))
         }
     }
 }

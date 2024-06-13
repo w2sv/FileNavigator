@@ -19,6 +19,7 @@ import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.notifications.NotificationResources
+import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putMoveFileExtra
 import com.w2sv.navigator.notifications.putOptionalNotificationResourcesExtra
@@ -40,6 +41,9 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
     internal lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
+
+    @Inject
+    lateinit var autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager
 
     @Inject
     @GlobalScope(AppDispatcher.IO)
@@ -139,15 +143,14 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                                 )
                             )
                         }
-                        context.showToast(
-                            context.getText(
-                                R.string.auto_move_destination_invalid,
-                                moveDestinationRepresentation(
-                                    context,
-                                    moveDestinationDocumentFile
+                        with(autoMoveDestinationInvalidNotificationManager) {
+                            buildAndEmit(
+                                BuilderArgs(
+                                    fileAndSourceType = moveFile.fileAndSourceType,
+                                    autoMoveDestination = moveFile.moveMode.destination
                                 )
                             )
-                        )
+                        }
                     } else {
                         context.showToast(errorCode.name)
                     }
