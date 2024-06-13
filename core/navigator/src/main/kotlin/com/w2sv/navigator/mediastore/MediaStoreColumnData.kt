@@ -1,4 +1,4 @@
-package com.w2sv.navigator.model
+package com.w2sv.navigator.mediastore
 
 import android.content.ContentResolver
 import android.net.Uri
@@ -12,7 +12,7 @@ import com.w2sv.common.utils.getLongOrThrow
 import com.w2sv.common.utils.getStringOrThrow
 import com.w2sv.common.utils.query
 import com.w2sv.domain.model.SourceType
-import com.w2sv.navigator.fileobservers.emitDiscardedLog
+import com.w2sv.navigator.shared.emitDiscardedLog
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import slimber.log.i

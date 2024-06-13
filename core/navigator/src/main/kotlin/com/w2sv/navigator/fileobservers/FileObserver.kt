@@ -5,18 +5,11 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Handler
 import com.google.common.collect.EvictingQueue
-import com.w2sv.androidutils.coroutines.mapState
 import com.w2sv.androidutils.generic.milliSecondsTo
-import com.w2sv.common.utils.DocumentUri
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.SourceType
-import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
-import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
-import com.w2sv.navigator.model.MediaStoreFile
-import com.w2sv.navigator.model.MediaStoreFileProvider
+import com.w2sv.navigator.mediastore.MediaStoreFile
+import com.w2sv.navigator.mediastore.MediaStoreFileProvider
 import com.w2sv.navigator.moving.MoveFile
-import com.w2sv.navigator.moving.MoveMode
-import kotlinx.coroutines.flow.StateFlow
+import com.w2sv.navigator.shared.emitDiscardedLog
 import slimber.log.i
 import java.time.LocalDateTime
 
@@ -106,92 +99,3 @@ private data class ManualMoveCandidate(val uri: Uri, val changeObservationDateTi
     fun matches(other: ManualMoveCandidate, milliSecondsThreshold: Int): Boolean =
         uri != other.uri && changeObservationDateTime.milliSecondsTo(other.changeObservationDateTime) < milliSecondsThreshold
 }
-
-internal fun emitDiscardedLog(reason: () -> String) {
-    i { "DISCARDED: ${reason()}" }
-}
-
-internal fun getFileObservers(
-    fileTypeConfigMapStateFlow: StateFlow<Map<FileType, FileTypeConfig>>,
-    contentResolver: ContentResolver,
-    onNewMoveFile: (MoveFile) -> Unit,
-    handler: Handler
-): List<FileObserver> =
-    buildList {
-        addAll(
-            getMediaFileObservers(
-                fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
-                contentResolver = contentResolver,
-                onNewMoveFile = onNewMoveFile,
-                handler = handler
-            )
-        )
-        getNonMediaFileObserver(
-            fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
-            contentResolver = contentResolver,
-            onNewMoveFile = onNewMoveFile,
-            handler = handler
-        )?.let {
-            add(it)
-        }
-    }
-
-private fun getMediaFileObservers(
-    fileTypeConfigMapStateFlow: StateFlow<Map<FileType, FileTypeConfig>>,
-    contentResolver: ContentResolver,
-    onNewMoveFile: (MoveFile) -> Unit,
-    handler: Handler
-): List<MediaFileObserver> =
-    FileType.Media.values
-        .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
-        .map { mediaFileType ->
-            MediaFileObserver(
-                fileType = mediaFileType,
-                enabledSourceTypeToAutoMoveConfigStateFlow = fileTypeConfigMapStateFlow
-                    .mapState { fileTypeConfigMap ->
-                        fileTypeConfigMap
-                            .getValue(mediaFileType)
-                            .sourceTypeConfigMap
-                            .filterValues { it.enabled }
-                            .mapValues { it.value.autoMoveConfig }
-                    },
-                contentResolver = contentResolver,
-                onNewMoveFile = onNewMoveFile,
-                handler = handler
-            )
-        }
-
-private fun getNonMediaFileObserver(
-    fileTypeConfigMapStateFlow: StateFlow<Map<FileType, FileTypeConfig>>,
-    contentResolver: ContentResolver,
-    onNewMoveFile: (MoveFile) -> Unit,
-    handler: Handler
-): NonMediaFileObserver? =
-    FileType.NonMedia.values
-        .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
-        .let { enabledFileTypes ->
-            if (enabledFileTypes.isNotEmpty()) {
-                NonMediaFileObserver(
-                    enabledFileTypeToAutoMoveConfigStateFlow = fileTypeConfigMapStateFlow.mapState { fileTypeConfigMap ->
-                        enabledFileTypes.associateWith { fileType ->
-                            fileTypeConfigMap.getValue(fileType)
-                                .sourceTypeConfigMap
-                                .getValue(SourceType.Download)
-                                .autoMoveConfig
-                        }
-                    },
-                    contentResolver = contentResolver,
-                    onNewMoveFile = onNewMoveFile,
-                    handler = handler
-                )
-            } else {
-                null
-            }
-        }
-
-internal val AutoMoveConfig.moveMode: MoveMode?
-    get() = enabledDestination
-        ?.let { MoveMode.Auto(it) }
-
-internal val AutoMoveConfig.enabledDestination: DocumentUri?
-    get() = if (enabled) destination else null

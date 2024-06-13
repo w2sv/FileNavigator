@@ -1,6 +1,6 @@
 package com.w2sv.navigator
 
-import com.w2sv.navigator.model.contentHash
+import com.w2sv.navigator.mediastore.contentHash
 import com.w2sv.navigator.utils.getResourceFile
 import com.w2sv.navigator.utils.sizeInMb
 import org.junit.Assert.assertEquals

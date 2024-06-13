@@ -1,4 +1,4 @@
-package com.w2sv.navigator.model
+package com.w2sv.navigator.mediastore
 
 import android.net.Uri
 import android.os.Parcelable

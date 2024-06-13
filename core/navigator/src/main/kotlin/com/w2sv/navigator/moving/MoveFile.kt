@@ -12,7 +12,7 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.model.SourceType
-import com.w2sv.navigator.model.MediaStoreFile
+import com.w2sv.navigator.mediastore.MediaStoreFile
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
