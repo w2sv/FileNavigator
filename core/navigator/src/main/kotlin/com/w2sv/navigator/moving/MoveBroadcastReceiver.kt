@@ -18,6 +18,7 @@ import com.w2sv.common.utils.showToast
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
+import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putMoveFileExtra
@@ -131,6 +132,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                                 fileType = moveFile.fileType,
                                 sourceType = moveFile.sourceType
                             )
+                            FileNavigator.reregisterFileObservers(context)
                         }
                         with(newMoveFileNotificationManager) {
                             buildAndEmit(
