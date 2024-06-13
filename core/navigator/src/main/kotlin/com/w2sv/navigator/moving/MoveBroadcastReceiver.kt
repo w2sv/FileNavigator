@@ -68,7 +68,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
         // Exit on unsuccessful conversion to SimpleStorage objects
         val moveDestinationDocumentFile = moveFile.moveMode!!.destination.documentFile(context)
-        val moveMediaFile = moveFile.getSimpleStorageMediaFile(context)
+        val moveMediaFile = moveFile.simpleStorageMediaFile(context)
 
         if (moveDestinationDocumentFile == null || moveMediaFile == null) {
             return MoveException.InternalError
@@ -96,7 +96,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                             fileName = moveFile.mediaStoreFile.columnData.name
                         )
                         insertMoveEntryUseCase(
-                            moveFile.getMoveEntry(
+                            moveFile.moveEntry(
                                 destinationDocumentUri = moveFile.moveMode.destination,
                                 movedFileDocumentUri = movedFileDocumentUri,
                                 movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!,

@@ -12,7 +12,7 @@ internal data class MediaStoreFile(
 ) : Parcelable {
 
     /**
-     * @return true if this & other have the same URI (=> identical path) OR
+     * @return true if this & other have the same URI (=> identical location) OR
      * if they have the identical content and file name (=> same file that has been moved to a different location).
      */
     fun isIdenticalFileAs(other: MediaStoreFile): Boolean =

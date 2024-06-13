@@ -11,7 +11,7 @@ import com.w2sv.navigator.moving.MoveFile
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
-typealias SourceTypeToAutoMoveConfig = Map<SourceType, AutoMoveConfig>
+internal typealias SourceTypeToAutoMoveConfig = Map<SourceType, AutoMoveConfig>
 
 internal class MediaFileObserver(
     private val fileType: FileType.Media,
@@ -21,7 +21,6 @@ internal class MediaFileObserver(
     handler: Handler
 ) :
     FileObserver(
-        contentObserverUri = fileType.simpleStorageMediaType.readUri!!,
         contentResolver = contentResolver,
         onNewMoveFileListener = onNewMoveFile,
         handler = handler

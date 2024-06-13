@@ -2,6 +2,7 @@ package com.w2sv.navigator.fileobservers
 
 import android.content.ContentResolver
 import android.os.Handler
+import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.coroutines.mapState
 import com.w2sv.androidutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.common.di.AppDispatcher
@@ -9,6 +10,7 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
+import com.w2sv.navigator.MediaTypeToFileObserver
 import com.w2sv.navigator.moving.MoveFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
@@ -30,9 +32,9 @@ internal class FileObserverProvider @Inject constructor(
         handler: Handler,
         contentResolver: ContentResolver,
         onNewMoveFile: (MoveFile) -> Unit
-    ): List<FileObserver> {
-        return buildList {
-            addAll(
+    ): MediaTypeToFileObserver {
+        return buildMap {
+            putAll(
                 mediaFileObservers(
                     contentResolver = contentResolver,
                     onNewMoveFile = onNewMoveFile,
@@ -44,7 +46,7 @@ internal class FileObserverProvider @Inject constructor(
                 onNewMoveFile = onNewMoveFile,
                 handler = handler
             )?.let {
-                add(it)
+                put(MediaType.DOWNLOADS, it)
             }
         }
     }
@@ -53,11 +55,11 @@ internal class FileObserverProvider @Inject constructor(
         contentResolver: ContentResolver,
         onNewMoveFile: (MoveFile) -> Unit,
         handler: Handler
-    ): List<MediaFileObserver> =
+    ): MediaTypeToFileObserver =
         FileType.Media.values
             .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
-            .map { mediaFileType ->
-                MediaFileObserver(
+            .associate { mediaFileType ->
+                mediaFileType.simpleStorageMediaType to MediaFileObserver(
                     fileType = mediaFileType,
                     enabledSourceTypeToAutoMoveConfigStateFlow = fileTypeConfigMapStateFlow
                         .mapState { fileTypeConfigMap ->

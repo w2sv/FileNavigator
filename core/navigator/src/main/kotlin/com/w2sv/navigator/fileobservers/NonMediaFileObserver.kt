@@ -12,7 +12,7 @@ import com.w2sv.navigator.moving.MoveFile
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
-typealias FileTypeToAutoMoveConfig = Map<FileType.NonMedia, AutoMoveConfig>
+internal typealias FileTypeToAutoMoveConfig = Map<FileType.NonMedia, AutoMoveConfig>
 
 internal class NonMediaFileObserver(
     private val enabledFileTypeToAutoMoveConfigStateFlow: StateFlow<FileTypeToAutoMoveConfig>,
@@ -21,7 +21,6 @@ internal class NonMediaFileObserver(
     handler: Handler
 ) :
     FileObserver(
-        contentObserverUri = MediaType.DOWNLOADS.readUri!!,
         contentResolver = contentResolver,
         onNewMoveFileListener = onNewMoveFile,
         handler = handler

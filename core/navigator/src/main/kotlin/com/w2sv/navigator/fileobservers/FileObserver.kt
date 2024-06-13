@@ -14,7 +14,6 @@ import slimber.log.i
 import java.time.LocalDateTime
 
 internal abstract class FileObserver(
-    val contentObserverUri: Uri,
     private val contentResolver: ContentResolver,
     private val onNewMoveFileListener: (MoveFile) -> Unit,
     handler: Handler

@@ -23,10 +23,10 @@ internal data class MoveFile(
     val moveMode: MoveMode?
 ) : Parcelable {
 
-    fun getSimpleStorageMediaFile(context: Context): MediaFile? =
+    fun simpleStorageMediaFile(context: Context): MediaFile? =
         MediaStoreCompat.fromMediaId(
             context,
-            fileAndSourceType.fileType.simpleStorageMediaType,
+            fileType.simpleStorageMediaType,
             mediaStoreFile.columnData.rowId
         )
 
@@ -36,7 +36,7 @@ internal data class MoveFile(
     val sourceType: SourceType
         get() = fileAndSourceType.sourceType
 
-    fun getMoveEntry(
+    fun moveEntry(
         destinationDocumentUri: DocumentUri,
         movedFileDocumentUri: DocumentUri,
         movedFileMediaUri: MediaUri,

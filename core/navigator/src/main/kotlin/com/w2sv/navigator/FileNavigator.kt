@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
+import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.navigator.fileobservers.FileObserver
@@ -20,6 +21,8 @@ import slimber.log.i
 import javax.inject.Inject
 import javax.inject.Singleton
 
+internal typealias MediaTypeToFileObserver = Map<MediaType, FileObserver>
+
 @AndroidEntryPoint
 class FileNavigator : UnboundService() {
 
@@ -35,13 +38,13 @@ class FileNavigator : UnboundService() {
     @Inject
     internal lateinit var fileObserverProvider: FileObserverProvider
 
-    private var fileObservers: List<FileObserver>? = null
+    private var fileObservers: MediaTypeToFileObserver? = null
 
     private val contentObserverHandlerThread by lazy {
         HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
     }
 
-    private fun getRegisteredFileObservers(): List<FileObserver> {
+    private fun getRegisteredFileObservers(): MediaTypeToFileObserver {
         if (!contentObserverHandlerThread.isAlive) {
             contentObserverHandlerThread.start()
         }
@@ -70,11 +73,11 @@ class FileNavigator : UnboundService() {
             },
             handler = Handler(contentObserverHandlerThread.looper)
         )
-            .onEach {
+            .onEach { (mediaType, fileObserver) ->
                 contentResolver.registerContentObserver(
-                    it.contentObserverUri,
+                    mediaType.readUri!!,
                     true,
-                    it
+                    fileObserver
                 )
             }
             .also { i { "Registered ${it.size} FileObserver(s)" } }
@@ -125,7 +128,7 @@ class FileNavigator : UnboundService() {
     }
 
     private fun unregisterFileObservers() {
-        fileObservers?.forEach {
+        fileObservers?.values?.forEach {
             contentResolver.unregisterContentObserver(it)
         }
         i { "Unregistered fileObservers" }
