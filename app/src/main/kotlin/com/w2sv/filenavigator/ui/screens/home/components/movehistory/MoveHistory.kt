@@ -64,7 +64,7 @@ fun MoveHistory(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
-            MoveEntryRow(
+            MoveEntryView(
                 moveEntry = moveEntry,
                 onClick = onRowClick,
                 modifier = Modifier
@@ -77,7 +77,7 @@ fun MoveHistory(
 }
 
 @Composable
-private fun MoveEntryRow(
+private fun MoveEntryView(
     moveEntry: MoveEntry,
     onClick: suspend (MoveEntry, Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -115,7 +115,7 @@ private fun MoveEntryRow(
             )
         }
         WeightedBox(weight = 0.5f) {
-            MoveEntryRowText(text = moveEntry.fileName)
+            MoveEntryViewText(text = moveEntry.fileName)
         }
         WeightedBox(weight = 0.1f) {
             Icon(
@@ -126,7 +126,7 @@ private fun MoveEntryRow(
             )
         }
         WeightedBox(weight = 0.5f) {
-            MoveEntryRowText(
+            MoveEntryViewText(
                 text = remember(moveEntry.destinationDocumentUri) {
                     documentUriToPathConverter.invoke(
                         moveEntry.destinationDocumentUri,
@@ -139,7 +139,7 @@ private fun MoveEntryRow(
 }
 
 @Composable
-private fun MoveEntryRowText(text: String, modifier: Modifier = Modifier) {
+private fun MoveEntryViewText(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         overflow = TextOverflow.Ellipsis,

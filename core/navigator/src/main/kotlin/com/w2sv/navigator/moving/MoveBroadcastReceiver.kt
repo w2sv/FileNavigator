@@ -53,7 +53,11 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         if (context == null || intent == null) return
 
         moveFile(context, intent)?.let { moveException ->
-            onMoveException(moveException = moveException, context = context, intent = intent)
+            onMoveException(
+                moveException = moveException,
+                context = context,
+                intent = intent
+            )
         }
     }
 
@@ -92,7 +96,10 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
             targetFolder = moveDestinationDocumentFile,
             callback = object : FileCallback() {
                 override fun onCompleted(result: Any) {
-                    context.showFileSuccessfullyMovedToast(moveDestinationDocumentFile)
+                    context.showFileSuccessfullyMovedToast(
+                        moveDestinationDocumentFile = moveDestinationDocumentFile,
+                        autoMoved = moveFile.moveMode.isAuto
+                    )
 
                     scope.launch {
                         val movedFileDocumentUri = movedFileDocumentUri(
@@ -203,10 +210,13 @@ private fun movedFileDocumentUri(
 ): DocumentUri =
     DocumentUri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
 
-private fun Context.showFileSuccessfullyMovedToast(moveDestinationDocumentFile: DocumentFile) {
+private fun Context.showFileSuccessfullyMovedToast(
+    moveDestinationDocumentFile: DocumentFile,
+    autoMoved: Boolean
+) {
     showToast(
         getText(
-            R.string.moved_file_to,
+            if (autoMoved) R.string.auto_moved_file_to else R.string.moved_file_to,
             moveDestinationRepresentation(
                 this@showFileSuccessfullyMovedToast,
                 moveDestinationDocumentFile

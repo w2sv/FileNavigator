@@ -22,8 +22,7 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
         companion object {
             const val EXTRA = "com.w2sv.filenavigator.extra.ViewFileIfPresentActivity.Args"
 
-            fun fromIntent(intent: Intent): Args =
-                intent.getParcelableCompat<Args>(EXTRA)!!
+            fun fromIntent(intent: Intent): Args = intent.getParcelableCompat<Args>(EXTRA)!!
         }
     }
 
@@ -35,11 +34,7 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
         if (File(args.absPath).exists()) {
             startActivity(
                 Intent()
-                    .setAction(Intent.ACTION_VIEW)
-                    .setDataAndType(
-                        args.mediaUri.uri,
-                        args.mimeType
-                    )
+                    .setAction(Intent.ACTION_VIEW).setDataAndType(args.mediaUri.uri, args.mimeType)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             )
         } else {
@@ -54,17 +49,11 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
 
     companion object {
         fun makeRestartActivityIntent(
-            context: Context,
-            args: Args,
-            notificationResources: NotificationResources
-        ): Intent =
-            Intent.makeRestartActivityTask(
-                ComponentName(
-                    context,
-                    ViewFileIfPresentActivity::class.java
-                )
+            context: Context, args: Args, notificationResources: NotificationResources
+        ): Intent = Intent.makeRestartActivityTask(
+            ComponentName(
+                context, ViewFileIfPresentActivity::class.java
             )
-                .putExtra(Args.EXTRA, args)
-                .putOptionalNotificationResourcesExtra(notificationResources)
+        ).putExtra(Args.EXTRA, args).putOptionalNotificationResourcesExtra(notificationResources)
     }
 }
