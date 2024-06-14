@@ -15,5 +15,5 @@ data class MoveEntry(
     val autoMoved: Boolean
 ) {
     val combinedFileAndSourceTypeIconRes: Int
-        get() = combinedFileAndSourceTypeIconRes(fileType, sourceType)
+        get() = FileAndSourceType(fileType, sourceType).iconRes
 }

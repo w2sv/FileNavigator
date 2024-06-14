@@ -14,4 +14,7 @@
     <string name="camera">Camera</string>
     <string name="photo">Photo</string>
     <string name="ebook">eBook</string>
+
+    <string name="file_type_download">%1$s Download</string>
+    <string name="gif">GIF</string>
 </resources>

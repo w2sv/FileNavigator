@@ -3,8 +3,6 @@ package com.w2sv.navigator.notifications.managers
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.common.utils.DocumentUri
@@ -44,11 +42,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
                 setContentTitle(context.getString(R.string.auto_move_destination_invalid))
 
                 // Set file source icon
-                setLargeIcon(
-                    AppCompatResources.getDrawable(context, args.fileAndSourceType.iconRes)
-                        ?.apply { setTint(args.fileAndSourceType.fileType.colorInt) }
-                        ?.toBitmap()
-                )
+                setLargeIcon(args.fileAndSourceType.coloredIconBitmap(context))
                 setContentText(
                     buildSpannedString {
                         bold {

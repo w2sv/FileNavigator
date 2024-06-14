@@ -36,6 +36,9 @@ internal data class MoveFile(
     val sourceType: SourceType
         get() = fileAndSourceType.sourceType
 
+    val isGif: Boolean
+        get() = fileType is FileType.Image && mediaStoreFile.columnData.fileExtension.lowercase() == "gif"
+
     fun moveEntry(
         destinationDocumentUri: DocumentUri,
         movedFileDocumentUri: DocumentUri,

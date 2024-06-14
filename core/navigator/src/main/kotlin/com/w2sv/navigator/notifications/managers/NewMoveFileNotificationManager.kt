@@ -7,9 +7,7 @@ import android.content.Context
 import android.os.Build
 import android.text.SpannedString
 import android.util.Size
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.androidutils.coroutines.stateInWithSynchronousInitial
@@ -23,7 +21,6 @@ import com.w2sv.common.utils.slashPrefixed
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.moving.FileMoveActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
@@ -68,57 +65,22 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             override fun build(): Notification {
                 setContentTitle(
-                    "${context.getString(R.string.new_)} ${getMoveFileTitle()}"
+                    context.getString(
+                        R.string.new_move_file_notification_title,
+                        args.moveFile.fileAndSourceType.moveFileLabel(
+                            context = context,
+                            isGif = args.moveFile.isGif,
+                            sourceDirName = args.moveFile.mediaStoreFile.columnData.dirName
+                        )
+                    )
                 )
                 // Set file source icon
-                setLargeIcon(
-                    AppCompatResources.getDrawable(context, args.moveFile.fileAndSourceType.iconRes)
-                        ?.apply { setTint(args.moveFile.fileType.colorInt) }
-                        ?.toBitmap()
-                )
+                setLargeIcon(args.moveFile.fileAndSourceType.coloredIconBitmap(context))
                 setContent()
                 setActionsAndIntents()
 
                 return super.build()
             }
-
-            private fun getMoveFileTitle(): String =
-                when (val fileType = args.moveFile.fileType) {
-                    is FileType.Media -> {
-                        if (isGif(args.moveFile)) {
-                            context.getString(R.string.gif)
-                        } else {
-                            when (val sourceType =
-                                args.moveFile.sourceType) {
-                                SourceType.Recording, SourceType.Screenshot -> context.getString(
-                                    sourceType.labelRes
-                                )
-
-                                SourceType.Camera -> context.getString(
-                                    when (args.moveFile.fileType) {
-                                        FileType.Image -> com.w2sv.core.domain.R.string.photo
-                                        FileType.Video -> com.w2sv.core.domain.R.string.video
-                                        else -> throw Error()
-                                    }
-                                )
-
-                                SourceType.Download -> "${context.getString(fileType.labelRes)} ${
-                                    context.getString(R.string.download)
-                                }"
-
-                                SourceType.OtherApp -> "${args.moveFile.mediaStoreFile.columnData.dirName} ${
-                                    context.getString(
-                                        fileType.labelRes
-                                    )
-                                }"
-                            }
-                        }
-                    }
-
-                    is FileType.NonMedia -> {
-                        context.getString(args.moveFile.fileType.labelRes)
-                    }
-                }
 
             private fun setContent() {
                 val bigPictureStyleSet = setBigPictureStyleIfImage()
@@ -275,9 +237,6 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             .setGroupSummary(true)
             .build()
 }
-
-private fun isGif(moveFile: MoveFile): Boolean =
-    moveFile.fileType is FileType.Image && moveFile.mediaStoreFile.columnData.fileExtension.lowercase() == "gif"
 
 private class SourceToLastMoveDestinationStateFlow(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,

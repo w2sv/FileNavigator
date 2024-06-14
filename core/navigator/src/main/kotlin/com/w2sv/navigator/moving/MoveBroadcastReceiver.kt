@@ -96,9 +96,9 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
             targetFolder = moveDestinationDocumentFile,
             callback = object : FileCallback() {
                 override fun onCompleted(result: Any) {
-                    context.showFileSuccessfullyMovedToast(
-                        moveDestinationDocumentFile = moveDestinationDocumentFile,
-                        autoMoved = moveFile.moveMode.isAuto
+                    context.showMoveSuccessToast(
+                        moveFile = moveFile,
+                        moveDestinationDocumentFile = moveDestinationDocumentFile
                     )
 
                     scope.launch {
@@ -210,15 +210,16 @@ private fun movedFileDocumentUri(
 ): DocumentUri =
     DocumentUri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
 
-private fun Context.showFileSuccessfullyMovedToast(
-    moveDestinationDocumentFile: DocumentFile,
-    autoMoved: Boolean
+private fun Context.showMoveSuccessToast(
+    moveFile: MoveFile,
+    moveDestinationDocumentFile: DocumentFile
 ) {
     showToast(
         getText(
-            if (autoMoved) R.string.auto_moved_file_to else R.string.moved_file_to,
+            if (moveFile.moveMode!!.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
+            moveFile.fileAndSourceType.label(context = this, isGif = moveFile.isGif),
             moveDestinationRepresentation(
-                this@showFileSuccessfullyMovedToast,
+                this@showMoveSuccessToast,
                 moveDestinationDocumentFile
             )
         )
