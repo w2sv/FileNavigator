@@ -29,9 +29,6 @@ class NavigatorViewModel @Inject constructor(
     val makeSnackbarVisuals: SharedFlow<MakeSnackbarVisuals> get() = _makeSnackbarVisuals.asSharedFlow()
     private val _makeSnackbarVisuals = MutableSharedFlow<MakeSnackbarVisuals>()
 
-    val cancelSnackbar get() = _cancelSnackbar.asSharedFlow()
-    private val _cancelSnackbar = MutableSharedFlow<Unit>()
-
     private val appliedConfig by navigatorConfigDataSource::navigatorConfig
 
     val disabledOnLowBatteryDistinctUntilChanged =
@@ -46,9 +43,6 @@ class NavigatorViewModel @Inject constructor(
             viewModelScope.launch {
                 _makeSnackbarVisuals.emit(it)
             }
-        },
-        cancelSnackbar = {
-            viewModelScope.launch { _cancelSnackbar.emit(Unit) }
         },
         onStateSynced = {
             if (isRunning.value) {

@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.update
 class ReversibleNavigatorConfig(
     reversibleStateFlow: ReversibleStateFlow<NavigatorConfig>,
     private val emitMakeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
-    private val cancelSnackbar: () -> Unit,
 ) : ReversibleState by reversibleStateFlow,
     MutableStateFlow<NavigatorConfig> by reversibleStateFlow {
 
@@ -29,7 +28,6 @@ class ReversibleNavigatorConfig(
         scope: CoroutineScope,
         navigatorConfigDataSource: NavigatorConfigDataSource,
         emitMakeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
-        cancelSnackbar: () -> Unit,
         onStateSynced: () -> Unit
     ) : this(
         reversibleStateFlow = ReversibleStateFlow(
@@ -42,19 +40,10 @@ class ReversibleNavigatorConfig(
             syncState = {
                 navigatorConfigDataSource.saveNavigatorConfig(it)
                 onStateSynced()
-            },
-            onStateReset = {
-                cancelSnackbar()
             }
         ),
         emitMakeSnackbarVisuals = emitMakeSnackbarVisuals,
-        cancelSnackbar = cancelSnackbar
     )
-
-    fun updateAndCancelSnackbar(function: (NavigatorConfig) -> NavigatorConfig) {
-        update(function)
-        cancelSnackbar()
-    }
 
     fun onFileTypeCheckedChange(
         fileType: FileType,
@@ -64,7 +53,7 @@ class ReversibleNavigatorConfig(
             checkedNew = checkedNew,
             checkedCount = value.enabledFileTypes.size,
             update = {
-                updateAndCancelSnackbar { config ->
+                update { config ->
                     config.copyWithAlteredFileConfig(fileType) { it.copy(enabled = checkedNew) }
                 }
             },
@@ -88,7 +77,7 @@ class ReversibleNavigatorConfig(
             checkedNew = checkedNew,
             checkedCount = value.enabledSourceTypesCount(fileType),
             update = {
-                updateAndCancelSnackbar { config ->
+                update { config ->
                     config.copyWithAlteredSourceConfig(
                         fileType = fileType,
                         sourceType = sourceType
