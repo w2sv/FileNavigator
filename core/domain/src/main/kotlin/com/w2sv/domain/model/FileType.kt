@@ -11,7 +11,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 sealed class FileType(
-    @StringRes val titleRes: Int,
+    @StringRes val labelRes: Int,
     @DrawableRes val iconRes: Int,
     @ColorInt val colorInt: Int,
     val simpleStorageMediaType: MediaType,
@@ -34,7 +34,7 @@ sealed class FileType(
         mediaType: MediaType,
         sourceTypes: List<SourceType>
     ) : FileType(
-        titleRes = labelRes,
+        labelRes = labelRes,
         iconRes = iconRes,
         colorInt = colorLong.toInt(),
         simpleStorageMediaType = mediaType,
@@ -57,7 +57,7 @@ sealed class FileType(
         @ColorLong colorLong: Long,
         private val fileExtensions: Set<String>,
     ) : FileType(
-        titleRes = labelRes,
+        labelRes = labelRes,
         iconRes = iconRes,
         colorInt = colorLong.toInt(),
         simpleStorageMediaType = MediaType.DOWNLOADS,

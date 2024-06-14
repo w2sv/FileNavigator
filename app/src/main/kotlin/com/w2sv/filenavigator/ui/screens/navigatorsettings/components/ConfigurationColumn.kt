@@ -50,6 +50,7 @@ import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypese
 import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
 import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.coroutines.flow.update
 import slimber.log.i
 
 private val verticalPadding = 16.dp
@@ -169,7 +170,7 @@ fun NavigatorConfigurationColumn(
                     }
                 },
                 setSourceAutoMoveConfigs = { autoMoveConfig ->
-                    reversibleConfig.updateAndCancelSnackbar {
+                    reversibleConfig.update {
                         it.copyWithAlteredSourceAutoMoveConfigs(
                             fileType = fileType,
                             autoMoveConfig = autoMoveConfig
@@ -187,7 +188,7 @@ fun NavigatorConfigurationColumn(
                     }
                 },
                 setSourceAutoMoveConfig = { sourceType, autoMoveConfig ->
-                    reversibleConfig.updateAndCancelSnackbar {
+                    reversibleConfig.update {
                         it.copyWithAlteredSourceAutoMoveConfig(fileType, sourceType) {
                             autoMoveConfig
                         }
@@ -205,11 +206,11 @@ fun NavigatorConfigurationColumn(
             MoreColumnItems(
                 disableOnLowBattery = config.disableOnLowBattery,
                 setDisableOnLowBattery = { checked ->
-                    reversibleConfig.updateAndCancelSnackbar { it.copy(disableOnLowBattery = checked) }
+                    reversibleConfig.update { it.copy(disableOnLowBattery = checked) }
                 },
                 startOnBoot = config.startOnBoot,
                 setStartOnBoot = { checked ->
-                    reversibleConfig.updateAndCancelSnackbar { it.copy(startOnBoot = checked) }
+                    reversibleConfig.update { it.copy(startOnBoot = checked) }
                 },
                 modifier = Modifier
                     .padding(bottom = Padding.fabButtonBottomPadding)

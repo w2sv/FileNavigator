@@ -59,7 +59,7 @@
         <!-- App Broadcast Receivers -->
 
         <receiver android:name="com.w2sv.navigator.moving.MoveBroadcastReceiver" />
-        <receiver android:name="com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager$ResourcesCleanupBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.notifications.NotificationResources$CleanupBroadcastReceiver" />
 
         <!-- Activity -->
 

@@ -8,7 +8,6 @@ import androidx.core.app.NotificationCompat
 import com.w2sv.core.navigator.R
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.notifications.AppNotificationChannel
-import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.shared.mainActivityPendingIntent
 import dagger.hilt.android.qualifiers.ApplicationContext

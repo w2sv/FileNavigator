@@ -4,14 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
-import com.w2sv.androidutils.coroutines.stateInWithSynchronousInitial
+import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.services.UnboundService
 import com.w2sv.androidutils.services.isServiceRunning
-import com.w2sv.common.di.AppDispatcher
-import com.w2sv.common.di.GlobalScope
-import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.fileobservers.FileObserver
-import com.w2sv.navigator.fileobservers.getFileObservers
+import com.w2sv.navigator.fileobservers.FileObserverProvider
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.MoveMode
 import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
@@ -19,18 +16,15 @@ import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 import slimber.log.i
 import javax.inject.Inject
 import javax.inject.Singleton
 
+internal typealias MediaTypeToFileObserver = Map<MediaType, FileObserver>
+
 @AndroidEntryPoint
 class FileNavigator : UnboundService() {
-
-    @Inject
-    internal lateinit var navigatorConfigDataSource: NavigatorConfigDataSource
 
     @Inject
     internal lateinit var isRunningStateFlow: IsRunningStateFlow
@@ -41,29 +35,22 @@ class FileNavigator : UnboundService() {
     @Inject
     internal lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
 
-    @Inject
-    @GlobalScope(AppDispatcher.Default)
-    internal lateinit var scope: CoroutineScope
+    internal lateinit var fileObserverProvider: FileObserverProvider
 
-    private lateinit var fileObservers: List<FileObserver>
+    private var fileObservers: MediaTypeToFileObserver? = null
 
-    private val contentObserverHandlerThread =
+    private val contentObserverHandlerThread by lazy {
         HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
-
-    private val fileTypeConfigMapStateFlow by lazy {
-        navigatorConfigDataSource.navigatorConfig
-            .map { it.fileTypeConfigMap }
-            .stateInWithSynchronousInitial(scope)
     }
 
-    private fun getRegisteredFileObservers(): List<FileObserver> {
+
+    private fun getRegisteredFileObservers(): MediaTypeToFileObserver {
         if (!contentObserverHandlerThread.isAlive) {
             contentObserverHandlerThread.start()
         }
-        return getFileObservers(
-            fileTypeConfigMap = fileTypeConfigMapStateFlow.value,
+        return fileObserverProvider(
             contentResolver = contentResolver,
-            onNewNavigatableFileListener = { moveFile ->
+            onNewMoveFile = { moveFile ->
                 when (moveFile.moveMode) {
                     is MoveMode.Auto -> {
                         MoveBroadcastReceiver.sendBroadcast(
@@ -86,11 +73,11 @@ class FileNavigator : UnboundService() {
             },
             handler = Handler(contentObserverHandlerThread.looper)
         )
-            .onEach {
+            .onEach { (mediaType, fileObserver) ->
                 contentResolver.registerContentObserver(
-                    it.contentObserverUri,
+                    mediaType.readUri!!,
                     true,
-                    it
+                    fileObserver
                 )
             }
             .also { i { "Registered ${it.size} FileObserver(s)" } }
@@ -128,6 +115,7 @@ class FileNavigator : UnboundService() {
             )
         )
 
+        i { "Registering file observers" }
         fileObservers = getRegisteredFileObservers()
         isRunningStateFlow.value = true
     }
@@ -140,7 +128,7 @@ class FileNavigator : UnboundService() {
     }
 
     private fun unregisterFileObservers() {
-        fileObservers.forEach {
+        fileObservers?.values?.forEach {
             contentResolver.unregisterContentObserver(it)
         }
         i { "Unregistered fileObservers" }
@@ -149,13 +137,8 @@ class FileNavigator : UnboundService() {
     override fun onDestroy() {
         super.onDestroy()
 
-        try {
-            unregisterFileObservers()
-        } catch (e: UninitializedPropertyAccessException) {
-            i(e)
-        } finally {
-            contentObserverHandlerThread.quit()
-        }
+        unregisterFileObservers()
+        contentObserverHandlerThread.quit()
     }
 
     @Singleton

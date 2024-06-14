@@ -12,7 +12,7 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.model.SourceType
-import com.w2sv.navigator.model.MediaStoreFile
+import com.w2sv.navigator.mediastore.MediaStoreFile
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
@@ -23,10 +23,10 @@ internal data class MoveFile(
     val moveMode: MoveMode?
 ) : Parcelable {
 
-    fun getSimpleStorageMediaFile(context: Context): MediaFile? =
+    fun simpleStorageMediaFile(context: Context): MediaFile? =
         MediaStoreCompat.fromMediaId(
             context,
-            fileAndSourceType.fileType.simpleStorageMediaType,
+            fileType.simpleStorageMediaType,
             mediaStoreFile.columnData.rowId
         )
 
@@ -36,7 +36,10 @@ internal data class MoveFile(
     val sourceType: SourceType
         get() = fileAndSourceType.sourceType
 
-    fun getMoveEntry(
+    val isGif: Boolean
+        get() = fileType is FileType.Image && mediaStoreFile.columnData.fileExtension.lowercase() == "gif"
+
+    fun moveEntry(
         destinationDocumentUri: DocumentUri,
         movedFileDocumentUri: DocumentUri,
         movedFileMediaUri: MediaUri,
@@ -55,7 +58,7 @@ internal data class MoveFile(
         )
 
     companion object {
-        const val EXTRA = "com.w2sv.filenavigator.extra.MOVE_FILE"
+        const val EXTRA = "com.w2sv.filenavigator.extra.MoveFile"
 
         fun fromIntent(intent: Intent): MoveFile =
             intent.getParcelableCompat<MoveFile>(EXTRA)!!

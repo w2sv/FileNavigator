@@ -1,8 +1,8 @@
 package com.w2sv.navigator.utils
 
 import android.net.Uri
-import com.w2sv.navigator.model.MediaStoreColumnData
-import com.w2sv.navigator.model.MediaStoreFile
+import com.w2sv.navigator.mediastore.MediaStoreColumnData
+import com.w2sv.navigator.mediastore.MediaStoreFile
 import java.time.LocalDateTime
 
 internal object TestInstancesProvider {

@@ -1,18 +1,18 @@
-package com.w2sv.navigator.model
+package com.w2sv.navigator.mediastore
 
 import android.content.ContentResolver
-import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore
 import com.w2sv.androidutils.generic.localDateTimeFromUnixTimeStamp
+import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.getBooleanOrThrow
 import com.w2sv.common.utils.getLongOrThrow
 import com.w2sv.common.utils.getStringOrThrow
 import com.w2sv.common.utils.query
 import com.w2sv.domain.model.SourceType
-import com.w2sv.navigator.fileobservers.emitDiscardedLog
+import com.w2sv.navigator.shared.emitDiscardedLog
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
@@ -88,12 +88,12 @@ internal data class MediaStoreColumnData(
 
     companion object {
         fun fetch(
-            uri: Uri,
+            mediaUri: MediaUri,
             contentResolver: ContentResolver
         ): MediaStoreColumnData? =
             try {
                 contentResolver.query(
-                    uri = uri,
+                    uri = mediaUri.uri,
                     columns = arrayOf(
                         MediaStore.MediaColumns._ID,
                         MediaStore.MediaColumns.DATA,

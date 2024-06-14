@@ -3,8 +3,11 @@ package com.w2sv.filenavigator.ui.screens.home.components.movehistory
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,6 +38,7 @@ import com.w2sv.composed.extensions.thenIf
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.usecase.DocumentUriToPathConverter
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
+import com.w2sv.filenavigator.ui.designsystem.drawer.AutoMoveIcon
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.movedFileExists
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.rememberFirstDateRepresentations
@@ -64,7 +68,7 @@ fun MoveHistory(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
-            MoveEntryRow(
+            MoveEntryView(
                 moveEntry = moveEntry,
                 onClick = onRowClick,
                 modifier = Modifier
@@ -77,7 +81,7 @@ fun MoveHistory(
 }
 
 @Composable
-private fun MoveEntryRow(
+private fun MoveEntryView(
     moveEntry: MoveEntry,
     onClick: suspend (MoveEntry, Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -94,8 +98,7 @@ private fun MoveEntryRow(
         }
     }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Box(
         modifier = modifier
             .clip(MaterialTheme.shapes.medium)
             .clickable { scope.launch { onClick(moveEntry, movedFileExists) } }
@@ -107,39 +110,52 @@ private fun MoveEntryRow(
             }
             .padding(8.dp)
     ) {
-        WeightedBox(weight = 0.15f) {
-            Icon(
-                painter = painterResource(id = moveEntry.combinedFileAndSourceTypeIconRes),
-                contentDescription = null,
-                tint = moveEntry.fileType.color
-            )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            WeightedBox(weight = 0.15f) {
+                Icon(
+                    painter = painterResource(id = moveEntry.combinedFileAndSourceTypeIconRes),
+                    contentDescription = null,
+                    tint = moveEntry.fileType.color
+                )
+            }
+            WeightedBox(weight = 0.5f) {
+                MoveEntryViewText(text = moveEntry.fileName)
+            }
+            WeightedBox(weight = 0.1f) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceDisabled
+                )
+            }
+            WeightedBox(weight = 0.5f) {
+                MoveEntryViewText(
+                    text = remember(moveEntry.destinationDocumentUri) {
+                        documentUriToPathConverter.invoke(
+                            moveEntry.destinationDocumentUri,
+                            context
+                        )!!
+                    },
+                )
+            }
         }
-        WeightedBox(weight = 0.5f) {
-            MoveEntryRowText(text = moveEntry.fileName)
-        }
-        WeightedBox(weight = 0.1f) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowForward,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceDisabled
-            )
-        }
-        WeightedBox(weight = 0.5f) {
-            MoveEntryRowText(
-                text = remember(moveEntry.destinationDocumentUri) {
-                    documentUriToPathConverter.invoke(
-                        moveEntry.destinationDocumentUri,
-                        context
-                    )!!
-                },
+        if (moveEntry.autoMoved) {
+            AutoMoveIcon(
+                tint = MaterialTheme.colorScheme.onSurfaceDisabled,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = (-2).dp)
             )
         }
     }
 }
 
 @Composable
-private fun MoveEntryRowText(text: String, modifier: Modifier = Modifier) {
+private fun MoveEntryViewText(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         overflow = TextOverflow.Ellipsis,

@@ -3,6 +3,8 @@ package com.w2sv.filenavigator.ui.screens.navigatorsettings
 import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,12 +30,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -48,6 +52,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.composed.CollectLatestFromFlow
+import com.w2sv.composed.OnChange
+import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
 import com.w2sv.composed.rememberStyledTextResource
@@ -69,8 +75,10 @@ import com.w2sv.filenavigator.ui.utils.Easing
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import slimber.log.i
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(style = NavigationTransitions::class)
@@ -104,8 +112,10 @@ fun NavigatorSettingsScreen(
         snackbarHostState.dismissCurrentSnackbarAndShow(makeSnackbarVisuals(context))
     }
 
-    CollectLatestFromFlow(flow = navigatorVM.cancelSnackbar, key1 = snackbarHostState) {
-        snackbarHostState.currentSnackbarData?.dismiss()
+    val navigatorConfigHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
+
+    var fabButtonRowIsShowing by remember {
+        mutableStateOf(false)
     }
 
     val onBack: () -> Unit = remember {
@@ -129,15 +139,8 @@ fun NavigatorSettingsScreen(
             )
         },
         floatingActionButton = {
-            // Delay slightly to prevent fab from moving up the just disappearing Snackbar, which results in an unpleasant UX
-            val navigatorConfigHasChangedWithDelay by navigatorVM.reversibleConfig.hasChangedWithDelay(
-                scope = scope,
-                delayMillis = 250L
-            )
-                .collectAsStateWithLifecycle()
-
             ConfigurationButtonRow(
-                configurationHasChanged = navigatorConfigHasChangedWithDelay,
+                configurationHasChanged = navigatorConfigHasChanged,
                 resetConfiguration = remember { { navigatorVM.reversibleConfig.reset() } },
                 syncConfiguration = remember {
                     {
@@ -146,16 +149,21 @@ fun NavigatorSettingsScreen(
                         }
                             .invokeOnCompletion {
                                 scope.launch {
-                                    delay(500)  // Wait until fab button row has disappeared
-                                    snackbarHostState.dismissCurrentSnackbarAndShow(
-                                        AppSnackbarVisuals(
-                                            message = context.getString(R.string.applied_navigator_settings),
-                                            kind = SnackbarKind.Success
-                                        )
-                                    )
+                                    snapshotFlow { fabButtonRowIsShowing }.filter { !it }.take(1)
+                                        .collect {
+                                            snackbarHostState.dismissCurrentSnackbarAndShow(
+                                                AppSnackbarVisuals(
+                                                    message = context.getString(R.string.applied_navigator_settings),
+                                                    kind = SnackbarKind.Success
+                                                )
+                                            )
+                                        }
                                 }
                             }
                     }
+                },
+                onVisibilityStateChange = {
+                    fabButtonRowIsShowing = it.also { i { "Set fabButtonRowIsShowing=$it" } }
                 },
                 modifier = Modifier
                     .padding(
@@ -245,6 +253,7 @@ private fun ConfigurationButtonRow(
     configurationHasChanged: Boolean,
     resetConfiguration: () -> Unit,
     syncConfiguration: () -> Unit,
+    onVisibilityStateChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
@@ -263,6 +272,8 @@ private fun ConfigurationButtonRow(
         },
         modifier = modifier
     ) {
+        OnVisibilityStateChange(transition = transition, callback = onVisibilityStateChange)
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -278,6 +289,19 @@ private fun ConfigurationButtonRow(
                 onClick = syncConfiguration
             )
         }
+    }
+}
+
+@Composable
+@Stable
+fun OnVisibilityStateChange(transition: Transition<*>, callback: (Boolean) -> Unit) {
+    OnChange(transition.targetState) {
+        if (it != EnterExitState.PostExit) {
+            callback(true)
+        }
+    }
+    OnDispose {
+        callback(false)
     }
 }
 

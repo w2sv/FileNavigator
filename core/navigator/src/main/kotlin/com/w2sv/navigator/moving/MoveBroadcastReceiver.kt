@@ -20,6 +20,7 @@ import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.notifications.NotificationResources
+import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putMoveFileExtra
 import com.w2sv.navigator.notifications.putOptionalNotificationResourcesExtra
@@ -43,6 +44,9 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     internal lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
 
     @Inject
+    lateinit var autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager
+
+    @Inject
     @GlobalScope(AppDispatcher.IO)
     internal lateinit var scope: CoroutineScope
 
@@ -50,7 +54,11 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         if (context == null || intent == null) return
 
         moveFile(context, intent)?.let { moveException ->
-            onMoveException(moveException = moveException, context = context, intent = intent)
+            onMoveException(
+                moveException = moveException,
+                context = context,
+                intent = intent
+            )
         }
     }
 
@@ -69,7 +77,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
         // Exit on unsuccessful conversion to SimpleStorage objects
         val moveDestinationDocumentFile = moveFile.moveMode!!.destination.documentFile(context)
-        val moveMediaFile = moveFile.getSimpleStorageMediaFile(context)
+        val moveMediaFile = moveFile.simpleStorageMediaFile(context)
 
         if (moveDestinationDocumentFile == null || moveMediaFile == null) {
             return MoveException.InternalError
@@ -89,7 +97,10 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
             targetFolder = moveDestinationDocumentFile,
             callback = object : FileCallback() {
                 override fun onCompleted(result: Any) {
-                    context.showFileSuccessfullyMovedToast(moveDestinationDocumentFile)
+                    context.showMoveSuccessToast(
+                        moveFile = moveFile,
+                        moveDestinationDocumentFile = moveDestinationDocumentFile
+                    )
 
                     scope.launch {
                         val movedFileDocumentUri = movedFileDocumentUri(
@@ -97,7 +108,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                             fileName = moveFile.mediaStoreFile.columnData.name
                         )
                         insertMoveEntryUseCase(
-                            moveFile.getMoveEntry(
+                            moveFile.moveEntry(
                                 destinationDocumentUri = moveFile.moveMode.destination,
                                 movedFileDocumentUri = movedFileDocumentUri,
                                 movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!,
@@ -116,7 +127,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                     }
 
                     if (intent.hasExtra(NotificationResources.EXTRA)) {
-                        NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+                        NotificationResources.CleanupBroadcastReceiver.startFromResourcesComprisingIntent(
                             context = context,
                             intent = intent
                         )
@@ -141,15 +152,14 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                                 )
                             )
                         }
-                        context.showToast(
-                            context.getText(
-                                R.string.auto_move_destination_invalid,
-                                moveDestinationRepresentation(
-                                    context,
-                                    moveDestinationDocumentFile
+                        with(autoMoveDestinationInvalidNotificationManager) {
+                            buildAndEmit(
+                                BuilderArgs(
+                                    fileAndSourceType = moveFile.fileAndSourceType,
+                                    autoMoveDestination = moveFile.moveMode.destination
                                 )
                             )
-                        )
+                        }
                     } else {
                         context.showToast(errorCode.name)
                     }
@@ -202,12 +212,16 @@ private fun movedFileDocumentUri(
 ): DocumentUri =
     DocumentUri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
 
-private fun Context.showFileSuccessfullyMovedToast(moveDestinationDocumentFile: DocumentFile) {
+private fun Context.showMoveSuccessToast(
+    moveFile: MoveFile,
+    moveDestinationDocumentFile: DocumentFile
+) {
     showToast(
         getText(
-            R.string.moved_file_to,
+            if (moveFile.moveMode!!.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
+            moveFile.fileAndSourceType.label(context = this, isGif = moveFile.isGif),
             moveDestinationRepresentation(
-                this@showFileSuccessfullyMovedToast,
+                this@showMoveSuccessToast,
                 moveDestinationDocumentFile
             )
         )
@@ -225,7 +239,7 @@ private fun onMoveException(moveException: MoveException, context: Context, inte
         context.showToast(it)
     }
     if (moveException.cancelNotification) {
-        NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+        NotificationResources.CleanupBroadcastReceiver.startFromResourcesComprisingIntent(
             context,
             intent
         )

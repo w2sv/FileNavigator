@@ -25,7 +25,7 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
             NavigatorConfigMapper
                 .toExternal(it)
                 .copyWithAlteredSourceAutoMoveConfig(fileType, sourceType) {
-                    AutoMoveConfig()
+                    AutoMoveConfig.Empty
                 }
                 .let { external -> NavigatorConfigMapper.toProto(external) }
         }

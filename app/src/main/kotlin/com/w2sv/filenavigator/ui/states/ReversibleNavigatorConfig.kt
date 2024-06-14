@@ -12,11 +12,8 @@ import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.sharedviewmodels.MakeSnackbarVisuals
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
@@ -24,7 +21,6 @@ import kotlinx.coroutines.flow.update
 class ReversibleNavigatorConfig(
     reversibleStateFlow: ReversibleStateFlow<NavigatorConfig>,
     private val emitMakeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
-    private val cancelSnackbar: () -> Unit,
 ) : ReversibleState by reversibleStateFlow,
     MutableStateFlow<NavigatorConfig> by reversibleStateFlow {
 
@@ -32,7 +28,6 @@ class ReversibleNavigatorConfig(
         scope: CoroutineScope,
         navigatorConfigDataSource: NavigatorConfigDataSource,
         emitMakeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
-        cancelSnackbar: () -> Unit,
         onStateSynced: () -> Unit
     ) : this(
         reversibleStateFlow = ReversibleStateFlow(
@@ -45,24 +40,10 @@ class ReversibleNavigatorConfig(
             syncState = {
                 navigatorConfigDataSource.saveNavigatorConfig(it)
                 onStateSynced()
-            },
-            onStateReset = {
-                cancelSnackbar()
             }
         ),
         emitMakeSnackbarVisuals = emitMakeSnackbarVisuals,
-        cancelSnackbar = cancelSnackbar
     )
-
-    fun hasChangedWithDelay(scope: CoroutineScope, delayMillis: Long): StateFlow<Boolean> =
-        statesDissimilar
-            .onEach { delay(delayMillis) }
-            .stateIn(scope, SharingStarted.Eagerly, statesDissimilar.value)
-
-    fun updateAndCancelSnackbar(function: (NavigatorConfig) -> NavigatorConfig) {
-        update(function)
-        cancelSnackbar()
-    }
 
     fun onFileTypeCheckedChange(
         fileType: FileType,
@@ -72,7 +53,7 @@ class ReversibleNavigatorConfig(
             checkedNew = checkedNew,
             checkedCount = value.enabledFileTypes.size,
             update = {
-                updateAndCancelSnackbar { config ->
+                update { config ->
                     config.copyWithAlteredFileConfig(fileType) { it.copy(enabled = checkedNew) }
                 }
             },
@@ -81,7 +62,7 @@ class ReversibleNavigatorConfig(
                     message = it.getString(
                         R.string.leave_at_least_one_file_type_enabled
                     ),
-                    kind = SnackbarKind.Error
+                    kind = SnackbarKind.Error,
                 )
             }
         )
@@ -96,7 +77,7 @@ class ReversibleNavigatorConfig(
             checkedNew = checkedNew,
             checkedCount = value.enabledSourceTypesCount(fileType),
             update = {
-                updateAndCancelSnackbar { config ->
+                update { config ->
                     config.copyWithAlteredSourceConfig(
                         fileType = fileType,
                         sourceType = sourceType

@@ -18,7 +18,6 @@ import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putMoveFileExtra
 import com.w2sv.navigator.notifications.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
@@ -106,7 +105,7 @@ internal class FileMoveActivity : ComponentActivity() {
         cancelNotification: Boolean = false
     ) {
         if (cancelNotification) {
-            NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+            NotificationResources.CleanupBroadcastReceiver.startFromResourcesComprisingIntent(
                 applicationContext,
                 intent
             )

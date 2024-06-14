@@ -1,17 +1,15 @@
-package com.w2sv.navigator.model
+package com.w2sv.navigator.mediastore
 
 import android.content.ContentResolver
-import android.net.Uri
-import androidx.annotation.VisibleForTesting
 import com.google.common.collect.EvictingQueue
-import com.w2sv.navigator.fileobservers.emitDiscardedLog
+import com.w2sv.common.utils.MediaUri
+import com.w2sv.navigator.shared.emitDiscardedLog
 import slimber.log.i
-import java.io.File
-import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.security.MessageDigest
+import javax.inject.Inject
 
-internal class MediaStoreFileProvider {
+internal class MediaStoreFileProvider @Inject constructor() {
 
     sealed interface Result {
         data class Success(val mediaStoreFile: MediaStoreFile) : Result
@@ -21,12 +19,12 @@ internal class MediaStoreFileProvider {
         data object AlreadySeen : Result
     }
 
-    private data class SeenParameters(val uri: Uri, val fileSize: Long)
+    private data class SeenParameters(val uri: MediaUri, val fileSize: Long)
 
     private val seenParametersCache = EvictingQueue.create<SeenParameters>(5)
 
     fun getMediaStoreFileIfNotPendingAndNotAlreadySeen(
-        mediaUri: Uri,
+        mediaUri: MediaUri,
         contentResolver: ContentResolver
     ): Result {
         // Fetch MediaStoreColumnData; exit if impossible
@@ -67,7 +65,7 @@ internal class MediaStoreFileProvider {
         seenParametersCache.add(seenParameters)
         return Result.Success(
             MediaStoreFile(
-                uri = mediaUri,
+                mediaUri = mediaUri,
                 columnData = columnData,
                 sha256 = sha256
             )
@@ -76,22 +74,4 @@ internal class MediaStoreFileProvider {
 
     // Reuse MessageDigest instance, as recommended in https://stackoverflow.com/a/13802730/12083276
     private val sha256MessageDigest = MessageDigest.getInstance("SHA-256")
-}
-
-@OptIn(ExperimentalStdlibApi::class)
-@VisibleForTesting
-internal fun File.contentHash(
-    messageDigest: MessageDigest,
-    bufferSize: Int = 8192,
-): String {
-    FileInputStream(this)
-        .use { inputStream ->
-            val buffer = ByteArray(bufferSize)
-            var bytesRead: Int
-            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                messageDigest.update(buffer, 0, bytesRead)
-            }
-        }
-
-    return messageDigest.digest().toHexString()
 }

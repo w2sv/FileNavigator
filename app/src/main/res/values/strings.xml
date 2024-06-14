@@ -78,4 +78,8 @@
     <string name="awesome">Awesome!</string>
     <string name="introducing_auto_move">Introducing Auto Move</string>
     <string name="notify">Notify</string>
+    <plurals name="add_file_types_button">
+        <item quantity="one">Add File Type</item>
+        <item quantity="other">Add File Types</item>
+    </plurals>
 </resources>
