@@ -3,6 +3,7 @@ package com.w2sv.filenavigator.ui.screens.navigatorsettings
 import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,13 +30,13 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -73,6 +74,8 @@ import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import slimber.log.i
 
@@ -112,21 +115,21 @@ fun NavigatorSettingsScreen(
         snackbarHostState.currentSnackbarData?.dismiss()
     }
 
-    val snackbarShowing by remember {
-        derivedStateOf { snackbarHostState.currentSnackbarData != null }
+    var snackbarIsShowing by remember {
+        mutableStateOf(false)
+    }
+    var fabButtonRowIsShowing by remember {
+        mutableStateOf(false)
     }
 
-    OnChange(value = snackbarShowing) {
-        i{"snackbarShowing=$it"}
+    LaunchedEffect(snackbarHostState) {
+        snapshotFlow { snackbarHostState.currentSnackbarData }
+            .map { it != null }
+            .collectLatest {
+                i { "snackbarIsShowing=$it" }
+                snackbarIsShowing = it
+            }
     }
-
-//    LaunchedEffect(snackbarHostState.currentSnackbarData) {
-//        i { "currentSnackbarData=$snackbarHostState.currentSnackbarData" }
-//    }
-
-//    OnChange(snackbarHostState.currentSnackbarData) {
-//        i { "currentSnackbarData=$it" }
-//    }
 
     val onBack: () -> Unit = remember {
         {
@@ -177,6 +180,7 @@ fun NavigatorSettingsScreen(
                             }
                     }
                 },
+                setDisplayState = { fabButtonRowIsShowing = it },
                 modifier = Modifier
                     .padding(
                         top = 8.dp,  // Snackbar padding
@@ -265,6 +269,7 @@ private fun ConfigurationButtonRow(
     configurationHasChanged: Boolean,
     resetConfiguration: () -> Unit,
     syncConfiguration: () -> Unit,
+    setDisplayState: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
@@ -283,6 +288,10 @@ private fun ConfigurationButtonRow(
         },
         modifier = modifier
     ) {
+        OnChange(transition.targetState) {
+            setDisplayState(it != EnterExitState.PostExit)
+        }
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
