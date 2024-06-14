@@ -34,6 +34,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -94,19 +95,21 @@ fun AddFileTypesBottomSheet(
                     onClick = { selectionMap.toggle(fileType) },
                     modifier = Modifier
                         .padding(bottom = 12.dp)
-                        .animateItem()
                 )
             }
         }
         DialogButton(
-            text = remember(selectionMap.enabledKeys.size) {
-                "Add ${selectionMap.enabledKeys.size} File Type${if (selectionMap.enabledKeys.size > 1) "s" else ""}"
-            },
-            onClick = {
-                addFileTypes(selectionMap.enabledKeys)
-                scope.launch {
-                    sheetState.hide()
-                    onDismissRequest()
+            text = pluralStringResource(
+                id = R.plurals.add_file_types_button,
+                count = selectionMap.enabledKeys.size
+            ),
+            onClick = remember {
+                {
+                    addFileTypes(selectionMap.enabledKeys)
+                    scope.launch {
+                        sheetState.hide()
+                        onDismissRequest()
+                    }
                 }
             },
             enabled = selectionMap.enabledKeys.isNotEmpty(),
