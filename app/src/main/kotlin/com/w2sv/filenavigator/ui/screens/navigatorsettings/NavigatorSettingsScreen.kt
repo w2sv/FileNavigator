@@ -28,6 +28,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +50,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.composed.CollectLatestFromFlow
+import com.w2sv.composed.OnChange
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
 import com.w2sv.composed.rememberStyledTextResource
@@ -71,6 +74,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import slimber.log.i
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(style = NavigationTransitions::class)
@@ -107,6 +111,22 @@ fun NavigatorSettingsScreen(
     CollectLatestFromFlow(flow = navigatorVM.cancelSnackbar, key1 = snackbarHostState) {
         snackbarHostState.currentSnackbarData?.dismiss()
     }
+
+    val snackbarShowing by remember {
+        derivedStateOf { snackbarHostState.currentSnackbarData != null }
+    }
+
+    OnChange(value = snackbarShowing) {
+        i{"snackbarShowing=$it"}
+    }
+
+//    LaunchedEffect(snackbarHostState.currentSnackbarData) {
+//        i { "currentSnackbarData=$snackbarHostState.currentSnackbarData" }
+//    }
+
+//    OnChange(snackbarHostState.currentSnackbarData) {
+//        i { "currentSnackbarData=$it" }
+//    }
 
     val onBack: () -> Unit = remember {
         {

@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -29,6 +30,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.RequiredPermissionsScreenDestination
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
@@ -127,7 +129,7 @@ class MainActivity : ComponentActivity() {
                                 dependenciesContainerBuilder = {
                                     dependency(postNotificationsPermissionState)
                                 },
-//                                startRoute = NavigatorSettingsScreenDestination
+                                startRoute = NavigatorSettingsScreenDestination
                             )
                         }
                     }
@@ -165,8 +167,7 @@ class MainActivity : ComponentActivity() {
                         bootCompletedReceiver.unregister(applicationContext)
                     }
                 }
-            } catch (e: IllegalArgumentException) {
-                i(e)
+            } catch (_: IllegalArgumentException) {  // Thrown when unregistered receiver is attempted to be unregistered
             }
         }
     }
@@ -186,6 +187,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@ReadOnlyComposable
 @Composable
 private fun useDarkTheme(theme: Theme): Boolean {
     return when (theme) {
