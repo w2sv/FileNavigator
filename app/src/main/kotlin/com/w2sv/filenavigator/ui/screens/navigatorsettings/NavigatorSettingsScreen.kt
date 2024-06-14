@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,7 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,14 +75,9 @@ import com.w2sv.filenavigator.ui.utils.Easing
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import slimber.log.i
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,55 +112,10 @@ fun NavigatorSettingsScreen(
         snackbarHostState.dismissCurrentSnackbarAndShow(makeSnackbarVisuals(context))
     }
 
-    var snackbarJustCancelled by remember {
-        mutableStateOf(false)
-    }
-    CollectLatestFromFlow(flow = navigatorVM.cancelSnackbar, key1 = snackbarHostState) {
-        snackbarHostState.currentSnackbarData?.dismiss()
-        snackbarJustCancelled = true
-        withContext(Dispatchers.IO) {
-            delay(200)
-            snackbarJustCancelled = false
-        }
-    }
-
-    // Delay slightly to prevent fab from moving up the just disappearing Snackbar, which results in an unpleasant UX
     val navigatorConfigHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
 
-    var snackbarIsShowing by remember {
-        mutableStateOf(false)
-    }
     var fabButtonRowIsShowing by remember {
         mutableStateOf(false)
-    }
-    val fabButtonRowInSync by remember(navigatorConfigHasChanged, fabButtonRowIsShowing) {
-        mutableStateOf(navigatorConfigHasChanged == fabButtonRowIsShowing)
-    }
-    var showFabButtonRow by remember {
-        mutableStateOf(false)
-    }
-
-    LaunchedEffect(navigatorConfigHasChanged) {
-        if (navigatorConfigHasChanged && snackbarJustCancelled) {
-            delay(200)
-            showFabButtonRow = true
-            i { "Set showFabButtonRow true after delay" }
-//            snapshotFlow { snackbarIsShowing }.filter { !it }.take(1).collect {
-//                showFabButtonRow = true
-//                i { "Set showFabButtonRow true" }
-//            }
-        } else {
-            showFabButtonRow = navigatorConfigHasChanged
-        }
-    }
-
-    LaunchedEffect(snackbarHostState) {
-        snapshotFlow { snackbarHostState.currentSnackbarData }
-            .map { it != null }
-            .collectLatest {
-                i { "snackbarIsShowing=$it" }
-                snackbarIsShowing = it
-            }
     }
 
     val onBack: () -> Unit = remember {
@@ -189,7 +140,7 @@ fun NavigatorSettingsScreen(
         },
         floatingActionButton = {
             ConfigurationButtonRow(
-                configurationHasChanged = showFabButtonRow,
+                configurationHasChanged = navigatorConfigHasChanged,
                 resetConfiguration = remember { { navigatorVM.reversibleConfig.reset() } },
                 syncConfiguration = remember {
                     {
@@ -211,7 +162,7 @@ fun NavigatorSettingsScreen(
                             }
                     }
                 },
-                setDisplayState = {
+                onVisibilityStateChange = {
                     fabButtonRowIsShowing = it.also { i { "Set fabButtonRowIsShowing=$it" } }
                 },
                 modifier = Modifier
@@ -302,7 +253,7 @@ private fun ConfigurationButtonRow(
     configurationHasChanged: Boolean,
     resetConfiguration: () -> Unit,
     syncConfiguration: () -> Unit,
-    setDisplayState: (Boolean) -> Unit,
+    onVisibilityStateChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
@@ -321,14 +272,7 @@ private fun ConfigurationButtonRow(
         },
         modifier = modifier
     ) {
-        OnChange(transition.targetState) {
-            if (it != EnterExitState.PostExit) {
-                setDisplayState(true)
-            }
-        }
-        OnDispose {
-            setDisplayState(false)
-        }
+        OnVisibilityStateChange(transition = transition, callback = onVisibilityStateChange)
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -345,6 +289,19 @@ private fun ConfigurationButtonRow(
                 onClick = syncConfiguration
             )
         }
+    }
+}
+
+@Composable
+@Stable
+fun OnVisibilityStateChange(transition: Transition<*>, callback: (Boolean) -> Unit) {
+    OnChange(transition.targetState) {
+        if (it != EnterExitState.PostExit) {
+            callback(true)
+        }
+    }
+    OnDispose {
+        callback(false)
     }
 }
 
