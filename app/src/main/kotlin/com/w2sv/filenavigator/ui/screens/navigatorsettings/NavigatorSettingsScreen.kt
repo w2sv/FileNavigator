@@ -52,6 +52,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.composed.CollectLatestFromFlow
 import com.w2sv.composed.OnChange
+import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
 import com.w2sv.composed.rememberStyledTextResource
@@ -73,9 +74,10 @@ import com.w2sv.filenavigator.ui.utils.Easing
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import slimber.log.i
 
@@ -115,10 +117,19 @@ fun NavigatorSettingsScreen(
         snackbarHostState.currentSnackbarData?.dismiss()
     }
 
+    // Delay slightly to prevent fab from moving up the just disappearing Snackbar, which results in an unpleasant UX
+    val navigatorConfigHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
+
     var snackbarIsShowing by remember {
         mutableStateOf(false)
     }
     var fabButtonRowIsShowing by remember {
+        mutableStateOf(false)
+    }
+    val fabButtonRowInSync by remember(navigatorConfigHasChanged, fabButtonRowIsShowing) {
+        mutableStateOf(navigatorConfigHasChanged == fabButtonRowIsShowing)
+    }
+    var showFabButtonRow by remember {
         mutableStateOf(false)
     }
 
@@ -152,15 +163,8 @@ fun NavigatorSettingsScreen(
             )
         },
         floatingActionButton = {
-            // Delay slightly to prevent fab from moving up the just disappearing Snackbar, which results in an unpleasant UX
-            val navigatorConfigHasChangedWithDelay by navigatorVM.reversibleConfig.hasChangedWithDelay(
-                scope = scope,
-                delayMillis = 250L
-            )
-                .collectAsStateWithLifecycle()
-
             ConfigurationButtonRow(
-                configurationHasChanged = navigatorConfigHasChangedWithDelay,
+                configurationHasChanged = navigatorConfigHasChanged,
                 resetConfiguration = remember { { navigatorVM.reversibleConfig.reset() } },
                 syncConfiguration = remember {
                     {
@@ -169,18 +173,22 @@ fun NavigatorSettingsScreen(
                         }
                             .invokeOnCompletion {
                                 scope.launch {
-                                    delay(500)  // Wait until fab button row has disappeared
-                                    snackbarHostState.dismissCurrentSnackbarAndShow(
-                                        AppSnackbarVisuals(
-                                            message = context.getString(R.string.applied_navigator_settings),
-                                            kind = SnackbarKind.Success
-                                        )
-                                    )
+                                    snapshotFlow { fabButtonRowIsShowing }.filter { !it }.take(1)
+                                        .collect {
+                                            snackbarHostState.dismissCurrentSnackbarAndShow(
+                                                AppSnackbarVisuals(
+                                                    message = context.getString(R.string.applied_navigator_settings),
+                                                    kind = SnackbarKind.Success
+                                                )
+                                            )
+                                        }
                                 }
                             }
                     }
                 },
-                setDisplayState = { fabButtonRowIsShowing = it },
+                setDisplayState = {
+                    fabButtonRowIsShowing = it.also { i { "Set fabButtonRowIsShowing=$it" } }
+                },
                 modifier = Modifier
                     .padding(
                         top = 8.dp,  // Snackbar padding
@@ -289,7 +297,12 @@ private fun ConfigurationButtonRow(
         modifier = modifier
     ) {
         OnChange(transition.targetState) {
-            setDisplayState(it != EnterExitState.PostExit)
+            if (it != EnterExitState.PostExit) {
+                setDisplayState(true)
+            }
+        }
+        OnDispose {
+            setDisplayState(false)
         }
 
         Row(
