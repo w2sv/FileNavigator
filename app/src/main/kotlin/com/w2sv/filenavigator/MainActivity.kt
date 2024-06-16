@@ -30,13 +30,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.RequiredPermissionsScreenDestination
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
 import com.w2sv.androidutils.coroutines.collectFromFlow
+import com.w2sv.androidutils.generic.localDateTimeFromUnixTimeStamp
 import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
