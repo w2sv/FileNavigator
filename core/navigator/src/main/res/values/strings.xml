@@ -1,5 +1,4 @@
 <resources>
-    <string name="moved_file_to"><![CDATA[Moved file to <b>%1$s</b>]]></string>
     <string name="move_success_toast_text"><![CDATA[Moved %1$s to <b>%2$s</b>]]></string>
     <string name="auto_move_success_toast_text"><![CDATA[Auto Moved %1$s to <b>%2$s</b>]]></string>
     <string name="move">Move</string>
@@ -16,7 +15,7 @@
     <string name="file_has_already_been_moved_or_deleted">File has already been moved or deleted</string>
     <string name="navigatable_file">%1$d navigatable file</string>
     <string name="navigatable_files">%1$d navigatable files</string>
-    <string name="you_will_receive_a_notification_when_a_new_file_corresponding_to_your_selected_file_types_enters_the_file_system">You will be notified when a new file corresponding to the selected file types enters the file system.</string>
+    <string name="foreground_service_notification_content">You will be notified when a new file corresponding to your enabled file types is found.</string>
     <string name="file_already_at_selected_location">File is already at the selected location</string>
     <string name="to">to /%1$s</string>
     <string name="starting_navigator">Launching File Navigator…</string>

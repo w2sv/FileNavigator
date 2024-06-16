@@ -129,7 +129,7 @@ class MainActivity : ComponentActivity() {
                                 dependenciesContainerBuilder = {
                                     dependency(postNotificationsPermissionState)
                                 },
-                                startRoute = NavigatorSettingsScreenDestination
+//                                startRoute = NavigatorSettingsScreenDestination
                             )
                         }
                     }

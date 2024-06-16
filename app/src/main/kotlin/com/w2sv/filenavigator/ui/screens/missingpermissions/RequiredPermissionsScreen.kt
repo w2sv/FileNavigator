@@ -55,8 +55,8 @@ fun RequiredPermissionsScreen(
     val permissionCards =
         rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState.state)
 
-    OnChange(value = permissionCards.size) {
-        if (it == 0) {
+    OnChange(value = permissionCards) {
+        if (it.isEmpty()) {
             navigator.navigate(
                 direction = HomeScreenDestination,
                 builder = {

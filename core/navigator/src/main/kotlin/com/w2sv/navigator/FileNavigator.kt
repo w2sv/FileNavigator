@@ -35,6 +35,7 @@ class FileNavigator : UnboundService() {
     @Inject
     internal lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
 
+    @Inject
     internal lateinit var fileObserverProvider: FileObserverProvider
 
     private var fileObservers: MediaTypeToFileObserver? = null
@@ -42,7 +43,6 @@ class FileNavigator : UnboundService() {
     private val contentObserverHandlerThread by lazy {
         HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
     }
-
 
     private fun getRegisteredFileObservers(): MediaTypeToFileObserver {
         if (!contentObserverHandlerThread.isAlive) {

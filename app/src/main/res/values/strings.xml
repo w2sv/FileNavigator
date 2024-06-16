@@ -18,7 +18,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="post_notifications_permission_rational">File Navigator requires <b>Post Notification Permission</b> to notify you about navigatable files.</string>
-    <string name="manage_external_storage_permission_rational">File Navigator requires permission to <b>Manage All Files</b> to move files upon your explicit soliciting to do so.</string>
+    <string name="manage_external_storage_permission_rational">File Navigator requires permission to <b>Manage All Files</b> in order to move files.</string>
     <string name="theme">Theme</string>
     <string name="open_navigation_drawer">Open navigation drawer</string>
     <string name="share">Share</string>

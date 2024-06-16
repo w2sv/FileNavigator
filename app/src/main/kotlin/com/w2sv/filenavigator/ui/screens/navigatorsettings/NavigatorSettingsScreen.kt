@@ -75,6 +75,7 @@ import com.w2sv.filenavigator.ui.utils.Easing
 import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -91,9 +92,7 @@ fun NavigatorSettingsScreen(
     scope: CoroutineScope = rememberCoroutineScope(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
-    val showAutoMoveIntroduction by appVM.showAutoMoveIntroduction.collectAsStateWithLifecycle()
-
-    if (showAutoMoveIntroduction) {
+    if (rememberShowAutoMoveIntroductionWithDelay(showAutoMoveIntroduction = appVM.showAutoMoveIntroduction.collectAsStateWithLifecycle().value)) {
         AutoMoveIntroductionDialog(
             onDismissRequest = remember {
                 {
@@ -200,6 +199,20 @@ fun NavigatorSettingsScreen(
             )
         }
     }
+}
+
+@Composable
+private fun rememberShowAutoMoveIntroductionWithDelay(showAutoMoveIntroduction: Boolean): Boolean {
+    var showAutoMoveIntroductionWithDelay by remember {
+        mutableStateOf(false)
+    }
+    OnChange(value = showAutoMoveIntroduction) {
+        if (it) {
+            delay(1_000)
+        }
+        showAutoMoveIntroductionWithDelay = it
+    }
+    return showAutoMoveIntroductionWithDelay
 }
 
 @Composable
