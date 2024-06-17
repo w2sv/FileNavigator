@@ -1,33 +1,21 @@
 package com.w2sv.datastore.di
 
 import android.content.Context
-import androidx.datastore.core.DataMigration
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.dataStoreFile
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.w2sv.androidutils.coroutines.firstBlocking
-import com.w2sv.androidutils.generic.localDateTimeFromUnixTimeStamp
-import com.w2sv.androidutils.generic.timeDeltaToNow
-import com.w2sv.common.utils.DocumentUri
-import com.w2sv.common.utils.update
 import com.w2sv.datastore.NavigatorConfigProto
-import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigMapper
+import com.w2sv.datastore.NavigatorPreferencesToProtoMigration
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigProtoSerializer
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.SourceType
-import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import slimber.log.i
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -54,108 +42,10 @@ object DataStoreModule {
                 context.dataStoreFile("navigator_config.pb")
             },
             migrations = listOf(
-                NavigatorPreferencesMigration(
+                NavigatorPreferencesToProtoMigration(
                     context = context,
                     preferencesDataStore = preferencesDataStore
                 )
             )
         )
 }
-
-private class NavigatorPreferencesMigration(
-    private val context: Context,
-    private val preferencesDataStore: DataStore<Preferences>
-) : DataMigration<NavigatorConfigProto> {
-
-    override suspend fun shouldMigrate(currentData: NavigatorConfigProto): Boolean {
-        return (!currentData.hasBeenMigrated.also { i { "hasBeenMigrated=$it" } } && localDateTimeFromUnixTimeStamp(
-            context.packageManager.getPackageInfo(
-                context.packageName,
-                0
-            )
-                .firstInstallTime / 1000L
-        )
-            .timeDeltaToNow().toMinutes() > 5)
-            .also { i { "Should migrate=$it" } }
-    }
-
-    override suspend fun cleanUp() {}
-
-    override suspend fun migrate(currentData: NavigatorConfigProto): NavigatorConfigProto {
-        i { "Migrating" }
-
-        val preferences = preferencesDataStore.data.firstBlocking()
-
-        i { "Preferences content: ${preferences.asMap()}" }
-
-        var migrated = NavigatorConfig.default
-        preferences[booleanPreferencesKey("disableNavigatorOnLowBattery")]?.let {
-            migrated = migrated.copy(disableOnLowBattery = it)
-        }
-
-        // Migrate file type configs
-        FileType.values.forEach { fileType ->
-            i { "Migrating $fileType" }
-
-            val fileTypeEnabled =
-                preferences.getOrDefault(fileType.preferencesKey, true)
-
-            migrated =
-                migrated.copyWithAlteredFileConfig(fileType) { fileTypeConfig ->
-                    fileTypeConfig.copy(
-                        enabled = fileTypeEnabled,
-                        sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.toMutableMap()
-                            .apply {
-                                fileType.sourceTypes.forEach { sourceType ->
-                                    preferences[sourceEnabledPreferencesKey(
-                                        fileType,
-                                        sourceType
-                                    )]?.let { sourceTypeEnabled ->
-                                        i { "Migrating $fileType.$sourceType" }
-                                        update(sourceType) { sourceConfig ->
-                                            sourceConfig.copy(
-                                                enabled = sourceTypeEnabled,
-                                                lastMoveDestinations = buildList {
-                                                    preferences[lastMoveDestinationPreferencesKey(
-                                                        fileType,
-                                                        sourceType
-                                                    )]?.let { lastMoveDestination ->
-                                                        add(
-                                                            DocumentUri.parse(lastMoveDestination)
-                                                        )
-                                                    }
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                    )
-                }
-        }
-        i { "Migrated: $migrated" }
-
-        return NavigatorConfigMapper.toProto(migrated)
-    }
-}
-
-private fun <K> Preferences.getOrDefault(k: Preferences.Key<K>, default: K): K =
-    get(k) ?: default
-
-private val FileType.preferencesIdentifier: String
-    get() = this::class.java.simpleName
-
-private val FileType.preferencesKey: Preferences.Key<Boolean>
-    get() = booleanPreferencesKey(preferencesIdentifier)
-
-private fun sourceEnabledPreferencesKey(
-    fileType: FileType,
-    sourceType: SourceType
-): Preferences.Key<Boolean> =
-    booleanPreferencesKey("${fileType.preferencesIdentifier}.${sourceType.name}.IS_ENABLED")
-
-private fun lastMoveDestinationPreferencesKey(
-    fileType: FileType,
-    sourceType: SourceType
-): Preferences.Key<String> =
-    stringPreferencesKey("${fileType.preferencesIdentifier}.${sourceType.name}.LAST_MOVE_DESTINATION")
