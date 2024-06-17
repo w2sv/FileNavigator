@@ -15,7 +15,7 @@
     <string name="file_has_already_been_moved_or_deleted">File has already been moved or deleted</string>
     <string name="navigatable_file">%1$d navigatable file</string>
     <string name="navigatable_files">%1$d navigatable files</string>
-    <string name="foreground_service_notification_content">You will be notified when a new file corresponding to your enabled file types is found.</string>
+    <string name="foreground_service_notification_content">You will be notified when a new file corresponding to your enabled file types enters the file system.</string>
     <string name="file_already_at_selected_location">File is already at the selected location</string>
     <string name="to">to /%1$s</string>
     <string name="starting_navigator">Launching File Navigator…</string>

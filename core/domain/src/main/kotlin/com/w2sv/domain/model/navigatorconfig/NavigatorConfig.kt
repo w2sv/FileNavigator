@@ -32,9 +32,6 @@ data class NavigatorConfig(
     fun sourceConfig(fileType: FileType, sourceType: SourceType): SourceConfig =
         fileTypeConfig(fileType).sourceTypeConfigMap.getValue(sourceType)
 
-    fun optionalSourceConfig(fileType: FileType, sourceType: SourceType): SourceConfig? =
-        fileTypeConfig(fileType).sourceTypeConfigMap[sourceType]
-
     // ================
     // Copying
     // ================
