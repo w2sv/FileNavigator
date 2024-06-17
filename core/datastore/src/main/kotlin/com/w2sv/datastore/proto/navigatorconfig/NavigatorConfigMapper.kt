@@ -37,12 +37,6 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
             disableOnLowBattery = external.disableOnLowBattery
             startOnBoot = external.startOnBoot
         }
-
-    fun toProto(external: NavigatorConfig, hasBeenMigrated: Boolean): NavigatorConfigProto =
-        toProto(external)
-            .toBuilder()
-            .apply { this.hasBeenMigrated = hasBeenMigrated }
-            .build()
 }
 
 private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeConfig> {
@@ -65,31 +59,6 @@ private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeC
         }
 }
 
-//private object FileTypeMapper : ProtoMapper<FileTypeProto, FileType> {
-//    override fun toExternal(proto: FileTypeProto): FileType =
-//        when (proto) {
-//            FileTypeProto.Image -> FileType.Image
-//            FileTypeProto.Video -> FileType.Video
-//            FileTypeProto.Audio -> FileType.Audio
-//            FileTypeProto.PDF -> FileType.PDF
-//            FileTypeProto.Text -> FileType.Text
-//            FileTypeProto.Archive -> FileType.Archive
-//            FileTypeProto.APK -> FileType.APK
-//            FileTypeProto.UNRECOGNIZED -> throw IllegalArgumentException("Unrecognized FileTypeProto")
-//        }
-//
-//    override fun toProto(external: FileType): FileTypeProto =
-//        when (external) {
-//            FileType.Image -> FileTypeProto.Image
-//            FileType.Video -> FileTypeProto.Video
-//            FileType.Audio -> FileTypeProto.Audio
-//            FileType.PDF -> FileTypeProto.PDF
-//            FileType.Text -> FileTypeProto.Text
-//            FileType.Archive -> FileTypeProto.Archive
-//            FileType.APK -> FileTypeProto.APK
-//        }
-//}
-
 private object SourceConfigMapper :
     ProtoMapper<SourceConfigProto, SourceConfig> {
     override fun toExternal(proto: SourceConfigProto): SourceConfig =
@@ -109,28 +78,6 @@ private object SourceConfigMapper :
             this.autoMoveConfig = AutoMoveConfigMapper.toProto(external.autoMoveConfig)
         }
 }
-
-//private object SourceTypeMapper :
-//    ProtoMapper<SourceTypeProto, SourceType> {
-//    override fun toExternal(proto: SourceTypeProto): SourceType =
-//        when (proto) {
-//            SourceTypeProto.Camera -> SourceType.Camera
-//            SourceTypeProto.Screenshot -> SourceType.Screenshot
-//            SourceTypeProto.Recording -> SourceType.Recording
-//            SourceTypeProto.Download -> SourceType.Download
-//            SourceTypeProto.OtherApp -> SourceType.OtherApp
-//            SourceTypeProto.UNRECOGNIZED -> throw IllegalArgumentException("Unrecognized SourceTypeProto")
-//        }
-//
-//    override fun toProto(external: SourceType): SourceTypeProto =
-//        when (external) {
-//            SourceType.Camera -> SourceTypeProto.Camera
-//            SourceType.Screenshot -> SourceTypeProto.Screenshot
-//            SourceType.Recording -> SourceTypeProto.Recording
-//            SourceType.Download -> SourceTypeProto.Download
-//            SourceType.OtherApp -> SourceTypeProto.OtherApp
-//        }
-//}
 
 private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveConfig> {
     override fun toExternal(proto: AutoMoveConfigProto): AutoMoveConfig = AutoMoveConfig(

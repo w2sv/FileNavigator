@@ -5,7 +5,7 @@ import android.os.Build
 import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore
-import com.w2sv.androidutils.generic.localDateTimeFromUnixTimeStamp
+import com.w2sv.androidutils.generic.localDateTimeFromUnixMilliSecondsTimeStamp
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.getBooleanOrThrow
 import com.w2sv.common.utils.getLongOrThrow
@@ -110,7 +110,7 @@ internal data class MediaStoreColumnData(
                         absPath = it.getStringOrThrow(MediaStore.MediaColumns.DATA),
                         volumeRelativeDirPath = it.getStringOrThrow(MediaStore.MediaColumns.RELATIVE_PATH),
                         name = it.getStringOrThrow(MediaStore.MediaColumns.DISPLAY_NAME),
-                        dateTimeAdded = localDateTimeFromUnixTimeStamp(
+                        dateTimeAdded = localDateTimeFromUnixMilliSecondsTimeStamp(
                             it.getLongOrThrow(MediaStore.MediaColumns.DATE_ADDED)
                         ),
                         size = it.getLongOrThrow(MediaStore.MediaColumns.SIZE),
