@@ -36,10 +36,11 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
             )
             disableOnLowBattery = external.disableOnLowBattery
             startOnBoot = external.startOnBoot
+            hasBeenMigrated = false  // TODO
         }
 }
 
-private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeConfig> {
+object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeConfig> {
     override fun toExternal(proto: FileTypeConfigProto): FileTypeConfig =
         FileTypeConfig(
             enabled = proto.enabled,
