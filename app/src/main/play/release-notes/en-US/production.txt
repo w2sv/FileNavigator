@@ -1,5 +1,7 @@
 - New Features:
     - File source-specific auto moving
-    - Automatic navigator restart on boot
+    - Optional automatic navigator restart on boot
     - New eBook file type
+    - App Settings screen
+    - Show/hide storage volume names
 - Performance improvements & UI refinements
