@@ -149,6 +149,7 @@ dependencies {
     implementation(libs.kotlinx.collections.immutable)
     lintChecks(libs.compose.lint.checks)
     implementation(libs.materialKolor)
+    implementation(libs.textflow)
 
     // Unit Test
     testImplementation(libs.bundles.unitTest)
