@@ -14,9 +14,9 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import com.w2sv.androidutils.coroutines.firstBlocking
 import com.w2sv.androidutils.generic.localDateTimeFromUnixTimeStamp
 import com.w2sv.androidutils.generic.timeDeltaToNow
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.update
 import com.w2sv.datastore.NavigatorConfigProto
-import com.w2sv.datastore.copy
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigMapper
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigProtoSerializer
 import com.w2sv.domain.model.FileType
@@ -54,82 +54,89 @@ object DataStoreModule {
                 context.dataStoreFile("navigator_config.pb")
             },
             migrations = listOf(
-                object : DataMigration<NavigatorConfigProto> {
-                    override suspend fun shouldMigrate(currentData: NavigatorConfigProto): Boolean {
-                        return (!currentData.hasBeenMigrated.also { i { "hasBeenMigrated=$it" } } && localDateTimeFromUnixTimeStamp(
-                            context.packageManager.getPackageInfo(
-                                context.packageName,
-                                0
-                            )
-                                .firstInstallTime / 1000L
-                        )
-                            .timeDeltaToNow().toMinutes() > 5)
-                            .also { i { "Should migrate=$it" } }
-                    }
+                NavigatorPreferencesMigration(
+                    context = context,
+                    preferencesDataStore = preferencesDataStore
+                )
+            )
+        )
+}
 
-                    override suspend fun cleanUp() {}
+private class NavigatorPreferencesMigration(
+    private val context: Context,
+    private val preferencesDataStore: DataStore<Preferences>
+) : DataMigration<NavigatorConfigProto> {
 
-                    override suspend fun migrate(currentData: NavigatorConfigProto): NavigatorConfigProto {
-                        i { "Migrating" }
+    override suspend fun shouldMigrate(currentData: NavigatorConfigProto): Boolean {
+        return (!currentData.hasBeenMigrated.also { i { "hasBeenMigrated=$it" } } && localDateTimeFromUnixTimeStamp(
+            context.packageManager.getPackageInfo(
+                context.packageName,
+                0
+            )
+                .firstInstallTime / 1000L
+        )
+            .timeDeltaToNow().toMinutes() > 5)
+            .also { i { "Should migrate=$it" } }
+    }
 
-                        val preferences = preferencesDataStore.data.firstBlocking()
+    override suspend fun cleanUp() {}
 
-                        i { "Preferences content: ${preferences.asMap()}" }
+    override suspend fun migrate(currentData: NavigatorConfigProto): NavigatorConfigProto {
+        i { "Migrating" }
 
-                        var migrated = NavigatorConfigMapper.toProto(NavigatorConfig.default)
-                        preferences[booleanPreferencesKey("disableNavigatorOnLowBattery")]?.let {
-                            migrated = migrated.copy { disableOnLowBattery = it }
-                        }
+        val preferences = preferencesDataStore.data.firstBlocking()
 
-                        // Migrate file type configs
-                        FileType.values.forEach { fileType ->
-                            i { "Migrating $fileType" }
+        i { "Preferences content: ${preferences.asMap()}" }
 
-                            val fileTypeEnabled =
-                                preferences.getOrDefault(fileType.preferencesKey, true)
+        var migrated = NavigatorConfig.default
+        preferences[booleanPreferencesKey("disableNavigatorOnLowBattery")]?.let {
+            migrated = migrated.copy(disableOnLowBattery = it)
+        }
 
-                            migrated.fileTypeToConfigMap.update(
-                                FileType.values.indexOf(
-                                    fileType
-                                )
-                            ) { fileTypeConfig ->
-                                fileTypeConfig.copy {
-                                    this.enabled = fileTypeEnabled
-                                    // Migrate source configs
-                                    fileType.sourceTypes.forEach { sourceType ->
-                                        preferences[sourceEnabledPreferencesKey(
-                                            fileType,
-                                            sourceType
-                                        )]?.let { sourceTypeEnabled ->
-                                            i { "Migrating $fileType.$sourceType" }
-                                            this.sourceTypeToConfig.toMutableMap()[sourceType.ordinal] =
-                                                this.sourceTypeToConfig.getValue(sourceType.ordinal)
-                                                    .copy {
-                                                        this.enabled = sourceTypeEnabled
-                                                        // Migrate lastMoveDestination
-                                                        preferences[lastMoveDestinationPreferencesKey(
-                                                            fileType,
-                                                            sourceType
-                                                        )]?.let { lastMoveDestination ->
-                                                            this.lastMoveDestinations.add(
-                                                                lastMoveDestination
-                                                            )
-                                                        }
+        // Migrate file type configs
+        FileType.values.forEach { fileType ->
+            i { "Migrating $fileType" }
+
+            val fileTypeEnabled =
+                preferences.getOrDefault(fileType.preferencesKey, true)
+
+            migrated =
+                migrated.copyWithAlteredFileConfig(fileType) { fileTypeConfig ->
+                    fileTypeConfig.copy(
+                        enabled = fileTypeEnabled,
+                        sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.toMutableMap()
+                            .apply {
+                                fileType.sourceTypes.forEach { sourceType ->
+                                    preferences[sourceEnabledPreferencesKey(
+                                        fileType,
+                                        sourceType
+                                    )]?.let { sourceTypeEnabled ->
+                                        i { "Migrating $fileType.$sourceType" }
+                                        update(sourceType) { sourceConfig ->
+                                            sourceConfig.copy(
+                                                enabled = sourceTypeEnabled,
+                                                lastMoveDestinations = buildList {
+                                                    preferences[lastMoveDestinationPreferencesKey(
+                                                        fileType,
+                                                        sourceType
+                                                    )]?.let { lastMoveDestination ->
+                                                        add(
+                                                            DocumentUri.parse(lastMoveDestination)
+                                                        )
                                                     }
+                                                }
+                                            )
                                         }
                                     }
                                 }
                             }
-                        }
-                        i { "Migrated: ${NavigatorConfigMapper.toExternal(migrated)}" }
-
-//                        migrated = migrated.copy { hasBeenMigrated = true }
-
-                        return migrated
-                    }
+                    )
                 }
-            )
-        )
+        }
+        i { "Migrated: $migrated" }
+
+        return NavigatorConfigMapper.toProto(migrated)
+    }
 }
 
 private fun <K> Preferences.getOrDefault(k: Preferences.Key<K>, default: K): K =
