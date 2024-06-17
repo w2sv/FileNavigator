@@ -1,2 +1,5 @@
-- Added a quick tile for enabling/disabling the navigator!
-- Reduced app size
+- New Features:
+    - File source-specific auto moving
+    - Automatic navigator restart on boot
+    - New eBook file type
+- Performance improvements & UI refinements

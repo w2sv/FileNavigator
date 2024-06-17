@@ -208,7 +208,7 @@ private fun rememberShowAutoMoveIntroductionWithDelay(showAutoMoveIntroduction: 
     }
     OnChange(value = showAutoMoveIntroduction) {
         if (it) {
-            delay(1_000)
+            delay(500)
         }
         showAutoMoveIntroductionWithDelay = it
     }
