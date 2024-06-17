@@ -1,13 +1,13 @@
 package com.w2sv.filenavigator.ui.screens.missingpermissions
 
 import android.content.Context
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,6 +45,10 @@ import com.w2sv.filenavigator.ui.utils.activityViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
+private object RequiredPermissionsScreenDefaults {
+    val CardSpacing = 32.dp
+}
+
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
@@ -55,6 +59,7 @@ fun RequiredPermissionsScreen(
     val permissionCards =
         rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState.state)
 
+    // Navigate to HomeScreenDestination if all permissions granted
     OnChange(value = permissionCards) {
         if (it.isEmpty()) {
             navigator.navigate(
@@ -89,15 +94,17 @@ private fun PortraitMode(
     permissionCards: ImmutableList<ModifierReceivingComposable>,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        verticalArrangement = Arrangement.SpaceEvenly,
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(
+            RequiredPermissionsScreenDefaults.CardSpacing,
+            Alignment.CenterVertically
+        ),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .padding(horizontal = 32.dp)
-            .verticalScroll(rememberScrollState())
     ) {
-        permissionCards.forEach {
-            it(Modifier)
+        items(permissionCards) {
+            it(Modifier.animateItem())
         }
     }
 }
@@ -107,15 +114,16 @@ private fun LandscapeMode(
     permissionCards: ImmutableList<ModifierReceivingComposable>,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    LazyRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = modifier.horizontalScroll(rememberScrollState())
+        modifier = modifier
     ) {
-        permissionCards.forEach {
+        items(permissionCards) {
             it(
                 Modifier
                     .fillMaxWidth(0.4f)
+                    .animateItem()
                     .verticalScroll(rememberScrollState())
             )
         }
