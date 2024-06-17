@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -116,7 +117,7 @@ private fun MoveEntryView(
         TextFlow(
             text = moveEntry.fileName,
             modifier = Modifier.weight(0.5f),
-            color = LocalContentColor.current,
+            style = LocalTextStyle.current.copy(color = LocalContentColor.current),
             overflow = TextOverflow.Ellipsis,
             fontSize = 14.sp,
             maxLines = 5,
