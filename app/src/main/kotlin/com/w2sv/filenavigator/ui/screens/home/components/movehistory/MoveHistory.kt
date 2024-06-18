@@ -3,11 +3,14 @@ package com.w2sv.filenavigator.ui.screens.home.components.movehistory
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -32,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -50,6 +52,10 @@ import eu.wewox.textflow.TextFlow
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+private object MoveHistoryDefaults {
+    val FontSize = 14.sp
+}
 
 @Composable
 fun MoveHistory(
@@ -114,65 +120,63 @@ private fun MoveEntryView(
             }
             .padding(8.dp)
     ) {
-        TextFlow(
-            text = remember(moveEntry.fileName) {
-                AnnotatedString(moveEntry.fileName)
-            },
-            modifier = Modifier.weight(0.7f),
-            style = LocalTextStyle.current.copy(color = LocalContentColor.current),
-            overflow = TextOverflow.Ellipsis,
-            fontSize = 14.sp,
-            maxLines = 5,
-        ) {
-            Icon(
-                painter = painterResource(id = moveEntry.combinedFileAndSourceTypeIconRes),
-                contentDescription = null,
-                tint = moveEntry.fileType.color,
+        FileNameWithTypeAndSourceIcon(moveEntry = moveEntry, modifier = Modifier.weight(0.7f))
+        CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.primary) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(end = 4.dp)
-            )
-        }
-        WeightedBox(weight = 0.2f) {
-            CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.primary) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowForward,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
+                    .weight(0.2f)
+                    .padding(horizontal = 4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                )
+                if (moveEntry.autoMoved) {
+                    Text(
+                        text = stringResource(id = R.string.auto),
+                        fontSize = 13.sp,
+                        lineHeight = 1.sp,
                     )
-                    if (moveEntry.autoMoved) {
-                        Text(
-                            text = stringResource(id = R.string.auto),
-                            fontSize = 13.sp,
-                            lineHeight = 2.sp,
-                        )
-                    }
                 }
             }
         }
         WeightedBox(weight = 0.5f) {
-            MoveEntryViewText(
+            Text(
                 text = remember(moveEntry.destinationDocumentUri) {
                     documentUriToPathConverter.invoke(
                         moveEntry.destinationDocumentUri,
                         context
                     )!!
                 },
+                fontSize = MoveHistoryDefaults.FontSize,
             )
         }
     }
 }
 
 @Composable
-private fun MoveEntryViewText(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text,
-        overflow = TextOverflow.Ellipsis,
-        fontSize = 14.sp,
-        maxLines = 5,
-        modifier = modifier
-    )
+private fun FileNameWithTypeAndSourceIcon(moveEntry: MoveEntry, modifier: Modifier = Modifier) {
+    Box(modifier = modifier) {
+        TextFlow(
+            text = remember(moveEntry.fileName) {
+                AnnotatedString(moveEntry.fileName)
+            },
+            style = LocalTextStyle.current.copy(color = LocalContentColor.current),
+            fontSize = MoveHistoryDefaults.FontSize,
+        ) {
+            // Placeholder that determines the obstacle size
+            Box(
+                modifier = Modifier
+                    .width(28.dp)
+                    .height(20.dp)
+            )
+        }
+        Icon(
+            painter = painterResource(id = moveEntry.combinedFileAndSourceTypeIconRes),
+            contentDescription = null,
+            tint = moveEntry.fileType.color
+        )
+    }
 }
