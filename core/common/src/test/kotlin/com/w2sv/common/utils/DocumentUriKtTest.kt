@@ -27,6 +27,6 @@ class DocumentUriKtTest {
 
     @Test
     fun getDocumentUriFileName() {
-        assertEquals(null, getDocumentUriFileName(treeDocumentUri, context))
+        assertEquals(null, DocumentUri(treeDocumentUri).documentFile(context)?.name)
     }
 }

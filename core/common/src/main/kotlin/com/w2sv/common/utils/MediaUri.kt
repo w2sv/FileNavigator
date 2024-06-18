@@ -20,5 +20,8 @@ value class MediaUri(val uri: Uri) : Parcelable {
                 documentUri.uri
             )
                 ?.let { MediaUri(it) }
+
+        fun parse(uriString: String): MediaUri =
+            MediaUri(Uri.parse(uriString))
     }
 }
