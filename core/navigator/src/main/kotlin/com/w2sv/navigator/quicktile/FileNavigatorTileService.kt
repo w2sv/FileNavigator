@@ -10,7 +10,6 @@ import androidx.annotation.IntDef
 import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.androidutils.coroutines.launchDelayed
 import com.w2sv.androidutils.permissions.hasPermission
-import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.isExternalStorageManger
@@ -31,13 +30,7 @@ internal class FileNavigatorTileService : TileService() {
     internal lateinit var scope: CoroutineScope
 
     @Inject
-    internal lateinit var fileNavigatorStatus: FileNavigator.Status
-
-    override fun onTileAdded() {
-        super.onTileAdded()
-
-        updateTileState(if (isServiceRunning<FileNavigator>()) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE)
-    }
+    internal lateinit var fileNavigatorIsRunningStateFlow: FileNavigator.IsRunningStateFlow
 
     /**
      * Called every time the quick tile pan is expanded. onStopListening behaves vice-versa.
@@ -48,15 +41,8 @@ internal class FileNavigatorTileService : TileService() {
         i { "onStartListening" }
 
         // Update tile state reactively on navigator status change
-        scope.collectFromFlow(fileNavigatorStatus.isRunning) { isRunning ->
+        scope.collectFromFlow(fileNavigatorIsRunningStateFlow) { isRunning ->
             updateTileState(if (isRunning) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE)
-        }
-
-        // If process was killed by removing the app from recents, fileNavigatorStatusChanged will not fire.
-        // For that case, update tile state non-reactively, to make sure tile state and navigator state are in sync, as
-        // it'd make for a horrible user experience if they weren't.
-        if (!isServiceRunning<FileNavigator>()) {
-            updateTileState(Tile.STATE_INACTIVE)
         }
     }
 

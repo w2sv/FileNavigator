@@ -2,38 +2,50 @@ package com.w2sv.common.utils
 
 import android.content.Context
 import android.net.Uri
+import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
-import com.anggrayudi.storage.file.child
 import com.anggrayudi.storage.file.getSimplePath
+import kotlinx.parcelize.Parcelize
+import java.io.File
 
-/**
- * Returns e.g. "primary:Moved/Screenshots" for [documentUri]="content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots".
- *
- * Does not depend on the file corresponding to [documentUri] being present.
- */
-fun getDocumentUriPath(documentUri: Uri, context: Context): String? =
-    DocumentFile.fromSingleUri(context, documentUri)?.getSimplePath(context)
+@Parcelize
+@JvmInline
+value class DocumentUri(val uri: Uri) : Parcelable {
 
-/**
- * Returns null if file corresponding to [documentUri] not present.
- */
-fun getDocumentUriFileName(documentUri: Uri, context: Context): String? =
-    DocumentFile.fromSingleUri(context, documentUri)?.name
+    fun isValidDocumentUri(context: Context): Boolean =
+        DocumentFile.isDocumentUri(context, uri)
 
-fun DocumentFile.hasChild(
-    context: Context,
-    path: String,
-    requiresWriteAccess: Boolean = false
-): Boolean =
-    child(context, path, requiresWriteAccess) != null
+    fun documentFile(context: Context): DocumentFile? =
+        DocumentFile.fromSingleUri(context, uri)
 
-// TODO: write test
-fun DocumentFile.fileName(context: Context): String =
-    getSimplePath(context).let { simplePath ->
-        val substringAfterLastSlash = simplePath.substringAfterLast("/")
-        if (substringAfterLastSlash != simplePath) {
-            substringAfterLastSlash
-        } else {
-            simplePath.substringAfterLast(":")
-        }
+    /**
+     * Returns e.g. "primary:Moved/Screenshots" for [uri]="content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots".
+     *
+     * Does not depend on the file corresponding to [uri] being present.
+     */
+    fun documentFilePath(context: Context): String? =
+        documentFile(context)?.getSimplePath(context)
+
+    fun mediaUri(context: Context): MediaUri? =
+        MediaUri.fromDocumentUri(context, this)
+
+    override fun toString(): String =
+        uri.toString()
+
+    companion object {
+        fun parse(uriString: String): DocumentUri =
+            DocumentUri(Uri.parse(uriString))
+
+        fun fromDocumentFile(documentFile: DocumentFile): DocumentUri =
+            DocumentUri(documentFile.uri)
+
+        fun fromTreeUri(context: Context, treeUri: Uri): DocumentUri? =
+            DocumentFile.fromTreeUri(context, treeUri)?.let { fromDocumentFile(it) }
+
+        fun fromMediaUri(context: Context, mediaUri: MediaUri): DocumentUri? =
+            mediaUri.documentUri(context)
+
+        fun fromFile(file: File): DocumentUri =
+            fromDocumentFile(DocumentFile.fromFile(file))
     }
+}

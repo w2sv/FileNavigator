@@ -14,5 +14,5 @@ import androidx.core.text.HtmlCompat
  *
  * Taken from https://stackoverflow.com/a/56944152/12083276
  */
-fun Context.getText(@StringRes id: Int, vararg args: Any?): CharSequence =
+fun Context.getText(@StringRes id: Int, vararg args: Any?): CharSequence =  // TODO: AndroidUtils
     HtmlCompat.fromHtml(String.format(getString(id), *args), HtmlCompat.FROM_HTML_MODE_COMPACT)

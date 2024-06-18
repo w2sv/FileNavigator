@@ -10,6 +10,11 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.common.utils.postNotificationsPermissionRequired
 import com.w2sv.composed.OnChange
 
+@Immutable
+data class PostNotificationsPermissionState @OptIn(ExperimentalPermissionsApi::class) constructor(
+    val state: PermissionState?
+)
+
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun rememberObservedPostNotificationsPermissionState(
@@ -31,8 +36,3 @@ fun rememberObservedPostNotificationsPermissionState(
             null
         }
     )
-
-@Immutable
-data class PostNotificationsPermissionState @OptIn(ExperimentalPermissionsApi::class) constructor(
-    val state: PermissionState?
-)

@@ -3,36 +3,43 @@ package com.w2sv.navigator.notifications
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import com.w2sv.androidutils.generic.getParcelableCompat
+import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.showToast
 import com.w2sv.navigator.moving.MoveException
-import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import kotlinx.parcelize.Parcelize
 import java.io.File
 
 internal class ViewFileIfPresentActivity : ComponentActivity() {
+
+    @Parcelize
+    data class Args(val mediaUri: MediaUri, val mimeType: String, val absPath: String) :
+        Parcelable {
+
+        companion object {
+            const val EXTRA = "com.w2sv.filenavigator.extra.ViewFileIfPresentActivity.Args"
+
+            fun fromIntent(intent: Intent): Args = intent.getParcelableCompat<Args>(EXTRA)!!
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val mediaUri = intent.getParcelableCompat<Uri>(Extra.MEDIA_URI)
-        val mimeType = intent.getStringExtra(Extra.MIME_TYPE)
-        val absPath = intent.getStringExtra(Extra.ABS_PATH)!!
+        val args = Args.fromIntent(intent)
 
-        if (File(absPath).exists()) {
+        if (File(args.absPath).exists()) {
             startActivity(
                 Intent()
-                    .setAction(Intent.ACTION_VIEW)
-                    .setDataAndType(
-                        mediaUri,
-                        mimeType
-                    )
+                    .setAction(Intent.ACTION_VIEW).setDataAndType(args.mediaUri.uri, args.mimeType)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             )
         } else {
             showToast(MoveException.MoveFileNotFound.toastProperties)
-            NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+            NotificationResources.CleanupBroadcastReceiver.startFromResourcesComprisingIntent(
                 context = this,
                 intent = intent
             )
@@ -40,32 +47,13 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
         finishAndRemoveTask()
     }
 
-    private data object Extra {
-        const val MIME_TYPE =
-            "com.w2sv.filenavigator.extra.ViewFileIfPresentBroadcastReceiver.MIME_TYPE"
-        const val MEDIA_URI =
-            "com.w2sv.filenavigator.extra.ViewFileIfPresentBroadcastReceiver.MEDIA_URI"
-        const val ABS_PATH =
-            "com.w2sv.filenavigator.extra.ViewFileIfPresentBroadcastReceiver.ABS_PATH"
-    }
-
     companion object {
         fun makeRestartActivityIntent(
-            context: Context,
-            mediaUri: Uri,
-            absPath: String,
-            mimeType: String,
-            notificationResources: NotificationResources
-        ): Intent =
-            Intent.makeRestartActivityTask(
-                ComponentName(
-                    context,
-                    ViewFileIfPresentActivity::class.java
-                )
+            context: Context, args: Args, notificationResources: NotificationResources
+        ): Intent = Intent.makeRestartActivityTask(
+            ComponentName(
+                context, ViewFileIfPresentActivity::class.java
             )
-                .putExtra(Extra.MIME_TYPE, mimeType)
-                .putExtra(Extra.MEDIA_URI, mediaUri)
-                .putExtra(Extra.ABS_PATH, absPath)
-                .putNotificationResourcesExtra(notificationResources)
+        ).putExtra(Args.EXTRA, args).putOptionalNotificationResourcesExtra(notificationResources)
     }
 }

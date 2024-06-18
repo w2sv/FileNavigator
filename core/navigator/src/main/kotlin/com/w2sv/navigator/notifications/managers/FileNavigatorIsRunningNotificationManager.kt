@@ -8,7 +8,6 @@ import androidx.core.app.NotificationCompat
 import com.w2sv.core.navigator.R
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.notifications.AppNotificationChannel
-import com.w2sv.navigator.notifications.getNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.shared.mainActivityPendingIntent
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -34,7 +33,7 @@ internal class FileNavigatorIsRunningNotificationManager @Inject constructor(
                 setStyle(
                     NotificationCompat.BigTextStyle()
                         .bigText(
-                            context.getString(R.string.you_will_receive_a_notification_when_a_new_file_corresponding_to_your_selected_file_types_enters_the_file_system)
+                            context.getString(R.string.foreground_service_notification_content)
                         )
                 )
 

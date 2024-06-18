@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option java_package = "com.w2sv.datastore";
+option java_multiple_files = true;
+
+message NavigatorConfigProto {
+  map<int32, FileTypeConfigProto> file_type_to_config = 1;
+  bool disable_on_low_battery = 2;
+  bool start_on_boot = 3;
+  bool has_been_migrated = 4;
+}
+
+message FileTypeConfigProto {
+  bool enabled = 1;
+  map<int32, SourceConfigProto> source_type_to_config = 2;
+}
+
+//enum FileTypeProto {
+//  Image = 0;
+//  Video = 1;
+//  Audio = 2;
+//  PDF = 3;
+//  Text = 4;
+//  Archive = 5;
+//  APK = 6;
+//}
+
+message SourceConfigProto {
+  bool enabled = 1;
+  repeated string last_move_destinations = 2;
+  AutoMoveConfigProto auto_move_config = 3;
+}
+
+//enum SourceTypeProto {
+//  Camera = 0;
+//  Screenshot = 1;
+//  Recording = 2;
+//  Download = 3;
+//  OtherApp = 4;
+//}
+
+message AutoMoveConfigProto {
+  bool enabled = 1;
+  string destination = 2;
+}

@@ -11,15 +11,15 @@ import com.w2sv.core.navigator.R
  */
 internal enum class AppNotificationChannel(@StringRes val nameRes: Int) {
     FileNavigatorIsRunning(R.string.file_navigator_is_running),
-    NewNavigatableFile(R.string.new_navigatable_file)
-}
+    NewNavigatableFile(R.string.new_navigatable_file);
 
-internal fun AppNotificationChannel.getNotificationChannel(
-    context: Context,
-    importance: Int = NotificationManager.IMPORTANCE_DEFAULT
-): NotificationChannel =
-    NotificationChannel(
-        name,
-        context.getString(nameRes),
-        importance
-    )
+    fun getNotificationChannel(
+        context: Context,
+        importance: Int = NotificationManager.IMPORTANCE_DEFAULT
+    ): NotificationChannel =
+        NotificationChannel(
+            name,
+            context.getString(nameRes),
+            importance
+        )
+}

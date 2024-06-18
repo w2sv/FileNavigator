@@ -2,9 +2,15 @@ package com.w2sv.datastore.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.dataStoreFile
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import com.w2sv.datastore.NavigatorConfigProto
+import com.w2sv.datastore.NavigatorPreferencesToProtoMigration
+import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigProtoSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,5 +27,25 @@ object DataStoreModule {
     fun preferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         PreferenceDataStoreFactory.create(
             produceFile = { context.preferencesDataStoreFile(context.packageName) }
+        )
+
+    @Provides
+    @Singleton
+    internal fun navigatorConfigProtoDataStore(
+        @ApplicationContext context: Context,
+        preferencesDataStore: DataStore<Preferences>
+    ): DataStore<NavigatorConfigProto> =
+        DataStoreFactory.create(
+            serializer = NavigatorConfigProtoSerializer,
+            corruptionHandler = ReplaceFileCorruptionHandler { NavigatorConfigProtoSerializer.defaultValue },
+            produceFile = {
+                context.dataStoreFile("navigator_config.pb")
+            },
+            migrations = listOf(
+                NavigatorPreferencesToProtoMigration(
+                    context = context,
+                    preferencesDataStore = preferencesDataStore
+                )
+            )
         )
 }

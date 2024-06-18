@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -18,10 +17,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,76 +28,59 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
+import androidx.navigation.NavController
+import com.ramcosta.composedestinations.generated.destinations.AppSettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
+import com.ramcosta.composedestinations.navigation.navigate
 import com.w2sv.androidutils.generic.appPlayStoreUrl
-import com.w2sv.androidutils.generic.dynamicColorsSupported
-import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundHandling
+import com.w2sv.androidutils.generic.openUrlWithActivityNotFoundExceptionHandling
 import com.w2sv.androidutils.notifying.showToast
 import com.w2sv.common.AppUrl
 import com.w2sv.common.utils.startActivityWithActivityNotFoundExceptionHandling
-import com.w2sv.composed.OnChange
 import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
-import com.w2sv.filenavigator.ui.designsystem.drawer.model.NavigationDrawerItemState
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
-import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
+import com.w2sv.filenavigator.ui.utils.LocalNavHostController
 import com.w2sv.filenavigator.ui.utils.OptionalAnimatedVisibility
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun NavigationDrawerSheetItemColumn(
-    itemState: NavigationDrawerItemState,
+    closeDrawer: suspend () -> Unit,
     modifier: Modifier = Modifier,
-    useDarkTheme: Boolean = LocalUseDarkTheme.current,
-    context: Context = LocalContext.current
+    scope: CoroutineScope = rememberCoroutineScope(),
+    context: Context = LocalContext.current,
+    navHostController: NavController = LocalNavHostController.current
 ) {
-    var useDarkThemeLocal by remember {
-        mutableStateOf(useDarkTheme)
-    }
-    OnChange(value = useDarkTheme) {
-        useDarkThemeLocal = useDarkTheme
-    }
-
     Column(modifier = modifier) {
         remember {
             listOf(
                 NavigationDrawerSheetElement.Header(
-                    titleRes = R.string.appearance,
+                    titleRes = R.string.settings,
                     modifier = Modifier
                 ),
                 NavigationDrawerSheetElement.Item(
-                    iconRes = R.drawable.ic_nightlight_24,
-                    labelRes = R.string.theme,
-                    type = NavigationDrawerSheetElement.Item.Type.Custom {
-                        ThemeSelectionRow(
-                            selected = itemState.theme(),
-                            onSelected = itemState.setTheme,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 22.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        )
-                    }
-                ),
-                NavigationDrawerSheetElement.Item(
-                    iconRes = R.drawable.ic_contrast_24,
-                    labelRes = R.string.amoled_black,
-                    visible = { useDarkThemeLocal },
-                    type = NavigationDrawerSheetElement.Item.Type.Switch(
-                        checked = itemState.useAmoledBlackTheme,
-                        onCheckedChange = itemState.setUseAmoledBlackTheme
-                    )
-                ),
-                NavigationDrawerSheetElement.Item(
-                    iconRes = R.drawable.ic_palette_24,
-                    labelRes = R.string.dynamic_colors,
-                    explanationRes = R.string.use_colors_derived_from_your_wallpaper,
-                    visible = {
-                        dynamicColorsSupported
+                    iconRes = com.w2sv.core.navigator.R.drawable.ic_settings_24,
+                    labelRes = R.string.app_settings,
+                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
+                        scope.launch {
+                            closeDrawer()
+                            navHostController.navigate(AppSettingsScreenDestination)
+                        }
                     },
-                    type = NavigationDrawerSheetElement.Item.Type.Switch(
-                        checked = itemState.useDynamicColors,
-                        onCheckedChange = itemState.setUseDynamicColors
-                    )
+                ),
+                NavigationDrawerSheetElement.Item(
+                    iconRes = com.w2sv.core.navigator.R.drawable.ic_app_logo_24,
+                    labelRes = R.string.navigator_settings,
+                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
+                        scope.launch {
+                            closeDrawer()
+                            navHostController.navigate(NavigatorSettingsScreenDestination)
+                        }
+                    },
                 ),
                 NavigationDrawerSheetElement.Header(
                     titleRes = R.string.legal
@@ -109,14 +89,14 @@ internal fun NavigationDrawerSheetItemColumn(
                     iconRes = R.drawable.ic_policy_24,
                     labelRes = R.string.privacy_policy,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrlWithActivityNotFoundHandling(AppUrl.PRIVACY_POLICY)
+                        context.openUrlWithActivityNotFoundExceptionHandling(AppUrl.PRIVACY_POLICY)
                     }
                 ),
                 NavigationDrawerSheetElement.Item(
                     iconRes = R.drawable.ic_copyright_24,
                     labelRes = R.string.license,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrlWithActivityNotFoundHandling(AppUrl.LICENSE)
+                        context.openUrlWithActivityNotFoundExceptionHandling(AppUrl.LICENSE)
                     }
                 ),
                 NavigationDrawerSheetElement.Header(
@@ -153,7 +133,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     iconRes = R.drawable.ic_bug_report_24,
                     labelRes = R.string.report_a_bug_request_a_feature,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrlWithActivityNotFoundHandling(AppUrl.CREATE_ISSUE)
+                        context.openUrlWithActivityNotFoundExceptionHandling(AppUrl.CREATE_ISSUE)
                     }
                 ),
                 NavigationDrawerSheetElement.Item(
@@ -161,7 +141,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     labelRes = R.string.support_development,
                     explanationRes = R.string.buy_me_a_coffee_as_a_sign_of_gratitude,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrlWithActivityNotFoundHandling(AppUrl.DONATE)
+                        context.openUrlWithActivityNotFoundExceptionHandling(AppUrl.DONATE)
                     }
                 ),
                 NavigationDrawerSheetElement.Header(
@@ -172,7 +152,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     labelRes = R.string.developer,
                     explanationRes = R.string.check_out_my_other_apps,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrlWithActivityNotFoundHandling(AppUrl.GOOGLE_PLAY_DEVELOPER_PAGE)
+                        context.openUrlWithActivityNotFoundExceptionHandling(AppUrl.GOOGLE_PLAY_DEVELOPER_PAGE)
                     }
                 ),
                 NavigationDrawerSheetElement.Item(
@@ -180,7 +160,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     labelRes = R.string.source,
                     explanationRes = R.string.examine_the_app_s_source_code_on_github,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrlWithActivityNotFoundHandling(AppUrl.GITHUB_REPOSITORY)
+                        context.openUrlWithActivityNotFoundExceptionHandling(AppUrl.GITHUB_REPOSITORY)
                     }
                 )
             )
@@ -224,11 +204,15 @@ private sealed interface NavigationDrawerSheetElement {
         val labelRes: Int,
         val explanationRes: Int? = null,
         val visible: (() -> Boolean)? = null,
-        override val modifier: Modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
+        override val modifier: Modifier = DefaultModifier,
         val type: Type
     ) : NavigationDrawerSheetElement {
+
+        companion object {
+            val DefaultModifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp)
+        }
 
         @Immutable
         sealed interface Type {
@@ -278,15 +262,12 @@ private fun Item(
             Text(
                 text = stringResource(id = it),
                 color = MaterialTheme.colorScheme.onSurfaceVariantDecreasedAlpha,
-                modifier = Modifier.padding(start = iconSize + labelStartPadding),
+                modifier = Modifier.padding(start = IconSize.Big + ItemRowDefaults.IconTextSpacing),
                 fontSize = 14.sp
             )
         }
     }
 }
-
-private val iconSize = 28.dp
-private val labelStartPadding = 16.dp
 
 @Composable
 private fun MainItemRow(
@@ -299,7 +280,7 @@ private fun MainItemRow(
     ) {
         Icon(
             modifier = Modifier
-                .size(size = iconSize),
+                .size(size = IconSize.Big),
             painter = painterResource(id = item.iconRes),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
@@ -307,7 +288,7 @@ private fun MainItemRow(
 
         Text(
             text = stringResource(id = item.labelRes),
-            modifier = Modifier.padding(start = labelStartPadding),
+            modifier = Modifier.padding(start = ItemRowDefaults.IconTextSpacing),
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
         )

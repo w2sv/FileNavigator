@@ -11,17 +11,15 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 sealed class FileType(
-    @StringRes val titleRes: Int,
+    @StringRes val labelRes: Int,
     @DrawableRes val iconRes: Int,
     @ColorInt val colorInt: Int,
     val simpleStorageMediaType: MediaType,
-    sourceKinds: List<Source.Kind>,
+    val sourceTypes: List<SourceType>
 ) : Parcelable {
 
-    val name: String = this::class.java.simpleName
-
-    @IgnoredOnParcel
-    val sources: List<Source> = sourceKinds.map { Source(this, it) }
+    val logIdentifier: String
+        get() = this::class.java.simpleName
 
     @IgnoredOnParcel
     val isMediaType: Boolean
@@ -34,13 +32,13 @@ sealed class FileType(
         @DrawableRes iconRes: Int,
         @ColorLong colorLong: Long,
         mediaType: MediaType,
-        sourceKinds: List<Source.Kind>,
+        sourceTypes: List<SourceType>
     ) : FileType(
-        titleRes = labelRes,
+        labelRes = labelRes,
         iconRes = iconRes,
         colorInt = colorLong.toInt(),
         simpleStorageMediaType = mediaType,
-        sourceKinds = sourceKinds,
+        sourceTypes = sourceTypes
     ) {
 
         override fun matchesFileExtension(extension: String): Boolean =
@@ -57,15 +55,13 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
         @ColorLong colorLong: Long,
-        private val fileExtensions: Set<String>
+        private val fileExtensions: Set<String>,
     ) : FileType(
-        titleRes = labelRes,
+        labelRes = labelRes,
         iconRes = iconRes,
         colorInt = colorLong.toInt(),
         simpleStorageMediaType = MediaType.DOWNLOADS,
-        sourceKinds = listOf(
-            Source.Kind.Download
-        )
+        sourceTypes = listOf(SourceType.Download)
     ) {
 
         override fun matchesFileExtension(extension: String): Boolean =
@@ -74,7 +70,7 @@ sealed class FileType(
         companion object {
             @JvmStatic
             val values: List<NonMedia>
-                get() = listOf(PDF, Text, Archive, APK)
+                get() = listOf(PDF, Text, Archive, APK, EBook)
         }
     }
 
@@ -84,12 +80,12 @@ sealed class FileType(
         iconRes = R.drawable.ic_image_24,
         colorLong = 0xFFBF1A2F,
         mediaType = MediaType.IMAGE,
-        sourceKinds = listOf(
-            Source.Kind.Camera,
-            Source.Kind.Screenshot,
-            Source.Kind.Download,
-            Source.Kind.OtherApp
-        ),
+        sourceTypes = listOf(
+            SourceType.Camera,
+            SourceType.Screenshot,
+            SourceType.OtherApp,
+            SourceType.Download
+        )
     )
 
     @Parcelize
@@ -98,11 +94,7 @@ sealed class FileType(
         iconRes = R.drawable.ic_video_file_24,
         colorLong = 0xFFFFCB77,
         mediaType = MediaType.VIDEO,
-        sourceKinds = listOf(
-            Source.Kind.Camera,
-            Source.Kind.Download,
-            Source.Kind.OtherApp
-        )
+        sourceTypes = listOf(SourceType.Camera, SourceType.OtherApp, SourceType.Download)
     )
 
     @Parcelize
@@ -111,11 +103,7 @@ sealed class FileType(
         iconRes = R.drawable.ic_audio_file_24,
         colorLong = 0xFFF26430,
         mediaType = MediaType.AUDIO,
-        sourceKinds = listOf(
-            Source.Kind.Recording,
-            Source.Kind.Download,
-            Source.Kind.OtherApp
-        )
+        sourceTypes = listOf(SourceType.Recording, SourceType.OtherApp, SourceType.Download)
     )
 
     @Parcelize
@@ -188,46 +176,45 @@ sealed class FileType(
         setOf("apk")
     )
 
+    @Parcelize
+    data object EBook : NonMedia(
+        R.string.ebook,
+        R.drawable.ic_book_24,
+        0xFFa89532,
+        setOf(
+            "epub",
+            "azw",
+            "azw1",
+            "azw2",
+            "azw3",
+            "mobi",
+            "iba",
+            "rtf",
+            "tpz",
+            "mart",
+            "tk3",
+            "aep",
+            "dnl",
+            "ybk",
+            "lit",
+            "ebk",
+            "prc",
+            "kfx",
+            "ava",
+            "orb",
+            "koob",
+            "epub",
+            "bpnueb",
+            "pef",
+            "vbk",
+            "fkb",
+            "bkk",
+        )
+    )
+
     companion object {
         @JvmStatic
         val values: List<FileType>
             get() = Media.values + NonMedia.values
-    }
-
-    @Parcelize
-    data class Source(val fileType: FileType, val kind: Kind) : Parcelable {
-
-        @DrawableRes
-        fun getIconRes(): Int =
-            when (kind) {
-                Kind.Screenshot, Kind.Camera -> kind.iconRes
-                else -> fileType.iconRes
-            }
-
-        enum class Kind(
-            @StringRes val labelRes: Int,
-            @DrawableRes val iconRes: Int
-        ) {
-            Camera(
-                R.string.camera,
-                R.drawable.ic_camera_24
-            ),
-            Screenshot(
-                R.string.screenshot,
-                R.drawable.ic_screenshot_24
-            ),
-            Recording(
-                R.string.recording,
-                R.drawable.ic_mic_24
-            ),
-            Download(
-                R.string.download,
-                R.drawable.ic_file_download_24
-            ),
-            OtherApp(
-                R.string.third_party_app,
-                R.drawable.ic_apps_24
-            )
-        }
     }
 }

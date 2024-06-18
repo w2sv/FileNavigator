@@ -1,120 +1,188 @@
 package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
+import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
 import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.theme.onSurfaceDisabled
-import com.w2sv.filenavigator.ui.utils.orOnSurfaceDisabledIf
+import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.SubDirectoryIcon
+import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.rememberSelectAutoMoveDestination
+import kotlinx.collections.immutable.ImmutableMap
 
 @Composable
 fun FileTypeAccordion(
     fileType: FileType,
-    isEnabled: Boolean,
-    isFirstDisabled: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    mediaFileSourceEnabled: (FileType.Source) -> Boolean,
-    onMediaFileSourceCheckedChange: (FileType.Source, Boolean) -> Unit,
+    excludeFileType: () -> Unit,
+    setSourceAutoMoveConfigs: (AutoMoveConfig) -> Unit,
+    sourceTypeConfigMap: ImmutableMap<SourceType, SourceConfig>,
+    onSourceCheckedChange: (SourceType, Boolean) -> Unit,
+    setSourceAutoMoveConfig: (SourceType, AutoMoveConfig) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
     ) {
-        if (isFirstDisabled) {
-            DisabledText(modifier = Modifier.padding(bottom = 8.dp))
-        }
-
         Header(
             fileType = fileType,
-            isEnabled = isEnabled,
-            onCheckedChange = onCheckedChange
+            excludeFileType = excludeFileType,
+            setSourceAutoMoveConfigs = setSourceAutoMoveConfigs
         )
-        AnimatedVisibility(
-            visible = isEnabled
-        ) {
-            FileTypeSourcesSurface(
-                fileType = fileType,
-                mediaFileSourceEnabled = mediaFileSourceEnabled,
-                setMediaFileSourceEnabled = onMediaFileSourceCheckedChange
-            )
-        }
+        SourcesSurface(
+            fileType = fileType,
+            sourceTypeConfigMap = sourceTypeConfigMap,
+            onSourceCheckedChange = onSourceCheckedChange,
+            setSourceAutoMoveConfig = setSourceAutoMoveConfig,
+        )
     }
-}
-
-@Composable
-private fun DisabledText(modifier: Modifier = Modifier) {
-    Text(
-        text = stringResource(R.string.disabled),
-        fontSize = 16.sp,
-        color = MaterialTheme.colorScheme.onSurfaceDisabled,
-        modifier = modifier
-    )
 }
 
 @Composable
 private fun Header(
     fileType: FileType,
-    isEnabled: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
+    excludeFileType: () -> Unit,
+    setSourceAutoMoveConfigs: (AutoMoveConfig) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val selectAutoMoveDestination = rememberSelectAutoMoveDestination(
+        onDestinationSelected = {
+            setSourceAutoMoveConfigs(AutoMoveConfig(enabled = true, destination = it))
+        }
+    )
+
     Surface(
         tonalElevation = 2.dp,
-        shape = RoundedCornerShape(8.dp),
+        shape = MaterialTheme.shapes.small,
         modifier = modifier
             .fillMaxWidth()
+            .height(52.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
+        FileTypeRow(
+            fileType = fileType,
+            excludeFileType = excludeFileType,
+            setSourceAutoMoveConfigs = { selectAutoMoveDestination.launch(null) }
+        )
+    }
+}
+
+@Composable
+private fun FileTypeRow(
+    fileType: FileType,
+    excludeFileType: () -> Unit,
+    setSourceAutoMoveConfigs: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        FileTypeIcon(
+            fileType = fileType,
+            tint = fileType.color,
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .size(34.dp)
+        )
+        Text(
+            text = stringResource(id = fileType.labelRes),
+            fontSize = 18.sp,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = setSourceAutoMoveConfigs)
+        Text(
+            text = stringResource(R.string.exclude),
+            modifier = Modifier
+                .padding(end = 6.dp)
+                .clip(MaterialTheme.shapes.small)
+                .clickable { excludeFileType() }
+                .padding(horizontal = 6.dp, vertical = 2.dp),
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun MoreIconButtonWithDropdownMenu(
+    setSourceAutoMoveConfigs: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by rememberSaveable {
+        mutableStateOf(false)
+    }
+    Box(modifier = modifier) {
+        IconButton(onClick = { expanded = !expanded }, modifier = Modifier.size(36.dp)) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_more_vert_24),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.border(
+                width = Dp.Hairline,
+                color = MaterialTheme.colorScheme.secondary,
+                shape = MaterialTheme.shapes.extraSmall
+            ),
         ) {
-            Box(modifier = Modifier.weight(0.2f), contentAlignment = Alignment.Center) {
-                Icon(
-                    painter = painterResource(id = fileType.iconRes),
-                    contentDescription = null,
-                    modifier = Modifier.size(34.dp),
-                    tint = fileType.color.orOnSurfaceDisabledIf(condition = !isEnabled)
-                )
-            }
-            Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.CenterStart) {
-                Text(
-                    text = stringResource(id = fileType.titleRes),
-                    fontSize = 18.sp,
-                    color = Color.Unspecified.orOnSurfaceDisabledIf(condition = !isEnabled)
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .weight(0.2f),
-                contentAlignment = Alignment.Center
-            ) {
-                Switch(
-                    colors = SwitchDefaults.colors(checkedTrackColor = MaterialTheme.colorScheme.primary),
-                    modifier = Modifier.padding(8.dp),
-                    checked = isEnabled,
-                    onCheckedChange = onCheckedChange
-                )
-            }
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.set_auto_move_destination_for_all_sources)) },
+                onClick = {
+                    expanded = false
+                    setSourceAutoMoveConfigs()
+                },
+                leadingIcon = {
+                    SubDirectoryIcon()
+                }
+            )
         }
     }
 }
+
+//@Preview
+//@Composable
+//private fun AutoMoveRowPrev() {
+//    AppTheme {
+//        Surface(
+//            tonalElevation = 2.dp,
+//            shape = MaterialTheme.shapes.small,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//        ) {
+//            AutoMoveRow(destinationPath = "/path/component/somefolder")
+//        }
+//    }
+//}

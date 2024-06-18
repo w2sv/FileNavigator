@@ -1,11 +1,6 @@
 package com.w2sv.filenavigator.ui.designsystem.drawer
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -20,8 +15,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -36,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.utils.Easing
+import com.w2sv.filenavigator.ui.designsystem.rememberBorderAnimationState
 
 @Composable
 fun ThemeSelectionRow(
@@ -145,41 +138,13 @@ private fun ThemeButton(
     isSelected: () -> Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val transition = updateTransition(targetState = isSelected(), label = "")
-
-    val borderWidth by transition.animateDp(
-        transitionSpec = {
-            remember {
-                if (targetState) {
-                    tween(
-                        durationMillis = BORDER_ANIMATION_DURATION,
-                        easing = Easing.Overshoot,
-                    )
-                } else {
-                    tween(durationMillis = BORDER_ANIMATION_DURATION)
-                }
-            }
-        },
-        label = "",
-    ) { state ->
-        if (state) 3.dp else 0.5.dp
-    }
-
-    val borderColor by transition.animateColor(
-        transitionSpec = {
-            if (targetState) {
-                tween(
-                    durationMillis = BORDER_ANIMATION_DURATION,
-                    easing = Easing.Overshoot,
-                )
-            } else {
-                tween(durationMillis = BORDER_ANIMATION_DURATION)
-            }
-        },
-        label = "",
-    ) { state ->
-        if (state) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val borderAnimationState = rememberBorderAnimationState(
+        enabled = isSelected(),
+        startWidth = 0.5.dp,
+        endWidth = 3.dp,
+        startColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        endColor = MaterialTheme.colorScheme.primary
+    )
 
     BoxWithConstraints(contentAlignment = Alignment.Center, modifier = modifier) {
         val size = with(LocalDensity.current) { constraints.maxWidth.toDp() }
@@ -200,9 +165,7 @@ private fun ThemeButton(
             colors = ButtonDefaults.buttonColors(containerColor = buttonColor.containerColor),
             onClick = onClick,
             shape = CircleShape,
-            border = BorderStroke(borderWidth, borderColor),
+            border = borderAnimationState.borderStroke,
         ) {}
     }
 }
-
-private const val BORDER_ANIMATION_DURATION = 500

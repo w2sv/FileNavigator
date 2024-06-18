@@ -1,7 +1,11 @@
 package com.w2sv.navigator
 
+import com.w2sv.common.utils.DocumentUri
+import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.SourceType
 import com.w2sv.navigator.moving.MoveFile
+import com.w2sv.navigator.moving.MoveMode
 import com.w2sv.navigator.utils.TestInstancesProvider
 import com.w2sv.test.testParceling
 import org.junit.Test
@@ -15,8 +19,8 @@ internal class MoveFileTest {
     fun testParceling() {
         MoveFile(
             mediaStoreFile = TestInstancesProvider.getMediaStoreFile(),
-            fileType = FileType.Image,
-            sourceKind = FileType.Source.Kind.Screenshot
+            fileAndSourceType = FileAndSourceType(FileType.Image, SourceType.Camera),
+            moveMode = MoveMode.Auto(DocumentUri.parse("gamba"))
         )
             .testParceling()
     }

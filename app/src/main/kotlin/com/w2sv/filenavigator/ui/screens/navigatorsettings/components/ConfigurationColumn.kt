@@ -1,90 +1,202 @@
 package com.w2sv.filenavigator.ui.screens.navigatorsettings.components
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.composed.isPortraitModeActive
+import com.w2sv.common.utils.DocumentUri
+import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
+import com.w2sv.domain.usecase.DocumentUriToPathConverter
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.designsystem.RightAligned
+import com.w2sv.filenavigator.ui.designsystem.DefaultItemRowIcon
+import com.w2sv.filenavigator.ui.designsystem.Padding
+import com.w2sv.filenavigator.ui.designsystem.Spacing
+import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
+import com.w2sv.filenavigator.ui.designsystem.drawer.IconSize
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
-import com.w2sv.filenavigator.ui.states.NavigatorConfiguration
-import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
+import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
+import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
+import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.coroutines.flow.update
 import slimber.log.i
 
 private val verticalPadding = 16.dp
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NavigatorConfigurationColumn(
-    configuration: NavigatorConfiguration,
+fun SubDirectoryIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurfaceVariant
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_subdirectory_arrow_right_24),
+        contentDescription = null,
+        tint = tint,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun rememberAutoMoveDestinationPath(
+    destination: DocumentUri?,
+    context: Context = LocalContext.current,
+    documentUriToPathConverter: DocumentUriToPathConverter = LocalDocumentUriToPathConverter.current,
+): State<String?> =
+    remember(destination) {
+        mutableStateOf(
+            destination?.let { documentUriToPathConverter.invoke(it, context) }
+        )
+    }
+
+@Composable
+fun AutoMoveRow(
+    destinationPath: String,
+    changeDestination: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val firstDisabledFileType by configuration.firstDisabledFileType.collectAsStateWithLifecycle()
+    CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+                .padding(start = 10.dp, bottom = 4.dp)
+        ) {
+            SubDirectoryIcon(
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .size(20.dp)
+            )
+            Text(destinationPath, modifier = Modifier.weight(1f), fontSize = 14.sp)
+            IconButton(
+                onClick = { changeDestination() },
+                modifier = Modifier.size(IconSize.Big)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_folder_edit_24),
+                    contentDescription = stringResource(R.string.select_the_auto_move_destination),
+                    modifier = Modifier.size(IconSize.Big),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun rememberSelectAutoMoveDestination(onDestinationSelected: (DocumentUri) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
+    val context: Context = LocalContext.current
+    return rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { optionalTreeUri ->
+        optionalTreeUri?.let { treeUri ->
+            context.contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
+            onDestinationSelected(
+                DocumentUri.fromTreeUri(context, treeUri)!!  // TODO: null case possible?
+            )
+        }
+    }
+}
+
+@Composable
+fun NavigatorConfigurationColumn(
+    reversibleConfig: ReversibleNavigatorConfig,
+    showAddFileTypesBottomSheet: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val config by reversibleConfig.collectAsStateWithLifecycle()
 
     LazyColumn(
         modifier = modifier
     ) {
         item {
-            SectionHeader(
-                text = stringResource(id = R.string.file_types),
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                SectionHeader(
+                    text = stringResource(id = R.string.file_types),
+                )
+                AnimatedVisibility(visible = config.disabledFileTypes.isNotEmpty()) {
+                    FilledTonalIconButton(onClick = showAddFileTypesBottomSheet) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(R.string.add_a_file_type)
+                        )
+                    }
+                }
+            }
         }
-        items(configuration.sortedFileTypes, key = { it }) { fileType ->
-            i { "Laying out ${fileType.name}" }
+        items(config.enabledFileTypes, key = { it }) { fileType ->
+            i { "Laying out ${fileType.logIdentifier}" }
 
             FileTypeAccordion(
                 fileType = fileType,
-                isEnabled = configuration.fileEnablementMap.getValue(fileType),
-                isFirstDisabled = fileType == firstDisabledFileType,
-                onCheckedChange = remember(fileType) {
+                excludeFileType = remember(fileType) {
                     {
-                        configuration.onFileTypeCheckedChange(
+                        reversibleConfig.onFileTypeCheckedChange(
                             fileType = fileType,
-                            checkedNew = it
+                            checkedNew = false
                         )
                     }
                 },
-                mediaFileSourceEnabled = remember(fileType) {
-                    {
-                        configuration.mediaFileSourceEnablementMap.getOrDefault(
-                            key = it,
-                            defaultValue = true
+                setSourceAutoMoveConfigs = { autoMoveConfig ->
+                    reversibleConfig.update {
+                        it.copyWithAlteredSourceAutoMoveConfigs(
+                            fileType = fileType,
+                            autoMoveConfig = autoMoveConfig
                         )
                     }
                 },
-                onMediaFileSourceCheckedChange = remember(fileType) {
+                sourceTypeConfigMap = config.fileTypeConfig(fileType).sourceTypeConfigMap.toImmutableMap(),
+                onSourceCheckedChange = remember(fileType) {
                     { source, checked ->
-                        configuration.onMediaFileSourceCheckedChange(
-                            source = source,
+                        reversibleConfig.onFileSourceCheckedChange(
+                            fileType = fileType,
+                            sourceType = source,
                             checkedNew = checked
                         )
                     }
                 },
+                setSourceAutoMoveConfig = { sourceType, autoMoveConfig ->
+                    reversibleConfig.update {
+                        it.copyWithAlteredSourceAutoMoveConfig(fileType, sourceType) {
+                            autoMoveConfig
+                        }
+                    }
+                },
                 modifier = Modifier
                     .padding(vertical = 4.dp)
-                    .animateItemPlacement(remember { tween(DefaultAnimationDuration) })  // Animate upon reordering
+                    .animateItem()
             )
         }
         item {
@@ -92,11 +204,18 @@ fun NavigatorConfigurationColumn(
                 text = stringResource(id = R.string.more),
             )
             MoreColumnItems(
-                disableOnLowBattery = configuration.disableOnLowBattery.collectAsStateWithLifecycle().value,
-                setDisableOnLowBattery = {
-                    configuration.disableOnLowBattery.value = it
+                disableOnLowBattery = config.disableOnLowBattery,
+                setDisableOnLowBattery = { checked ->
+                    reversibleConfig.update { it.copy(disableOnLowBattery = checked) }
                 },
-                modifier = Modifier.padding(bottom = if (isPortraitModeActive) 132.dp else 92.dp)
+                startOnBoot = config.startOnBoot,
+                setStartOnBoot = { checked ->
+                    reversibleConfig.update { it.copy(startOnBoot = checked) }
+                },
+                modifier = Modifier
+                    .padding(bottom = Padding.fabButtonBottomPadding)
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp)
             )
         }
     }
@@ -117,44 +236,25 @@ private val defaultSectionHeaderModifier = Modifier.padding(vertical = verticalP
 private fun MoreColumnItems(
     disableOnLowBattery: Boolean,
     setDisableOnLowBattery: (Boolean) -> Unit,
+    startOnBoot: Boolean,
+    setStartOnBoot: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        SwitchItemRow(
-            iconRes = R.drawable.ic_battery_low_24,
-            textRes = R.string.disable_on_low_battery,
-            checked = disableOnLowBattery,
-            onCheckedChange = setDisableOnLowBattery,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp)
-        )
-    }
-}
-
-@Composable
-private fun SwitchItemRow(
-    @DrawableRes iconRes: Int,
-    @StringRes textRes: Int,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(Spacing.VerticalItemRow)
     ) {
-        Icon(
-            painter = painterResource(id = iconRes),
-            contentDescription = null
+        SwitchItemRow(
+            icon = { DefaultItemRowIcon(res = R.drawable.ic_battery_low_24) },
+            labelRes = R.string.disable_on_low_battery,
+            checked = disableOnLowBattery,
+            onCheckedChange = setDisableOnLowBattery
         )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = stringResource(id = textRes))
-        RightAligned {
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange
-            )
-        }
+        SwitchItemRow(
+            icon = { DefaultItemRowIcon(res = R.drawable.ic_restart_24) },
+            labelRes = R.string.start_on_system_boot,
+            checked = startOnBoot,
+            onCheckedChange = setStartOnBoot
+        )
     }
 }

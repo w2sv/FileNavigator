@@ -4,33 +4,30 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
-import com.w2sv.androidutils.coroutines.mapValuesToFirstBlocking
+import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.services.UnboundService
-import com.w2sv.common.di.AppDispatcher
-import com.w2sv.common.di.GlobalScope
-import com.w2sv.domain.repository.NavigatorRepository
+import com.w2sv.androidutils.services.isServiceRunning
 import com.w2sv.navigator.fileobservers.FileObserver
-import com.w2sv.navigator.fileobservers.getFileObservers
+import com.w2sv.navigator.fileobservers.FileObserverProvider
+import com.w2sv.navigator.moving.MoveBroadcastReceiver
+import com.w2sv.navigator.moving.MoveMode
 import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
 import slimber.log.i
 import javax.inject.Inject
 import javax.inject.Singleton
+
+internal typealias MediaTypeToFileObserver = Map<MediaType, FileObserver>
 
 @AndroidEntryPoint
 class FileNavigator : UnboundService() {
 
     @Inject
-    internal lateinit var navigatorRepository: NavigatorRepository
-
-    @Inject
-    internal lateinit var status: Status
+    internal lateinit var isRunningStateFlow: IsRunningStateFlow
 
     @Inject
     internal lateinit var fileNavigatorIsRunningNotificationManager: FileNavigatorIsRunningNotificationManager
@@ -39,39 +36,48 @@ class FileNavigator : UnboundService() {
     internal lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
 
     @Inject
-    @GlobalScope(AppDispatcher.IO)
-    lateinit var ioScope: CoroutineScope
+    internal lateinit var fileObserverProvider: FileObserverProvider
 
-    private lateinit var fileObservers: List<FileObserver>
+    private var fileObservers: MediaTypeToFileObserver? = null
 
-    private val contentObserverHandlerThread =
+    private val contentObserverHandlerThread by lazy {
         HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
+    }
 
-    private fun getRegisteredFileObservers(): List<FileObserver> {
+    private fun getRegisteredFileObservers(): MediaTypeToFileObserver {
         if (!contentObserverHandlerThread.isAlive) {
             contentObserverHandlerThread.start()
         }
-        return getFileObservers(
-            fileTypeEnablementMap = navigatorRepository.fileTypeEnablementMap.mapValuesToFirstBlocking(),
-            mediaFileSourceEnablementMap = navigatorRepository.mediaFileSourceEnablementMap.mapValuesToFirstBlocking(),
+        return fileObserverProvider(
             contentResolver = contentResolver,
-            onNewNavigatableFileListener = { moveFile ->
-                // with scope because construction of inner class BuilderArgs requires inner class scope
-                with(newMoveFileNotificationManager) {
-                    buildAndEmit(
-                        BuilderArgs(
+            onNewMoveFile = { moveFile ->
+                when (moveFile.moveMode) {
+                    is MoveMode.Auto -> {
+                        MoveBroadcastReceiver.sendBroadcast(
+                            context = applicationContext,
                             moveFile = moveFile
                         )
-                    )
+                    }
+
+                    else -> {
+                        // with scope because construction of inner class BuilderArgs requires inner class scope
+                        with(newMoveFileNotificationManager) {
+                            buildAndEmit(
+                                BuilderArgs(
+                                    moveFile = moveFile
+                                )
+                            )
+                        }
+                    }
                 }
             },
             handler = Handler(contentObserverHandlerThread.looper)
         )
-            .onEach {
+            .onEach { (mediaType, fileObserver) ->
                 contentResolver.registerContentObserver(
-                    it.contentObserverUri,
+                    mediaType.readUri!!,
                     true,
-                    it
+                    fileObserver
                 )
             }
             .also { i { "Registered ${it.size} FileObserver(s)" } }
@@ -109,19 +115,20 @@ class FileNavigator : UnboundService() {
             )
         )
 
+        i { "Registering file observers" }
         fileObservers = getRegisteredFileObservers()
-        status.emitNewStatus(true)
+        isRunningStateFlow.value = true
     }
 
     private fun stop() {
         i { "FileNavigator.stop" }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        status.emitNewStatus(false)
+        isRunningStateFlow.value = false
     }
 
     private fun unregisterFileObservers() {
-        fileObservers.forEach {
+        fileObservers?.values?.forEach {
             contentResolver.unregisterContentObserver(it)
         }
         i { "Unregistered fileObservers" }
@@ -130,26 +137,14 @@ class FileNavigator : UnboundService() {
     override fun onDestroy() {
         super.onDestroy()
 
-        try {
-            unregisterFileObservers()
-        } catch (e: UninitializedPropertyAccessException) {
-            i(e)
-        } finally {
-            contentObserverHandlerThread.quit()
-        }
+        unregisterFileObservers()
+        contentObserverHandlerThread.quit()
     }
 
     @Singleton
-    class Status @Inject constructor(@GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope) {
-        val isRunning get() = _isRunning.asSharedFlow()
-        private val _isRunning: MutableSharedFlow<Boolean> = MutableSharedFlow()
-
-        internal fun emitNewStatus(isRunning: Boolean) {
-            scope.launch {
-                _isRunning.emit(isRunning)
-            }
-        }
-    }
+    class IsRunningStateFlow @Inject constructor(
+        @ApplicationContext context: Context
+    ) : MutableStateFlow<Boolean> by MutableStateFlow(context.isServiceRunning<FileNavigator>())
 
     private data object Action {
         const val REREGISTER_MEDIA_OBSERVERS =

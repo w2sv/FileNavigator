@@ -34,7 +34,7 @@ inline fun SystemBarsIgnoringVisibilityPaddedColumn(
     }
 }
 
-val emptyInsets = WindowInsets(0, 0, 0, 0)
+val emptyWindowInsets = WindowInsets(0, 0, 0, 0)
 
 @Composable
 fun RowScope.WeightedBox(

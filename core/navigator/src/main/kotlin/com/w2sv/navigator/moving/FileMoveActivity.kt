@@ -8,18 +8,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.SavedStateHandle
 import com.w2sv.androidutils.coroutines.firstBlocking
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.ToastProperties
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.showToast
+import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.core.navigator.R
-import com.w2sv.domain.repository.NavigatorRepository
+import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.putMoveFileExtra
-import com.w2sv.navigator.notifications.putNotificationResourcesExtra
+import com.w2sv.navigator.notifications.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import slimber.log.i
@@ -31,7 +31,7 @@ internal class FileMoveActivity : ComponentActivity() {
     @HiltViewModel
     class ViewModel @Inject constructor(
         savedStateHandle: SavedStateHandle,
-        navigatorRepository: NavigatorRepository
+        navigatorConfigDataSource: NavigatorConfigDataSource
     ) :
         androidx.lifecycle.ViewModel() {
 
@@ -46,7 +46,9 @@ internal class FileMoveActivity : ComponentActivity() {
             }
 
         val lastMoveDestination by lazy {
-            navigatorRepository.getLastMoveDestinationFlow(moveFile.source).firstBlocking()
+            navigatorConfigDataSource.lastMoveDestination(moveFile.fileType, moveFile.sourceType)
+                .firstBlocking()
+                .firstOrNull()
         }
     }
 
@@ -56,7 +58,7 @@ internal class FileMoveActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         when (val preemptiveExitReason = viewModel.preemptiveExitReason()) {
-            null -> destinationPickerLauncher.launch(viewModel.lastMoveDestination)
+            null -> destinationPickerLauncher.launch(viewModel.lastMoveDestination?.uri)
             else -> terminateActivity(
                 toastProperties = preemptiveExitReason.toastProperties,
                 cancelNotification = preemptiveExitReason.cancelNotification
@@ -80,21 +82,20 @@ internal class FileMoveActivity : ComponentActivity() {
         i { "Move destination treeUri: $treeUri" }
 
         // Take persistable read & write permission
-        // Required for quick move, as it remedies "Failed query: java.lang.SecurityException: Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider from ProcessRecord{6fc17ee 8097:com.w2sv.filenavigator.debug/u0a753} (pid=8097, uid=10753) requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs"
-        contentResolver.takePersistableUriPermission(
-            treeUri,
-            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        )
+        // Required for quick move
+        contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
 
-        // Build DocumentFile, exit if unsuccessful
-        val moveDestinationDocumentFile =
-            DocumentFile.fromTreeUri(this, treeUri)
+        // Build DocumentUri, exit if unsuccessful
+        val moveDestinationDocumentUri =
+            DocumentUri.fromTreeUri(this, treeUri)
                 ?: return terminateActivity(ToastProperties(getString(R.string.couldnt_move_file_internal_error)))
 
-        MoveBroadcastReceiver.startFromFileMoveActivityIntent(
+        MoveBroadcastReceiver.sendBroadcast(
             context = applicationContext,
-            fileMoveActivityIntent = intent,
-            moveDestinationDocumentUri = moveDestinationDocumentFile.uri
+            fileMoveActivityIntent = intent.putMoveFileExtra(
+                MoveFile.fromIntent(intent)
+                    .copy(moveMode = MoveMode.ManualSelection(moveDestinationDocumentUri))
+            ),
         )
         terminateActivity()
     }
@@ -104,7 +105,7 @@ internal class FileMoveActivity : ComponentActivity() {
         cancelNotification: Boolean = false
     ) {
         if (cancelNotification) {
-            NewMoveFileNotificationManager.ResourcesCleanupBroadcastReceiver.startFromResourcesComprisingIntent(
+            NotificationResources.CleanupBroadcastReceiver.startFromResourcesComprisingIntent(
                 applicationContext,
                 intent
             )
@@ -128,6 +129,6 @@ internal class FileMoveActivity : ComponentActivity() {
                 )
             )
                 .putMoveFileExtra(moveFile)
-                .putNotificationResourcesExtra(notificationResources)
+                .putOptionalNotificationResourcesExtra(notificationResources)
     }
 }

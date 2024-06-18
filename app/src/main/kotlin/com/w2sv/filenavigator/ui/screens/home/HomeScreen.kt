@@ -22,14 +22,14 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
-import com.w2sv.filenavigator.ui.designsystem.NavigationDrawerScreenTopBar
+import com.w2sv.filenavigator.ui.designsystem.NavigationDrawerScreenTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.designsystem.drawer.drawerRepelledAnimation
 import com.w2sv.filenavigator.ui.designsystem.drawer.rememberDrawerRepelledAnimationState
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.MoveHistoryCard
-import com.w2sv.filenavigator.ui.screens.home.components.statusdisplay.StatusDisplayCard
+import com.w2sv.filenavigator.ui.screens.home.components.statusdisplay.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.utils.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.utils.rememberMovableContentOf
 import kotlinx.coroutines.CoroutineScope
@@ -51,7 +51,7 @@ fun HomeScreen(
                 AppSnackbarHost()
             },
             topBar = {
-                NavigationDrawerScreenTopBar(
+                NavigationDrawerScreenTopAppBar(
                     title = stringResource(id = com.w2sv.core.common.R.string.app_name),
                     onNavigationIconClick = {
                         scope.launch {
@@ -72,7 +72,7 @@ fun HomeScreen(
                     )
 
             val statusDisplayCard: ModifierReceivingComposable = rememberMovableContentOf {
-                StatusDisplayCard(it)
+                NavigatorStatusCard(it)
             }
             val moveHistoryCard: ModifierReceivingComposable = rememberMovableContentOf {
                 MoveHistoryCard(it)

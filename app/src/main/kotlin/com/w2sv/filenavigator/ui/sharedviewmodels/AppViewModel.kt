@@ -10,6 +10,7 @@ import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.postNotificationsPermissionRequired
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
+import com.w2sv.domain.usecase.DocumentUriToPathConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
+    val documentUriToPathConverter: DocumentUriToPathConverter,
     @ApplicationContext context: Context
 ) :
     ViewModel() {
@@ -103,6 +105,32 @@ class AppViewModel @Inject constructor(
     fun saveUseDynamicColors(value: Boolean) {
         viewModelScope.launch {
             preferencesRepository.useDynamicColors.save(value)
+        }
+    }
+
+    // ==============
+    // Other
+    // ==============
+
+    val showStorageVolumeNames = preferencesRepository.showStorageVolumeNames.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed()
+    )
+
+    fun saveShowStorageVolumeNames(value: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.showStorageVolumeNames.save(value)
+        }
+    }
+
+    val showAutoMoveIntroduction = preferencesRepository.showAutoMoveIntroduction.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly
+    )
+
+    fun saveShowAutoMoveIntroduction(value: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.showAutoMoveIntroduction.save(value)
         }
     }
 }

@@ -4,18 +4,7 @@
     <string name="stop">Stop</string>
     <string name="start_navigator">Start</string>
     <string name="stop_navigator">Stop</string>
-    <string name="image">Image</string>
-    <string name="video">Video</string>
-    <string name="audio">Audio</string>
-    <string name="pdf">PDF</string>
-    <string name="archive">Archive</string>
-    <string name="apk">APK</string>
-    <string name="text">Text</string>
 
-    <string name="download">Download</string>
-    <string name="third_party_app">Other Apps</string>
-    <string name="screenshot">Screenshot</string>
-    <string name="camera">Camera</string>
     <string name="grant">Grant</string>
     <string name="leave_at_least_one_file_type_enabled">Leave at least one file type enabled.</string>
     <string name="apply">Apply</string>
@@ -29,7 +18,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="post_notifications_permission_rational">File Navigator requires <b>Post Notification Permission</b> to notify you about navigatable files.</string>
-    <string name="manage_external_storage_permission_rational">File Navigator requires permission to <b>Manage All Files</b> to move files upon your explicit soliciting to do so.</string>
+    <string name="manage_external_storage_permission_rational">File Navigator requires permission to <b>Manage All Files</b> in order to move files.</string>
     <string name="theme">Theme</string>
     <string name="open_navigation_drawer">Open navigation drawer</string>
     <string name="share">Share</string>
@@ -43,7 +32,6 @@
     <string name="more">More</string>
     <string name="license">License</string>
     <string name="developer">Developer</string>
-    <string name="disabled">Disabled</string>
     <string name="dynamic_colors">Dynamic Colors</string>
     <string name="navigator_status">Navigator Status:</string>
     <string name="active">Active</string>
@@ -71,5 +59,27 @@
     <string name="support_development">Support development</string>
     <string name="buy_me_a_coffee_as_a_sign_of_gratitude">Buy me a coffee as a sign of gratitude if you feel like I\'ve deserved one</string>
     <string name="required_permissions">Required Permissions</string>
+    <string name="auto">Auto</string>
     <string name="rate_the_app_in_the_playstore">Rate the app in the PlayStore</string>
+    <string name="add_a_file_type">Add a file type.</string>
+    <string name="exclude">Exclude</string>
+    <string name="add_file_types">Add File Types</string>
+    <string name="select_the_auto_move_destination">Select the auto move destination.</string>
+    <string name="set_auto_move_destination_for_all_sources">Set Auto Move destination for all sources</string>
+    <string name="start_on_system_boot">Start on system boot</string>
+    <string name="app_settings">App Settings</string>
+    <string name="show_storage_volume_names">Show storage volume names</string>
+    <string name="show_storage_volume_names_explanation">E.g. primary:Folder/OtherFolder instead of Folder/OtherFolder</string>
+    <string name="settings">Settings</string>
+    <string name="general">General</string>
+    <string name="you_can_now_enable_file_source_specific_auto_moving_by">You can now enable file source specific Auto Moving by</string>
+    <string name="now_whenever_a_new_file_corresponding_to_the_file_source_is_discovered_it_will_be_automatically_moved_to_the_selected_destination_without_you_needing_to_do_anything_else">Now, whenever a new file corresponding to the file source is discovered, it will be automatically moved to the selected destination without you needing to do anything else.</string>
+    <string name="_1_clicking_on_the_auto_button_of_an_enabled_file_source_2_selecting_a_destination_3_saving_the_changes"><b>1.</b> Clicking on the <b>Auto</b> button of an enabled file source\n<b>2.</b> Selecting a destination\n<b>3.</b> Saving the changes</string>
+    <string name="awesome">Awesome!</string>
+    <string name="introducing_auto_move">Introducing Auto Move</string>
+    <string name="notify">Notify</string>
+    <plurals name="add_file_types_button">
+        <item quantity="one">Add File Type</item>
+        <item quantity="other">Add File Types</item>
+    </plurals>
 </resources>

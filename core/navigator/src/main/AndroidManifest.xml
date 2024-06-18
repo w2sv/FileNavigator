@@ -11,8 +11,10 @@
     <!-- System Permissions -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application>
+        <!-- Services -->
         <service
             android:name="com.w2sv.navigator.FileNavigator"
             android:foregroundServiceType="specialUse">
@@ -36,17 +38,30 @@
             </intent-filter>
         </service>
 
+        <!-- System Broadcast Receivers -->
 
         <receiver
-            android:name="com.w2sv.navigator.PowerSaveModeChangedReceiver"
+            android:name="com.w2sv.navigator.system_action_broadcastreceiver.PowerSaveModeChangedReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.os.action.POWER_SAVE_MODE_CHANGED" />
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name="com.w2sv.navigator.system_action_broadcastreceiver.BootCompletedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- App Broadcast Receivers -->
+
         <receiver android:name="com.w2sv.navigator.moving.MoveBroadcastReceiver" />
-        <receiver android:name="com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager$ResourcesCleanupBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.notifications.NotificationResources$CleanupBroadcastReceiver" />
+
+        <!-- Activity -->
 
         <activity
             android:name="com.w2sv.navigator.moving.FileMoveActivity"

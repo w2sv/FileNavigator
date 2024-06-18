@@ -4,7 +4,7 @@ import android.content.ContentResolver
 import android.database.Cursor
 import android.net.Uri
 
-fun <R> ContentResolver.query(
+fun <R> ContentResolver.query(  // TODO: AndroidUtils
     uri: Uri,
     columns: Array<String>,
     selection: String? = null,

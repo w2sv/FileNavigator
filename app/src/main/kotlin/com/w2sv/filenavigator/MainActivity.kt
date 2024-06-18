@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -41,10 +42,12 @@ import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.states.rememberObservedPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
 import com.w2sv.filenavigator.ui.utils.LocalNavHostController
 import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
 import com.w2sv.navigator.FileNavigator
-import com.w2sv.navigator.PowerSaveModeChangedReceiver
+import com.w2sv.navigator.system_action_broadcastreceiver.BootCompletedReceiver
+import com.w2sv.navigator.system_action_broadcastreceiver.PowerSaveModeChangedReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import slimber.log.i
@@ -91,14 +94,13 @@ class MainActivity : ComponentActivity() {
                             systemBarStyle,
                         )
                     }
+                    val navController = rememberNavController()
 
                     val postNotificationsPermissionState =
                         rememberObservedPostNotificationsPermissionState(
                             onPermissionResult = { appVM.savePostNotificationsPermissionRequestedIfRequired() },
                             onStatusChanged = appVM::setPostNotificationsPermissionGranted
                         )
-
-                    val navController = rememberNavController()
 
                     OnChange(appVM.allPermissionsGranted.collectAsStateWithLifecycle().value) { allPermissionsGranted ->
                         if (!allPermissionsGranted && !navController.isRouteOnBackStack(
@@ -115,7 +117,10 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    CompositionLocalProvider(LocalNavHostController provides navController) {
+                    CompositionLocalProvider(
+                        LocalNavHostController provides navController,
+                        LocalDocumentUriToPathConverter provides appVM.documentUriToPathConverter
+                    ) {
                         Surface(modifier = Modifier.fillMaxSize()) {
                             DestinationsNavHost(
                                 navGraph = NavGraphs.root,
@@ -123,6 +128,7 @@ class MainActivity : ComponentActivity() {
                                 dependenciesContainerBuilder = {
                                     dependency(postNotificationsPermissionState)
                                 },
+//                                startRoute = NavigatorSettingsScreenDestination
                             )
                         }
                     }
@@ -132,10 +138,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun CoroutineScope.collectFromFlows() {
-        collectFromFlow(navigatorVM.configuration.disableOnLowBattery.appliedState) {
-            val intent = PowerSaveModeChangedReceiver.HostService.getIntent(this@MainActivity)
-
-            i { "Collected disableListenerOnLowBattery=$it" }
+        collectFromFlow(navigatorVM.disabledOnLowBatteryDistinctUntilChanged) {
+            i { "Collected disableOnLowBattery=$it" }
+            val intent =
+                PowerSaveModeChangedReceiver.HostService.getIntent(applicationContext)
 
             when (it) {
                 true -> {
@@ -147,6 +153,26 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        collectFromFlow(navigatorVM.startOnBootDistinctUntilChanged) {
+            i { "Collected startOnBootCompleted=$it" }
+
+            try {
+                when (it) {
+                    true -> {
+                        bootCompletedReceiver.register(applicationContext)
+                    }
+
+                    false -> {
+                        bootCompletedReceiver.unregister(applicationContext)
+                    }
+                }
+            } catch (_: IllegalArgumentException) {  // Thrown when unregistered receiver is attempted to be unregistered
+            }
+        }
+    }
+
+    private val bootCompletedReceiver by lazy {
+        BootCompletedReceiver()
     }
 
     override fun onStart() {
@@ -160,6 +186,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@ReadOnlyComposable
 @Composable
 private fun useDarkTheme(theme: Theme): Boolean {
     return when (theme) {
