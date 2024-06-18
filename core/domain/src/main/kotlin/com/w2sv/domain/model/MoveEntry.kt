@@ -14,6 +14,7 @@ data class MoveEntry(
     val dateTime: LocalDateTime,
     val autoMoved: Boolean
 ) {
-    val combinedFileAndSourceTypeIconRes: Int
-        get() = FileAndSourceType(fileType, sourceType).iconRes
+    val combinedFileAndSourceTypeIconRes: Int by lazy {
+        FileAndSourceType(fileType, sourceType).iconRes
+    }
 }

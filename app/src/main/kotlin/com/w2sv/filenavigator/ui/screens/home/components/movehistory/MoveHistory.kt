@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,7 +45,6 @@ import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.movedFileExists
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.rememberFirstDateRepresentations
-import com.w2sv.filenavigator.ui.theme.onSurfaceDisabled
 import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
 import eu.wewox.textflow.TextFlow
 import kotlinx.collections.immutable.ImmutableList
@@ -115,8 +115,10 @@ private fun MoveEntryView(
             .padding(8.dp)
     ) {
         TextFlow(
-            text = moveEntry.fileName,
-            modifier = Modifier.weight(0.5f),
+            text = remember(moveEntry.fileName) {
+                AnnotatedString(moveEntry.fileName)
+            },
+            modifier = Modifier.weight(0.7f),
             style = LocalTextStyle.current.copy(color = LocalContentColor.current),
             overflow = TextOverflow.Ellipsis,
             fontSize = 14.sp,
@@ -126,23 +128,26 @@ private fun MoveEntryView(
                 painter = painterResource(id = moveEntry.combinedFileAndSourceTypeIconRes),
                 contentDescription = null,
                 tint = moveEntry.fileType.color,
-                modifier = Modifier.padding(end = 4.dp)
+                modifier = Modifier
+                    .padding(end = 4.dp)
             )
         }
         WeightedBox(weight = 0.2f) {
-            CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.onSurfaceDisabled) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.primary) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowForward,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceDisabled
                     )
                     if (moveEntry.autoMoved) {
                         Text(
                             text = stringResource(id = R.string.auto),
                             fontSize = 13.sp,
-                            lineHeight = 2.sp
+                            lineHeight = 2.sp,
                         )
                     }
                 }

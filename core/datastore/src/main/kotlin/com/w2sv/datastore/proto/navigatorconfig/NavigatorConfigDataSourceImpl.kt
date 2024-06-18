@@ -22,8 +22,7 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
 
     override suspend fun unsetAutoMoveConfig(fileType: FileType, sourceType: SourceType) {
         navigatorConfigProtoDataStore.updateData {
-            NavigatorConfigMapper
-                .toExternal(it)
+            NavigatorConfigMapper.toExternal(it)
                 .copyWithAlteredSourceAutoMoveConfig(fileType, sourceType) {
                     AutoMoveConfig.Empty
                 }
@@ -33,7 +32,7 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
 
     override suspend fun saveNavigatorConfig(config: NavigatorConfig) {
         navigatorConfigProtoDataStore.updateData {
-            NavigatorConfigMapper.toProto(config)
+            NavigatorConfigMapper.toProto(config, it.hasBeenMigrated)
         }
     }
 

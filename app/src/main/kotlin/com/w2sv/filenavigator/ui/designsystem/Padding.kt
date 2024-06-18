@@ -12,5 +12,5 @@ object Padding {
 
     val fabButtonBottomPadding: Dp
         @Composable
-        get() = if (isPortraitModeActive) 138.dp else 92.dp
+        get() = if (isPortraitModeActive) 144.dp else 92.dp
 }

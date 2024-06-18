@@ -28,6 +28,9 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
         )
 
     override fun toProto(external: NavigatorConfig): NavigatorConfigProto =
+        toProto(external = external, hasBeenMigrated = null)
+
+    fun toProto(external: NavigatorConfig, hasBeenMigrated: Boolean?): NavigatorConfigProto =
         navigatorConfigProto {
             fileTypeToConfig.putAll(
                 external.fileTypeConfigMap.entries.associate { (fileType, config) ->
@@ -36,6 +39,9 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
             )
             disableOnLowBattery = external.disableOnLowBattery
             startOnBoot = external.startOnBoot
+            hasBeenMigrated?.let {
+                this.hasBeenMigrated = it
+            }
         }
 }
 
