@@ -10,14 +10,12 @@ import com.w2sv.androidutils.coroutines.firstBlocking
 import com.w2sv.androidutils.generic.localDateTimeFromUnixMilliSecondsTimeStamp
 import com.w2sv.androidutils.generic.timeDeltaToNow
 import com.w2sv.common.utils.DocumentUri
-import com.w2sv.common.utils.update
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigMapper
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
+import com.w2sv.kotlinutils.extensions.update
 import slimber.log.i
-
-private const val SHOULD_MIGRATE_FIRST_INSTALLATION_NOW_MINUTE_THRESHOLD = 5
 
 internal class NavigatorPreferencesToProtoMigration(
     private val context: Context,
@@ -50,7 +48,7 @@ internal class NavigatorPreferencesToProtoMigration(
                 .firstInstallTime
         )
             .timeDeltaToNow().toMinutes()
-            .also { i { "Minutes delta: $it" } } > SHOULD_MIGRATE_FIRST_INSTALLATION_NOW_MINUTE_THRESHOLD
+            .also { i { "Minutes delta: $it" } } > 5
     }
 
     private fun fullMigration(preferences: Preferences): NavigatorConfigProto {

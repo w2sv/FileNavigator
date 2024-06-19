@@ -28,7 +28,7 @@ androidxActivity = "1.9.0"
 
 # Owned
 androidutils = "com.github.w2sv:AndroidUtils:0.3.34-rc3"
-kotlinutils = "com.github.w2sv:KotlinUtils:0.0.8-rc1"
+kotlinutils = "com.github.w2sv:KotlinUtils:0.1.0-rc2"
 composed = { module = "com.github.w2sv.Composed:composed", version.ref = "composed" }
 composed-permissions = { module = "com.github.w2sv.Composed:permissions", version.ref = "composed" }
 

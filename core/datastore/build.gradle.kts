@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.protobuf.kotlin.lite)
 
+    implementation(libs.kotlinutils)
     implementation(libs.androidutils)
     implementation(libs.slimber)
 }
