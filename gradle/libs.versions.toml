@@ -6,7 +6,7 @@ agp = "8.3.2"
 kotlin = "2.0.0"
 java = "17"
 ksp = "2.0.0-1.0.22"
-triplet-play = "3.9.1"
+triplet-play = "3.10.1"
 protobuf-plugin = "0.9.4"
 
 compose-tooling = "1.7.0-beta03"
