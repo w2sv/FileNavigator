@@ -6,12 +6,12 @@ import android.content.Intent
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.callback.FileCallback
-import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.androidutils.res.getText
+import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.fileName
-import com.w2sv.common.utils.getText
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.showToast
@@ -217,7 +217,7 @@ private fun Context.showMoveSuccessToast(
     moveDestinationDocumentFile: DocumentFile
 ) {
     showToast(
-        getText(
+        resources.getText(
             if (moveFile.moveMode!!.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
             moveFile.fileAndSourceType.label(context = this, isGif = moveFile.isGif),
             moveDestinationRepresentation(

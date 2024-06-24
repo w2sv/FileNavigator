@@ -57,6 +57,8 @@ dependencies {
     implementation(libs.protobuf.kotlin.lite)
 
     implementation(libs.kotlinutils)
+    implementation(libs.datastoreutils.preferences)
+    implementation(libs.datastoreutils.datastoreflow)
     implementation(libs.androidutils)
     implementation(libs.slimber)
 }

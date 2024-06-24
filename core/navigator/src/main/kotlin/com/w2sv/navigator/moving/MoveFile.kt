@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Parcelable
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
-import com.w2sv.androidutils.generic.getParcelableCompat
+import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.domain.model.FileAndSourceType

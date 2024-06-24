@@ -7,13 +7,13 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.IntDef
-import com.w2sv.androidutils.coroutines.collectFromFlow
-import com.w2sv.androidutils.coroutines.launchDelayed
-import com.w2sv.androidutils.permissions.hasPermission
+import com.w2sv.androidutils.hasPermission
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.core.navigator.R
+import com.w2sv.kotlinutils.coroutines.collectFromFlow
+import com.w2sv.kotlinutils.coroutines.launchDelayed
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.shared.mainActivityIntent
 import com.w2sv.navigator.shared.mainActivityPendingIntent

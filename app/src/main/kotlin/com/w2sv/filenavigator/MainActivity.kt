@@ -35,7 +35,6 @@ import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
-import com.w2sv.androidutils.coroutines.collectFromFlow
 import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
@@ -45,6 +44,7 @@ import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
 import com.w2sv.filenavigator.ui.utils.LocalNavHostController
 import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
+import com.w2sv.kotlinutils.coroutines.collectFromFlow
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.system_action_broadcastreceiver.BootCompletedReceiver
 import com.w2sv.navigator.system_action_broadcastreceiver.PowerSaveModeChangedReceiver

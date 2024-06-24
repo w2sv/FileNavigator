@@ -4,13 +4,13 @@ import android.Manifest
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.w2sv.androidutils.coroutines.combineStates
-import com.w2sv.androidutils.permissions.hasPermission
+import com.w2sv.androidutils.hasPermission
+import com.w2sv.androidutils.os.postNotificationsPermissionRequired
 import com.w2sv.common.utils.isExternalStorageManger
-import com.w2sv.common.utils.postNotificationsPermissionRequired
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.domain.usecase.DocumentUriToPathConverter
+import com.w2sv.kotlinutils.coroutines.combineStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow

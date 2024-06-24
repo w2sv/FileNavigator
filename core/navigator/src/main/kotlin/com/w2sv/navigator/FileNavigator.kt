@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
 import com.anggrayudi.storage.media.MediaType
-import com.w2sv.androidutils.services.UnboundService
-import com.w2sv.androidutils.services.isServiceRunning
+import com.w2sv.androidutils.UnboundService
+import com.w2sv.androidutils.isServiceRunning
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.FileObserverProvider
 import com.w2sv.navigator.moving.MoveBroadcastReceiver

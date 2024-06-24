@@ -118,6 +118,8 @@ dependencies {
 
     implementation(libs.androidutils)
     implementation(libs.kotlinutils)
+    implementation(libs.datastoreutils.datastoreflow)
+    implementation(libs.reversiblestate)
     implementation(libs.composed)
     implementation(libs.composed.permissions)
 

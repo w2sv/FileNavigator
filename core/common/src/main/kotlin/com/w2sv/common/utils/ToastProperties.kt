@@ -4,7 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.annotation.IntDef
 import androidx.annotation.StringRes
-import com.w2sv.androidutils.notifying.showToast
+import com.w2sv.androidutils.widget.showToast
 
 @IntDef(Toast.LENGTH_SHORT, Toast.LENGTH_LONG)
 @Retention(AnnotationRetention.SOURCE)

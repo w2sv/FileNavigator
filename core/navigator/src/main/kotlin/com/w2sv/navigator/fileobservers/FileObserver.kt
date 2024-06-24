@@ -5,8 +5,8 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Handler
 import com.google.common.collect.EvictingQueue
-import com.w2sv.androidutils.generic.milliSecondsTo
 import com.w2sv.common.utils.MediaUri
+import com.w2sv.kotlinutils.time.durationBetween
 import com.w2sv.navigator.mediastore.MediaStoreFile
 import com.w2sv.navigator.mediastore.MediaStoreFileProvider
 import com.w2sv.navigator.moving.MoveFile
@@ -98,5 +98,6 @@ private data class ManualMoveCandidate(
     val changeObservationDateTime: LocalDateTime
 ) {
     fun matches(other: ManualMoveCandidate, milliSecondsThreshold: Int): Boolean =
-        mediaUri != other.mediaUri && changeObservationDateTime.milliSecondsTo(other.changeObservationDateTime) < milliSecondsThreshold
+        mediaUri != other.mediaUri && changeObservationDateTime.durationBetween(other.changeObservationDateTime)
+            .toMillis() < milliSecondsThreshold
 }

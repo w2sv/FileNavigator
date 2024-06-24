@@ -6,7 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import androidx.annotation.CallSuper
-import com.w2sv.androidutils.notifying.UniqueIds
+import com.w2sv.androidutils.UniqueIds
 import com.w2sv.navigator.notifications.NotificationResources
 import slimber.log.i
 

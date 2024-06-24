@@ -47,7 +47,7 @@ import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.emptyWindowInsets
-import com.w2sv.kotlinutils.extensions.toggle
+import com.w2sv.kotlinutils.toggle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

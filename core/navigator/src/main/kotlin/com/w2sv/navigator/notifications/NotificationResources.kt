@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
-import com.w2sv.androidutils.generic.getParcelableCompat
+import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import dagger.hilt.android.AndroidEntryPoint

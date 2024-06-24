@@ -1,8 +1,6 @@
 package com.w2sv.filenavigator.ui.states
 
 import androidx.compose.runtime.Stable
-import com.w2sv.androidutils.ui.reversible_state.ReversibleState
-import com.w2sv.androidutils.ui.reversible_state.ReversibleStateFlow
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -11,6 +9,8 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.sharedviewmodels.MakeSnackbarVisuals
+import com.w2sv.reversiblestate.ReversibleState
+import com.w2sv.reversiblestate.ReversibleStateFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

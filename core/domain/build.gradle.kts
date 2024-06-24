@@ -7,6 +7,7 @@ plugins {
 dependencies {
     implementation(projects.core.common)
 
+    implementation(libs.datastoreutils.datastoreflow)
     implementation(libs.androidutils)
     implementation(libs.slimber)
     implementation(libs.simplestorage)

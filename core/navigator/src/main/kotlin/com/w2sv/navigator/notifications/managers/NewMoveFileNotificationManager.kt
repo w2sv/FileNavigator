@@ -10,18 +10,18 @@ import android.util.Size
 import androidx.core.app.NotificationCompat
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
-import com.w2sv.androidutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.lineBreakSuffixed
-import com.w2sv.common.utils.loadBitmap
+import com.w2sv.common.utils.loadBitmapFileNotFoundHandled
 import com.w2sv.common.utils.removeSlashSuffix
 import com.w2sv.common.utils.slashPrefixed
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
+import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.moving.FileMoveActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.MoveFile
@@ -94,7 +94,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun setBigPictureStyleIfImage(): Boolean {
                 when (args.moveFile.fileType) {
-                    FileType.Image -> context.contentResolver.loadBitmap(args.moveFile.mediaStoreFile.mediaUri.uri)
+                    FileType.Image -> context.contentResolver.loadBitmapFileNotFoundHandled(args.moveFile.mediaStoreFile.mediaUri.uri)
                     FileType.Video -> {
                         try {
                             context.contentResolver.loadThumbnail(

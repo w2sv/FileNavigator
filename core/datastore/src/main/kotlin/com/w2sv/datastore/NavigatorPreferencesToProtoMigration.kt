@@ -6,15 +6,15 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.w2sv.androidutils.coroutines.firstBlocking
-import com.w2sv.androidutils.generic.localDateTimeFromUnixMilliSecondsTimeStamp
-import com.w2sv.androidutils.generic.timeDeltaToNow
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigMapper
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
-import com.w2sv.kotlinutils.extensions.update
+import com.w2sv.kotlinutils.coroutines.firstBlocking
+import com.w2sv.kotlinutils.time.durationToNow
+import com.w2sv.kotlinutils.time.localDateTimeFromMilliSecondsUnixTimestamp
+import com.w2sv.kotlinutils.update
 import slimber.log.i
 
 internal class NavigatorPreferencesToProtoMigration(
@@ -40,14 +40,15 @@ internal class NavigatorPreferencesToProtoMigration(
     }
 
     private val doFullMigration by lazy {
-        localDateTimeFromUnixMilliSecondsTimeStamp(
+        localDateTimeFromMilliSecondsUnixTimestamp(
             context.packageManager.getPackageInfo(
                 context.packageName,
                 0
             )
                 .firstInstallTime
         )
-            .timeDeltaToNow().toMinutes()
+            .durationToNow()
+            .toMinutes()
             .also { i { "Minutes delta: $it" } } > 5
     }
 

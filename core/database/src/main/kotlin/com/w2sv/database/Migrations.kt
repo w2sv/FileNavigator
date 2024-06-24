@@ -10,7 +10,7 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.anggrayudi.storage.file.child
-import com.w2sv.common.utils.getStringOrThrow
+import com.w2sv.androidutils.database.getStringOrThrow
 import slimber.log.i
 
 internal object Migrations {

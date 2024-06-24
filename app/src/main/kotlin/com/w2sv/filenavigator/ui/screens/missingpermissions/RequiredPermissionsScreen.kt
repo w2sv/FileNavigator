@@ -30,7 +30,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
-import com.w2sv.androidutils.generic.goToAppSettings
+import com.w2sv.androidutils.openAppSettings
 import com.w2sv.common.utils.goToManageExternalStorageSettings
 import com.w2sv.composed.OnChange
 import com.w2sv.composed.isPortraitModeActive
@@ -153,9 +153,7 @@ private fun rememberMovablePermissionCards(
                             postNotificationsPermissionState.launchPermissionRequest(
                                 launchedBefore = appVM.postNotificationsPermissionRequested.value,
                                 onSuppressed = {
-                                    goToAppSettings(
-                                        context
-                                    )
+                                    context.openAppSettings()
                                 }
                             )
                         }

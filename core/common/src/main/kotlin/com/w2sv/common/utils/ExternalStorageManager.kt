@@ -6,12 +6,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
-import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.RequiresApi
-
-// ===========================
-// External storage manager
-// ===========================
+import com.w2sv.androidutils.os.manageExternalStoragePermissionRequired
 
 @RequiresApi(Build.VERSION_CODES.R)
 fun goToManageExternalStorageSettings(context: Context) {
@@ -23,17 +19,5 @@ fun goToManageExternalStorageSettings(context: Context) {
     )
 }
 
-@get:ChecksSdkIntAtLeast(api = Build.VERSION_CODES.R)
-val manageExternalStoragePermissionRequired: Boolean
-    get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-
 val isExternalStorageManger: Boolean
     get() = !manageExternalStoragePermissionRequired || Environment.isExternalStorageManager()
-
-// ====================
-// Post notifications
-// ====================
-
-@get:ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
-val postNotificationsPermissionRequired: Boolean
-    get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU

@@ -3,7 +3,7 @@ package com.w2sv.navigator.system_action_broadcastreceiver
 import android.content.Context
 import android.content.Intent
 import android.os.PowerManager
-import com.w2sv.androidutils.services.UnboundService
+import com.w2sv.androidutils.UnboundService
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import slimber.log.i

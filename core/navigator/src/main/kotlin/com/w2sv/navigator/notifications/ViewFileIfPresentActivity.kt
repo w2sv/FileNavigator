@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.activity.ComponentActivity
-import com.w2sv.androidutils.generic.getParcelableCompat
+import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.showToast
 import com.w2sv.navigator.moving.MoveException

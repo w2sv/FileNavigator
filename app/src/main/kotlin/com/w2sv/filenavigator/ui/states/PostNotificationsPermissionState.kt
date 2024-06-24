@@ -7,7 +7,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.w2sv.common.utils.postNotificationsPermissionRequired
+import com.w2sv.androidutils.os.postNotificationsPermissionRequired
 import com.w2sv.composed.OnChange
 
 @Immutable
