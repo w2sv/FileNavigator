@@ -10,6 +10,7 @@ import com.w2sv.kotlinutils.time.durationBetween
 import com.w2sv.navigator.mediastore.MediaStoreFile
 import com.w2sv.navigator.mediastore.MediaStoreFileProvider
 import com.w2sv.navigator.moving.MoveFile
+import com.w2sv.navigator.shared.NavigatorConstant
 import com.w2sv.navigator.shared.emitDiscardedLog
 import slimber.log.i
 import java.time.LocalDateTime
@@ -104,7 +105,7 @@ internal abstract class FileObserver(
     }
 
     private val seenMediaStoreFiles =
-        EvictingQueue.create<MediaStoreFile>(5)
+        EvictingQueue.create<MediaStoreFile>(NavigatorConstant.SEEN_FILE_BUFFER_SIZE)
 
     private var latestManualMoveCandidate: ManualMoveCandidate? = null
 

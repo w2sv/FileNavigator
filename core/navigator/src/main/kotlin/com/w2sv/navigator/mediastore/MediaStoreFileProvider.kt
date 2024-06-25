@@ -3,6 +3,7 @@ package com.w2sv.navigator.mediastore
 import android.content.ContentResolver
 import com.google.common.collect.EvictingQueue
 import com.w2sv.common.utils.MediaUri
+import com.w2sv.navigator.shared.NavigatorConstant
 import com.w2sv.navigator.shared.emitDiscardedLog
 import slimber.log.i
 import java.io.FileNotFoundException
@@ -21,7 +22,8 @@ internal class MediaStoreFileProvider @Inject constructor() {
 
     private data class SeenParameters(val uri: MediaUri, val fileSize: Long)
 
-    private val seenParametersCache = EvictingQueue.create<SeenParameters>(5)
+    private val seenParametersCache =
+        EvictingQueue.create<SeenParameters>(NavigatorConstant.SEEN_FILE_BUFFER_SIZE)
 
     fun getMediaStoreFileIfNotPendingAndNotAlreadySeen(
         mediaUri: MediaUri,
