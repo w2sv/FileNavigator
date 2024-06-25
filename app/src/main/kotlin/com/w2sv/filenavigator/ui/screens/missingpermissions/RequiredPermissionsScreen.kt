@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screens.missingpermissions
 
 import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -166,7 +167,9 @@ private fun rememberMovablePermissionCards(
                         iconRes = R.drawable.ic_folder_open_24,
                         textRes = R.string.manage_external_storage_permission_rational,
                         onGrantButtonClick = {
-                            goToManageExternalStorageSettings(context)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                goToManageExternalStorageSettings(context)
+                            }
                         }
                     )
                 )

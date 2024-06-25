@@ -1,5 +1,5 @@
 [versions]
-minSdk = "30"  # min for MediaStore.Downloads.EXTERNAL_CONTENT_URI
+minSdk = "29"  # 29 = min for MediaStore.Downloads.EXTERNAL_CONTENT_URI
 compileSdk = "34"
 
 agp = "8.3.2"
