@@ -19,8 +19,6 @@ import slimber.log.i
 import java.io.File
 import java.time.LocalDateTime
 
-//private const val RECENTLY_ADDED_MS_THRESHOLD = 5_000L
-
 /**
  * @param volumeRelativeDirPath Relative dir path from the storage volume, e.g. "Documents/", "DCIM/Camera/".
  */
@@ -35,12 +33,6 @@ internal data class MediaStoreColumnData(
     val isPending: Boolean,
     val isTrashed: Boolean
 ) : Parcelable {
-
-//    @IgnoredOnParcel
-//    val recentlyAdded = !addedBeforeForMoreThan(RECENTLY_ADDED_MS_THRESHOLD)
-
-//    fun addedBeforeForMoreThan(ms: Long): Boolean =
-//        dateTimeAdded.milliSecondsToNow() > ms
 
     @IgnoredOnParcel
     val fileExtension: String by lazy {

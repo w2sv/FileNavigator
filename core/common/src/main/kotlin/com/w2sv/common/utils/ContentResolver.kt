@@ -3,7 +3,6 @@ package com.w2sv.common.utils
 import android.content.ContentResolver
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import com.w2sv.androidutils.graphics.loadBitmap
 import slimber.log.i
