@@ -228,8 +228,9 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     override fun buildSummaryNotification(): Notification =
         Builder()
             .setContentTitle(
-                context.getString(
-                    if (nActiveNotifications >= 2) R.string.navigatable_files else R.string.navigatable_file,
+                context.resources.getQuantityString(
+                    R.plurals.navigatable_file,
+                    nActiveNotifications,
                     nActiveNotifications
                 )
             )
