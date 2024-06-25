@@ -71,7 +71,7 @@ fun NavigatorStatusCard(
                 toggleButtonProperties = ToggleNavigatorButtonProperties(
                     color = AppColor.success,
                     iconRes = R.drawable.ic_start_24,
-                    labelRes = R.string.start_navigator
+                    labelRes = R.string.start
                 ) { FileNavigator.start(context) }
             ),
             true to NavigatorIsRunningDependentProperties(
@@ -82,7 +82,7 @@ fun NavigatorStatusCard(
                 toggleButtonProperties = ToggleNavigatorButtonProperties(
                     color = AppColor.error,
                     iconRes = R.drawable.ic_stop_24,
-                    labelRes = R.string.stop_navigator
+                    labelRes = R.string.stop
                 ) { FileNavigator.stop(context) }
             )
         )
