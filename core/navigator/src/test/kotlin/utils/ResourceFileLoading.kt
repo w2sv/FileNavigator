@@ -1,4 +1,4 @@
-package com.w2sv.navigator.utils
+package utils
 
 import java.io.File
 

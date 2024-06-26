@@ -1,6 +1,5 @@
-package com.w2sv.navigator.utils
+package utils
 
-import android.net.Uri
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.navigator.mediastore.MediaStoreColumnData
 import com.w2sv.navigator.mediastore.MediaStoreFile

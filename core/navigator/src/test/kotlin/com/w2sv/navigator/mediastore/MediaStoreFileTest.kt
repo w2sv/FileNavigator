@@ -1,10 +1,10 @@
-package com.w2sv.navigator
+package com.w2sv.navigator.mediastore
 
-import com.w2sv.navigator.utils.TestInstancesProvider
 import com.w2sv.test.testParceling
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import utils.TestInstancesProvider
 
 @RunWith(RobolectricTestRunner::class)
 internal class MediaStoreFileTest {

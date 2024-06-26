@@ -1,13 +1,12 @@
-package com.w2sv.navigator
+package com.w2sv.navigator.mediastore
 
-import com.w2sv.navigator.mediastore.contentHash
-import com.w2sv.navigator.utils.getResourceFile
-import com.w2sv.navigator.utils.sizeInMb
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import utils.getResourceFile
+import utils.sizeInMb
 import java.security.MessageDigest
 
 @RunWith(RobolectricTestRunner::class)

@@ -1,6 +1,6 @@
-package com.w2sv.navigator
+package com.w2sv.navigator.mediastore
 
-import com.w2sv.navigator.utils.TestInstancesProvider
+import utils.TestInstancesProvider
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
