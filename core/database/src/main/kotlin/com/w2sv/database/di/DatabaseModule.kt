@@ -3,7 +3,7 @@ package com.w2sv.database.di
 import android.content.Context
 import androidx.room.Room
 import com.w2sv.database.AppDatabase
-import com.w2sv.database.Migrations
+import com.w2sv.database.migration.Migrations
 import com.w2sv.database.dao.MoveEntryDao
 import dagger.Module
 import dagger.Provides

@@ -1,4 +1,4 @@
-package com.w2sv.database.model
+package com.w2sv.database.entity
 
 import android.net.Uri
 import androidx.room.Entity

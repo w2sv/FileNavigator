@@ -1,4 +1,4 @@
-package com.w2sv.database
+package com.w2sv.database.migration
 
 import android.content.ContentValues
 import android.content.Context
