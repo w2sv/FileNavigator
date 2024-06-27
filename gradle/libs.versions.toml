@@ -75,7 +75,7 @@ google-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", ver
 
 # Other
 slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
-simplestorage = "com.anggrayudi:storage:1.5.5"
+simplestorage = "com.anggrayudi:storage:1.5.6"
 compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "compose-lint-checks" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
