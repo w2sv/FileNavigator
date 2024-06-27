@@ -30,7 +30,7 @@ internal class FileNavigatorTileService : TileService() {
     internal lateinit var scope: CoroutineScope
 
     @Inject
-    internal lateinit var fileNavigatorIsRunningStateFlow: FileNavigator.IsRunningStateFlow
+    internal lateinit var fileNavigatorIsRunning: FileNavigator.IsRunning
 
     /**
      * Called every time the quick tile pan is expanded. onStopListening behaves vice-versa.
@@ -41,7 +41,7 @@ internal class FileNavigatorTileService : TileService() {
         i { "onStartListening" }
 
         // Update tile state reactively on navigator status change
-        scope.collectFromFlow(fileNavigatorIsRunningStateFlow) { isRunning ->
+        scope.collectFromFlow(fileNavigatorIsRunning) { isRunning ->
             updateTileState(if (isRunning) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE)
         }
     }

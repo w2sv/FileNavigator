@@ -179,7 +179,7 @@ class MainActivity : ComponentActivity() {
         super.onStart()
 
         appVM.updateManageAllFilesPermissionGranted().let { isGranted ->
-            if (!isGranted && navigatorVM.isRunning.value) {
+            if (!isGranted && navigatorVM.navigatorIsRunning.value) {
                 FileNavigator.stop(this)
             }
         }

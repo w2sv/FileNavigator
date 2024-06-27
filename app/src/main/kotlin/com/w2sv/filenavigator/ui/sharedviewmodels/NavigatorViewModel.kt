@@ -22,7 +22,7 @@ typealias MakeSnackbarVisuals = (Context) -> SnackbarVisuals
 @HiltViewModel
 class NavigatorViewModel @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
-    val isRunning: FileNavigator.IsRunningStateFlow,
+    val navigatorIsRunning: FileNavigator.IsRunning,
     @ApplicationContext context: Context
 ) : ViewModel() {
 
@@ -45,7 +45,7 @@ class NavigatorViewModel @Inject constructor(
             }
         },
         onStateSynced = {
-            if (isRunning.value) {
+            if (navigatorIsRunning.value) {
                 FileNavigator.reregisterFileObservers(
                     context
                 )

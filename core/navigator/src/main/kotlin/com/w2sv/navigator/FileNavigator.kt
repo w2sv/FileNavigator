@@ -6,7 +6,6 @@ import android.os.Handler
 import android.os.HandlerThread
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.UnboundService
-import com.w2sv.androidutils.isServiceRunning
 import com.w2sv.navigator.fileobservers.FileObserver
 import com.w2sv.navigator.fileobservers.FileObserverProvider
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
@@ -15,11 +14,10 @@ import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificat
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 import javax.inject.Inject
-import javax.inject.Singleton
 
 internal typealias MediaTypeToFileObserver = Map<MediaType, FileObserver>
 
@@ -27,7 +25,7 @@ internal typealias MediaTypeToFileObserver = Map<MediaType, FileObserver>
 class FileNavigator : UnboundService() {
 
     @Inject
-    internal lateinit var isRunningStateFlow: IsRunningStateFlow
+    internal lateinit var isRunning: IsRunning
 
     @Inject
     internal lateinit var fileNavigatorIsRunningNotificationManager: FileNavigatorIsRunningNotificationManager
@@ -117,14 +115,14 @@ class FileNavigator : UnboundService() {
 
         i { "Registering file observers" }
         fileObservers = getRegisteredFileObservers()
-        isRunningStateFlow.value = true
+        isRunning.setState(true)
     }
 
     private fun stop() {
         i { "FileNavigator.stop" }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        isRunningStateFlow.value = false
+        isRunning.setState(false)
     }
 
     private fun unregisterFileObservers() {
@@ -141,10 +139,13 @@ class FileNavigator : UnboundService() {
         contentObserverHandlerThread.quit()
     }
 
-    @Singleton
-    class IsRunningStateFlow @Inject constructor(
-        @ApplicationContext context: Context
-    ) : MutableStateFlow<Boolean> by MutableStateFlow(context.isServiceRunning<FileNavigator>())
+    class IsRunning internal constructor(private val mutableStateFlow: MutableStateFlow<Boolean>) :
+        StateFlow<Boolean> by mutableStateFlow {
+
+        internal fun setState(value: Boolean) {
+            mutableStateFlow.value = value
+        }
+    }
 
     private data object Action {
         const val REREGISTER_MEDIA_OBSERVERS =

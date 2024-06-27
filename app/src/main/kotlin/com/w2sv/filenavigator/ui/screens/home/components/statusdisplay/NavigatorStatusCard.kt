@@ -59,7 +59,7 @@ fun NavigatorStatusCard(
     navController: NavController = LocalNavHostController.current,
     context: Context = LocalContext.current
 ) {
-    val navigatorIsRunning by navigatorVM.isRunning.collectAsStateWithLifecycle()
+    val navigatorIsRunning by navigatorVM.navigatorIsRunning.collectAsStateWithLifecycle()
 
     val navigatorIsRunningDependentPropertiesMap = remember {
         mapOf(
