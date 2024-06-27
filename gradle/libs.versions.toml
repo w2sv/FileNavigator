@@ -85,7 +85,7 @@ textflow = { module = "io.github.oleksandrbalan:textflow", version = "1.1.2" }
 
 # Testing
 junit = { module = "junit:junit", version.ref = "junit" }
-androidx-junit = "androidx.test.ext:junit:1.1.5"
+androidx-junit = "androidx.test.ext:junit:1.2.1"
 roboelectric = "org.robolectric:robolectric:4.12.2"
 rules = "androidx.test:rules:1.5.0"
 
