@@ -8,26 +8,19 @@ import com.w2sv.androidutils.widget.showToast
 
 @IntDef(Toast.LENGTH_SHORT, Toast.LENGTH_LONG)
 @Retention(AnnotationRetention.SOURCE)
-annotation class ToastDuration {
+private annotation class ToastDuration {
     companion object {
         const val DEFAULT = Toast.LENGTH_LONG
     }
 }
 
-sealed interface ToastMessage {
-    @JvmInline
-    value class String(val value: kotlin.String) : ToastMessage
-
-    @JvmInline
-    value class StringResId(@StringRes val value: Int) : ToastMessage
-}
-
-data class ToastProperties(
-    val message: ToastMessage,
+@Suppress("DataClassPrivateConstructor")
+data class ToastProperties private constructor(
+    val message: Message,
     @ToastDuration val duration: Int = ToastDuration.DEFAULT
 ) {
     constructor(message: String, @ToastDuration duration: Int = ToastDuration.DEFAULT) : this(
-        message = ToastMessage.String(message),
+        message = Message.String(message),
         duration = duration
     )
 
@@ -35,16 +28,24 @@ data class ToastProperties(
         @StringRes message: Int,
         @ToastDuration duration: Int = ToastDuration.DEFAULT
     ) : this(
-        message = ToastMessage.StringResId(message),
+        message = Message.StringResId(message),
         duration = duration
     )
+
+    sealed interface Message {
+        @JvmInline
+        value class String(val value: kotlin.String) : Message
+
+        @JvmInline
+        value class StringResId(@StringRes val value: Int) : Message
+    }
 }
 
 fun Context.showToast(properties: ToastProperties) {
     showToast(
         text = when (properties.message) {
-            is ToastMessage.String -> properties.message.value
-            is ToastMessage.StringResId -> getString(properties.message.value)
+            is ToastProperties.Message.String -> properties.message.value
+            is ToastProperties.Message.StringResId -> getString(properties.message.value)
         },
         duration = properties.duration
     )

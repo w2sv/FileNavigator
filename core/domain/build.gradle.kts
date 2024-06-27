@@ -11,10 +11,7 @@ dependencies {
     implementation(libs.androidutils)
     implementation(libs.slimber)
     implementation(libs.simplestorage)
-
     implementation(libs.androidx.core)
 
-    // Unit tests
-    testImplementation(libs.bundles.unitTest)
     testImplementation(projects.core.test)
 }

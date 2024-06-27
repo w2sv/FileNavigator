@@ -34,6 +34,7 @@ import com.ramcosta.composedestinations.generated.destinations.NavigatorSettings
 import com.ramcosta.composedestinations.navigation.navigate
 import com.w2sv.androidutils.openUrl
 import com.w2sv.androidutils.packagePlayStoreUrl
+import com.w2sv.androidutils.startActivity
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.AppUrl
 import com.w2sv.common.utils.startActivityWithActivityNotFoundExceptionHandling
@@ -106,7 +107,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     labelRes = R.string.rate,
                     explanationRes = R.string.rate_the_app_in_the_playstore,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.startActivityWithActivityNotFoundExceptionHandling(
+                        context.startActivity(
                             intent = Intent(
                                 Intent.ACTION_VIEW,
                                 Uri.parse(context.packagePlayStoreUrl)

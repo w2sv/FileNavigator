@@ -174,7 +174,7 @@ private fun FileNameWithTypeAndSourceIcon(moveEntry: MoveEntry, modifier: Modifi
             )
         }
         Icon(
-            painter = painterResource(id = moveEntry.combinedFileAndSourceTypeIconRes),
+            painter = painterResource(id = moveEntry.fileAndSourceType.iconRes),
             contentDescription = null,
             tint = moveEntry.fileType.color
         )

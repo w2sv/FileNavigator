@@ -1,4 +1,4 @@
-package com.w2sv.datastorage
+package com.w2sv.domain.model
 
 import com.w2sv.domain.model.FileType
 import com.w2sv.test.testParceling

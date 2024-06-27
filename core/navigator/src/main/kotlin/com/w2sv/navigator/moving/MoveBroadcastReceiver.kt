@@ -235,9 +235,7 @@ private fun moveDestinationRepresentation(
     "/${moveDestinationDocumentFile.fileName(context)}"
 
 private fun onMoveException(moveException: MoveException, context: Context, intent: Intent) {
-    moveException.toastProperties.let {
-        context.showToast(it)
-    }
+    context.showToast(moveException.toastProperties)
     if (moveException.cancelNotification) {
         NotificationResources.CleanupBroadcastReceiver.startFromResourcesComprisingIntent(
             context,
