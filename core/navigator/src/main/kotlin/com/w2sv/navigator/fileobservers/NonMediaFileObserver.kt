@@ -18,12 +18,14 @@ internal class NonMediaFileObserver(
     private val enabledFileTypeToAutoMoveConfigStateFlow: StateFlow<FileTypeToAutoMoveConfig>,
     contentResolver: ContentResolver,
     onNewMoveFile: (MoveFile) -> Unit,
+    cancelMostRecentNotification: () -> Unit,
     mediaStoreFileProvider: MediaStoreFileProvider,
     handler: Handler
 ) :
     FileObserver(
         contentResolver = contentResolver,
         onNewMoveFileListener = onNewMoveFile,
+        cancelMostRecentNotification = cancelMostRecentNotification,
         mediaStoreFileProvider = mediaStoreFileProvider,
         handler = handler
     ) {

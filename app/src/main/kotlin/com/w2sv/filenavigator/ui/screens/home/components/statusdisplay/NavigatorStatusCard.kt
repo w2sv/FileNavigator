@@ -132,7 +132,7 @@ fun NavigatorStatusCard(
                     onClick = { navController.navigate(NavigatorSettingsScreenDestination) }
                 ) {
                     Icon(
-                        painter = painterResource(id = com.w2sv.core.navigator.R.drawable.ic_settings_24),
+                        painter = painterResource(id = com.w2sv.core.common.R.drawable.ic_settings_24),
                         contentDescription = null
                     )
                 }

@@ -69,6 +69,9 @@ class FileNavigator : UnboundService() {
                     }
                 }
             },
+            cancelMostRecentNotification = {
+                newMoveFileNotificationManager.cancelMostRecentNotification()
+            },
             handler = Handler(contentObserverHandlerThread.looper)
         )
             .onEach { (mediaType, fileObserver) ->

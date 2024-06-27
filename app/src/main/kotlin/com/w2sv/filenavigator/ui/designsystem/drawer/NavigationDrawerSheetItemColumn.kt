@@ -37,7 +37,6 @@ import com.w2sv.androidutils.packagePlayStoreUrl
 import com.w2sv.androidutils.startActivity
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.AppUrl
-import com.w2sv.common.utils.startActivityWithActivityNotFoundExceptionHandling
 import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults
@@ -63,7 +62,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     modifier = Modifier
                 ),
                 NavigationDrawerSheetElement.Item(
-                    iconRes = com.w2sv.core.navigator.R.drawable.ic_settings_24,
+                    iconRes = com.w2sv.core.common.R.drawable.ic_settings_24,
                     labelRes = R.string.app_settings,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
                         scope.launch {
@@ -73,7 +72,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     },
                 ),
                 NavigationDrawerSheetElement.Item(
-                    iconRes = com.w2sv.core.navigator.R.drawable.ic_app_logo_24,
+                    iconRes = com.w2sv.core.common.R.drawable.ic_app_logo_24,
                     labelRes = R.string.navigator_settings,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
                         scope.launch {

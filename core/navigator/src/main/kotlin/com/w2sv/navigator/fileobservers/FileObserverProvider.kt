@@ -33,19 +33,22 @@ internal class FileObserverProvider @Inject constructor(
     operator fun invoke(
         handler: Handler,
         contentResolver: ContentResolver,
-        onNewMoveFile: (MoveFile) -> Unit
+        onNewMoveFile: (MoveFile) -> Unit,
+        cancelMostRecentNotification: () -> Unit
     ): MediaTypeToFileObserver {
         return buildMap {
             putAll(
                 mediaFileObservers(
                     contentResolver = contentResolver,
                     onNewMoveFile = onNewMoveFile,
+                    cancelMostRecentNotification = cancelMostRecentNotification,
                     handler = handler
                 )
             )
             nonMediaFileObserver(
                 contentResolver = contentResolver,
                 onNewMoveFile = onNewMoveFile,
+                cancelMostRecentNotification = cancelMostRecentNotification,
                 handler = handler
             )?.let {
                 put(MediaType.DOWNLOADS, it)
@@ -56,6 +59,7 @@ internal class FileObserverProvider @Inject constructor(
     private fun mediaFileObservers(
         contentResolver: ContentResolver,
         onNewMoveFile: (MoveFile) -> Unit,
+        cancelMostRecentNotification: () -> Unit,
         handler: Handler
     ): MediaTypeToFileObserver =
         FileType.Media.values
@@ -73,6 +77,7 @@ internal class FileObserverProvider @Inject constructor(
                         },
                     contentResolver = contentResolver,
                     onNewMoveFile = onNewMoveFile,
+                    cancelMostRecentNotification = cancelMostRecentNotification,
                     mediaStoreFileProvider = mediaStoreFileProvider,
                     handler = handler
                 )
@@ -81,6 +86,7 @@ internal class FileObserverProvider @Inject constructor(
     private fun nonMediaFileObserver(
         contentResolver: ContentResolver,
         onNewMoveFile: (MoveFile) -> Unit,
+        cancelMostRecentNotification: () -> Unit,
         handler: Handler
     ): NonMediaFileObserver? =
         FileType.NonMedia.values
@@ -98,6 +104,7 @@ internal class FileObserverProvider @Inject constructor(
                         },
                         contentResolver = contentResolver,
                         onNewMoveFile = onNewMoveFile,
+                        cancelMostRecentNotification = cancelMostRecentNotification,
                         mediaStoreFileProvider = mediaStoreFileProvider,
                         handler = handler
                     )

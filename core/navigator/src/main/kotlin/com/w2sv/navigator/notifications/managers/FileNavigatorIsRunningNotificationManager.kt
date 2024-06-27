@@ -46,7 +46,7 @@ internal class FileNavigatorIsRunningNotificationManager @Inject constructor(
                 // add stop action
                 addAction(
                     NotificationCompat.Action(
-                        R.drawable.ic_cancel_24,
+                        com.w2sv.core.common.R.drawable.ic_cancel_24,
                         context.getString(R.string.stop),
                         PendingIntent.getService(
                             context,

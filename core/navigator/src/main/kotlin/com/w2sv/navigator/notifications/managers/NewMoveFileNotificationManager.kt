@@ -190,7 +190,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 requestCode: Int,
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
-                    R.drawable.ic_app_logo_24,
+                    com.w2sv.core.common.R.drawable.ic_app_logo_24,
                     context.getString(R.string.move),
                     PendingIntent.getActivity(
                         context,
@@ -210,7 +210,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 lastMoveDestinationDirectoryName: String
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
-                    R.drawable.ic_app_logo_24,
+                    com.w2sv.core.common.R.drawable.ic_app_logo_24,
                     context.getString(R.string.to, lastMoveDestinationDirectoryName),
                     PendingIntent.getBroadcast(
                         context,

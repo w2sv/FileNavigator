@@ -11,15 +11,13 @@ import com.w2sv.androidutils.database.getStringOrThrow
 import com.w2sv.androidutils.database.query
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.domain.model.SourceType
-import com.w2sv.kotlinutils.time.localDateTimeFromMilliSecondsUnixTimestamp
+import com.w2sv.kotlinutils.time.localDateTimeFromSecondsUnixTimestamp
 import com.w2sv.navigator.shared.emitDiscardedLog
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
 import java.io.File
 import java.time.LocalDateTime
-
-//private const val RECENTLY_ADDED_MS_THRESHOLD = 5_000L
 
 /**
  * @param volumeRelativeDirPath Relative dir path from the storage volume, e.g. "Documents/", "DCIM/Camera/".
@@ -35,12 +33,6 @@ internal data class MediaStoreColumnData(
     val isPending: Boolean,
     val isTrashed: Boolean
 ) : Parcelable {
-
-//    @IgnoredOnParcel
-//    val recentlyAdded = !addedBeforeForMoreThan(RECENTLY_ADDED_MS_THRESHOLD)
-
-//    fun addedBeforeForMoreThan(ms: Long): Boolean =
-//        dateTimeAdded.milliSecondsToNow() > ms
 
     @IgnoredOnParcel
     val fileExtension: String by lazy {
@@ -110,7 +102,7 @@ internal data class MediaStoreColumnData(
                         absPath = it.getStringOrThrow(MediaStore.MediaColumns.DATA),
                         volumeRelativeDirPath = it.getStringOrThrow(MediaStore.MediaColumns.RELATIVE_PATH),
                         name = it.getStringOrThrow(MediaStore.MediaColumns.DISPLAY_NAME),
-                        dateTimeAdded = localDateTimeFromMilliSecondsUnixTimestamp(
+                        dateTimeAdded = localDateTimeFromSecondsUnixTimestamp(
                             it.getLongOrThrow(MediaStore.MediaColumns.DATE_ADDED)
                         ),
                         size = it.getLongOrThrow(MediaStore.MediaColumns.SIZE),

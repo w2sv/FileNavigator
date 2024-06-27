@@ -16,7 +16,7 @@ internal class MediaStoreFileProvider @Inject constructor() {
         data class Success(val mediaStoreFile: MediaStoreFile) : Result
         data object CouldntFetchMediaStoreColumnData : Result
         data object FileIsPending : Result
-        data object FileNotFoundException : Result
+        data object FileNotFound : Result
         data object AlreadySeen : Result
     }
 
@@ -25,7 +25,7 @@ internal class MediaStoreFileProvider @Inject constructor() {
     private val seenParametersCache =
         EvictingQueue.create<SeenParameters>(NavigatorConstant.SEEN_FILE_BUFFER_SIZE)
 
-    fun getMediaStoreFileIfNotPendingAndNotAlreadySeen(
+    fun provide(
         mediaUri: MediaUri,
         contentResolver: ContentResolver
     ): Result {
@@ -61,7 +61,7 @@ internal class MediaStoreFileProvider @Inject constructor() {
 //                .value
         } catch (e: FileNotFoundException) {
             emitDiscardedLog(e::toString)
-            return Result.FileNotFoundException
+            return Result.FileNotFound
         }
 
         seenParametersCache.add(seenParameters)

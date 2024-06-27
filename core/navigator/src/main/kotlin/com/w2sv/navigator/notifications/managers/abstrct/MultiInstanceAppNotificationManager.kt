@@ -32,6 +32,13 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
     protected val nActiveNotifications: Int
         get() = notificationIds.size
 
+    fun cancelMostRecentNotification(): Boolean {
+        return notificationIds.lastOrNull()?.let {
+            notificationManager.cancel(it)
+            true
+        } ?: false
+    }
+
     // =============
     // Building
     // =============
