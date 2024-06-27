@@ -158,5 +158,5 @@ dependencies {
 
     // Android Test
     androidTestImplementation(libs.androidx.compose.ui.test)
-    androidTestImplementation(libs.rules)
+    androidTestImplementation(libs.androidx.test.rules)
 }

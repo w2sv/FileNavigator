@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 internal fun Project.baseConfig() {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
-            jvmTarget.set(JvmTarget.fromTarget(libs.findVersionInt("java").toString()))
+            jvmTarget.set(JvmTarget.fromTarget(libs.findVersionString("java")))
         }
     }
     extensions.configure<KotlinProjectExtension> {

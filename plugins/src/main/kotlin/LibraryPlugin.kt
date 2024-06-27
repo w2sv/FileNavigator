@@ -8,7 +8,6 @@ class LibraryPlugin : Plugin<Project> {
                 apply(libs.findPluginId("android.library"))
                 apply(libs.findPluginId("kotlin.android"))
             }
-
             baseConfig()
         }
     }

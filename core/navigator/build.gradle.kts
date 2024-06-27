@@ -33,4 +33,5 @@ dependencies {
     // Test
 
     testImplementation(projects.core.test)
+    androidTestImplementation(libs.bundles.androidTest)
 }

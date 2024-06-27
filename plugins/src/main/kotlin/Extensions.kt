@@ -3,6 +3,9 @@ import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.getByType
 
+internal fun VersionCatalog.findVersionString(alias: String): String =
+    findVersion(alias).get().requiredVersion
+
 internal fun VersionCatalog.findVersionInt(alias: String): Int =
     findVersion(alias).get().requiredVersion.toInt()
 
