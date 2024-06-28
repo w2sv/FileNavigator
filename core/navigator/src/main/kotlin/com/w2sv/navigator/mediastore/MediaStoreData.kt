@@ -23,7 +23,7 @@ import java.time.LocalDateTime
  * @param volumeRelativeDirPath Relative dir path from the storage volume, e.g. "Documents/", "DCIM/Camera/".
  */
 @Parcelize
-internal data class MediaStoreColumnData(
+internal data class MediaStoreData(
     val rowId: String,
     val absPath: String,
     val volumeRelativeDirPath: String,
@@ -79,10 +79,10 @@ internal data class MediaStoreColumnData(
             }
 
     companion object {
-        fun fetch(
+        fun queryFor(
             mediaUri: MediaUri,
             contentResolver: ContentResolver
-        ): MediaStoreColumnData? =
+        ): MediaStoreData? =
             try {
                 contentResolver.query(
                     uri = mediaUri.uri,
@@ -97,7 +97,7 @@ internal data class MediaStoreColumnData(
                         MediaStore.MediaColumns.IS_TRASHED,
                     )
                 ) {
-                    MediaStoreColumnData(
+                    MediaStoreData(
                         rowId = it.getStringOrThrow(MediaStore.MediaColumns._ID),
                         absPath = it.getStringOrThrow(MediaStore.MediaColumns.DATA),
                         volumeRelativeDirPath = it.getStringOrThrow(MediaStore.MediaColumns.RELATIVE_PATH),

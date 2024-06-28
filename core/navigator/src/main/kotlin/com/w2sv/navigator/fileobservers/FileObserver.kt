@@ -1,26 +1,25 @@
 package com.w2sv.navigator.fileobservers
 
 import android.content.ContentResolver
+import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Handler
-import com.google.common.collect.EvictingQueue
 import com.w2sv.common.utils.MediaUri
-import com.w2sv.kotlinutils.time.durationBetween
 import com.w2sv.kotlinutils.time.durationToNow
 import com.w2sv.navigator.mediastore.MediaStoreFile
-import com.w2sv.navigator.mediastore.MediaStoreFileProvider
+import com.w2sv.navigator.mediastore.MediaStoreFileRetriever
+import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.MoveFile
-import com.w2sv.navigator.shared.NavigatorConstant
-import com.w2sv.navigator.shared.emitDiscardedLog
+import com.w2sv.navigator.moving.MoveMode
+import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import slimber.log.i
 import java.time.LocalDateTime
 
 internal abstract class FileObserver(
-    private val contentResolver: ContentResolver,
-    private val onNewMoveFileListener: (MoveFile) -> Unit,
-    private val cancelMostRecentNotification: () -> Unit,
-    private val mediaStoreFileProvider: MediaStoreFileProvider,
+    private val context: Context,
+    private val newMoveFileNotificationManager: NewMoveFileNotificationManager,
+    private val mediaStoreFileRetriever: MediaStoreFileRetriever,
     handler: Handler
 ) :
     ContentObserver(handler) {
@@ -29,98 +28,84 @@ internal abstract class FileObserver(
 
     override fun deliverSelfNotifications(): Boolean = false
 
-    private val seenMediaStoreFiles =
-        EvictingQueue.create<MediaStoreFile>(NavigatorConstant.SEEN_FILE_BUFFER_SIZE)
-
-    private var latestManualMoveCandidate: ManualMoveCandidate? = null
-
-    private var lastOnNewMoveFileListenerCallTime: LocalDateTime? = null
-
     override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
-        super.onChange(selfChange, uri, flags)
-
         if (flags and ContentResolver.NOTIFY_UPDATE != 0) {
-            println("NOTIFY_UPDATE")
-
+            emitOnChangeLog(uri, "UPDATE")
             onChangeCore(uri)
         }
         if (flags and ContentResolver.NOTIFY_INSERT != 0) {
-            println("NOTIFY_INSERT")
+            emitOnChangeLog(uri, "INSERT")
         }
-        if (flags and ContentResolver.NOTIFY_DELETE != 0 && lastOnNewMoveFileListenerCallTime?.durationToNow()
+        if (flags and ContentResolver.NOTIFY_DELETE != 0 && mostRecentEmittedNotification?.dateTime?.durationToNow()
                 ?.toMillis()?.let { it <= 1_000 } == true
         ) {
-            println("NOTIFY_DELETE")
-            cancelMostRecentNotification()
+            emitOnChangeLog(uri, "DELETE")
+            newMoveFileNotificationManager.cancelNotificationAndFreeResources(
+                mostRecentEmittedNotification!!.builderArgs.resources
+            )
         }
+    }
+
+    override fun onChange(selfChange: Boolean, uri: Uri?) {
+        emitOnChangeLog(uri, "FLAGLESS")
+        onChangeCore(uri)
+    }
+
+    private data class EmittedNotification(
+        val builderArgs: NewMoveFileNotificationManager.BuilderArgs,
+        val dateTime: LocalDateTime = LocalDateTime.now()
+    )
+
+    private var mostRecentEmittedNotification: EmittedNotification? = null
+
+    private fun onNewMoveFile(moveFile: MoveFile) {
+        when (moveFile.moveMode) {
+            is MoveMode.Auto -> {
+                MoveBroadcastReceiver.sendBroadcast(
+                    context = context,
+                    moveFile = moveFile
+                )
+            }
+
+            else -> {
+                // with scope because construction of inner class BuilderArgs requires inner class scope
+                with(newMoveFileNotificationManager) {
+                    buildAndEmit(
+                        BuilderArgs(
+                            moveFile = moveFile
+                        )
+                            .also {
+                                mostRecentEmittedNotification = EmittedNotification(it)
+                            }
+                    )
+                }
+            }
+        }
+    }
+
+    private fun emitOnChangeLog(uri: Uri?, flagTitle: String) {
+        i { "$logIdentifier $flagTitle $uri" }
     }
 
     private fun onChangeCore(uri: Uri?) {
-        i { "$logIdentifier onChange | Uri: $uri" }
-
         val mediaUri = uri?.let { MediaUri(it) } ?: return
 
-        val changeObservationDateTime = LocalDateTime.now()
-        val manualMoveCandidate by lazy {
-            ManualMoveCandidate(
+        val mediaStoreFileRetrievalResult =
+            mediaStoreFileRetriever.provide(
                 mediaUri = mediaUri,
-                changeObservationDateTime = changeObservationDateTime
-            )
-        }
-        val mediaStoreFileProvisionResult =
-            mediaStoreFileProvider.provide(
-                mediaUri = mediaUri,
-                contentResolver = contentResolver
+                contentResolver = context.contentResolver
             )
 
-        when (mediaStoreFileProvisionResult) {
-            is MediaStoreFileProvider.Result.Success -> {
-                when {
-                    matchesLatestManualMoveCandidate(manualMoveCandidate) -> {
-                        seenMediaStoreFiles.add(mediaStoreFileProvisionResult.mediaStoreFile)
-                        emitDiscardedLog { "Manually moved file" }
-                    }
+        if (mediaStoreFileRetrievalResult !is MediaStoreFileRetriever.Result.Success) return
 
-                    seenMediaStoreFiles.any { it.isIdenticalFileAs(mediaStoreFileProvisionResult.mediaStoreFile) } -> emitDiscardedLog { "Identical file in cache" }
-
-                    else -> {
-                        getMoveFileIfMatchingConstraints(mediaStoreFileProvisionResult.mediaStoreFile)
-                            ?.let {
-                                i { "Calling onNewNavigatableFileListener on $it" }
-                                lastOnNewMoveFileListenerCallTime = LocalDateTime.now()
-                                onNewMoveFileListener(it)
-                            }
-
-                        seenMediaStoreFiles.add(mediaStoreFileProvisionResult.mediaStoreFile)
-                        i { "Added ${mediaStoreFileProvisionResult.mediaStoreFile} to cache" }
-                    }
-                }
+        getMoveFileIfMatchingConstraints(mediaStoreFileRetrievalResult.mediaStoreFile)
+            ?.let {
+                i { "Calling onNewNavigatableFileListener on $it" }
+                onNewMoveFile(it)
             }
-
-            is MediaStoreFileProvider.Result.CouldntFetchMediaStoreColumnData -> {
-                latestManualMoveCandidate = manualMoveCandidate
-            }
-
-            else -> Unit
-        }
     }
-
-    private fun matchesLatestManualMoveCandidate(candidate: ManualMoveCandidate): Boolean =
-        latestManualMoveCandidate?.matches(
-            other = candidate,
-            milliSecondsThreshold = 500
-        ) == true
 
     protected abstract fun getMoveFileIfMatchingConstraints(
         mediaStoreFile: MediaStoreFile
     ): MoveFile?
-}
-
-private data class ManualMoveCandidate(
-    val mediaUri: MediaUri,
-    val changeObservationDateTime: LocalDateTime
-) {
-    fun matches(other: ManualMoveCandidate, milliSecondsThreshold: Int): Boolean =
-        mediaUri != other.mediaUri && changeObservationDateTime.durationBetween(other.changeObservationDateTime)
-            .toMillis() < milliSecondsThreshold
 }

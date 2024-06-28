@@ -1,7 +1,8 @@
 package com.w2sv.navigator.fileobservers
 
-import android.content.ContentResolver
+import android.content.Context
 import android.os.Handler
+import android.os.HandlerThread
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
@@ -11,18 +12,21 @@ import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.mapState
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.MediaTypeToFileObserver
-import com.w2sv.navigator.mediastore.MediaStoreFileProvider
-import com.w2sv.navigator.moving.MoveFile
+import com.w2sv.navigator.mediastore.MediaStoreFileRetriever
+import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class FileObserverProvider @Inject constructor(
+internal class FileObserverFactory @Inject constructor(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
+    private val mediaStoreFileRetriever: MediaStoreFileRetriever,
+    private val newMoveFileNotificationManager: NewMoveFileNotificationManager,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
-    private val mediaStoreFileProvider: MediaStoreFileProvider
+    @ApplicationContext private val context: Context
 ) {
     private val fileTypeConfigMapStateFlow by lazy {
         navigatorConfigDataSource.navigatorConfig
@@ -30,38 +34,33 @@ internal class FileObserverProvider @Inject constructor(
             .stateInWithSynchronousInitial(scope)
     }
 
-    operator fun invoke(
-        handler: Handler,
-        contentResolver: ContentResolver,
-        onNewMoveFile: (MoveFile) -> Unit,
-        cancelMostRecentNotification: () -> Unit
-    ): MediaTypeToFileObserver {
+    private val handlerThread by lazy {
+        HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
+    }
+    private val handler by lazy {
+        Handler(handlerThread.looper)
+    }
+
+    fun quitThread() {
+        handlerThread.quit()
+    }
+
+    operator fun invoke(): MediaTypeToFileObserver {
+        if (!handlerThread.isAlive) {
+            handlerThread.start()
+        }
+
         return buildMap {
             putAll(
-                mediaFileObservers(
-                    contentResolver = contentResolver,
-                    onNewMoveFile = onNewMoveFile,
-                    cancelMostRecentNotification = cancelMostRecentNotification,
-                    handler = handler
-                )
+                mediaFileObservers()
             )
-            nonMediaFileObserver(
-                contentResolver = contentResolver,
-                onNewMoveFile = onNewMoveFile,
-                cancelMostRecentNotification = cancelMostRecentNotification,
-                handler = handler
-            )?.let {
+            nonMediaFileObserver()?.let {
                 put(MediaType.DOWNLOADS, it)
             }
         }
     }
 
-    private fun mediaFileObservers(
-        contentResolver: ContentResolver,
-        onNewMoveFile: (MoveFile) -> Unit,
-        cancelMostRecentNotification: () -> Unit,
-        handler: Handler
-    ): MediaTypeToFileObserver =
+    private fun mediaFileObservers(): MediaTypeToFileObserver =
         FileType.Media.values
             .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
             .associate { mediaFileType ->
@@ -75,20 +74,14 @@ internal class FileObserverProvider @Inject constructor(
                                 .filterValues { it.enabled }
                                 .mapValues { it.value.autoMoveConfig }
                         },
-                    contentResolver = contentResolver,
-                    onNewMoveFile = onNewMoveFile,
-                    cancelMostRecentNotification = cancelMostRecentNotification,
-                    mediaStoreFileProvider = mediaStoreFileProvider,
+                    context = context,
+                    newMoveFileNotificationManager = newMoveFileNotificationManager,
+                    mediaStoreFileRetriever = mediaStoreFileRetriever,
                     handler = handler
                 )
             }
 
-    private fun nonMediaFileObserver(
-        contentResolver: ContentResolver,
-        onNewMoveFile: (MoveFile) -> Unit,
-        cancelMostRecentNotification: () -> Unit,
-        handler: Handler
-    ): NonMediaFileObserver? =
+    private fun nonMediaFileObserver(): NonMediaFileObserver? =
         FileType.NonMedia.values
             .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
             .let { enabledFileTypes ->
@@ -102,10 +95,9 @@ internal class FileObserverProvider @Inject constructor(
                                     .autoMoveConfig
                             }
                         },
-                        contentResolver = contentResolver,
-                        onNewMoveFile = onNewMoveFile,
-                        cancelMostRecentNotification = cancelMostRecentNotification,
-                        mediaStoreFileProvider = mediaStoreFileProvider,
+                        context = context,
+                        newMoveFileNotificationManager = newMoveFileNotificationManager,
+                        mediaStoreFileRetriever = mediaStoreFileRetriever,
                         handler = handler
                     )
                 } else {

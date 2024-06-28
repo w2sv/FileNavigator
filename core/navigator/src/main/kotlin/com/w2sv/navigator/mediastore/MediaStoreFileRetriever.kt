@@ -10,11 +10,11 @@ import java.io.FileNotFoundException
 import java.security.MessageDigest
 import javax.inject.Inject
 
-internal class MediaStoreFileProvider @Inject constructor() {
+internal class MediaStoreFileRetriever @Inject constructor() {
 
     sealed interface Result {
         data class Success(val mediaStoreFile: MediaStoreFile) : Result
-        data object CouldntFetchMediaStoreColumnData : Result
+        data object CouldntRetrieveMediaStoreData : Result
         data object FileIsPending : Result
         data object FileNotFound : Result
         data object AlreadySeen : Result
@@ -31,8 +31,8 @@ internal class MediaStoreFileProvider @Inject constructor() {
     ): Result {
         // Fetch MediaStoreColumnData; exit if impossible
         val columnData =
-            MediaStoreColumnData.fetch(mediaUri, contentResolver)
-                ?: return Result.CouldntFetchMediaStoreColumnData
+            MediaStoreData.queryFor(mediaUri, contentResolver)
+                ?: return Result.CouldntRetrieveMediaStoreData
 
         // Exit if file is pending or trashed
         if (columnData.isPending) {

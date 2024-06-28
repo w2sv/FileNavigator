@@ -1,14 +1,15 @@
 package com.w2sv.navigator.fileobservers
 
-import android.content.ContentResolver
+import android.content.Context
 import android.os.Handler
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.navigator.mediastore.MediaStoreFile
-import com.w2sv.navigator.mediastore.MediaStoreFileProvider
+import com.w2sv.navigator.mediastore.MediaStoreFileRetriever
 import com.w2sv.navigator.moving.MoveFile
+import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
@@ -16,17 +17,15 @@ internal typealias FileTypeToAutoMoveConfig = Map<FileType.NonMedia, AutoMoveCon
 
 internal class NonMediaFileObserver(
     private val enabledFileTypeToAutoMoveConfigStateFlow: StateFlow<FileTypeToAutoMoveConfig>,
-    contentResolver: ContentResolver,
-    onNewMoveFile: (MoveFile) -> Unit,
-    cancelMostRecentNotification: () -> Unit,
-    mediaStoreFileProvider: MediaStoreFileProvider,
+    context: Context,
+    newMoveFileNotificationManager: NewMoveFileNotificationManager,
+    mediaStoreFileRetriever: MediaStoreFileRetriever,
     handler: Handler
 ) :
     FileObserver(
-        contentResolver = contentResolver,
-        onNewMoveFileListener = onNewMoveFile,
-        cancelMostRecentNotification = cancelMostRecentNotification,
-        mediaStoreFileProvider = mediaStoreFileProvider,
+        context = context,
+        newMoveFileNotificationManager = newMoveFileNotificationManager,
+        mediaStoreFileRetriever = mediaStoreFileRetriever,
         handler = handler
     ) {
 

@@ -4,7 +4,7 @@ import utils.TestInstancesProvider
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
-internal class MediaStoreColumnDataTest {
+internal class MediaStoreDataTest {
 
 //    @Test
 //    fun testExistsForMoreThan() {

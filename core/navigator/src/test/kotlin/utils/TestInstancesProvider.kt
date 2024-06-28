@@ -1,7 +1,7 @@
 package utils
 
 import com.w2sv.common.utils.MediaUri
-import com.w2sv.navigator.mediastore.MediaStoreColumnData
+import com.w2sv.navigator.mediastore.MediaStoreData
 import com.w2sv.navigator.mediastore.MediaStoreFile
 import java.time.LocalDateTime
 
@@ -16,8 +16,8 @@ internal object TestInstancesProvider {
         size: Long = 0L,
         isPending: Boolean = false,
         isTrashed: Boolean = false
-    ): MediaStoreColumnData =
-        MediaStoreColumnData(
+    ): MediaStoreData =
+        MediaStoreData(
             rowId = rowId,
             absPath = absPath,
             volumeRelativeDirPath = volumeRelativeDirPath,

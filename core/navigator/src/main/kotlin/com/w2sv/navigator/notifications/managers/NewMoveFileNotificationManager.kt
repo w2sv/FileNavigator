@@ -234,7 +234,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                     nActiveNotifications
                 )
             )
-            .setOnlyAlertOnce(true)
+            .setSilent(true)
             .setGroupSummary(true)
             .build()
 }

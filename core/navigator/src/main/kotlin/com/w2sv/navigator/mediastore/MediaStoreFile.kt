@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 internal data class MediaStoreFile(
     val mediaUri: MediaUri,
-    val columnData: MediaStoreColumnData,
+    val columnData: MediaStoreData,
     val sha256: String
 ) : Parcelable {
 
