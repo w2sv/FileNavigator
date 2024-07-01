@@ -43,18 +43,16 @@ internal class MediaFileObserver(
     override fun getMoveFileIfMatchingConstraints(
         mediaStoreFile: MediaStoreFile
     ): MoveFile? {
-        if (fileType.matchesFileExtension(mediaStoreFile.columnData.fileExtension)) {
-            val sourceType = mediaStoreFile.columnData.getSourceType()
+        val sourceType = mediaStoreFile.columnData.getSourceType()
 
-            if (enabledSourceTypeToAutoMoveConfig.contains(sourceType)) {
-                return MoveFile(
-                    mediaStoreFile = mediaStoreFile,
-                    fileAndSourceType = FileAndSourceType(fileType, sourceType),
-                    moveMode = enabledSourceTypeToAutoMoveConfig
-                        .getValue(sourceType)
-                        .moveMode
-                )
-            }
+        if (enabledSourceTypeToAutoMoveConfig.contains(sourceType)) {
+            return MoveFile(
+                mediaStoreFile = mediaStoreFile,
+                fileAndSourceType = FileAndSourceType(fileType, sourceType),
+                moveMode = enabledSourceTypeToAutoMoveConfig
+                    .getValue(sourceType)
+                    .moveMode
+            )
         }
         return null
     }
