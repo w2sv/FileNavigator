@@ -8,15 +8,18 @@ import android.os.Build
 import android.os.Handler
 import androidx.annotation.RequiresApi
 import com.w2sv.common.utils.MediaUri
-import com.w2sv.kotlinutils.time.durationToNow
+import com.w2sv.kotlinutils.coroutines.launchDelayed
 import com.w2sv.navigator.mediastore.MediaStoreFile
 import com.w2sv.navigator.mediastore.MediaStoreFileRetriever
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.MoveFile
 import com.w2sv.navigator.moving.MoveMode
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import slimber.log.i
-import java.time.LocalDateTime
 
 private enum class FileChangeOperation(private val flag: Int?) {
     @RequiresApi(Build.VERSION_CODES.R)
@@ -47,6 +50,8 @@ internal abstract class FileObserver(
 ) :
     ContentObserver(handler) {
 
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
     protected abstract val logIdentifier: String
 
     override fun deliverSelfNotifications(): Boolean = false
@@ -57,12 +62,10 @@ internal abstract class FileObserver(
             FileChangeOperation.determine(flags).also { emitOnChangeLog(uri, it) }
         when (fileChangeOperation) {
             FileChangeOperation.Delete -> {
-                if (mostRecentEmittedNotification?.dateTime?.durationToNow()
-                        ?.toMillis()?.let { it <= 500 } == true
-                ) {
-                    newMoveFileNotificationManager.cancelNotificationAndFreeResources(
-                        mostRecentEmittedNotification!!.builderArgs.resources
-                    )
+                mostRecentOnNewMoveFileJob?.let {
+                    if (it.isActive) {
+                        it.cancel()
+                    }
                 }
             }
 
@@ -78,33 +81,27 @@ internal abstract class FileObserver(
         onChangeCore(uri)
     }
 
-    private data class EmittedNotification(
-        val builderArgs: NewMoveFileNotificationManager.BuilderArgs,
-        val dateTime: LocalDateTime = LocalDateTime.now()
-    )
-
-    private var mostRecentEmittedNotification: EmittedNotification? = null
+    private var mostRecentOnNewMoveFileJob: Job? = null
 
     private fun onNewMoveFile(moveFile: MoveFile) {
-        when (moveFile.moveMode) {
-            is MoveMode.Auto -> {
-                MoveBroadcastReceiver.sendBroadcast(
-                    context = context,
-                    moveFile = moveFile
-                )
-            }
-
-            else -> {
-                // with scope because construction of inner class BuilderArgs requires inner class scope
-                with(newMoveFileNotificationManager) {
-                    buildAndEmit(
-                        BuilderArgs(
-                            moveFile = moveFile
-                        )
-                            .also {
-                                mostRecentEmittedNotification = EmittedNotification(it)
-                            }
+        mostRecentOnNewMoveFileJob = scope.launchDelayed(300L) {
+            when (moveFile.moveMode) {
+                is MoveMode.Auto -> {
+                    MoveBroadcastReceiver.sendBroadcast(
+                        context = context,
+                        moveFile = moveFile
                     )
+                }
+
+                else -> {
+                    // with scope because construction of inner class BuilderArgs requires inner class scope
+                    with(newMoveFileNotificationManager) {
+                        buildAndEmit(
+                            BuilderArgs(
+                                moveFile = moveFile
+                            )
+                        )
+                    }
                 }
             }
         }

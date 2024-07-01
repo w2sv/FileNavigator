@@ -67,11 +67,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 setContentTitle(
                     context.getString(
                         R.string.new_move_file_notification_title,
-                        args.moveFile.fileAndSourceType.moveFileLabel(
-                            context = context,
-                            isGif = args.moveFile.isGif,
-                            sourceDirName = args.moveFile.mediaStoreFile.columnData.dirName
-                        )
+                        args.moveFile.label(context = context)
                     )
                 )
                 // Set file source icon

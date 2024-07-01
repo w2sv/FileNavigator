@@ -24,37 +24,6 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
         }
     }
 
-    fun moveFileLabel(context: Context, isGif: Boolean, sourceDirName: String): String =
-        when {
-            isGif -> context.getString(R.string.gif)
-            else -> {
-                when (sourceType) {
-                    SourceType.Screenshot, SourceType.Recording -> context.getString(
-                        sourceType.labelRes
-                    )
-
-                    SourceType.Camera -> context.getString(
-                        when (fileType) {
-                            FileType.Image -> R.string.photo
-                            FileType.Video -> R.string.video
-                            else -> throw Error()
-                        }
-                    )
-
-                    SourceType.Download -> context.getString(
-                        R.string.file_type_download,
-                        context.getString(fileType.labelRes),
-                    )
-
-                    SourceType.OtherApp -> "$sourceDirName ${
-                        context.getString(
-                            fileType.labelRes
-                        )
-                    }"
-                }
-            }
-        }
-
     /**
      * @return
      * - Gif -> 'GIF'

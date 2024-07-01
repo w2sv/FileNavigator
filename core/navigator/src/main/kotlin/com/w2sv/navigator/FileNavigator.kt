@@ -28,7 +28,7 @@ class FileNavigator : UnboundService() {
     @Inject
     internal lateinit var fileObserverFactory: FileObserverFactory
 
-    private var fileObservers: MediaTypeToFileObserver? = null
+    private var mediaTypeToFileObserver: MediaTypeToFileObserver? = null
 
     private fun getRegisteredFileObservers(): MediaTypeToFileObserver {
         return fileObserverFactory.invoke()
@@ -52,7 +52,7 @@ class FileNavigator : UnboundService() {
 
             Action.REREGISTER_MEDIA_OBSERVERS -> {
                 unregisterFileObservers()
-                fileObservers = getRegisteredFileObservers()
+                mediaTypeToFileObserver = getRegisteredFileObservers()
             }
 
             else -> try {
@@ -75,7 +75,7 @@ class FileNavigator : UnboundService() {
         )
 
         i { "Registering file observers" }
-        fileObservers = getRegisteredFileObservers()
+        mediaTypeToFileObserver = getRegisteredFileObservers()
         isRunning.setState(true)
     }
 
@@ -87,7 +87,7 @@ class FileNavigator : UnboundService() {
     }
 
     private fun unregisterFileObservers() {
-        fileObservers?.values?.forEach {
+        mediaTypeToFileObserver?.values?.forEach {
             contentResolver.unregisterContentObserver(it)
         }
         i { "Unregistered fileObservers" }
