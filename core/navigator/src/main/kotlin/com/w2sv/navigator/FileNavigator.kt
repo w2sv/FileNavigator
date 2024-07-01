@@ -23,7 +23,7 @@ class FileNavigator : UnboundService() {
     internal lateinit var isRunning: IsRunning
 
     @Inject
-    internal lateinit var fileNavigatorIsRunningNotificationManager: FileNavigatorIsRunningNotificationManager
+    internal lateinit var isRunningNotificationManager: FileNavigatorIsRunningNotificationManager
 
     @Inject
     internal lateinit var fileObserverFactory: FileObserverFactory
@@ -69,7 +69,7 @@ class FileNavigator : UnboundService() {
     private fun start() {
         startForeground(
             1,
-            fileNavigatorIsRunningNotificationManager.buildNotification(
+            isRunningNotificationManager.buildNotification(
                 AppNotificationManager.BuilderArgs.Empty
             )
         )

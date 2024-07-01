@@ -4,7 +4,9 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
+import androidx.annotation.RequiresApi
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.kotlinutils.time.durationToNow
 import com.w2sv.navigator.mediastore.MediaStoreFile
@@ -15,6 +17,27 @@ import com.w2sv.navigator.moving.MoveMode
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import slimber.log.i
 import java.time.LocalDateTime
+
+private enum class FileChangeOperation(private val flag: Int?) {
+    @RequiresApi(Build.VERSION_CODES.R)
+    Update(ContentResolver.NOTIFY_UPDATE),
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    Insert(ContentResolver.NOTIFY_INSERT),
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    Delete(ContentResolver.NOTIFY_DELETE),
+
+    Unclassified(null);
+
+    companion object {
+        /**
+         * Depends on [Unclassified] being the last entry!!!
+         */
+        fun determine(contentObserverOnChangeFlags: Int): FileChangeOperation =
+            entries.first { it.flag == null || it.flag and contentObserverOnChangeFlags != 0 }
+    }
+}
 
 internal abstract class FileObserver(
     private val context: Context,
@@ -28,26 +51,30 @@ internal abstract class FileObserver(
 
     override fun deliverSelfNotifications(): Boolean = false
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
-        if (flags and ContentResolver.NOTIFY_UPDATE != 0) {
-            emitOnChangeLog(uri, "UPDATE")
-            onChangeCore(uri)
-        }
-        if (flags and ContentResolver.NOTIFY_INSERT != 0) {
-            emitOnChangeLog(uri, "INSERT")
-        }
-        if (flags and ContentResolver.NOTIFY_DELETE != 0 && mostRecentEmittedNotification?.dateTime?.durationToNow()
-                ?.toMillis()?.let { it <= 1_000 } == true
-        ) {
-            emitOnChangeLog(uri, "DELETE")
-            newMoveFileNotificationManager.cancelNotificationAndFreeResources(
-                mostRecentEmittedNotification!!.builderArgs.resources
-            )
+        val fileChangeOperation =
+            FileChangeOperation.determine(flags).also { emitOnChangeLog(uri, it) }
+        when (fileChangeOperation) {
+            FileChangeOperation.Delete -> {
+                if (mostRecentEmittedNotification?.dateTime?.durationToNow()
+                        ?.toMillis()?.let { it <= 500 } == true
+                ) {
+                    newMoveFileNotificationManager.cancelNotificationAndFreeResources(
+                        mostRecentEmittedNotification!!.builderArgs.resources
+                    )
+                }
+            }
+
+            FileChangeOperation.Insert -> Unit
+            FileChangeOperation.Update, FileChangeOperation.Unclassified -> {
+                onChangeCore(uri)
+            }
         }
     }
 
     override fun onChange(selfChange: Boolean, uri: Uri?) {
-        emitOnChangeLog(uri, "FLAGLESS")
+        emitOnChangeLog(uri, FileChangeOperation.Unclassified)
         onChangeCore(uri)
     }
 
@@ -83,8 +110,8 @@ internal abstract class FileObserver(
         }
     }
 
-    private fun emitOnChangeLog(uri: Uri?, flagTitle: String) {
-        i { "$logIdentifier $flagTitle $uri" }
+    private fun emitOnChangeLog(uri: Uri?, fileChangeOperation: FileChangeOperation) {
+        i { "$logIdentifier ${fileChangeOperation.name} $uri" }
     }
 
     private fun onChangeCore(uri: Uri?) {
