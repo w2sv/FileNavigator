@@ -23,8 +23,5 @@ internal sealed interface MoveMode : Parcelable {
         get() = this is Auto
 
     val updateLastMoveDestinations: Boolean
-        get() = when (this) {
-            is ManualSelection -> true
-            else -> false
-        }
+        get() = this is ManualSelection
 }
