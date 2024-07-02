@@ -10,7 +10,7 @@ import utils.sizeInMb
 import java.security.MessageDigest
 
 @RunWith(RobolectricTestRunner::class)
-class MediaStoreFileRetrieverTest {
+class MoveFileProducerTest {
 
     private val sha256MessageDigest = MessageDigest.getInstance("SHA-256")
 

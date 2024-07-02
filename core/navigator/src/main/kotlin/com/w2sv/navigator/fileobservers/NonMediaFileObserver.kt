@@ -5,51 +5,44 @@ import android.os.Handler
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
-import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
-import com.w2sv.navigator.mediastore.MediaStoreFile
-import com.w2sv.navigator.mediastore.MediaStoreFileRetriever
-import com.w2sv.navigator.moving.MoveFile
+import com.w2sv.navigator.mediastore.MoveFile
+import com.w2sv.navigator.mediastore.MediaStoreFileProducer
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
-internal typealias FileTypeToAutoMoveConfig = Map<FileType.NonMedia, AutoMoveConfig>
-
 internal class NonMediaFileObserver(
-    private val enabledFileTypeToAutoMoveConfigStateFlow: StateFlow<FileTypeToAutoMoveConfig>,
-    context: Context,
+    private val enabledFileTypesStateFlow: StateFlow<Set<FileType.NonMedia>>,
+    fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
     newMoveFileNotificationManager: NewMoveFileNotificationManager,
-    mediaStoreFileRetriever: MediaStoreFileRetriever,
+    mediaStoreFileProducer: MediaStoreFileProducer,
+    context: Context,
     handler: Handler
 ) :
     FileObserver(
         context = context,
         newMoveFileNotificationManager = newMoveFileNotificationManager,
-        mediaStoreFileRetriever = mediaStoreFileRetriever,
+        mediaStoreFileProducer = mediaStoreFileProducer,
+        fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
         handler = handler
     ) {
 
-    init {
-        i { "Initialized NonMediaFileObserver with fileTypes: ${enabledFileTypeToAutoMoveConfig.keys.map { it.logIdentifier }}" }
-    }
-
-    private val enabledFileTypeToAutoMoveConfig: FileTypeToAutoMoveConfig
-        get() = enabledFileTypeToAutoMoveConfigStateFlow.value
+    private val enabledFileTypes: Set<FileType.NonMedia>
+        get() = enabledFileTypesStateFlow.value
 
     override val logIdentifier: String
         get() = this.javaClass.simpleName
 
-    override fun getMoveFileIfMatchingConstraints(
-        mediaStoreFile: MediaStoreFile
-    ): MoveFile? =
-        enabledFileTypeToAutoMoveConfig
-            .keys
-            .firstOrNull { it.matchesFileExtension(mediaStoreFile.columnData.fileExtension) }
+    init {
+        i { "Initialized NonMediaFileObserver with fileTypes: ${enabledFileTypes.map { it.logIdentifier }}" }
+    }
+
+    override fun enabledFileAndSourceTypeOrNull(
+        moveFile: MoveFile
+    ): FileAndSourceType? =
+        enabledFileTypes
+            .firstOrNull { it.matchesFileExtension(moveFile.mediaStoreData.fileExtension) }
             ?.let { fileType ->
-                MoveFile(
-                    mediaStoreFile = mediaStoreFile,
-                    fileAndSourceType = FileAndSourceType(fileType, SourceType.Download),
-                    moveMode = enabledFileTypeToAutoMoveConfig.getValue(fileType).moveMode
-                )
+                FileAndSourceType(fileType, SourceType.Download)
             }
 }

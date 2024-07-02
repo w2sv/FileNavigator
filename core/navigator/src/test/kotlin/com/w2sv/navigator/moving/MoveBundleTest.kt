@@ -11,12 +11,12 @@ import org.robolectric.RobolectricTestRunner
 import utils.TestInstancesProvider
 
 @RunWith(RobolectricTestRunner::class)
-internal class MoveFileTest {
+internal class MoveBundleTest {
 
     @Test
     fun testParceling() {
-        MoveFile(
-            mediaStoreFile = TestInstancesProvider.getMediaStoreFile(),
+        MoveBundle(
+            moveFile = TestInstancesProvider.getMediaStoreFile(),
             fileAndSourceType = FileAndSourceType(FileType.Image, SourceType.Camera),
             moveMode = MoveMode.Auto(DocumentUri.parse("gamba"))
         )

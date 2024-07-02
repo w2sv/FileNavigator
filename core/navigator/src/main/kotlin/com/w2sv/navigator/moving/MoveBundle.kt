@@ -13,23 +13,23 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.model.SourceType
-import com.w2sv.navigator.mediastore.MediaStoreFile
+import com.w2sv.navigator.mediastore.MoveFile
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
 @Parcelize
-internal data class MoveFile(
-    val mediaStoreFile: MediaStoreFile,
+internal data class MoveBundle(
+    val moveFile: MoveFile,
     val fileAndSourceType: FileAndSourceType,
     val moveMode: MoveMode?
 ) : Parcelable {
 
     fun simpleStorageMediaFile(context: Context): MediaFile? =
         MediaStoreCompat.fromMediaId(
-            context,
-            fileType.simpleStorageMediaType,
-            mediaStoreFile.columnData.rowId
+            context = context,
+            mediaType = fileType.simpleStorageMediaType,
+            id = moveFile.mediaStoreData.rowId
         )
 
     val fileType: FileType
@@ -40,7 +40,7 @@ internal data class MoveFile(
 
     @IgnoredOnParcel
     val isGif: Boolean by lazy {
-        fileType is FileType.Image && mediaStoreFile.columnData.fileExtension.lowercase() == "gif"
+        fileType is FileType.Image && moveFile.mediaStoreData.fileExtension.lowercase() == "gif"
     }
 
     fun moveEntry(
@@ -51,7 +51,7 @@ internal data class MoveFile(
         autoMoved: Boolean
     ): MoveEntry =
         MoveEntry(
-            fileName = mediaStoreFile.columnData.name,
+            fileName = moveFile.mediaStoreData.name,
             fileType = fileType,
             sourceType = sourceType,
             destinationDocumentUri = destinationDocumentUri,
@@ -61,7 +61,7 @@ internal data class MoveFile(
             autoMoved = autoMoved
         )
 
-    fun label(
+    fun moveNotificationLabel(
         context: Context
     ): String =
         when {
@@ -85,7 +85,7 @@ internal data class MoveFile(
                         context.getString(fileType.labelRes),
                     )
 
-                    SourceType.OtherApp -> "/${mediaStoreFile.columnData.dirName} ${
+                    SourceType.OtherApp -> "/${moveFile.mediaStoreData.dirName} ${
                         context.getString(
                             fileType.labelRes
                         )
@@ -97,7 +97,7 @@ internal data class MoveFile(
     companion object {
         const val EXTRA = "com.w2sv.filenavigator.extra.MoveFile"
 
-        fun fromIntent(intent: Intent): MoveFile =
-            intent.getParcelableCompat<MoveFile>(EXTRA)!!
+        fun fromIntent(intent: Intent): MoveBundle =
+            intent.getParcelableCompat<MoveBundle>(EXTRA)!!
     }
 }

@@ -24,7 +24,7 @@ import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.moving.FileMoveActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
-import com.w2sv.navigator.moving.MoveFile
+import com.w2sv.navigator.moving.MoveBundle
 import com.w2sv.navigator.moving.MoveMode
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.ViewFileIfPresentActivity
@@ -50,7 +50,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     summaryProperties = SummaryProperties(999)
 ) {
     inner class BuilderArgs(
-        val moveFile: MoveFile,
+        val moveBundle: MoveBundle,
     ) : MultiInstanceAppNotificationManager.BuilderArgs(
         resources = getNotificationResources(
             pendingIntentRequestCodeCount = 4
@@ -67,11 +67,11 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 setContentTitle(
                     context.getString(
                         R.string.new_move_file_notification_title,
-                        args.moveFile.label(context = context)
+                        args.moveBundle.moveNotificationLabel(context = context)
                     )
                 )
                 // Set file source icon
-                setLargeIcon(args.moveFile.fileAndSourceType.coloredIconBitmap(context))
+                setLargeIcon(args.moveBundle.fileAndSourceType.coloredIconBitmap(context))
                 setContent()
                 setActionsAndIntents()
 
@@ -89,12 +89,12 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             }
 
             private fun setBigPictureStyleIfImage(): Boolean {
-                when (args.moveFile.fileType) {
-                    FileType.Image -> context.contentResolver.loadBitmapFileNotFoundHandled(args.moveFile.mediaStoreFile.mediaUri.uri)
+                when (args.moveBundle.fileType) {
+                    FileType.Image -> context.contentResolver.loadBitmapFileNotFoundHandled(args.moveBundle.moveFile.mediaUri.uri)
                     FileType.Video -> {
                         try {
                             context.contentResolver.loadThumbnail(
-                                args.moveFile.mediaStoreFile.mediaUri.uri,
+                                args.moveBundle.moveFile.mediaUri.uri,
                                 Size(512, 512),
                                 null
                             )
@@ -126,10 +126,10 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun getContentText(): SpannedString =
                 buildSpannedString {
-                    append(args.moveFile.mediaStoreFile.columnData.name.lineBreakSuffixed())
+                    append(args.moveBundle.moveFile.mediaStoreData.name.lineBreakSuffixed())
                     bold { append(context.getString(R.string.found_at).lineBreakSuffixed()) }
                     append(
-                        args.moveFile.mediaStoreFile.columnData.volumeRelativeDirPath.removeSlashSuffix()
+                        args.moveBundle.moveFile.mediaStoreData.volumeRelativeDirPath.removeSlashSuffix()
                             .slashPrefixed()
                     )
                 }
@@ -141,7 +141,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 
                 // Add quickMoveAction if lastMoveDestination present.
-                sourceToLastMoveDestinationStateFlow.lastMoveDestination(args.moveFile.fileAndSourceType)
+                sourceToLastMoveDestinationStateFlow.lastMoveDestination(args.moveBundle.fileAndSourceType)
                     ?.let { lastMoveDestination ->
                         // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
                         lastMoveDestination.documentFile(context)?.name?.let { directoryName ->
@@ -173,9 +173,9 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                     ViewFileIfPresentActivity.makeRestartActivityIntent(
                         context = context,
                         args = ViewFileIfPresentActivity.Args(
-                            mediaUri = args.moveFile.mediaStoreFile.mediaUri,
-                            absPath = args.moveFile.mediaStoreFile.columnData.absPath,
-                            mimeType = args.moveFile.fileType.simpleStorageMediaType.mimeType,
+                            mediaUri = args.moveBundle.moveFile.mediaUri,
+                            absPath = args.moveBundle.moveFile.mediaStoreData.absPath,
+                            mimeType = args.moveBundle.fileType.simpleStorageMediaType.mimeType,
                         ),
                         notificationResources = args.resources
                     ),
@@ -192,7 +192,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         context,
                         requestCode,
                         FileMoveActivity.makeRestartActivityIntent(
-                            args.moveFile,
+                            args.moveBundle,
                             args.resources,
                             context
                         ),
@@ -212,7 +212,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         context,
                         requestCode,
                         MoveBroadcastReceiver.getIntent(
-                            moveFile = args.moveFile.copy(moveMode = MoveMode.Quick(destination = lastMoveDestination)),
+                            moveBundle = args.moveBundle.copy(moveMode = MoveMode.Quick(destination = lastMoveDestination)),
                             notificationResources = args.resources,
                             context = context
                         ),

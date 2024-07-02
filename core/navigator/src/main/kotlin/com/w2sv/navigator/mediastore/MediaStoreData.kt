@@ -62,7 +62,7 @@ internal data class MediaStoreData(
     val fileExists: Boolean
         get() = getFile().exists()
 
-    fun getSourceType(): SourceType =
+    fun sourceType(): SourceType =
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && volumeRelativeDirPath.contains(
                 Environment.DIRECTORY_RECORDINGS

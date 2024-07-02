@@ -69,15 +69,15 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         }
 
         // Extract extras
-        val moveFile = MoveFile.fromIntent(intent)
+        val moveBundle = MoveBundle.fromIntent(intent)
 
-        if (!moveFile.mediaStoreFile.columnData.fileExists) {
+        if (!moveBundle.moveFile.mediaStoreData.fileExists) {
             return MoveException.MoveFileNotFound
         }
 
         // Exit on unsuccessful conversion to SimpleStorage objects
-        val moveDestinationDocumentFile = moveFile.moveMode!!.destination.documentFile(context)
-        val moveMediaFile = moveFile.simpleStorageMediaFile(context)
+        val moveDestinationDocumentFile = moveBundle.moveMode!!.destination.documentFile(context)
+        val moveMediaFile = moveBundle.simpleStorageMediaFile(context)
 
         if (moveDestinationDocumentFile == null || moveMediaFile == null) {
             return MoveException.InternalError
@@ -86,7 +86,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         // Exit if file already at selected location.
         if (moveDestinationDocumentFile.hasChild(
                 context = context,
-                path = moveFile.mediaStoreFile.columnData.name,
+                path = moveBundle.moveFile.mediaStoreData.name,
                 requiresWriteAccess = false
             )
         ) {
@@ -98,30 +98,30 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
             callback = object : FileCallback() {
                 override fun onCompleted(result: Any) {
                     context.showMoveSuccessToast(
-                        moveFile = moveFile,
+                        moveBundle = moveBundle,
                         moveDestinationDocumentFile = moveDestinationDocumentFile
                     )
 
                     scope.launch {
                         val movedFileDocumentUri = movedFileDocumentUri(
-                            moveDestinationDocumentUri = moveFile.moveMode.destination,
-                            fileName = moveFile.mediaStoreFile.columnData.name
+                            moveDestinationDocumentUri = moveBundle.moveMode.destination,
+                            fileName = moveBundle.moveFile.mediaStoreData.name
                         )
                         insertMoveEntryUseCase(
-                            moveFile.moveEntry(
-                                destinationDocumentUri = moveFile.moveMode.destination,
+                            moveBundle.moveEntry(
+                                destinationDocumentUri = moveBundle.moveMode.destination,
                                 movedFileDocumentUri = movedFileDocumentUri,
                                 movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!,
                                 dateTime = LocalDateTime.now(),
-                                autoMoved = moveFile.moveMode.isAuto
+                                autoMoved = moveBundle.moveMode.isAuto
                             )
                         )
 
-                        if (moveFile.moveMode.updateLastMoveDestinations) {
+                        if (moveBundle.moveMode.updateLastMoveDestinations) {
                             navigatorConfigDataSource.saveLastMoveDestination(
-                                fileType = moveFile.fileType,
-                                sourceType = moveFile.sourceType,
-                                destination = moveFile.moveMode.destination
+                                fileType = moveBundle.fileType,
+                                sourceType = moveBundle.sourceType,
+                                destination = moveBundle.moveMode.destination
                             )
                         }
                     }
@@ -137,26 +137,26 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                 override fun onFailed(errorCode: ErrorCode) {
                     i { errorCode.toString() }
 
-                    if (errorCode == ErrorCode.TARGET_FOLDER_NOT_FOUND && moveFile.moveMode.isAuto) {
+                    if (errorCode == ErrorCode.TARGET_FOLDER_NOT_FOUND && moveBundle.moveMode.isAuto) {
                         scope.launch {
                             navigatorConfigDataSource.unsetAutoMoveConfig(
-                                fileType = moveFile.fileType,
-                                sourceType = moveFile.sourceType
+                                fileType = moveBundle.fileType,
+                                sourceType = moveBundle.sourceType
                             )
                             FileNavigator.reregisterFileObservers(context)
                         }
                         with(newMoveFileNotificationManager) {
                             buildAndEmit(
                                 BuilderArgs(
-                                    moveFile = moveFile.copy(moveMode = null)
+                                    moveBundle = moveBundle.copy(moveMode = null)
                                 )
                             )
                         }
                         with(autoMoveDestinationInvalidNotificationManager) {
                             buildAndEmit(
                                 BuilderArgs(
-                                    fileAndSourceType = moveFile.fileAndSourceType,
-                                    autoMoveDestination = moveFile.moveMode.destination
+                                    fileAndSourceType = moveBundle.fileAndSourceType,
+                                    autoMoveDestination = moveBundle.moveMode.destination
                                 )
                             )
                         }
@@ -172,12 +172,12 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     companion object {
         fun sendBroadcast(
             context: Context,
-            moveFile: MoveFile,
+            moveBundle: MoveBundle,
             notificationResources: NotificationResources? = null
         ) {
             context.sendBroadcast(
                 getIntent(
-                    moveFile = moveFile,
+                    moveBundle = moveBundle,
                     notificationResources = notificationResources,
                     context = context
                 )
@@ -196,12 +196,12 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         }
 
         fun getIntent(
-            moveFile: MoveFile,
+            moveBundle: MoveBundle,
             notificationResources: NotificationResources?,
             context: Context
         ): Intent =
             Intent(context, MoveBroadcastReceiver::class.java)
-                .putMoveFileExtra(moveFile)
+                .putMoveFileExtra(moveBundle)
                 .putOptionalNotificationResourcesExtra(notificationResources)
     }
 }
@@ -213,13 +213,13 @@ private fun movedFileDocumentUri(
     DocumentUri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
 
 private fun Context.showMoveSuccessToast(
-    moveFile: MoveFile,
+    moveBundle: MoveBundle,
     moveDestinationDocumentFile: DocumentFile
 ) {
     showToast(
         resources.getText(
-            if (moveFile.moveMode!!.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
-            moveFile.fileAndSourceType.label(context = this, isGif = moveFile.isGif),
+            if (moveBundle.moveMode!!.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
+            moveBundle.fileAndSourceType.label(context = this, isGif = moveBundle.isGif),
             moveDestinationRepresentation(
                 this@showMoveSuccessToast,
                 moveDestinationDocumentFile

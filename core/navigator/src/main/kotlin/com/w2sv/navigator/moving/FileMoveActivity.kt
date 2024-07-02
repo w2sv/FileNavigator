@@ -35,18 +35,18 @@ internal class FileMoveActivity : ComponentActivity() {
     ) :
         androidx.lifecycle.ViewModel() {
 
-        private val moveFile: MoveFile =
-            savedStateHandle[MoveFile.EXTRA]!!
+        private val moveBundle: MoveBundle =
+            savedStateHandle[MoveBundle.EXTRA]!!
 
         fun preemptiveExitReason(): MoveException? =
             when {
                 !isExternalStorageManger -> MoveException.MissingManageAllFilesPermission
-                !moveFile.mediaStoreFile.columnData.fileExists -> MoveException.MoveFileNotFound
+                !moveBundle.moveFile.mediaStoreData.fileExists -> MoveException.MoveFileNotFound
                 else -> null
             }
 
         val lastMoveDestination by lazy {
-            navigatorConfigDataSource.lastMoveDestination(moveFile.fileType, moveFile.sourceType)
+            navigatorConfigDataSource.lastMoveDestination(moveBundle.fileType, moveBundle.sourceType)
                 .firstBlocking()
                 .firstOrNull()
         }
@@ -93,7 +93,7 @@ internal class FileMoveActivity : ComponentActivity() {
         MoveBroadcastReceiver.sendBroadcast(
             context = applicationContext,
             fileMoveActivityIntent = intent.putMoveFileExtra(
-                MoveFile.fromIntent(intent)
+                MoveBundle.fromIntent(intent)
                     .copy(moveMode = MoveMode.ManualSelection(moveDestinationDocumentUri))
             ),
         )
@@ -118,7 +118,7 @@ internal class FileMoveActivity : ComponentActivity() {
 
     companion object {
         fun makeRestartActivityIntent(
-            moveFile: MoveFile,
+            moveBundle: MoveBundle,
             notificationResources: NotificationResources,
             context: Context
         ): Intent =
@@ -128,7 +128,7 @@ internal class FileMoveActivity : ComponentActivity() {
                     FileMoveActivity::class.java
                 )
             )
-                .putMoveFileExtra(moveFile)
+                .putMoveFileExtra(moveBundle)
                 .putOptionalNotificationResourcesExtra(notificationResources)
     }
 }

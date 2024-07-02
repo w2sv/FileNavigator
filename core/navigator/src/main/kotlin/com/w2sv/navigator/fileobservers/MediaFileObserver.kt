@@ -5,55 +5,55 @@ import android.os.Handler
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
-import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
-import com.w2sv.navigator.mediastore.MediaStoreFile
-import com.w2sv.navigator.mediastore.MediaStoreFileRetriever
-import com.w2sv.navigator.moving.MoveFile
+import com.w2sv.kotlinutils.coroutines.mapState
+import com.w2sv.navigator.mediastore.MoveFile
+import com.w2sv.navigator.mediastore.MediaStoreFileProducer
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
-internal typealias SourceTypeToAutoMoveConfig = Map<SourceType, AutoMoveConfig>
-
 internal class MediaFileObserver(
     private val fileType: FileType.Media,
-    private val enabledSourceTypeToAutoMoveConfigStateFlow: StateFlow<SourceTypeToAutoMoveConfig>,
-    context: Context,
+    fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
     newMoveFileNotificationManager: NewMoveFileNotificationManager,
-    mediaStoreFileRetriever: MediaStoreFileRetriever,
+    mediaStoreFileProducer: MediaStoreFileProducer,
+    context: Context,
     handler: Handler
 ) :
     FileObserver(
         context = context,
         newMoveFileNotificationManager = newMoveFileNotificationManager,
-        mediaStoreFileRetriever = mediaStoreFileRetriever,
+        mediaStoreFileProducer = mediaStoreFileProducer,
+        fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
         handler = handler
     ) {
 
-    private val enabledSourceTypeToAutoMoveConfig: SourceTypeToAutoMoveConfig
-        get() = enabledSourceTypeToAutoMoveConfigStateFlow.value
+    private val enabledSourceTypesStateFlow: StateFlow<Set<SourceType>> =
+        fileTypeConfigMapStateFlow.mapState { fileTypeConfigMap ->
+            val fileTypeConfig = fileTypeConfigMap.getValue(fileType)
+            fileType.sourceTypes
+                .filter { fileTypeConfig.sourceTypeConfigMap.getValue(it).enabled }
+                .toSet()
+        }
 
-    init {
-        i { "Initialized ${fileType.logIdentifier} MediaFileObserver with sources: ${enabledSourceTypeToAutoMoveConfig.keys.map { it.name }}" }
-    }
+    private val enabledSourceTypes
+        get() = enabledSourceTypesStateFlow.value
 
     override val logIdentifier: String
         get() = "${this.javaClass.simpleName}.${fileType.logIdentifier}"
 
-    override fun getMoveFileIfMatchingConstraints(
-        mediaStoreFile: MediaStoreFile
-    ): MoveFile? {
-        val sourceType = mediaStoreFile.columnData.getSourceType()
+    init {
+        i { "Initialized ${fileType.logIdentifier} MediaFileObserver with sources ${enabledSourceTypes.map { it.name }}" }
+    }
 
-        if (enabledSourceTypeToAutoMoveConfig.contains(sourceType)) {
-            return MoveFile(
-                mediaStoreFile = mediaStoreFile,
-                fileAndSourceType = FileAndSourceType(fileType, sourceType),
-                moveMode = enabledSourceTypeToAutoMoveConfig
-                    .getValue(sourceType)
-                    .moveMode
-            )
-        }
-        return null
+    override fun enabledFileAndSourceTypeOrNull(
+        moveFile: MoveFile
+    ): FileAndSourceType? {
+        val sourceType = moveFile.mediaStoreData.sourceType()
+
+        return if (enabledSourceTypes.contains(sourceType)) {
+            FileAndSourceType(fileType, sourceType)
+        } else
+            null
     }
 }

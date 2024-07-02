@@ -7,18 +7,22 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import androidx.annotation.RequiresApi
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
+import com.w2sv.domain.model.FileAndSourceType
+import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.launchDelayed
-import com.w2sv.navigator.mediastore.MediaStoreFile
-import com.w2sv.navigator.mediastore.MediaStoreFileRetriever
+import com.w2sv.navigator.mediastore.MediaStoreFileProducer
+import com.w2sv.navigator.mediastore.MoveFile
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
-import com.w2sv.navigator.moving.MoveFile
+import com.w2sv.navigator.moving.MoveBundle
 import com.w2sv.navigator.moving.MoveMode
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
 private enum class FileChangeOperation(private val flag: Int?) {
@@ -45,7 +49,8 @@ private enum class FileChangeOperation(private val flag: Int?) {
 internal abstract class FileObserver(
     private val context: Context,
     private val newMoveFileNotificationManager: NewMoveFileNotificationManager,
-    private val mediaStoreFileRetriever: MediaStoreFileRetriever,
+    private val mediaStoreFileProducer: MediaStoreFileProducer,
+    private val fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
     handler: Handler
 ) :
     ContentObserver(handler) {
@@ -62,7 +67,7 @@ internal abstract class FileObserver(
             FileChangeOperation.determine(flags).also { emitOnChangeLog(uri, it) }
         when (fileChangeOperation) {
             FileChangeOperation.Delete -> {
-                mostRecentOnNewMoveFileJob?.let {
+                mostRecentMoveBundleProcedureJob?.let {
                     if (it.isActive) {
                         it.cancel()
                     }
@@ -81,15 +86,47 @@ internal abstract class FileObserver(
         onChangeCore(uri)
     }
 
-    private var mostRecentOnNewMoveFileJob: Job? = null
+    private fun emitOnChangeLog(uri: Uri?, fileChangeOperation: FileChangeOperation) {
+        i { "$logIdentifier ${fileChangeOperation.name} $uri" }
+    }
 
-    private fun onNewMoveFile(moveFile: MoveFile) {
-        mostRecentOnNewMoveFileJob = scope.launchDelayed(300L) {
-            when (moveFile.moveMode) {
+    private fun onChangeCore(uri: Uri?) {
+        val mediaUri = uri?.let { MediaUri(it) } ?: return
+        val mediaStoreFile =
+            mediaStoreFileProducer.mediaStoreFileOrNull(mediaUri, context.contentResolver) ?: return
+
+        enabledFileAndSourceTypeOrNull(mediaStoreFile)
+            ?.let { fileAndSourceType ->
+                onMoveBundle(
+                    MoveBundle(
+                        moveFile = mediaStoreFile,
+                        fileAndSourceType = fileAndSourceType,
+                        moveMode = fileTypeConfigMapStateFlow.value.getValue(fileAndSourceType.fileType).sourceTypeConfigMap.getValue(
+                            fileAndSourceType.sourceType
+                        )
+                            .autoMoveConfig
+                            .moveMode
+                    )
+                        .also {
+                            i { "Calling onMoveBundle on $it" }
+                        }
+                )
+            }
+    }
+
+    protected abstract fun enabledFileAndSourceTypeOrNull(
+        moveFile: MoveFile
+    ): FileAndSourceType?
+
+    private var mostRecentMoveBundleProcedureJob: Job? = null
+
+    private fun onMoveBundle(moveBundle: MoveBundle) {
+        mostRecentMoveBundleProcedureJob = scope.launchDelayed(300L) {
+            when (moveBundle.moveMode) {
                 is MoveMode.Auto -> {
                     MoveBroadcastReceiver.sendBroadcast(
                         context = context,
-                        moveFile = moveFile
+                        moveBundle = moveBundle
                     )
                 }
 
@@ -98,7 +135,7 @@ internal abstract class FileObserver(
                     with(newMoveFileNotificationManager) {
                         buildAndEmit(
                             BuilderArgs(
-                                moveFile = moveFile
+                                moveBundle = moveBundle
                             )
                         )
                     }
@@ -106,30 +143,11 @@ internal abstract class FileObserver(
             }
         }
     }
-
-    private fun emitOnChangeLog(uri: Uri?, fileChangeOperation: FileChangeOperation) {
-        i { "$logIdentifier ${fileChangeOperation.name} $uri" }
-    }
-
-    private fun onChangeCore(uri: Uri?) {
-        val mediaUri = uri?.let { MediaUri(it) } ?: return
-
-        val mediaStoreFileRetrievalResult =
-            mediaStoreFileRetriever.provide(
-                mediaUri = mediaUri,
-                contentResolver = context.contentResolver
-            )
-
-        if (mediaStoreFileRetrievalResult !is MediaStoreFileRetriever.Result.Success) return
-
-        getMoveFileIfMatchingConstraints(mediaStoreFileRetrievalResult.mediaStoreFile)
-            ?.let {
-                i { "Calling onNewNavigatableFileListener on $it" }
-                onNewMoveFile(it)
-            }
-    }
-
-    protected abstract fun getMoveFileIfMatchingConstraints(
-        mediaStoreFile: MediaStoreFile
-    ): MoveFile?
 }
+
+private val AutoMoveConfig.moveMode: MoveMode?
+    get() = enabledDestination
+        ?.let { MoveMode.Auto(it) }
+
+private val AutoMoveConfig.enabledDestination: DocumentUri?
+    get() = if (enabled) destination else null

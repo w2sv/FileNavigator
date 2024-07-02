@@ -9,10 +9,10 @@ import java.io.FileNotFoundException
 import java.security.MessageDigest
 import javax.inject.Inject
 
-internal class MediaStoreFileRetriever @Inject constructor() {
+internal class MediaStoreFileProducer @Inject constructor() {
 
     sealed interface Result {
-        data class Success(val mediaStoreFile: MediaStoreFile) : Result
+        data class Success(val moveFile: MoveFile) : Result
         data object CouldntRetrieveMediaStoreData : Result
         data object FileIsPending : Result
         data object FileNotFound : Result
@@ -24,7 +24,13 @@ internal class MediaStoreFileRetriever @Inject constructor() {
     private val seenParametersCache =
         EvictingQueue.create<SeenParameters>(5)
 
-    fun provide(
+    fun mediaStoreFileOrNull(
+        mediaUri: MediaUri,
+        contentResolver: ContentResolver
+    ): MoveFile? =
+        (invoke(mediaUri, contentResolver) as? Result.Success)?.moveFile
+
+    operator fun invoke(
         mediaUri: MediaUri,
         contentResolver: ContentResolver
     ): Result {
@@ -65,10 +71,10 @@ internal class MediaStoreFileRetriever @Inject constructor() {
 
         seenParametersCache.add(seenParameters)
         return Result.Success(
-            MediaStoreFile(
+            MoveFile(
                 mediaUri = mediaUri,
-                columnData = columnData,
-                sha256 = sha256
+                mediaStoreData = columnData,
+                contentHash = sha256
             )
         )
     }

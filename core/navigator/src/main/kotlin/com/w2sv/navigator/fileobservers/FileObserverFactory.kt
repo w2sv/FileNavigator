@@ -7,12 +7,12 @@ import com.anggrayudi.storage.media.MediaType
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.mapState
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.MediaTypeToFileObserver
-import com.w2sv.navigator.mediastore.MediaStoreFileRetriever
+import com.w2sv.navigator.mediastore.MediaStoreFileProducer
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -20,10 +20,12 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
+typealias FileTypeConfigMap = Map<FileType, FileTypeConfig>
+
 @Singleton
 internal class FileObserverFactory @Inject constructor(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
-    private val mediaStoreFileRetriever: MediaStoreFileRetriever,
+    private val mediaStoreFileProducer: MediaStoreFileProducer,
     private val newMoveFileNotificationManager: NewMoveFileNotificationManager,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
     @ApplicationContext private val context: Context
@@ -33,6 +35,8 @@ internal class FileObserverFactory @Inject constructor(
             .map { it.fileTypeConfigMap }
             .stateInWithSynchronousInitial(scope)
     }
+    private val fileTypeConfigMap
+        get() = fileTypeConfigMapStateFlow.value
 
     private val handlerThread by lazy {
         HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
@@ -62,42 +66,30 @@ internal class FileObserverFactory @Inject constructor(
 
     private fun mediaFileObservers(): MediaTypeToFileObserver =
         FileType.Media.values
-            .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
+            .filter { fileTypeConfigMap.getValue(it).enabled }
             .associate { mediaFileType ->
                 mediaFileType.simpleStorageMediaType to MediaFileObserver(
                     fileType = mediaFileType,
-                    enabledSourceTypeToAutoMoveConfigStateFlow = fileTypeConfigMapStateFlow
-                        .mapState { fileTypeConfigMap ->
-                            fileTypeConfigMap
-                                .getValue(mediaFileType)
-                                .sourceTypeConfigMap
-                                .filterValues { it.enabled }
-                                .mapValues { it.value.autoMoveConfig }
-                        },
+                    fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
                     context = context,
                     newMoveFileNotificationManager = newMoveFileNotificationManager,
-                    mediaStoreFileRetriever = mediaStoreFileRetriever,
+                    mediaStoreFileProducer = mediaStoreFileProducer,
                     handler = handler
                 )
             }
 
     private fun nonMediaFileObserver(): NonMediaFileObserver? =
-        FileType.NonMedia.values
-            .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
-            .let { enabledFileTypes ->
-                if (enabledFileTypes.isNotEmpty()) {
+        fileTypeConfigMapStateFlow.mapState { fileTypeConfigMap ->
+            FileType.NonMedia.values.filter { fileTypeConfigMap.getValue(it).enabled }.toSet()
+        }
+            .let { enabledFileTypesStateFlow ->
+                if (enabledFileTypesStateFlow.value.isNotEmpty()) {
                     NonMediaFileObserver(
-                        enabledFileTypeToAutoMoveConfigStateFlow = fileTypeConfigMapStateFlow.mapState { fileTypeConfigMap ->
-                            enabledFileTypes.associateWith { fileType ->
-                                fileTypeConfigMap.getValue(fileType)
-                                    .sourceTypeConfigMap
-                                    .getValue(SourceType.Download)
-                                    .autoMoveConfig
-                            }
-                        },
+                        fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
+                        enabledFileTypesStateFlow = enabledFileTypesStateFlow,
                         context = context,
                         newMoveFileNotificationManager = newMoveFileNotificationManager,
-                        mediaStoreFileRetriever = mediaStoreFileRetriever,
+                        mediaStoreFileProducer = mediaStoreFileProducer,
                         handler = handler
                     )
                 } else {

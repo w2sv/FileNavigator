@@ -7,7 +7,7 @@ import org.robolectric.RobolectricTestRunner
 import utils.TestInstancesProvider
 
 @RunWith(RobolectricTestRunner::class)
-internal class MediaStoreFileTest {
+internal class MoveFileTest {
 
     @Test
     fun testParceling() {
