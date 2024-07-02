@@ -16,7 +16,7 @@ internal class MoveBundleTest {
     @Test
     fun testParceling() {
         MoveBundle(
-            moveFile = TestInstancesProvider.getMediaStoreFile(),
+            mediaStoreFile = TestInstancesProvider.getMediaStoreFile(),
             fileAndSourceType = FileAndSourceType(FileType.Image, SourceType.Camera),
             moveMode = MoveMode.Auto(DocumentUri.parse("gamba"))
         )

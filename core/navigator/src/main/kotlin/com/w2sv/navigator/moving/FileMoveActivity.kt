@@ -41,7 +41,7 @@ internal class FileMoveActivity : ComponentActivity() {
         fun preemptiveExitReason(): MoveException? =
             when {
                 !isExternalStorageManger -> MoveException.MissingManageAllFilesPermission
-                !moveBundle.moveFile.mediaStoreData.fileExists -> MoveException.MoveFileNotFound
+                !moveBundle.mediaStoreFile.mediaStoreData.fileExists -> MoveException.MoveFileNotFound
                 else -> null
             }
 

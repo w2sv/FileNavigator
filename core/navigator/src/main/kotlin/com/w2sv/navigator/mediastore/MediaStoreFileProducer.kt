@@ -4,18 +4,17 @@ import android.content.ContentResolver
 import com.google.common.collect.EvictingQueue
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.navigator.shared.emitDiscardedLog
-import slimber.log.i
-import java.io.FileNotFoundException
-import java.security.MessageDigest
 import javax.inject.Inject
 
 internal class MediaStoreFileProducer @Inject constructor() {
 
     sealed interface Result {
-        data class Success(val moveFile: MoveFile) : Result
+        data class Success(val mediaStoreFile: MediaStoreFile) : Result
         data object CouldntRetrieveMediaStoreData : Result
         data object FileIsPending : Result
-        data object FileNotFound : Result
+        data object FileIsTrashed : Result
+
+        //        data object FileNotFound : Result
         data object AlreadySeen : Result
     }
 
@@ -27,8 +26,8 @@ internal class MediaStoreFileProducer @Inject constructor() {
     fun mediaStoreFileOrNull(
         mediaUri: MediaUri,
         contentResolver: ContentResolver
-    ): MoveFile? =
-        (invoke(mediaUri, contentResolver) as? Result.Success)?.moveFile
+    ): MediaStoreFile? =
+        (invoke(mediaUri, contentResolver) as? Result.Success)?.mediaStoreFile
 
     operator fun invoke(
         mediaUri: MediaUri,
@@ -46,7 +45,7 @@ internal class MediaStoreFileProducer @Inject constructor() {
         }
         if (columnData.isTrashed) {
             emitDiscardedLog { "trashed" }
-            return Result.FileIsPending
+            return Result.FileIsTrashed
         }
 
         // Create SeenParameters & exit if in seenParametersCache to avoid expensive recomputation of content hash
@@ -56,29 +55,29 @@ internal class MediaStoreFileProducer @Inject constructor() {
             return Result.AlreadySeen
         }
 
-        val sha256 = try {
-            columnData.getFile().contentHash(sha256MessageDigest)
-                .also { i { "SHA256 ($mediaUri) = $it" } }
-//            measureTimedValue {
-//                columnData.getFile().contentHash(sha256MessageDigest)
-//            }
-//                .also { i { "SHA256 ($mediaUri) = ${it.value}/nComputation took ${it.duration}" } }
-//                .value
-        } catch (e: FileNotFoundException) {
-            emitDiscardedLog(e::toString)
-            return Result.FileNotFound
-        }
+//        val sha256 = try {
+//            columnData.getFile().contentHash(sha256MessageDigest)
+//                .also { i { "SHA256 ($mediaUri) = $it" } }
+////            measureTimedValue {
+////                columnData.getFile().contentHash(sha256MessageDigest)
+////            }
+////                .also { i { "SHA256 ($mediaUri) = ${it.value}/nComputation took ${it.duration}" } }
+////                .value
+//        } catch (e: FileNotFoundException) {
+//            emitDiscardedLog(e::toString)
+//            return Result.FileNotFound
+//        }
 
         seenParametersCache.add(seenParameters)
         return Result.Success(
-            MoveFile(
+            MediaStoreFile(
                 mediaUri = mediaUri,
                 mediaStoreData = columnData,
-                contentHash = sha256
+//                contentHash = sha256
             )
         )
     }
 
     // Reuse MessageDigest instance, as recommended in https://stackoverflow.com/a/13802730/12083276
-    private val sha256MessageDigest = MessageDigest.getInstance("SHA-256")
+//    private val sha256MessageDigest = MessageDigest.getInstance("SHA-256")
 }

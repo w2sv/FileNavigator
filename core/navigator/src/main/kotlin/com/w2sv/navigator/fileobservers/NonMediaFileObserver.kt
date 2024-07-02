@@ -5,7 +5,8 @@ import android.os.Handler
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
-import com.w2sv.navigator.mediastore.MoveFile
+import com.w2sv.navigator.mediastore.MediaStoreData
+import com.w2sv.navigator.mediastore.MediaStoreFile
 import com.w2sv.navigator.mediastore.MediaStoreFileProducer
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import kotlinx.coroutines.flow.StateFlow
@@ -38,10 +39,10 @@ internal class NonMediaFileObserver(
     }
 
     override fun enabledFileAndSourceTypeOrNull(
-        moveFile: MoveFile
+        mediaStoreData: MediaStoreData
     ): FileAndSourceType? =
         enabledFileTypes
-            .firstOrNull { it.matchesFileExtension(moveFile.mediaStoreData.fileExtension) }
+            .firstOrNull { it.matchesFileExtension(mediaStoreData.fileExtension) }
             ?.let { fileType ->
                 FileAndSourceType(fileType, SourceType.Download)
             }

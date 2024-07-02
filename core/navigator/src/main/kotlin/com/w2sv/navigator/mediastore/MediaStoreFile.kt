@@ -5,8 +5,8 @@ import com.w2sv.common.utils.MediaUri
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-internal data class MoveFile(
+internal data class MediaStoreFile(
     val mediaUri: MediaUri,
     val mediaStoreData: MediaStoreData,
-    val contentHash: String
+//    val contentHash: String
 ) : Parcelable

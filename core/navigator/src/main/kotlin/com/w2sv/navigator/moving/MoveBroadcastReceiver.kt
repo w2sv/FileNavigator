@@ -71,7 +71,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         // Extract extras
         val moveBundle = MoveBundle.fromIntent(intent)
 
-        if (!moveBundle.moveFile.mediaStoreData.fileExists) {
+        if (!moveBundle.mediaStoreFile.mediaStoreData.fileExists) {
             return MoveException.MoveFileNotFound
         }
 
@@ -86,7 +86,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         // Exit if file already at selected location.
         if (moveDestinationDocumentFile.hasChild(
                 context = context,
-                path = moveBundle.moveFile.mediaStoreData.name,
+                path = moveBundle.mediaStoreFile.mediaStoreData.name,
                 requiresWriteAccess = false
             )
         ) {
@@ -105,7 +105,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                     scope.launch {
                         val movedFileDocumentUri = movedFileDocumentUri(
                             moveDestinationDocumentUri = moveBundle.moveMode.destination,
-                            fileName = moveBundle.moveFile.mediaStoreData.name
+                            fileName = moveBundle.mediaStoreFile.mediaStoreData.name
                         )
                         insertMoveEntryUseCase(
                             moveBundle.moveEntry(

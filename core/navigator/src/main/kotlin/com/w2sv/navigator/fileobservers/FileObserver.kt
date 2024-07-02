@@ -12,8 +12,8 @@ import com.w2sv.common.utils.MediaUri
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.launchDelayed
+import com.w2sv.navigator.mediastore.MediaStoreData
 import com.w2sv.navigator.mediastore.MediaStoreFileProducer
-import com.w2sv.navigator.mediastore.MoveFile
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.MoveBundle
 import com.w2sv.navigator.moving.MoveMode
@@ -95,11 +95,11 @@ internal abstract class FileObserver(
         val mediaStoreFile =
             mediaStoreFileProducer.mediaStoreFileOrNull(mediaUri, context.contentResolver) ?: return
 
-        enabledFileAndSourceTypeOrNull(mediaStoreFile)
+        enabledFileAndSourceTypeOrNull(mediaStoreFile.mediaStoreData)
             ?.let { fileAndSourceType ->
                 onMoveBundle(
                     MoveBundle(
-                        moveFile = mediaStoreFile,
+                        mediaStoreFile = mediaStoreFile,
                         fileAndSourceType = fileAndSourceType,
                         moveMode = fileTypeConfigMapStateFlow.value.getValue(fileAndSourceType.fileType).sourceTypeConfigMap.getValue(
                             fileAndSourceType.sourceType
@@ -114,9 +114,7 @@ internal abstract class FileObserver(
             }
     }
 
-    protected abstract fun enabledFileAndSourceTypeOrNull(
-        moveFile: MoveFile
-    ): FileAndSourceType?
+    protected abstract fun enabledFileAndSourceTypeOrNull(mediaStoreData: MediaStoreData): FileAndSourceType?
 
     private var mostRecentMoveBundleProcedureJob: Job? = null
 

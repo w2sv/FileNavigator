@@ -90,11 +90,11 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun setBigPictureStyleIfImage(): Boolean {
                 when (args.moveBundle.fileType) {
-                    FileType.Image -> context.contentResolver.loadBitmapFileNotFoundHandled(args.moveBundle.moveFile.mediaUri.uri)
+                    FileType.Image -> context.contentResolver.loadBitmapFileNotFoundHandled(args.moveBundle.mediaStoreFile.mediaUri.uri)
                     FileType.Video -> {
                         try {
                             context.contentResolver.loadThumbnail(
-                                args.moveBundle.moveFile.mediaUri.uri,
+                                args.moveBundle.mediaStoreFile.mediaUri.uri,
                                 Size(512, 512),
                                 null
                             )
@@ -126,10 +126,10 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun getContentText(): SpannedString =
                 buildSpannedString {
-                    append(args.moveBundle.moveFile.mediaStoreData.name.lineBreakSuffixed())
+                    append(args.moveBundle.mediaStoreFile.mediaStoreData.name.lineBreakSuffixed())
                     bold { append(context.getString(R.string.found_at).lineBreakSuffixed()) }
                     append(
-                        args.moveBundle.moveFile.mediaStoreData.volumeRelativeDirPath.removeSlashSuffix()
+                        args.moveBundle.mediaStoreFile.mediaStoreData.volumeRelativeDirPath.removeSlashSuffix()
                             .slashPrefixed()
                     )
                 }
@@ -173,8 +173,8 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                     ViewFileIfPresentActivity.makeRestartActivityIntent(
                         context = context,
                         args = ViewFileIfPresentActivity.Args(
-                            mediaUri = args.moveBundle.moveFile.mediaUri,
-                            absPath = args.moveBundle.moveFile.mediaStoreData.absPath,
+                            mediaUri = args.moveBundle.mediaStoreFile.mediaUri,
+                            absPath = args.moveBundle.mediaStoreFile.mediaStoreData.absPath,
                             mimeType = args.moveBundle.fileType.simpleStorageMediaType.mimeType,
                         ),
                         notificationResources = args.resources

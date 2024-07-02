@@ -13,14 +13,14 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.model.SourceType
-import com.w2sv.navigator.mediastore.MoveFile
+import com.w2sv.navigator.mediastore.MediaStoreFile
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
 @Parcelize
 internal data class MoveBundle(
-    val moveFile: MoveFile,
+    val mediaStoreFile: MediaStoreFile,
     val fileAndSourceType: FileAndSourceType,
     val moveMode: MoveMode?
 ) : Parcelable {
@@ -29,7 +29,7 @@ internal data class MoveBundle(
         MediaStoreCompat.fromMediaId(
             context = context,
             mediaType = fileType.simpleStorageMediaType,
-            id = moveFile.mediaStoreData.rowId
+            id = mediaStoreFile.mediaStoreData.rowId
         )
 
     val fileType: FileType
@@ -40,7 +40,7 @@ internal data class MoveBundle(
 
     @IgnoredOnParcel
     val isGif: Boolean by lazy {
-        fileType is FileType.Image && moveFile.mediaStoreData.fileExtension.lowercase() == "gif"
+        fileType is FileType.Image && mediaStoreFile.mediaStoreData.fileExtension.lowercase() == "gif"
     }
 
     fun moveEntry(
@@ -51,7 +51,7 @@ internal data class MoveBundle(
         autoMoved: Boolean
     ): MoveEntry =
         MoveEntry(
-            fileName = moveFile.mediaStoreData.name,
+            fileName = mediaStoreFile.mediaStoreData.name,
             fileType = fileType,
             sourceType = sourceType,
             destinationDocumentUri = destinationDocumentUri,
@@ -85,7 +85,7 @@ internal data class MoveBundle(
                         context.getString(fileType.labelRes),
                     )
 
-                    SourceType.OtherApp -> "/${moveFile.mediaStoreData.dirName} ${
+                    SourceType.OtherApp -> "/${mediaStoreFile.mediaStoreData.dirName} ${
                         context.getString(
                             fileType.labelRes
                         )
