@@ -12,7 +12,7 @@ import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.mapState
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.MediaTypeToFileObserver
-import com.w2sv.navigator.mediastore.MediaStoreFileProducer
+import com.w2sv.navigator.mediastore.MediaStoreDataProducer
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +25,7 @@ typealias FileTypeConfigMap = Map<FileType, FileTypeConfig>
 @Singleton
 internal class FileObserverFactory @Inject constructor(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
-    private val mediaStoreFileProducer: MediaStoreFileProducer,
+    private val mediaStoreDataProducer: MediaStoreDataProducer,
     private val newMoveFileNotificationManager: NewMoveFileNotificationManager,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
     @ApplicationContext private val context: Context
@@ -73,7 +73,7 @@ internal class FileObserverFactory @Inject constructor(
                     fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
                     context = context,
                     newMoveFileNotificationManager = newMoveFileNotificationManager,
-                    mediaStoreFileProducer = mediaStoreFileProducer,
+                    mediaStoreDataProducer = mediaStoreDataProducer,
                     handler = handler
                 )
             }
@@ -89,7 +89,7 @@ internal class FileObserverFactory @Inject constructor(
                         enabledFileTypesStateFlow = enabledFileTypesStateFlow,
                         context = context,
                         newMoveFileNotificationManager = newMoveFileNotificationManager,
-                        mediaStoreFileProducer = mediaStoreFileProducer,
+                        mediaStoreDataProducer = mediaStoreDataProducer,
                         handler = handler
                     )
                 } else {

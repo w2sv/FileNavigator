@@ -17,7 +17,12 @@ import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.firstBlocking
+import com.w2sv.navigator.moving.model.MoveBundle
+import com.w2sv.navigator.moving.model.MoveException
+import com.w2sv.navigator.moving.model.MoveFile
+import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.notifications.NotificationResources
+import com.w2sv.navigator.notifications.putMoveBundleExtra
 import com.w2sv.navigator.notifications.putMoveFileExtra
 import com.w2sv.navigator.notifications.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,7 +31,7 @@ import slimber.log.i
 import javax.inject.Inject
 
 @AndroidEntryPoint
-internal class FileMoveActivity : ComponentActivity() {
+internal class MoveDestinationSelectionActivity : ComponentActivity() {
 
     @HiltViewModel
     class ViewModel @Inject constructor(
@@ -35,18 +40,18 @@ internal class FileMoveActivity : ComponentActivity() {
     ) :
         androidx.lifecycle.ViewModel() {
 
-        private val moveBundle: MoveBundle =
-            savedStateHandle[MoveBundle.EXTRA]!!
+        val moveFile: MoveFile =
+            savedStateHandle[MoveFile.EXTRA]!!
 
         fun preemptiveExitReason(): MoveException? =
             when {
                 !isExternalStorageManger -> MoveException.MissingManageAllFilesPermission
-                !moveBundle.mediaStoreFile.mediaStoreData.fileExists -> MoveException.MoveFileNotFound
+                !moveFile.mediaStoreData.fileExists -> MoveException.MoveFileNotFound
                 else -> null
             }
 
         val lastMoveDestination by lazy {
-            navigatorConfigDataSource.lastMoveDestination(moveBundle.fileType, moveBundle.sourceType)
+            navigatorConfigDataSource.lastMoveDestination(moveFile.fileType, moveFile.sourceType)
                 .firstBlocking()
                 .firstOrNull()
         }
@@ -92,9 +97,12 @@ internal class FileMoveActivity : ComponentActivity() {
 
         MoveBroadcastReceiver.sendBroadcast(
             context = applicationContext,
-            fileMoveActivityIntent = intent.putMoveFileExtra(
-                MoveBundle.fromIntent(intent)
-                    .copy(moveMode = MoveMode.ManualSelection(moveDestinationDocumentUri))
+            fileMoveActivityIntent = intent.putMoveBundleExtra(
+                MoveBundle(
+                    file = viewModel.moveFile,
+                    destination = moveDestinationDocumentUri,
+                    mode = MoveMode.ManualSelection
+                )
             ),
         )
         terminateActivity()
@@ -118,17 +126,17 @@ internal class FileMoveActivity : ComponentActivity() {
 
     companion object {
         fun makeRestartActivityIntent(
-            moveBundle: MoveBundle,
+            moveFile: MoveFile,
             notificationResources: NotificationResources,
             context: Context
         ): Intent =
             Intent.makeRestartActivityTask(
                 ComponentName(
                     context,
-                    FileMoveActivity::class.java
+                    MoveDestinationSelectionActivity::class.java
                 )
             )
-                .putMoveFileExtra(moveBundle)
+                .putMoveFileExtra(moveFile)
                 .putOptionalNotificationResourcesExtra(notificationResources)
     }
 }

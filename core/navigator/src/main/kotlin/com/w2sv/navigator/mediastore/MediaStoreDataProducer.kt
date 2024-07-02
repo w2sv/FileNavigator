@@ -6,15 +6,13 @@ import com.w2sv.common.utils.MediaUri
 import com.w2sv.navigator.shared.emitDiscardedLog
 import javax.inject.Inject
 
-internal class MediaStoreFileProducer @Inject constructor() {
+internal class MediaStoreDataProducer @Inject constructor() {
 
     sealed interface Result {
-        data class Success(val mediaStoreFile: MediaStoreFile) : Result
+        data class Success(val data: MediaStoreData) : Result
         data object CouldntRetrieveMediaStoreData : Result
         data object FileIsPending : Result
         data object FileIsTrashed : Result
-
-        //        data object FileNotFound : Result
         data object AlreadySeen : Result
     }
 
@@ -23,11 +21,11 @@ internal class MediaStoreFileProducer @Inject constructor() {
     private val seenParametersCache =
         EvictingQueue.create<SeenParameters>(5)
 
-    fun mediaStoreFileOrNull(
+    fun mediaStoreDataOrNull(
         mediaUri: MediaUri,
         contentResolver: ContentResolver
-    ): MediaStoreFile? =
-        (invoke(mediaUri, contentResolver) as? Result.Success)?.mediaStoreFile
+    ): MediaStoreData? =
+        (invoke(mediaUri, contentResolver) as? Result.Success)?.data
 
     operator fun invoke(
         mediaUri: MediaUri,
@@ -55,29 +53,7 @@ internal class MediaStoreFileProducer @Inject constructor() {
             return Result.AlreadySeen
         }
 
-//        val sha256 = try {
-//            columnData.getFile().contentHash(sha256MessageDigest)
-//                .also { i { "SHA256 ($mediaUri) = $it" } }
-////            measureTimedValue {
-////                columnData.getFile().contentHash(sha256MessageDigest)
-////            }
-////                .also { i { "SHA256 ($mediaUri) = ${it.value}/nComputation took ${it.duration}" } }
-////                .value
-//        } catch (e: FileNotFoundException) {
-//            emitDiscardedLog(e::toString)
-//            return Result.FileNotFound
-//        }
-
         seenParametersCache.add(seenParameters)
-        return Result.Success(
-            MediaStoreFile(
-                mediaUri = mediaUri,
-                mediaStoreData = columnData,
-//                contentHash = sha256
-            )
-        )
+        return Result.Success(columnData)
     }
-
-    // Reuse MessageDigest instance, as recommended in https://stackoverflow.com/a/13802730/12083276
-//    private val sha256MessageDigest = MessageDigest.getInstance("SHA-256")
 }

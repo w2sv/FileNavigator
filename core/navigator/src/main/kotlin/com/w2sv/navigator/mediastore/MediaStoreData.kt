@@ -56,11 +56,11 @@ internal data class MediaStoreData(
             .substringAfterLast(File.separator)
     }
 
-    fun getFile(): File =
-        File(absPath)
-
-    val fileExists: Boolean
-        get() = getFile().exists()
+//    fun getFile(): File =
+//        File(absPath)
+//
+//    val fileExists: Boolean
+//        get() = getFile().exists()
 
     fun sourceType(): SourceType =
         when {

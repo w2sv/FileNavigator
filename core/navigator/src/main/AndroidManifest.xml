@@ -64,7 +64,7 @@
         <!-- Activity -->
 
         <activity
-            android:name="com.w2sv.navigator.moving.FileMoveActivity"
+            android:name="com.w2sv.navigator.moving.MoveDestinationSelectionActivity"
             android:taskAffinity="com.w2sv.filenavigator.filemoving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity

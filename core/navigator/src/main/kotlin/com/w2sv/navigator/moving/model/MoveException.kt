@@ -1,4 +1,4 @@
-package com.w2sv.navigator.moving
+package com.w2sv.navigator.moving.model
 
 import com.w2sv.common.utils.ToastProperties
 import com.w2sv.core.navigator.R

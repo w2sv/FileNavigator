@@ -6,8 +6,7 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.navigator.mediastore.MediaStoreData
-import com.w2sv.navigator.mediastore.MediaStoreFile
-import com.w2sv.navigator.mediastore.MediaStoreFileProducer
+import com.w2sv.navigator.mediastore.MediaStoreDataProducer
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
@@ -16,14 +15,14 @@ internal class NonMediaFileObserver(
     private val enabledFileTypesStateFlow: StateFlow<Set<FileType.NonMedia>>,
     fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
     newMoveFileNotificationManager: NewMoveFileNotificationManager,
-    mediaStoreFileProducer: MediaStoreFileProducer,
+    mediaStoreDataProducer: MediaStoreDataProducer,
     context: Context,
     handler: Handler
 ) :
     FileObserver(
         context = context,
         newMoveFileNotificationManager = newMoveFileNotificationManager,
-        mediaStoreFileProducer = mediaStoreFileProducer,
+        mediaStoreDataProducer = mediaStoreDataProducer,
         fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
         handler = handler
     ) {
