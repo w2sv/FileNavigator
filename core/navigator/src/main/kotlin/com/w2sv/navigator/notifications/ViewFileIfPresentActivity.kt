@@ -10,6 +10,7 @@ import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.showToast
 import com.w2sv.navigator.moving.model.MoveException
+import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import kotlinx.parcelize.Parcelize
 import java.io.File
 

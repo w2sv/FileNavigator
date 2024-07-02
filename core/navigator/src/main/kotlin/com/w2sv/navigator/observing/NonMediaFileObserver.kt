@@ -1,13 +1,13 @@
-package com.w2sv.navigator.fileobservers
+package com.w2sv.navigator.observing
 
 import android.content.Context
 import android.os.Handler
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
-import com.w2sv.navigator.mediastore.MediaStoreData
-import com.w2sv.navigator.mediastore.MediaStoreDataProducer
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import com.w2sv.navigator.observing.model.MediaStoreData
+import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 

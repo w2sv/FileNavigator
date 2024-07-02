@@ -1,4 +1,4 @@
-package com.w2sv.navigator.mediastore
+package com.w2sv.navigator.observing.model
 
 import android.content.ContentResolver
 import android.os.Build
@@ -20,7 +20,7 @@ import java.io.File
 import java.time.LocalDateTime
 
 /**
- * @param volumeRelativeDirPath Relative dir path from the storage volume, e.g. "Documents/", "DCIM/Camera/".
+ * @param volumeRelativeDirPath Relative to the storage volume, e.g. "Documents/", "DCIM/Camera/".
  */
 @Parcelize
 internal data class MediaStoreData(
@@ -56,13 +56,13 @@ internal data class MediaStoreData(
             .substringAfterLast(File.separator)
     }
 
-//    fun getFile(): File =
-//        File(absPath)
-//
-//    val fileExists: Boolean
-//        get() = getFile().exists()
+    fun file(): File =
+        File(absPath)
 
-    fun sourceType(): SourceType =
+    val fileExists: Boolean
+        get() = file().exists()
+
+    fun sourceType(): SourceType =  // TODO: test
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && volumeRelativeDirPath.contains(
                 Environment.DIRECTORY_RECORDINGS

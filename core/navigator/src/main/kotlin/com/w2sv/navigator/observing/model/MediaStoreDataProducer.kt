@@ -1,11 +1,15 @@
-package com.w2sv.navigator.mediastore
+package com.w2sv.navigator.observing.model
 
 import android.content.ContentResolver
 import com.google.common.collect.EvictingQueue
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.navigator.shared.emitDiscardedLog
 import javax.inject.Inject
+import javax.inject.Singleton
 
+private const val SEEN_FILES_BUFFER_SIZE = 5
+
+@Singleton
 internal class MediaStoreDataProducer @Inject constructor() {
 
     sealed interface Result {
@@ -18,8 +22,8 @@ internal class MediaStoreDataProducer @Inject constructor() {
 
     private data class SeenParameters(val uri: MediaUri, val fileSize: Long)
 
-    private val seenParametersCache =
-        EvictingQueue.create<SeenParameters>(5)
+    private val seenParametersBuffer =
+        EvictingQueue.create<SeenParameters>(SEEN_FILES_BUFFER_SIZE)
 
     fun mediaStoreDataOrNull(
         mediaUri: MediaUri,
@@ -46,14 +50,13 @@ internal class MediaStoreDataProducer @Inject constructor() {
             return Result.FileIsTrashed
         }
 
-        // Create SeenParameters & exit if in seenParametersCache to avoid expensive recomputation of content hash
         val seenParameters = SeenParameters(uri = mediaUri, fileSize = columnData.size)
-        if (seenParametersCache.contains(seenParameters)) {
+        if (seenParametersBuffer.contains(seenParameters)) {
             emitDiscardedLog { "already seen" }
             return Result.AlreadySeen
         }
 
-        seenParametersCache.add(seenParameters)
+        seenParametersBuffer.add(seenParameters)
         return Result.Success(columnData)
     }
 }

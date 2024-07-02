@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.Intent
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.UnboundService
-import com.w2sv.navigator.fileobservers.FileObserver
-import com.w2sv.navigator.fileobservers.FileObserverFactory
 import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
+import com.w2sv.navigator.observing.FileObserver
+import com.w2sv.navigator.observing.FileObserverFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,6 +1,5 @@
-package com.w2sv.navigator.fileobservers
+package com.w2sv.navigator.observing
 
-import android.content.ContentResolver
 import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
@@ -12,40 +11,20 @@ import com.w2sv.common.utils.MediaUri
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.launchDelayed
-import com.w2sv.navigator.mediastore.MediaStoreData
-import com.w2sv.navigator.mediastore.MediaStoreDataProducer
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import com.w2sv.navigator.observing.model.FileChangeOperation
+import com.w2sv.navigator.observing.model.MediaStoreData
+import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
-
-private enum class FileChangeOperation(private val flag: Int?) {
-    @RequiresApi(Build.VERSION_CODES.R)
-    Update(ContentResolver.NOTIFY_UPDATE),
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    Insert(ContentResolver.NOTIFY_INSERT),
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    Delete(ContentResolver.NOTIFY_DELETE),
-
-    Unclassified(null);
-
-    companion object {
-        /**
-         * Depends on [Unclassified] being the last entry!!!
-         */
-        fun determine(contentObserverOnChangeFlags: Int): FileChangeOperation =
-            entries.first { it.flag == null || it.flag and contentObserverOnChangeFlags != 0 }
-    }
-}
 
 internal abstract class FileObserver(
     private val context: Context,
@@ -59,6 +38,9 @@ internal abstract class FileObserver(
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     protected abstract val logIdentifier: String
+
+    private val fileTypeConfigMap
+        get() = fileTypeConfigMapStateFlow.value
 
     override fun deliverSelfNotifications(): Boolean = false
 
@@ -99,7 +81,11 @@ internal abstract class FileObserver(
         enabledFileAndSourceTypeOrNull(mediaStoreData)
             ?.let { fileAndSourceType ->
                 onMoveFile(
-                    MoveFile(mediaUri, mediaStoreData, fileAndSourceType)
+                    MoveFile(
+                        mediaUri = mediaUri,
+                        mediaStoreData = mediaStoreData,
+                        fileAndSourceType = fileAndSourceType
+                    )
                         .also {
                             i { "Calling onMoveFile on $it" }
                         }
@@ -113,11 +99,12 @@ internal abstract class FileObserver(
 
     private fun onMoveFile(moveFile: MoveFile) {
         val enabledAutoMoveDestination =
-            fileTypeConfigMapStateFlow.value.getValue(moveFile.fileType).sourceTypeConfigMap.getValue(
-                moveFile.sourceType
-            )
+            fileTypeConfigMap
+                .getValue(moveFile.fileType)
+                .sourceTypeConfigMap
+                .getValue(moveFile.sourceType)
                 .autoMoveConfig
-                .enabledDestination
+                .enabledDestinationOrNull
 
         mostRecentMoveBundleProcedureJob = scope.launchDelayed(300L) {
             when (enabledAutoMoveDestination) {
@@ -147,5 +134,5 @@ internal abstract class FileObserver(
     }
 }
 
-private val AutoMoveConfig.enabledDestination: DocumentUri?
+private val AutoMoveConfig.enabledDestinationOrNull: DocumentUri?
     get() = if (enabled) destination else null

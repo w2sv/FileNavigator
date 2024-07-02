@@ -1,7 +1,7 @@
 package utils
 
 import com.w2sv.common.utils.MediaUri
-import com.w2sv.navigator.mediastore.MediaStoreData
+import com.w2sv.navigator.observing.model.MediaStoreData
 import java.time.LocalDateTime
 
 internal object TestInstancesProvider {

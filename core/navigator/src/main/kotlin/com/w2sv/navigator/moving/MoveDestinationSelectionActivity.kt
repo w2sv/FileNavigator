@@ -22,9 +22,9 @@ import com.w2sv.navigator.moving.model.MoveException
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.notifications.putMoveBundleExtra
-import com.w2sv.navigator.notifications.putMoveFileExtra
-import com.w2sv.navigator.notifications.putOptionalNotificationResourcesExtra
+import com.w2sv.navigator.shared.putMoveBundleExtra
+import com.w2sv.navigator.shared.putMoveFileExtra
+import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import slimber.log.i

@@ -1,4 +1,4 @@
-package com.w2sv.navigator.fileobservers
+package com.w2sv.navigator.observing
 
 import android.content.Context
 import android.os.Handler
@@ -12,8 +12,8 @@ import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.mapState
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.MediaTypeToFileObserver
-import com.w2sv.navigator.mediastore.MediaStoreDataProducer
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map

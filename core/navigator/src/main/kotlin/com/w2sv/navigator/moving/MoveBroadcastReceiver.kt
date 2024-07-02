@@ -24,8 +24,8 @@ import com.w2sv.navigator.moving.model.MoveException
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
-import com.w2sv.navigator.notifications.putMoveBundleExtra
-import com.w2sv.navigator.notifications.putOptionalNotificationResourcesExtra
+import com.w2sv.navigator.shared.putMoveBundleExtra
+import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -110,12 +110,10 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                             fileName = moveBundle.file.mediaStoreData.name
                         )
                         insertMoveEntryUseCase(
-                            moveBundle.file.moveEntry(
-                                destinationDocumentUri = moveBundle.destination,
+                            moveBundle.moveEntry(
                                 movedFileDocumentUri = movedFileDocumentUri,
                                 movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!,
                                 dateTime = LocalDateTime.now(),
-                                autoMoved = moveBundle.mode.isAuto
                             )
                         )
 
