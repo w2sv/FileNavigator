@@ -7,6 +7,7 @@ import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
 import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
@@ -69,6 +70,13 @@ internal data class NotificationResources(
             ) {
                 context.sendBroadcast(
                     intent.setClass(context, CleanupBroadcastReceiver::class.java)
+                )
+            }
+
+            fun start(context: Context, notificationResources: NotificationResources) {
+                context.sendBroadcast(
+                    Intent(context, CleanupBroadcastReceiver::class.java)
+                        .putOptionalNotificationResourcesExtra(notificationResources)
                 )
             }
         }
