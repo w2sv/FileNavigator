@@ -8,13 +8,11 @@ import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.DocumentUri
-import com.w2sv.common.utils.ToastProperties
 import com.w2sv.common.utils.fileName
 import com.w2sv.common.utils.showToast
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
-import com.w2sv.kotlinutils.coroutines.collectFromFlow
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
@@ -31,7 +29,6 @@ import javax.inject.Singleton
 
 @Singleton
 internal class MoveResultListener @Inject constructor(
-    moveResultFlow: MoveResultFlow,
     private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val newMoveFileNotificationManager: NewMoveFileNotificationManager,
@@ -39,32 +36,28 @@ internal class MoveResultListener @Inject constructor(
     @GlobalScope(AppDispatcher.IO) private val scope: CoroutineScope,
     @ApplicationContext private val context: Context
 ) {
-    init {
-        scope.collectFromFlow(moveResultFlow) { moveResult ->
-            when (moveResult) {
-                is MoveResult.Success -> {
-                    onSuccess(moveResult.moveBundle)
-                }
-
-                is MoveResult.Failure.Generic -> {
-                    onGenericFailure(moveResult.toastProperties, moveResult.cancelNotification)
-                }
-
-                is MoveResult.Failure.AutoMoveDestinationNotFound -> {
-                    onAutoMoveDestinationNotFound(moveResult.moveBundle)
-                }
-            }
-        }
-    }
-
-    private fun onGenericFailure(
-        toastProperties: ToastProperties,
-        cancelNotification: Boolean,
-        notificationResources: NotificationResources?
+    operator fun invoke(
+        moveResult: MoveResult,
+        notificationResources: NotificationResources?,
     ) {
-        context.showToast(toastProperties)
-        if (cancelNotification && notificationResources != null) {
-            NotificationResources.CleanupBroadcastReceiver.start(context, notificationResources)
+        if (moveResult.cancelNotification == true && notificationResources != null) {
+            NotificationResources.CleanupBroadcastReceiver.start(
+                context = context,
+                notificationResources = notificationResources
+            )
+        }
+        when (moveResult) {
+            is MoveResult.Success -> {
+                onSuccess(moveResult.moveBundle)
+            }
+
+            is MoveResult.Failure.Generic -> {
+                context.showToast(moveResult.toastProperties)
+            }
+
+            is MoveResult.Failure.AutoMoveDestinationNotFound -> {
+                onAutoMoveDestinationNotFound(moveResult.moveBundle)
+            }
         }
     }
 
@@ -93,7 +86,7 @@ internal class MoveResultListener @Inject constructor(
         }
     }
 
-    private fun onSuccess(moveBundle: MoveBundle, notificationResources: NotificationResources?) {
+    private fun onSuccess(moveBundle: MoveBundle) {
         context.showMoveSuccessToast(
             moveBundle = moveBundle,
             moveDestinationDocumentFile = moveBundle.destination.documentFile(context)!!  // TODO
@@ -120,10 +113,6 @@ internal class MoveResultListener @Inject constructor(
                     destination = moveBundle.destination
                 )
             }
-        }
-
-        notificationResources?.let {
-            NotificationResources.CleanupBroadcastReceiver.start(context, it)
         }
     }
 }

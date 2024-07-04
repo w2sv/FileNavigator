@@ -3,14 +3,14 @@ package com.w2sv.navigator.moving.model
 import com.w2sv.common.utils.ToastProperties
 import com.w2sv.core.navigator.R
 
-internal interface MoveResult {
-    sealed interface Failure :
-        MoveResult {
+internal sealed class MoveResult(val cancelNotification: Boolean?) {
+    sealed class Failure(cancelNotification: Boolean?) :
+        MoveResult(cancelNotification = cancelNotification) {
 
         sealed class Generic(
             val toastProperties: ToastProperties,
-            val cancelNotification: Boolean
-        ) : Failure
+            cancelNotification: Boolean
+        ) : Failure(cancelNotification)
 
         data object ManageAllFilesPermissionMissing :
             Generic(
@@ -35,8 +35,8 @@ internal interface MoveResult {
             cancelNotification = true
         )
 
-        data class AutoMoveDestinationNotFound(val moveBundle: MoveBundle) : Failure
+        data class AutoMoveDestinationNotFound(val moveBundle: MoveBundle) : Failure(null)
     }
 
-    data class Success(val moveBundle: MoveBundle) : MoveResult
+    data class Success(val moveBundle: MoveBundle) : MoveResult(true)
 }

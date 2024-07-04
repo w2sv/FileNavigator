@@ -61,18 +61,6 @@ internal data class NotificationResources(
                         notificationResources
                     )
 
-            /**
-             * @param intent Intent, whose extras contain the [NotificationResources].
-             */
-            fun startFromResourcesComprisingIntent(
-                context: Context,
-                intent: Intent
-            ) {
-                context.sendBroadcast(
-                    intent.setClass(context, CleanupBroadcastReceiver::class.java)
-                )
-            }
-
             fun start(context: Context, notificationResources: NotificationResources) {
                 context.sendBroadcast(
                     Intent(context, CleanupBroadcastReceiver::class.java)

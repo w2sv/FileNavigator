@@ -8,13 +8,19 @@ import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.MediaUri
-import com.w2sv.common.utils.showToast
-import com.w2sv.navigator.moving.model.MoveException
+import com.w2sv.navigator.moving.MoveResultListener
+import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
 import java.io.File
+import javax.inject.Inject
 
+@AndroidEntryPoint
 internal class ViewFileIfPresentActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var moveResultListener: MoveResultListener
 
     @Parcelize
     data class Args(val mediaUri: MediaUri, val mimeType: String, val absPath: String) :
@@ -39,10 +45,9 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             )
         } else {
-            showToast(MoveException.MoveFileNotFound.toastProperties)
-            NotificationResources.CleanupBroadcastReceiver.startFromResourcesComprisingIntent(
-                context = this,
-                intent = intent
+            moveResultListener.invoke(
+                MoveResult.Failure.MoveFileNotFound,
+                NotificationResources.fromIntent(intent)
             )
         }
         finishAndRemoveTask()

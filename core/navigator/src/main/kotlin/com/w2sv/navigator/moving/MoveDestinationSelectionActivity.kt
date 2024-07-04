@@ -10,19 +10,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.SavedStateHandle
 import com.w2sv.common.utils.DocumentUri
-import com.w2sv.common.utils.ToastProperties
 import com.w2sv.common.utils.isExternalStorageManger
-import com.w2sv.common.utils.showToast
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
-import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.firstBlocking
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveException
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
+import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.shared.putMoveBundleExtra
 import com.w2sv.navigator.shared.putMoveFileExtra
 import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,10 +39,10 @@ internal class MoveDestinationSelectionActivity : ComponentActivity() {
         val moveFile: MoveFile =
             savedStateHandle[MoveFile.EXTRA]!!
 
-        fun preemptiveExitReason(): MoveException? =
+        fun preemptiveMoveFailure(): MoveResult.Failure? =
             when {
-                !isExternalStorageManger -> MoveException.MissingManageAllFilesPermission
-                !moveFile.mediaStoreData.fileExists -> MoveException.MoveFileNotFound
+                !isExternalStorageManger -> MoveResult.Failure.ManageAllFilesPermissionMissing
+                !moveFile.mediaStoreData.fileExists -> MoveResult.Failure.MoveFileNotFound
                 else -> null
             }
 
@@ -57,17 +53,22 @@ internal class MoveDestinationSelectionActivity : ComponentActivity() {
         }
     }
 
+    @Inject
+    lateinit var moveResultListener: MoveResultListener
+
     private val viewModel by viewModels<ViewModel>()
+
+    private val notificationResources: NotificationResources?
+        get() = NotificationResources.fromIntent(intent)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        when (val preemptiveExitReason = viewModel.preemptiveExitReason()) {
+        when (val moveFailure = viewModel.preemptiveMoveFailure()) {
             null -> destinationPickerLauncher.launch(viewModel.lastMoveDestination?.uri)
-            else -> terminateActivity(
-                toastProperties = preemptiveExitReason.toastProperties,
-                cancelNotification = preemptiveExitReason.cancelNotification
-            )
+            else -> {
+                finishAndRemoveTask(moveFailure)
+            }
         }
     }
 
@@ -76,7 +77,7 @@ internal class MoveDestinationSelectionActivity : ComponentActivity() {
             contract = ActivityResultContracts.OpenDocumentTree(),
             callback = { treeUri ->
                 if (treeUri == null) {  // When file picker exited via back press
-                    terminateActivity()
+                    finishAndRemoveTask()
                 } else {
                     onMoveDestinationSelected(treeUri)
                 }
@@ -93,33 +94,23 @@ internal class MoveDestinationSelectionActivity : ComponentActivity() {
         // Build DocumentUri, exit if unsuccessful
         val moveDestinationDocumentUri =
             DocumentUri.fromTreeUri(this, treeUri)
-                ?: return terminateActivity(ToastProperties(getString(R.string.couldnt_move_file_internal_error)))
+                ?: return finishAndRemoveTask(MoveResult.Failure.InternalError)
 
         MoveBroadcastReceiver.sendBroadcast(
             context = applicationContext,
-            fileMoveActivityIntent = intent.putMoveBundleExtra(
-                MoveBundle(
-                    file = viewModel.moveFile,
-                    destination = moveDestinationDocumentUri,
-                    mode = MoveMode.ManualSelection
-                )
+            moveBundle = MoveBundle(
+                file = viewModel.moveFile,
+                destination = moveDestinationDocumentUri,
+                mode = MoveMode.ManualSelection
             ),
+            notificationResources = notificationResources
         )
-        terminateActivity()
+        finishAndRemoveTask()
     }
 
-    private fun terminateActivity(
-        toastProperties: ToastProperties? = null,
-        cancelNotification: Boolean = false
-    ) {
-        if (cancelNotification) {
-            NotificationResources.CleanupBroadcastReceiver.startFromResourcesComprisingIntent(
-                applicationContext,
-                intent
-            )
-        }
-        toastProperties?.let {
-            showToast(it)
+    private fun finishAndRemoveTask(moveResult: MoveResult? = null) {
+        moveResult?.let {
+            moveResultListener.invoke(it, notificationResources)
         }
         finishAndRemoveTask()
     }

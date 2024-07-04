@@ -16,13 +16,19 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     @Inject
     internal lateinit var fileMover: FileMover
 
+    @Inject
+    internal lateinit var moveResultListener: MoveResultListener
+
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
 
-        fileMover.invoke(
+        val moveResult = fileMover.invoke(
             moveBundle = MoveBundle.fromIntent(intent),
-            notificationResources = NotificationResources.fromIntent(intent),
             context = context
+        )
+        moveResultListener.invoke(
+            moveResult = moveResult,
+            notificationResources = NotificationResources.fromIntent(intent)
         )
     }
 
@@ -38,17 +44,6 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
                     notificationResources = notificationResources,
                     context = context
                 )
-            )
-        }
-
-        fun sendBroadcast(
-            context: Context,
-            fileMoveActivityIntent: Intent,
-        ) {
-            context.sendBroadcast(
-                fileMoveActivityIntent.apply {
-                    setClass(context, MoveBroadcastReceiver::class.java)
-                }
             )
         }
 
