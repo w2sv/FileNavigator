@@ -31,7 +31,6 @@ internal class FileMover @Inject constructor(
 ) {
     operator fun invoke(
         moveBundle: MoveBundle,
-        notificationResources: NotificationResources?,
         context: Context
     ) {
         // Exit if 'manage all files' permission not granted
@@ -76,28 +75,7 @@ internal class FileMover @Inject constructor(
                     i { errorCode.toString() }
 
                     if (errorCode == ErrorCode.TARGET_FOLDER_NOT_FOUND && moveBundle.mode.isAuto) {
-                        scope.launch {
-                            navigatorConfigDataSource.unsetAutoMoveConfig(
-                                fileType = moveBundle.file.fileType,
-                                sourceType = moveBundle.file.sourceType
-                            )
-                            FileNavigator.reregisterFileObservers(context)
-                        }
-                        with(newMoveFileNotificationManager) {
-                            buildAndEmit(
-                                BuilderArgs(
-                                    moveFile = moveBundle.file
-                                )
-                            )
-                        }
-                        with(autoMoveDestinationInvalidNotificationManager) {
-                            buildAndEmit(
-                                BuilderArgs(
-                                    fileAndSourceType = moveBundle.file.fileAndSourceType,
-                                    autoMoveDestination = moveBundle.destination
-                                )
-                            )
-                        }
+                        onMoveResult(MoveResult.Failure.AutoMoveDestinationNotFound(moveBundle))
                     } else {
                         context.showToast(errorCode.name)
                     }

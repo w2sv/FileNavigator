@@ -8,11 +8,14 @@ import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.DocumentUri
+import com.w2sv.common.utils.ToastProperties
 import com.w2sv.common.utils.fileName
+import com.w2sv.common.utils.showToast
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.kotlinutils.coroutines.collectFromFlow
+import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
@@ -27,8 +30,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class MoveResultConsumer @Inject constructor(
-    private val moveResultFlow: MoveResultFlow,
+internal class MoveResultListener @Inject constructor(
+    moveResultFlow: MoveResultFlow,
     private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val newMoveFileNotificationManager: NewMoveFileNotificationManager,
@@ -42,14 +45,58 @@ internal class MoveResultConsumer @Inject constructor(
                 is MoveResult.Success -> {
                     onSuccess(moveResult.moveBundle)
                 }
+
+                is MoveResult.Failure.Generic -> {
+                    onGenericFailure(moveResult.toastProperties, moveResult.cancelNotification)
+                }
+
+                is MoveResult.Failure.AutoMoveDestinationNotFound -> {
+                    onAutoMoveDestinationNotFound(moveResult.moveBundle)
+                }
             }
         }
     }
 
-    private fun onSuccess(moveBundle: MoveBundle) {
+    private fun onGenericFailure(
+        toastProperties: ToastProperties,
+        cancelNotification: Boolean,
+        notificationResources: NotificationResources?
+    ) {
+        context.showToast(toastProperties)
+        if (cancelNotification && notificationResources != null) {
+            NotificationResources.CleanupBroadcastReceiver.start(context, notificationResources)
+        }
+    }
+
+    private fun onAutoMoveDestinationNotFound(moveBundle: MoveBundle) {
+        scope.launch {
+            navigatorConfigDataSource.unsetAutoMoveConfig(
+                fileType = moveBundle.file.fileType,
+                sourceType = moveBundle.file.sourceType
+            )
+            FileNavigator.reregisterFileObservers(context)
+        }
+        with(newMoveFileNotificationManager) {
+            buildAndEmit(
+                BuilderArgs(
+                    moveFile = moveBundle.file
+                )
+            )
+        }
+        with(autoMoveDestinationInvalidNotificationManager) {
+            buildAndEmit(
+                BuilderArgs(
+                    fileAndSourceType = moveBundle.file.fileAndSourceType,
+                    autoMoveDestination = moveBundle.destination
+                )
+            )
+        }
+    }
+
+    private fun onSuccess(moveBundle: MoveBundle, notificationResources: NotificationResources?) {
         context.showMoveSuccessToast(
             moveBundle = moveBundle,
-            moveDestinationDocumentFile = moveDestinationDocumentFile
+            moveDestinationDocumentFile = moveBundle.destination.documentFile(context)!!  // TODO
         )
 
         scope.launch {
@@ -108,16 +155,3 @@ private fun moveDestinationRepresentation(
     moveDestinationDocumentFile: DocumentFile
 ): String =
     "/${moveDestinationDocumentFile.fileName(context)}"
-
-private fun onMoveException(
-    context: Context,
-    moveException: MoveException,
-    notificationResources: NotificationResources?
-) {
-    context.showToast(moveException.toastProperties)
-    if (moveException.cancelNotification) {
-        notificationResources?.let {
-            NotificationResources.CleanupBroadcastReceiver.start(context, notificationResources)
-        }
-    }
-}
