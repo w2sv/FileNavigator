@@ -4,6 +4,7 @@ import com.w2sv.common.utils.ToastProperties
 import com.w2sv.core.navigator.R
 
 internal sealed class MoveResult(val cancelNotification: Boolean?) {
+
     sealed class Failure(cancelNotification: Boolean?) :
         MoveResult(cancelNotification = cancelNotification) {
 
