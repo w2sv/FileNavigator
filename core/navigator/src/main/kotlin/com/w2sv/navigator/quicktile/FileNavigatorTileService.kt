@@ -86,7 +86,7 @@ internal class FileNavigatorTileService : TileService() {
         showDialog(
             Dialog(this)
                 .apply {
-                    setTheme(com.afollestad.materialdialogs.R.style.MD_Dark)
+//                    setTheme(com.afollestad.materialdialogs.R.style.MD_Dark)  TODO: check
                     setContentView(R.layout.tile_dialog)
                     setOnShowListener {
                         scope.launchDelayed(250) {  // Add small delay to make the dialog visible for a bit longer than merely a couple of milliseconds for UX

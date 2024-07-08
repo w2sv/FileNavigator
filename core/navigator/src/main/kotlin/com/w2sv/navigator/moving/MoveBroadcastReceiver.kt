@@ -22,12 +22,11 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
 
-        val moveResult = fileMover.invoke(
-            moveBundle = MoveBundle.fromIntent(intent),
-            context = context
-        )
         moveResultListener.invoke(
-            moveResult = moveResult,
+            moveResult = fileMover.invoke(
+                moveBundle = MoveBundle.fromIntent(intent),
+                context = context
+            ),
             notificationResources = NotificationResources.fromIntent(intent)
         )
     }
