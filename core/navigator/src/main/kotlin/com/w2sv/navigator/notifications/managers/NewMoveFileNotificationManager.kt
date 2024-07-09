@@ -13,6 +13,7 @@ import androidx.core.text.buildSpannedString
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.DocumentUri
+import com.w2sv.common.utils.formattedFileSize
 import com.w2sv.common.utils.lineBreakSuffixed
 import com.w2sv.common.utils.loadBitmapFileNotFoundHandled
 import com.w2sv.common.utils.removeSlashSuffix
@@ -22,8 +23,8 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
-import com.w2sv.navigator.moving.MoveDestinationSelectionActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
+import com.w2sv.navigator.moving.MoveDestinationSelectionActivity
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
@@ -34,8 +35,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import java.io.IOException
+import java.text.NumberFormat
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 @Singleton
 internal class NewMoveFileNotificationManager @Inject constructor(
@@ -80,7 +84,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             }
 
             private fun setContent() {
-                val bigPictureStyleSet = setBigPictureStyleIfImage()
+                val bigPictureStyleSet = setBigPictureStyleIfImageOrVideo()
                 if (!bigPictureStyleSet) {
                     setStyle(
                         NotificationCompat.BigTextStyle()
@@ -89,7 +93,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 }
             }
 
-            private fun setBigPictureStyleIfImage(): Boolean {
+            private fun setBigPictureStyleIfImageOrVideo(): Boolean {
                 when (args.moveFile.fileType) {
                     FileType.Image -> context.contentResolver.loadBitmapFileNotFoundHandled(args.moveFile.mediaUri.uri)
                     FileType.Video -> {
@@ -128,10 +132,15 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             private fun getContentText(): SpannedString =
                 buildSpannedString {
                     append(args.moveFile.mediaStoreData.name.lineBreakSuffixed())
-                    bold { append(context.getString(R.string.found_at).lineBreakSuffixed()) }
+                    bold { append("Directory".lineBreakSuffixed()) }
                     append(
                         args.moveFile.mediaStoreData.volumeRelativeDirPath.removeSlashSuffix()
                             .slashPrefixed()
+                            .lineBreakSuffixed()
+                    )
+                    bold { append("Size".lineBreakSuffixed()) }
+                    append(
+                        formattedFileSize(args.moveFile.mediaStoreData.size)
                     )
                 }
 
