@@ -14,19 +14,13 @@ import javax.inject.Inject
 internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
-    internal lateinit var fileMover: FileMover
-
-    @Inject
     internal lateinit var moveResultListener: MoveResultListener
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
 
         moveResultListener.invoke(
-            moveResult = fileMover.invoke(
-                moveBundle = MoveBundle.fromIntent(intent),
-                context = context
-            ),
+            moveResult = MoveBundle.fromIntent(intent).move(context),
             notificationResources = NotificationResources.fromIntent(intent)
         )
     }

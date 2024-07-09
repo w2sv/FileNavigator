@@ -15,6 +15,7 @@ import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.moving.model.MoveBundle
+import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
@@ -40,11 +41,8 @@ internal class MoveResultListener @Inject constructor(
         moveResult: MoveResult,
         notificationResources: NotificationResources?,
     ) {
-        if (moveResult.cancelNotification == true && notificationResources != null) {
-            NotificationResources.CleanupBroadcastReceiver.start(
-                context = context,
-                notificationResources = notificationResources
-            )
+        if (moveResult.cancelNotification) {
+            cancelNotification(notificationResources)
         }
         when (moveResult) {
             is MoveResult.Success -> {
@@ -56,8 +54,51 @@ internal class MoveResultListener @Inject constructor(
             }
 
             is MoveResult.Failure.MoveDestinationNotFound -> {
-                onAutoMoveDestinationNotFound(moveResult.moveBundle)
+                when (moveResult.moveBundle.mode) {
+                    MoveMode.Auto -> {
+                        onAutoMoveDestinationNotFound(moveResult.moveBundle)
+                    }
+
+                    MoveMode.Quick -> {
+                        onQuickMoveDestinationNotFound(moveResult.moveBundle, notificationResources)
+                    }
+
+                    MoveMode.ManualSelection -> {  // Shouldn't normally occur
+                        invoke(MoveResult.Failure.InternalError, notificationResources)
+                    }
+                }
             }
+        }
+    }
+
+    private fun cancelNotification(notificationResources: NotificationResources?) {
+        notificationResources?.let {
+            NotificationResources.CleanupBroadcastReceiver.start(
+                context = context,
+                notificationResources = it
+            )
+        }
+    }
+
+    private fun onQuickMoveDestinationNotFound(
+        moveBundle: MoveBundle,
+        notificationResources: NotificationResources?
+    ) {
+        cancelNotification(notificationResources)
+        scope.launch {
+            navigatorConfigDataSource.unsetLastMoveDestination(
+                fileType = moveBundle.file.fileType,
+                sourceType = moveBundle.file.sourceType
+            )
+        }
+        context.showToast(context.getString(R.string.couldn_t_find_quick_move_destination))
+
+        with(newMoveFileNotificationManager) {
+            buildAndEmit(
+                BuilderArgs(
+                    moveFile = moveBundle.file
+                )
+            )
         }
     }
 

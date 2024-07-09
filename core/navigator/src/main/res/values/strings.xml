@@ -10,16 +10,17 @@
     <string name="new_navigatable_file">New navigatable file</string>
     <string name="couldnt_move_manage_all_files_permission_missing">Couldn\'t move: Manage all files permission missing</string>
     <string name="couldnt_move_file_internal_error">Couldn\'t move: Internal Error</string>
-    <string name="file_has_already_been_moved_or_deleted">File has already been moved or deleted</string>
+    <string name="file_has_already_been_moved_or_deleted">Couldn\'t move: File has already been moved or deleted</string>
     <plurals name="navigatable_file">
         <item quantity="one">%1$d navigatable file</item>
         <item quantity="other">%1$d navigatable files</item>
     </plurals>
     <string name="foreground_service_notification_content">You will be notified when a new file corresponding to your enabled file types enters the file system.</string>
-    <string name="file_already_at_selected_location">File is already at the selected location</string>
-    <string name="not_enough_space_on_destination">Not enough space on destination</string>
+    <string name="file_already_at_selected_location">Couldn\'t move: File already at the selected destination</string>
+    <string name="not_enough_space_on_destination">Couldn\'t move: Not enough space on destination</string>
     <string name="to">to /%1$s</string>
     <string name="starting_navigator">Launching File Navigator…</string>
     <string name="auto_move_destination_invalid">Auto Move Destination invalid</string>
     <string name="has_been_deleted_and_got_therefore_removed_from">"has been deleted and got therefore removed from"</string>
+    <string name="couldn_t_find_quick_move_destination">Couldn\'t find quick move destination</string>
 </resources>

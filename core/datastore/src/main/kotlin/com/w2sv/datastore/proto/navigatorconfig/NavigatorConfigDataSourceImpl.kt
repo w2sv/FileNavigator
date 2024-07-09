@@ -55,6 +55,24 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
         }
     }
 
+    override suspend fun unsetLastMoveDestination(
+        fileType: FileType,
+        sourceType: SourceType,
+    ) {
+        navigatorConfigProtoDataStore.updateData { configProto ->
+            NavigatorConfigMapper.toProto(
+                NavigatorConfigMapper
+                    .toExternal(configProto)
+                    .copyWithAlteredSourceConfig(
+                        fileType,
+                        sourceType
+                    ) {
+                        it.copy(lastMoveDestinations = listOf())
+                    }
+            )
+        }
+    }
+
     override fun lastMoveDestination(
         fileType: FileType,
         sourceType: SourceType

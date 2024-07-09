@@ -3,9 +3,9 @@ package com.w2sv.navigator.moving.model
 import com.w2sv.common.utils.ToastProperties
 import com.w2sv.core.navigator.R
 
-internal sealed class MoveResult(val cancelNotification: Boolean?) {
+internal sealed class MoveResult(val cancelNotification: Boolean) {
 
-    sealed class Failure(cancelNotification: Boolean?) :
+    sealed class Failure(cancelNotification: Boolean) :
         MoveResult(cancelNotification = cancelNotification) {
 
         sealed class Generic(
@@ -41,7 +41,7 @@ internal sealed class MoveResult(val cancelNotification: Boolean?) {
             cancelNotification = false
         )
 
-        data class MoveDestinationNotFound(val moveBundle: MoveBundle) : Failure(null)
+        data class MoveDestinationNotFound(val moveBundle: MoveBundle) : Failure(false)
     }
 
     data class Success(val moveBundle: MoveBundle) : MoveResult(true)

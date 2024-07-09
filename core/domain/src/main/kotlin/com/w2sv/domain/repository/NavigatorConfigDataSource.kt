@@ -18,6 +18,11 @@ interface NavigatorConfigDataSource {
         destination: DocumentUri
     )
 
+    suspend fun unsetLastMoveDestination(
+        fileType: FileType,
+        sourceType: SourceType,
+    )
+
     fun lastMoveDestination(
         fileType: FileType,
         sourceType: SourceType
