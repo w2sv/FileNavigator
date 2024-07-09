@@ -31,12 +31,17 @@ internal sealed class MoveResult(val cancelNotification: Boolean?) {
             cancelNotification = false
         )
 
-        data object FileAlreadyAtMoveDestination : Generic(
+        data object FileAlreadyAtDestination : Generic(
             toastProperties = ToastProperties(R.string.file_already_at_selected_location),
             cancelNotification = true
         )
 
-        data class AutoMoveDestinationNotFound(val moveBundle: MoveBundle) : Failure(null)
+        data object NotEnoughSpaceOnDestination : Generic(
+            toastProperties = ToastProperties(R.string.not_enough_space_on_destination),
+            cancelNotification = false
+        )
+
+        data class MoveDestinationNotFound(val moveBundle: MoveBundle) : Failure(null)
     }
 
     data class Success(val moveBundle: MoveBundle) : MoveResult(true)

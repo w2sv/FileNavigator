@@ -5,7 +5,6 @@ import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.callback.SingleFileConflictCallback
 import com.anggrayudi.storage.result.SingleFileErrorCode
 import com.anggrayudi.storage.result.SingleFileResult
-import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.kotlinutils.coroutines.firstBlocking
@@ -41,14 +40,14 @@ internal class FileMover @Inject constructor() {
             return MoveResult.Failure.InternalError
         }
 
-        // Exit if file already at selected location.
+        // Exit if file already at destination
         if (moveDestinationDocumentFile.hasChild(  // TODO: optimizable?
                 context = context,
                 path = moveBundle.file.mediaStoreData.name,
                 requiresWriteAccess = false
             )
         ) {
-            return MoveResult.Failure.FileAlreadyAtMoveDestination
+            return MoveResult.Failure.FileAlreadyAtDestination
         }
 
         return moveMediaFile.moveTo(
@@ -63,11 +62,15 @@ internal class FileMover @Inject constructor() {
                     is SingleFileResult.Error -> {
                         i { moveState.errorCode.toString() }
 
-                        if (moveState.errorCode == SingleFileErrorCode.TARGET_FOLDER_NOT_FOUND && moveBundle.mode.isAuto) {
-                            MoveResult.Failure.AutoMoveDestinationNotFound(moveBundle)
-                        } else {
-                            context.showToast(moveState.errorCode.name)
-                            MoveResult.Failure.InternalError
+                        when (moveState.errorCode) {
+                            SingleFileErrorCode.TARGET_FOLDER_NOT_FOUND -> MoveResult.Failure.MoveDestinationNotFound(
+                                moveBundle
+                            )
+
+                            SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.Failure.NotEnoughSpaceOnDestination
+                            SingleFileErrorCode.SOURCE_FILE_NOT_FOUND -> MoveResult.Failure.MoveFileNotFound
+                            SingleFileErrorCode.STORAGE_PERMISSION_DENIED, SingleFileErrorCode.CANNOT_CREATE_FILE_IN_TARGET -> MoveResult.Failure.ManageAllFilesPermissionMissing
+                            else -> MoveResult.Failure.InternalError
                         }
                     }
 

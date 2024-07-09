@@ -55,7 +55,7 @@ internal class MoveResultListener @Inject constructor(
                 context.showToast(moveResult.toastProperties)
             }
 
-            is MoveResult.Failure.AutoMoveDestinationNotFound -> {
+            is MoveResult.Failure.MoveDestinationNotFound -> {
                 onAutoMoveDestinationNotFound(moveResult.moveBundle)
             }
         }

@@ -17,6 +17,7 @@
     </plurals>
     <string name="foreground_service_notification_content">You will be notified when a new file corresponding to your enabled file types enters the file system.</string>
     <string name="file_already_at_selected_location">File is already at the selected location</string>
+    <string name="not_enough_space_on_destination">Not enough space on destination</string>
     <string name="to">to /%1$s</string>
     <string name="starting_navigator">Launching File Navigator…</string>
     <string name="auto_move_destination_invalid">Auto Move Destination invalid</string>
