@@ -2,7 +2,6 @@ package com.w2sv.navigator.observing
 
 import android.content.Context
 import android.os.Handler
-import android.os.HandlerThread
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
@@ -38,33 +37,18 @@ internal class FileObserverFactory @Inject constructor(
     private val fileTypeConfigMap
         get() = fileTypeConfigMapStateFlow.value
 
-    private val handlerThread by lazy {
-        HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
-    }
-    private val handler by lazy {
-        Handler(handlerThread.looper)
-    }
-
-    fun quitThread() {
-        handlerThread.quit()
-    }
-
-    operator fun invoke(): MediaTypeToFileObserver {
-        if (!handlerThread.isAlive) {
-            handlerThread.start()
-        }
-
+    operator fun invoke(handler: Handler): MediaTypeToFileObserver {
         return buildMap {
             putAll(
-                mediaFileObservers()
+                mediaFileObservers(handler)
             )
-            nonMediaFileObserver()?.let {
+            nonMediaFileObserver(handler)?.let {
                 put(MediaType.DOWNLOADS, it)
             }
         }
     }
 
-    private fun mediaFileObservers(): MediaTypeToFileObserver =
+    private fun mediaFileObservers(handler: Handler): MediaTypeToFileObserver =
         FileType.Media.values
             .filter { fileTypeConfigMap.getValue(it).enabled }
             .associate { mediaFileType ->
@@ -78,7 +62,7 @@ internal class FileObserverFactory @Inject constructor(
                 )
             }
 
-    private fun nonMediaFileObserver(): NonMediaFileObserver? =
+    private fun nonMediaFileObserver(handler: Handler): NonMediaFileObserver? =
         fileTypeConfigMapStateFlow.mapState { fileTypeConfigMap ->
             FileType.NonMedia.values.filter { fileTypeConfigMap.getValue(it).enabled }.toSet()
         }

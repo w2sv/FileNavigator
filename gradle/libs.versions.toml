@@ -72,6 +72,7 @@ protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref 
 # .Hilt
 google-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 google-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+google-hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 
 # Other
 slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
@@ -82,12 +83,15 @@ materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "ma
 compose-destinations = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "compose-destinations" }
 compose-destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "compose-destinations" }
 textflow = { module = "io.github.oleksandrbalan:textflow", version = "1.1.2" }
+materialDialogs-core = "com.afollestad.material-dialogs:core:3.3.0"
 
 # Testing
 junit = { module = "junit:junit", version.ref = "junit" }
-androidx-junit = "androidx.test.ext:junit:1.2.1"
+androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
+androidx-test-rules = "androidx.test:rules:1.6.1"
+androidx-test-runner = "androidx.test:runner:1.6.1"
+androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 roboelectric = "org.robolectric:robolectric:4.12.2"
-rules = "androidx.test:rules:1.6.1"
 
 # Plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -95,7 +99,7 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 
 [bundles]
-unitTest = ["junit", "androidx-junit", "roboelectric"]
+unitTest = ["junit", "androidx-test-ext-junit", "roboelectric"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

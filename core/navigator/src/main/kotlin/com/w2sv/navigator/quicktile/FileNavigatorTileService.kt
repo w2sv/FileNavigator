@@ -36,8 +36,6 @@ internal class FileNavigatorTileService : TileService() {
      * Called every time the quick tile pan is expanded. onStopListening behaves vice-versa.
      */
     override fun onStartListening() {
-        super.onStartListening()
-
         i { "onStartListening" }
 
         // Update tile state reactively on navigator status change
@@ -47,8 +45,6 @@ internal class FileNavigatorTileService : TileService() {
     }
 
     override fun onClick() {
-        super.onClick()
-
         when (qsTile.state) {
             Tile.STATE_ACTIVE -> {
                 FileNavigator.stop(this)
@@ -86,7 +82,7 @@ internal class FileNavigatorTileService : TileService() {
         showDialog(
             Dialog(this)
                 .apply {
-//                    setTheme(com.afollestad.materialdialogs.R.style.MD_Dark)  TODO: check
+                    setTheme(com.afollestad.materialdialogs.R.style.MD_Dark)
                     setContentView(R.layout.tile_dialog)
                     setOnShowListener {
                         scope.launchDelayed(250) {  // Add small delay to make the dialog visible for a bit longer than merely a couple of milliseconds for UX
