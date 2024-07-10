@@ -4,7 +4,6 @@
     <string name="move">Move</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
     <string name="stop">Stop</string>
-    <string name="found_at">found at</string>
 
     <string name="new_move_file_notification_title">New %1$s</string>
     <string name="new_navigatable_file">New navigatable file</string>
@@ -23,4 +22,6 @@
     <string name="auto_move_destination_invalid">Auto Move Destination invalid</string>
     <string name="has_been_deleted_and_got_therefore_removed_from">"has been deleted and got therefore removed from"</string>
     <string name="couldn_t_find_quick_move_destination">Couldn\'t find quick move destination</string>
+    <string name="directory">Directory</string>
+    <string name="size">Size</string>
 </resources>

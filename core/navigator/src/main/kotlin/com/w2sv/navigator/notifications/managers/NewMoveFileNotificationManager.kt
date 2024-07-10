@@ -38,7 +38,6 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 @Singleton
 internal class NewMoveFileNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
@@ -130,13 +129,13 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             private fun getContentText(): SpannedString =
                 buildSpannedString {
                     append(args.moveFile.mediaStoreData.name.lineBreakSuffixed())
-                    bold { append("Directory".lineBreakSuffixed()) }
+                    bold { append(context.getString(R.string.directory).lineBreakSuffixed()) }
                     append(
                         args.moveFile.mediaStoreData.volumeRelativeDirPath.removeSlashSuffix()
                             .slashPrefixed()
                             .lineBreakSuffixed()
                     )
-                    bold { append("Size".lineBreakSuffixed()) }
+                    bold { append(context.getString(R.string.size).lineBreakSuffixed()) }
                     append(
                         formattedFileSize(args.moveFile.mediaStoreData.size)
                     )
