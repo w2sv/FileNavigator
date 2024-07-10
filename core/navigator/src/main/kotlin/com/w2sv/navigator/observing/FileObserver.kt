@@ -8,6 +8,7 @@ import android.os.Handler
 import androidx.annotation.RequiresApi
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
+import com.w2sv.common.utils.cancelIfActive
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.launchDelayed
@@ -26,6 +27,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
+private data class MoveFileWithProcedureJob(val moveFile: MoveFile, val procedureJob: Job)
+
+private const val CANCEL_PERIOD_MILLIS = 300L
+
 internal abstract class FileObserver(
     private val context: Context,
     private val newMoveFileNotificationManager: NewMoveFileNotificationManager,
@@ -42,6 +47,8 @@ internal abstract class FileObserver(
     private val fileTypeConfigMap
         get() = fileTypeConfigMapStateFlow.value
 
+    private var moveFileWithProcedureJob: MoveFileWithProcedureJob? = null
+
     override fun deliverSelfNotifications(): Boolean = false
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -50,11 +57,8 @@ internal abstract class FileObserver(
             FileChangeOperation.determine(flags).also { emitOnChangeLog(uri, it) }
         when (fileChangeOperation) {
             FileChangeOperation.Delete -> {
-                mostRecentMoveBundleProcedureJob?.let {
-                    if (it.isActive) {
-                        it.cancel()
-                    }
-                }
+                moveFileWithProcedureJob?.procedureJob?.cancelIfActive()
+                moveFileWithProcedureJob = null
             }
 
             FileChangeOperation.Insert -> Unit
@@ -75,63 +79,70 @@ internal abstract class FileObserver(
 
     private fun onChangeCore(uri: Uri?) {
         val mediaUri = uri?.let { MediaUri(it) } ?: return
-        val mediaStoreData =
-            mediaStoreDataProducer.mediaStoreDataOrNull(mediaUri, context.contentResolver) ?: return
+        val mediaStoreDataRetrievalResult = (mediaStoreDataProducer(
+            mediaUri = mediaUri,
+            contentResolver = context.contentResolver
+        ) as? MediaStoreDataProducer.Result.Success) ?: return
 
-        enabledFileAndSourceTypeOrNull(mediaStoreData)
+        if (mediaStoreDataRetrievalResult.isUpdateOfAlreadySeenFile) {
+            moveFileWithProcedureJob?.let {
+                if (mediaUri == it.moveFile.mediaUri) {
+                    it.procedureJob.cancel()
+                }
+            }
+        }
+
+        enabledFileAndSourceTypeOrNull(mediaStoreDataRetrievalResult.data)
             ?.let { fileAndSourceType ->
-                onMoveFile(
-                    MoveFile(
-                        mediaUri = mediaUri,
-                        mediaStoreData = mediaStoreData,
-                        fileAndSourceType = fileAndSourceType
-                    )
-                        .also {
-                            i { "Calling onMoveFile on $it" }
+                val moveFile = MoveFile(
+                    mediaUri = mediaUri,
+                    mediaStoreData = mediaStoreDataRetrievalResult.data,
+                    fileAndSourceType = fileAndSourceType
+                )
+                    .also {
+                        i { "Calling onMoveFile on $it" }
+                    }
+
+                val enabledAutoMoveDestination =
+                    fileTypeConfigMap
+                        .getValue(moveFile.fileType)
+                        .sourceTypeConfigMap
+                        .getValue(moveFile.sourceType)
+                        .autoMoveConfig
+                        .enabledDestinationOrNull
+
+                moveFileWithProcedureJob = MoveFileWithProcedureJob(
+                    moveFile = moveFile,
+                    procedureJob = scope.launchDelayed(CANCEL_PERIOD_MILLIS) {
+                        when (enabledAutoMoveDestination) {
+                            null -> {
+                                // with-scope because construction of inner class BuilderArgs requires inner class scope
+                                with(newMoveFileNotificationManager) {
+                                    buildAndEmit(
+                                        BuilderArgs(
+                                            moveFile = moveFile
+                                        )
+                                    )
+                                }
+                            }
+
+                            else -> {
+                                MoveBroadcastReceiver.sendBroadcast(
+                                    context = context,
+                                    moveBundle = MoveBundle(
+                                        file = moveFile,
+                                        destination = enabledAutoMoveDestination,
+                                        mode = MoveMode.Auto
+                                    )
+                                )
+                            }
                         }
+                    }
                 )
             }
     }
 
     protected abstract fun enabledFileAndSourceTypeOrNull(mediaStoreData: MediaStoreData): FileAndSourceType?
-
-    private var mostRecentMoveBundleProcedureJob: Job? = null
-
-    private fun onMoveFile(moveFile: MoveFile) {
-        val enabledAutoMoveDestination =
-            fileTypeConfigMap
-                .getValue(moveFile.fileType)
-                .sourceTypeConfigMap
-                .getValue(moveFile.sourceType)
-                .autoMoveConfig
-                .enabledDestinationOrNull
-
-        mostRecentMoveBundleProcedureJob = scope.launchDelayed(300L) {
-            when (enabledAutoMoveDestination) {
-                null -> {
-                    // with scope because construction of inner class BuilderArgs requires inner class scope
-                    with(newMoveFileNotificationManager) {
-                        buildAndEmit(
-                            BuilderArgs(
-                                moveFile = moveFile
-                            )
-                        )
-                    }
-                }
-
-                else -> {
-                    MoveBroadcastReceiver.sendBroadcast(
-                        context = context,
-                        moveBundle = MoveBundle(
-                            file = moveFile,
-                            destination = enabledAutoMoveDestination,
-                            mode = MoveMode.Auto
-                        )
-                    )
-                }
-            }
-        }
-    }
 }
 
 private val AutoMoveConfig.enabledDestinationOrNull: DocumentUri?

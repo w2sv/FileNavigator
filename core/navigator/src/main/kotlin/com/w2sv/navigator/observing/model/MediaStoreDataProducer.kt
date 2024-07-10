@@ -13,23 +13,23 @@ private const val SEEN_FILES_BUFFER_SIZE = 5
 internal class MediaStoreDataProducer @Inject constructor() {
 
     sealed interface Result {
-        data class Success(val data: MediaStoreData) : Result
-        data object CouldntRetrieveMediaStoreData : Result
-        data object FileIsPending : Result
-        data object FileIsTrashed : Result
-        data object AlreadySeen : Result
+        data class Success(
+            val data: MediaStoreData,
+            val isUpdateOfAlreadySeenFile: Boolean
+        ) : Result
+
+        sealed interface Failure : Result
+
+        data object CouldntRetrieve : Failure
+        data object FileIsPending : Failure
+        data object FileIsTrashed : Failure
+        data object AlreadySeen : Failure
     }
 
     private data class SeenParameters(val uri: MediaUri, val fileSize: Long)
 
     private val seenParametersBuffer =
         EvictingQueue.create<SeenParameters>(SEEN_FILES_BUFFER_SIZE)
-
-    fun mediaStoreDataOrNull(
-        mediaUri: MediaUri,
-        contentResolver: ContentResolver
-    ): MediaStoreData? =
-        (invoke(mediaUri, contentResolver) as? Result.Success)?.data
 
     operator fun invoke(
         mediaUri: MediaUri,
@@ -38,7 +38,7 @@ internal class MediaStoreDataProducer @Inject constructor() {
         // Fetch MediaStoreColumnData; exit if impossible
         val columnData =
             MediaStoreData.queryFor(mediaUri, contentResolver)
-                ?: return Result.CouldntRetrieveMediaStoreData
+                ?: return Result.CouldntRetrieve
 
         // Exit if file is pending or trashed
         if (columnData.isPending) {
@@ -56,7 +56,8 @@ internal class MediaStoreDataProducer @Inject constructor() {
             return Result.AlreadySeen
         }
 
+        val fileInBuffer = seenParametersBuffer.removeIf { it.uri == seenParameters.uri }
         seenParametersBuffer.add(seenParameters)
-        return Result.Success(columnData)
+        return Result.Success(data = columnData, isUpdateOfAlreadySeenFile = fileInBuffer)
     }
 }

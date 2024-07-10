@@ -35,8 +35,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import java.io.IOException
-import java.text.NumberFormat
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -62,8 +60,8 @@ internal class NewMoveFileNotificationManager @Inject constructor(
         )
     )
 
-    private val sourceToLastMoveDestinationStateFlow =
-        SourceToLastMoveDestinationStateFlow(navigatorConfigDataSource, scope)
+    private val fileAndSourceTypeToLastMoveDestinationStateFlow =
+        FileAndSourceTypeToLastMoveDestinationStateFlow(navigatorConfigDataSource, scope)
 
     override fun getBuilder(args: BuilderArgs): Builder =
         object : Builder() {
@@ -151,7 +149,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 
                 // Add quickMoveAction if lastMoveDestination present.
-                sourceToLastMoveDestinationStateFlow.lastMoveDestination(args.moveFile.fileAndSourceType)
+                fileAndSourceTypeToLastMoveDestinationStateFlow.lastMoveDestination(args.moveFile.fileAndSourceType)
                     ?.let { lastMoveDestination ->
                         // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
                         lastMoveDestination.documentFile(context)?.name?.let { directoryName ->
@@ -249,7 +247,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             .build()
 }
 
-private class SourceToLastMoveDestinationStateFlow(
+private class FileAndSourceTypeToLastMoveDestinationStateFlow(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val scope: CoroutineScope,
     private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<DocumentUri>>> = mutableMapOf()
