@@ -1,6 +1,6 @@
 package com.w2sv.navigator.moving.model
 
-import com.w2sv.common.utils.ToastProperties
+import androidx.annotation.StringRes
 import com.w2sv.core.navigator.R
 
 internal sealed class MoveResult(val cancelNotification: Boolean) {
@@ -9,35 +9,33 @@ internal sealed class MoveResult(val cancelNotification: Boolean) {
         MoveResult(cancelNotification = cancelNotification) {
 
         sealed class Generic(
-            val toastProperties: ToastProperties,
+            @StringRes val explanationStringRes: Int,
             cancelNotification: Boolean
         ) : Failure(cancelNotification)
 
         data object ManageAllFilesPermissionMissing :
             Generic(
-                toastProperties = ToastProperties(message = R.string.couldnt_move_manage_all_files_permission_missing),
+                explanationStringRes = R.string.manage_all_files_permission_missing,
                 cancelNotification = false
             )
 
         data object MoveFileNotFound : Generic(
-            toastProperties = ToastProperties(
-                message = R.string.file_has_already_been_moved_or_deleted,
-            ),
+            explanationStringRes = R.string.file_has_already_been_moved_or_deleted,
             cancelNotification = true
         )
 
         data object InternalError : Generic(
-            toastProperties = ToastProperties(R.string.couldnt_move_file_internal_error),
+            explanationStringRes = R.string.internal_error,
             cancelNotification = false
         )
 
         data object FileAlreadyAtDestination : Generic(
-            toastProperties = ToastProperties(R.string.file_already_at_selected_location),
+            explanationStringRes = R.string.file_already_at_selected_location,
             cancelNotification = true
         )
 
         data object NotEnoughSpaceOnDestination : Generic(
-            toastProperties = ToastProperties(R.string.not_enough_space_on_destination),
+            explanationStringRes = R.string.not_enough_space_on_destination,
             cancelNotification = false
         )
 

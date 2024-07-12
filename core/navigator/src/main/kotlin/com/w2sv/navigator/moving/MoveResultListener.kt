@@ -2,6 +2,10 @@ package com.w2sv.navigator.moving
 
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.core.text.bold
+import androidx.core.text.buildSpannedString
 import androidx.documentfile.provider.DocumentFile
 import com.w2sv.androidutils.res.getText
 import com.w2sv.androidutils.widget.showToast
@@ -9,7 +13,6 @@ import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.fileName
-import com.w2sv.common.utils.showToast
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
@@ -50,7 +53,7 @@ internal class MoveResultListener @Inject constructor(
             }
 
             is MoveResult.Failure.Generic -> {
-                context.showToast(moveResult.toastProperties)
+                context.showMoveFailureToast(moveResult.explanationStringRes)
             }
 
             is MoveResult.Failure.MoveDestinationNotFound -> {
@@ -72,12 +75,7 @@ internal class MoveResultListener @Inject constructor(
     }
 
     private fun cancelNotification(notificationResources: NotificationResources?) {
-        notificationResources?.let {
-            NotificationResources.CleanupBroadcastReceiver.start(
-                context = context,
-                notificationResources = it
-            )
-        }
+        notificationResources?.cancelNotification(context)
     }
 
     private fun onQuickMoveDestinationNotFound(
@@ -91,7 +89,7 @@ internal class MoveResultListener @Inject constructor(
                 sourceType = moveBundle.file.sourceType
             )
         }
-        context.showToast(context.getString(R.string.couldn_t_find_quick_move_destination))
+        context.showMoveFailureToast(R.string.quick_move_destination_doesnt_exist)
 
         with(newMoveFileNotificationManager) {
             buildAndEmit(
@@ -172,16 +170,17 @@ private fun Context.showMoveSuccessToast(
         resources.getText(
             id = if (moveBundle.mode.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
             moveBundle.file.fileAndSourceType.label(context = this, isGif = moveBundle.file.isGif),
-            moveDestinationRepresentation(
-                this@showMoveSuccessToast,
-                moveDestinationDocumentFile
-            )
+            "/${moveDestinationDocumentFile.fileName(this)}"
         )
     )
 }
 
-private fun moveDestinationRepresentation(
-    context: Context,
-    moveDestinationDocumentFile: DocumentFile
-): String =
-    "/${moveDestinationDocumentFile.fileName(context)}"
+private fun Context.showMoveFailureToast(@StringRes explanationStringRes: Int) {
+    showToast(
+        text = buildSpannedString {
+            bold { append("${getString(R.string.couldnt_move)}: ") }
+            append(getString(explanationStringRes))
+        },
+        duration = Toast.LENGTH_LONG
+    )
+}

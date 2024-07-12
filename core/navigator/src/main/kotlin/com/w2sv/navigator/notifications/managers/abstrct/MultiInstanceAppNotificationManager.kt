@@ -60,8 +60,7 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
             )
     }
 
-    abstract class BuilderArgs(val resources: NotificationResources) :
-        AppNotificationManager.BuilderArgs
+    abstract class BuilderArgs(val resources: NotificationResources) : AppNotificationManager.BuilderArgs
 
     protected fun getNotificationResources(pendingIntentRequestCodeCount: Int): NotificationResources =
         NotificationResources(

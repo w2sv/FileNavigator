@@ -20,6 +20,13 @@ internal data class NotificationResources(
     private val notificationManagerIdentifier: String
 ) : Parcelable {
 
+    fun cancelNotification(context: Context) {
+        CleanupBroadcastReceiver.start(
+            context = context,
+            notificationResources = this
+        )
+    }
+
     @AndroidEntryPoint
     class CleanupBroadcastReceiver : BroadcastReceiver() {
 

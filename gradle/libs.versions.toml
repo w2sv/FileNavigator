@@ -2,7 +2,7 @@
 minSdk = "29"  # 29 = min for MediaStore.Downloads.EXTERNAL_CONTENT_URI
 compileSdk = "34"
 
-agp = "8.5.0"
+agp = "8.5.1"
 kotlin = "2.0.0"
 java = "17"
 ksp = "2.0.0-1.0.22"
