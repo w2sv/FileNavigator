@@ -17,7 +17,7 @@ import javax.inject.Inject
 internal data class NotificationResources(
     val id: Int,
     val pendingIntentRequestCodes: ArrayList<Int>,
-    private val notificationManagerIdentifier: String
+    private val resourcesIdentifier: String
 ) : Parcelable {
 
     fun cancelNotification(context: Context) {
@@ -37,20 +37,19 @@ internal data class NotificationResources(
         lateinit var autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager
 
         private val notificationManagers by lazy {
-            listOf(newMoveFileNotificationManager, autoMoveDestinationInvalidNotificationManager)
+            listOf(
+                newMoveFileNotificationManager, autoMoveDestinationInvalidNotificationManager
+            )
         }
 
-        override fun onReceive(context: Context?, intent: Intent?) {
-            intent
-                ?.let {
-                    fromIntent(it)
-                        ?.let { resources ->
-                            notificationManagers.first { notificationManager ->
-                                resources.notificationManagerIdentifier == notificationManager.identifier
-                            }
-                                .also { i { "Cleaning up ${it.identifier} resources" } }
-                                .cancelNotificationAndFreeResources(resources)
-                        }
+        override fun onReceive(context: Context, intent: Intent) {
+            fromIntent(intent)
+                ?.let { resources ->
+                    notificationManagers.first { notificationManager ->
+                        resources.resourcesIdentifier == notificationManager.resourcesIdentifier
+                    }
+                        .also { i { "Cleaning up ${it.resourcesIdentifier} resources" } }
+                        .cancelNotificationAndFreeResources(resources)
                 }
         }
 

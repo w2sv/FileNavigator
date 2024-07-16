@@ -5,6 +5,9 @@ import android.content.Context
 import com.w2sv.androidutils.getNotificationManager
 import com.w2sv.androidutils.isServiceRunning
 import com.w2sv.navigator.FileNavigator
+import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
+import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,11 +22,22 @@ object NavigatorModule {
 
     @Singleton
     @Provides
-    fun notificationManager(@ApplicationContext context: Context): NotificationManager =
+    internal fun notificationManager(@ApplicationContext context: Context): NotificationManager =
         context.getNotificationManager()
 
     @Singleton
     @Provides
     fun fileNavigatorIsRunning(@ApplicationContext context: Context): FileNavigator.IsRunning =
         FileNavigator.IsRunning(mutableStateFlow = MutableStateFlow(context.isServiceRunning<FileNavigator>()))
+
+//    @Singleton
+//    @Provides
+//    internal fun multiInstanceAppNotificationManagers(
+//        newMoveFileNotificationManager: NewMoveFileNotificationManager,
+//        autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager
+//    ): List<MultiInstanceAppNotificationManager<*>> =
+//        listOf(
+//            newMoveFileNotificationManager,
+//            autoMoveDestinationInvalidNotificationManager
+//        )
 }

@@ -23,7 +23,6 @@ import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
@@ -40,7 +39,7 @@ internal abstract class FileObserver(
 ) :
     ContentObserver(handler) {
 
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     protected abstract val logIdentifier: String
 

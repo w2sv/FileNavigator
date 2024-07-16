@@ -21,7 +21,7 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
     notificationManager = notificationManager,
     context = context
 ) {
-    val identifier: String
+    val resourcesIdentifier: String
         get() = this::class.java.simpleName
 
     data class SummaryProperties(val id: Int)
@@ -29,7 +29,7 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
     private val notificationIds = UniqueIds(resourcesBaseSeed)
     private val pendingIntentRequestCodes = UniqueIds(resourcesBaseSeed)
 
-    protected val nActiveNotifications: Int
+    protected val activeNotificationCount: Int
         get() = notificationIds.size
 
     // =============
@@ -68,13 +68,14 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
             pendingIntentRequestCodes = pendingIntentRequestCodes.addMultipleNewIds(
                 pendingIntentRequestCodeCount
             ),
-            notificationManagerIdentifier = identifier.also { i { "Putting identifier=$identifier" } }
+            resourcesIdentifier = resourcesIdentifier.also { i { "Putting identifier=$resourcesIdentifier" } }
         )
 
-    fun buildAndEmit(args: A) {
-        super.buildAndEmit(args.resources.id, args)
+    @CallSuper
+    open fun buildAndEmit(args: A) {
+        super.buildAndPostNotification(args.resources.id, args)
 
-        if (nActiveNotifications >= 2 && summaryProperties != null) {
+        if (activeNotificationCount >= 2 && summaryProperties != null) {
             emitSummaryNotification()
         }
     }
@@ -91,10 +92,11 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
     // Cancelling
     // ================
 
-    fun cancelNotificationAndFreeResources(resources: NotificationResources) {
+    @CallSuper
+    open fun cancelNotificationAndFreeResources(resources: NotificationResources) {
         notificationManager.cancel(resources.id)
         freeNotificationResources(resources)
-        if (nActiveNotifications == 0 && summaryProperties != null) {
+        if (activeNotificationCount == 0 && summaryProperties != null) {
             notificationManager.cancel(summaryProperties.id)
         } else {
             emitSummaryNotification()

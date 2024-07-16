@@ -32,7 +32,7 @@ internal abstract class AppNotificationManager<A : AppNotificationManager.Builde
         data object Empty : BuilderArgs
     }
 
-    fun buildAndEmit(id: Int, args: A) {
+    fun buildAndPostNotification(id: Int, args: A) {
         notificationManager.notify(id, buildNotification(args))
     }
 

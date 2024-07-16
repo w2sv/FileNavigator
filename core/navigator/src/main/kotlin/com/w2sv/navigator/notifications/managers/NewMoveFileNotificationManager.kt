@@ -29,6 +29,7 @@ import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.notifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.ViewFileIfPresentActivity
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -43,7 +44,8 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
     navigatorConfigDataSource: NavigatorConfigDataSource,
-    @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope
+    @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
+    private val batchMoveNotificationManager: BatchMoveNotificationManager
 ) : MultiInstanceAppNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
     notificationChannel = AppNotificationChannel.NewNavigatableFile.getNotificationChannel(context),
     notificationManager = notificationManager,
@@ -61,6 +63,20 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
     private val fileAndSourceTypeToLastMoveDestinationStateFlow =
         FileAndSourceTypeToLastMoveDestinationStateFlow(navigatorConfigDataSource, scope)
+
+    override fun buildAndEmit(args: BuilderArgs) {
+        super.buildAndEmit(args)
+
+//        if (activeNotificationCount >= 2) {
+            batchMoveNotificationManager.buildAndEmit(activeNotificationCount)
+//        }
+    }
+
+    override fun cancelNotificationAndFreeResources(resources: NotificationResources) {
+        super.cancelNotificationAndFreeResources(resources)
+
+        batchMoveNotificationManager.cancelOrUpdate(activeNotificationCount)
+    }
 
     override fun getBuilder(args: BuilderArgs): Builder =
         object : Builder() {
@@ -237,8 +253,8 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             .setContentTitle(
                 context.resources.getQuantityString(
                     R.plurals.navigatable_file,
-                    nActiveNotifications,
-                    nActiveNotifications
+                    activeNotificationCount,
+                    activeNotificationCount
                 )
             )
             .setSilent(true)
