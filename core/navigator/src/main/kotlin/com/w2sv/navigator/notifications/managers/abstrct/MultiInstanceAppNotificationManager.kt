@@ -60,7 +60,9 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
             )
     }
 
-    abstract class BuilderArgs(val resources: NotificationResources) : AppNotificationManager.BuilderArgs
+    interface BuilderArgs : AppNotificationManager.BuilderArgs {
+        val resources: NotificationResources
+    }
 
     protected fun getNotificationResources(pendingIntentRequestCodeCount: Int): NotificationResources =
         NotificationResources(
@@ -72,7 +74,7 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
         )
 
     @CallSuper
-    open fun buildAndEmit(args: A) {
+    open fun buildAndPost(args: A) {
         super.buildAndPostNotification(args.resources.id, args)
 
         if (activeNotificationCount >= 2 && summaryProperties != null) {

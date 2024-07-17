@@ -115,14 +115,7 @@ internal abstract class FileObserver(
                     procedureJob = scope.launchDelayed(CANCEL_PERIOD_MILLIS) {
                         when (enabledAutoMoveDestination) {
                             null -> {
-                                // with-scope because construction of inner class BuilderArgs requires inner class scope
-                                with(newMoveFileNotificationManager) {
-                                    buildAndEmit(
-                                        BuilderArgs(
-                                            moveFile = moveFile
-                                        )
-                                    )
-                                }
+                                newMoveFileNotificationManager.buildAndPost(moveFile)
                             }
 
                             else -> {

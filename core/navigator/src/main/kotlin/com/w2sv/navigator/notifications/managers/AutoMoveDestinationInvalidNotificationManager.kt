@@ -10,6 +10,7 @@ import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.usecase.DocumentUriToPathConverter
 import com.w2sv.navigator.notifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,14 +28,26 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
     context = context,
     resourcesBaseSeed = 2
 ) {
-    inner class BuilderArgs(
+    data class BuilderArgs(
         val fileAndSourceType: FileAndSourceType,
-        val autoMoveDestination: DocumentUri
-    ) : MultiInstanceAppNotificationManager.BuilderArgs(
-        resources = getNotificationResources(
-            pendingIntentRequestCodeCount = 1
+        val autoMoveDestination: DocumentUri,
+        override val resources: NotificationResources
+    ) : MultiInstanceAppNotificationManager.BuilderArgs
+
+    fun buildAndPost(
+        fileAndSourceType: FileAndSourceType,
+        autoMoveDestination: DocumentUri,
+    ) {
+        buildNotification(
+            BuilderArgs(
+                fileAndSourceType = fileAndSourceType,
+                autoMoveDestination = autoMoveDestination,
+                resources = getNotificationResources(
+                    pendingIntentRequestCodeCount = 1
+                )
+            )
         )
-    )
+    }
 
     override fun getBuilder(args: AutoMoveDestinationInvalidNotificationManager.BuilderArgs): AppNotificationManager<BuilderArgs>.Builder {
         return object : Builder() {

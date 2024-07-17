@@ -45,7 +45,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     notificationManager: NotificationManager,
     navigatorConfigDataSource: NavigatorConfigDataSource,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
-    private val batchMoveNotificationManager: BatchMoveNotificationManager
+    private val batchMoveNotificationManager: BatchMoveNotificationManager,
 ) : MultiInstanceAppNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
     notificationChannel = AppNotificationChannel.NewNavigatableFile.getNotificationChannel(context),
     notificationManager = notificationManager,
@@ -53,28 +53,41 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     resourcesBaseSeed = 1,
     summaryProperties = SummaryProperties(999)
 ) {
-    inner class BuilderArgs(
+    data class BuilderArgs(
         val moveFile: MoveFile,
-    ) : MultiInstanceAppNotificationManager.BuilderArgs(
-        resources = getNotificationResources(
-            pendingIntentRequestCodeCount = 4
+        val quickMoveDestination: DocumentUri?,
+        override val resources: NotificationResources
+    ) : MultiInstanceAppNotificationManager.BuilderArgs
+
+    fun buildAndPost(moveFile: MoveFile) {
+        buildAndPost(
+            BuilderArgs(
+                moveFile = moveFile,
+                quickMoveDestination = fileAndSourceTypeToLastMoveDestinationStateFlow.lastMoveDestination(moveFile.fileAndSourceType),
+                resources = getNotificationResources(pendingIntentRequestCodeCount = 4)
+            )
         )
-    )
+    }
+
+    private val activeNotificationBuilderArgs = mutableListOf<BuilderArgs>()
 
     private val fileAndSourceTypeToLastMoveDestinationStateFlow =
         FileAndSourceTypeToLastMoveDestinationStateFlow(navigatorConfigDataSource, scope)
 
-    override fun buildAndEmit(args: BuilderArgs) {
-        super.buildAndEmit(args)
+    override fun buildAndPost(args: BuilderArgs) {
+        super.buildAndPost(args)
+
+        activeNotificationBuilderArgs.add(args)
 
 //        if (activeNotificationCount >= 2) {
-            batchMoveNotificationManager.buildAndEmit(activeNotificationCount)
+        batchMoveNotificationManager.buildAndEmit(activeNotificationCount)
 //        }
     }
 
     override fun cancelNotificationAndFreeResources(resources: NotificationResources) {
         super.cancelNotificationAndFreeResources(resources)
 
+        activeNotificationBuilderArgs.removeAt(activeNotificationBuilderArgs.indexOfFirst { it.resources == resources })
         batchMoveNotificationManager.cancelOrUpdate(activeNotificationCount)
     }
 
@@ -163,8 +176,8 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 
-                // Add quickMoveAction if lastMoveDestination present.
-                fileAndSourceTypeToLastMoveDestinationStateFlow.lastMoveDestination(args.moveFile.fileAndSourceType)
+                // Add quickMoveAction if quickMoveDestination present.
+                args.quickMoveDestination
                     ?.let { lastMoveDestination ->
                         // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
                         lastMoveDestination.documentFile(context)?.name?.let { directoryName ->

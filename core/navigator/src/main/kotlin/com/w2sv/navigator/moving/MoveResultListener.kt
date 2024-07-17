@@ -90,14 +90,7 @@ internal class MoveResultListener @Inject constructor(
             )
         }
         context.showMoveFailureToast(R.string.quick_move_destination_doesnt_exist)
-
-        with(newMoveFileNotificationManager) {
-            buildAndEmit(
-                BuilderArgs(
-                    moveFile = moveBundle.file
-                )
-            )
-        }
+        newMoveFileNotificationManager.buildAndPost(moveBundle.file)
     }
 
     private fun onAutoMoveDestinationNotFound(moveBundle: MoveBundle) {
@@ -108,21 +101,11 @@ internal class MoveResultListener @Inject constructor(
             )
             FileNavigator.reregisterFileObservers(context)
         }
-        with(newMoveFileNotificationManager) {
-            buildAndEmit(
-                BuilderArgs(
-                    moveFile = moveBundle.file
-                )
-            )
-        }
-        with(autoMoveDestinationInvalidNotificationManager) {
-            buildAndEmit(
-                BuilderArgs(
-                    fileAndSourceType = moveBundle.file.fileAndSourceType,
-                    autoMoveDestination = moveBundle.destination
-                )
-            )
-        }
+        newMoveFileNotificationManager.buildAndPost(moveBundle.file)
+        autoMoveDestinationInvalidNotificationManager.buildAndPost(
+            fileAndSourceType = moveBundle.file.fileAndSourceType,
+            autoMoveDestination = moveBundle.destination
+        )
     }
 
     private fun onSuccess(moveBundle: MoveBundle) {
