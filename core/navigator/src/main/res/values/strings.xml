@@ -7,6 +7,7 @@
 
     <string name="new_move_file_notification_title">New %1$s</string>
     <string name="new_navigatable_file">New navigatable file</string>
+    <string name="batch_move_files">Batch move files</string>
     <string name="manage_all_files_permission_missing">Manage all files permission missing</string>
     <string name="internal_error">Internal Error</string>
     <string name="file_has_already_been_moved_or_deleted">File has already been moved or deleted</string>
@@ -25,4 +26,5 @@
     <string name="couldnt_move">Couldn\'t move</string>
     <string name="directory">Directory</string>
     <string name="size">Size</string>
+    <string name="move_files">Move %1$d files</string>
 </resources>

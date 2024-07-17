@@ -3,6 +3,7 @@ package com.w2sv.navigator.notifications.managers
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
+import com.w2sv.core.navigator.R
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.SingleInstanceAppNotificationManager
@@ -15,7 +16,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
 ) : SingleInstanceAppNotificationManager<BatchMoveNotificationManager.BuilderArgs>(
-    notificationChannel = AppNotificationChannel.NewNavigatableFile.getNotificationChannel(context),
+    notificationChannel = AppNotificationChannel.BatchMoveFiles.getNotificationChannel(context),
     notificationManager = notificationManager,
     context = context,
     notificationId = 9867234
@@ -32,7 +33,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
         object : Builder() {
             override fun build(): Notification {
                 setGroup(notificationChannel.id)
-                setContentTitle("Move ${args.fileCount} files")
+                setContentTitle(context.getString(R.string.move_files, args.fileCount))
                 setSilent(true)
                 return super.build()
             }
