@@ -3,11 +3,11 @@ package com.w2sv.navigator.moving
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Parcelable
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.shared.putMoveBundleExtra
-import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -16,37 +16,41 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     @Inject
     internal lateinit var moveResultListener: MoveResultListener
 
-    override fun onReceive(context: Context?, intent: Intent?) {
-        if (context == null || intent == null) return
-
+    override fun onReceive(context: Context, intent: Intent) {
         moveResultListener.invoke(
             moveResult = MoveBundle.fromIntent(intent).move(context),
             notificationResources = NotificationResources.fromIntent(intent)
         )
     }
 
+    @Parcelize
+    data class Args(
+        val moveBundle: MoveBundle,
+        val notificationResources: NotificationResources? = null
+    ) : Parcelable {
+        companion object {
+            const val EXTRA = "com.w2sv.navigator.extra.MoveBroadcastReceiver.Args"
+        }
+    }
+
     companion object {
         fun sendBroadcast(
+            args: Args,
             context: Context,
-            moveBundle: MoveBundle,
-            notificationResources: NotificationResources? = null
         ) {
             context.sendBroadcast(
                 getIntent(
-                    moveBundle = moveBundle,
-                    notificationResources = notificationResources,
+                    args = args,
                     context = context
                 )
             )
         }
 
         fun getIntent(
-            moveBundle: MoveBundle,
-            notificationResources: NotificationResources?,
+            args: Args,
             context: Context
         ): Intent =
             Intent(context, MoveBroadcastReceiver::class.java)
-                .putMoveBundleExtra(moveBundle)
-                .putOptionalNotificationResourcesExtra(notificationResources)
+                .putExtra(Args.EXTRA, args)
     }
 }

@@ -1,23 +1,23 @@
 package com.w2sv.navigator.notifications.managers.abstrct
 
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import androidx.annotation.CallSuper
 import com.w2sv.androidutils.UniqueIds
+import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
 import slimber.log.i
 
 internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceAppNotificationManager.BuilderArgs>(
-    notificationChannel: NotificationChannel,
+    appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,
     context: Context,
     resourcesBaseSeed: Int,
     private val summaryProperties: SummaryProperties? = null,
 ) : AppNotificationManager<A>(
-    notificationChannel = notificationChannel,
+    appNotificationChannel = appNotificationChannel,
     notificationManager = notificationManager,
     context = context
 ) {
@@ -70,7 +70,7 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
             pendingIntentRequestCodes = pendingIntentRequestCodes.addMultipleNewIds(
                 pendingIntentRequestCodeCount
             ),
-            resourcesIdentifier = resourcesIdentifier.also { i { "Putting identifier=$resourcesIdentifier" } }
+            resourcesIdentifier = resourcesIdentifier
         )
 
     @CallSuper

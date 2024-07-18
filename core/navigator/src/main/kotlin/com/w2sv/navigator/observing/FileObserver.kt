@@ -120,12 +120,14 @@ internal abstract class FileObserver(
 
                             else -> {
                                 MoveBroadcastReceiver.sendBroadcast(
+                                    MoveBroadcastReceiver.Args(
+                                        MoveBundle(
+                                            file = moveFile,
+                                            destination = enabledAutoMoveDestination,
+                                            mode = MoveMode.Auto
+                                        )
+                                    ),
                                     context = context,
-                                    moveBundle = MoveBundle(
-                                        file = moveFile,
-                                        destination = enabledAutoMoveDestination,
-                                        mode = MoveMode.Auto
-                                    )
                                 )
                             }
                         }

@@ -42,7 +42,7 @@ internal class MoveResultListener @Inject constructor(
 ) {
     operator fun invoke(
         moveResult: MoveResult,
-        notificationResources: NotificationResources?,
+        notificationResources: NotificationResources? = null,
     ) {
         if (moveResult.cancelNotification) {
             cancelNotification(notificationResources)

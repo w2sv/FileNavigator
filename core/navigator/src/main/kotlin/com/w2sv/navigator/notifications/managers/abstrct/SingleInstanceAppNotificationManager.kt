@@ -1,16 +1,16 @@
 package com.w2sv.navigator.notifications.managers.abstrct
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import com.w2sv.navigator.notifications.AppNotificationChannel
 
 internal abstract class SingleInstanceAppNotificationManager<A : AppNotificationManager.BuilderArgs>(
-    notificationChannel: NotificationChannel,
+    appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,
     context: Context,
     private val notificationId: Int
 ) : AppNotificationManager<A>(
-    notificationChannel = notificationChannel,
+    appNotificationChannel = appNotificationChannel,
     notificationManager = notificationManager,
     context = context
 ) {

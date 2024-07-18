@@ -23,8 +23,8 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
+import com.w2sv.navigator.moving.DestinationPickerActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
-import com.w2sv.navigator.moving.MoveDestinationSelectionActivity
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
@@ -47,7 +47,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
     private val batchMoveNotificationManager: BatchMoveNotificationManager,
 ) : MultiInstanceAppNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
-    notificationChannel = AppNotificationChannel.NewNavigatableFile.getNotificationChannel(context),
+    appNotificationChannel = AppNotificationChannel.NewNavigatableFile,
     notificationManager = notificationManager,
     context = context,
     resourcesBaseSeed = 1,
@@ -63,32 +63,34 @@ internal class NewMoveFileNotificationManager @Inject constructor(
         buildAndPost(
             BuilderArgs(
                 moveFile = moveFile,
-                quickMoveDestination = fileAndSourceTypeToLastMoveDestinationStateFlow.lastMoveDestination(moveFile.fileAndSourceType),
+                quickMoveDestination = fileAndSourceTypeToLastMoveDestinationStateFlow.lastMoveDestination(
+                    moveFile.fileAndSourceType
+                ),
                 resources = getNotificationResources(pendingIntentRequestCodeCount = 4)
             )
         )
     }
 
-    private val activeNotificationBuilderArgs = mutableListOf<BuilderArgs>()
-
     private val fileAndSourceTypeToLastMoveDestinationStateFlow =
         FileAndSourceTypeToLastMoveDestinationStateFlow(navigatorConfigDataSource, scope)
+
+    private val activeNotificationBuilderArgs = mutableListOf<BuilderArgs>()
 
     override fun buildAndPost(args: BuilderArgs) {
         super.buildAndPost(args)
 
         activeNotificationBuilderArgs.add(args)
 
-//        if (activeNotificationCount >= 2) {
-        batchMoveNotificationManager.buildAndEmit(activeNotificationCount)
-//        }
+        if (activeNotificationCount >= 2) {
+            batchMoveNotificationManager.buildAndPost(activeNotificationBuilderArgs)
+        }
     }
 
     override fun cancelNotificationAndFreeResources(resources: NotificationResources) {
         super.cancelNotificationAndFreeResources(resources)
 
         activeNotificationBuilderArgs.removeAt(activeNotificationBuilderArgs.indexOfFirst { it.resources == resources })
-        batchMoveNotificationManager.cancelOrUpdate(activeNotificationCount)
+        batchMoveNotificationManager.cancelOrUpdate(activeNotificationBuilderArgs)
     }
 
     override fun getBuilder(args: BuilderArgs): Builder =
@@ -140,7 +142,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         setStyle(
                             NotificationCompat.BigPictureStyle()
                                 .bigPicture(it)
-                                .run {  // .apply {} strangely not working here; possibly kotlin 2.0-related issue?
+                                .run {  // .apply {} strangely not working here
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                                         setContentDescription(
                                             getContentText()
@@ -227,9 +229,12 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                     PendingIntent.getActivity(
                         context,
                         requestCode,
-                        MoveDestinationSelectionActivity.makeRestartActivityIntent(
-                            moveFile = args.moveFile,
-                            notificationResources = args.resources,
+                        DestinationPickerActivity.makeRestartActivityIntent(
+                            args = DestinationPickerActivity.Args.SingleFile(
+                                moveFile = args.moveFile,
+                                pickerStartDestination = args.quickMoveDestination,
+                                notificationResources = args.resources,
+                            ),
                             context = context
                         ),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -248,12 +253,14 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         context,
                         requestCode,
                         MoveBroadcastReceiver.getIntent(
-                            moveBundle = MoveBundle(
-                                file = args.moveFile,
-                                destination = lastMoveDestination,
-                                mode = MoveMode.Quick
+                            MoveBroadcastReceiver.Args(
+                                moveBundle = MoveBundle(
+                                    file = args.moveFile,
+                                    destination = lastMoveDestination,
+                                    mode = MoveMode.Quick
+                                ),
+                                notificationResources = args.resources,
                             ),
-                            notificationResources = args.resources,
                             context = context
                         ),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT

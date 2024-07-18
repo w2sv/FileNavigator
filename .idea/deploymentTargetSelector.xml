@@ -30,6 +30,9 @@
       <SelectionState runConfigName="traverseUiObjects()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="MoveDestinationSelectionActivity">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

@@ -8,6 +8,7 @@
     <string name="new_move_file_notification_title">New %1$s</string>
     <string name="new_navigatable_file">New navigatable file</string>
     <string name="batch_move_files">Batch move files</string>
+    <string name="move_progress">Move progress</string>
     <string name="manage_all_files_permission_missing">Manage all files permission missing</string>
     <string name="internal_error">Internal Error</string>
     <string name="file_has_already_been_moved_or_deleted">File has already been moved or deleted</string>

@@ -5,45 +5,73 @@ import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.callback.SingleFileConflictCallback
 import com.anggrayudi.storage.result.SingleFileErrorCode
 import com.anggrayudi.storage.result.SingleFileResult
+import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.kotlinutils.coroutines.firstBlocking
 import com.w2sv.navigator.moving.model.MoveBundle
+import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import slimber.log.i
 
+internal sealed interface PreMoveCheckResult {
+    @JvmInline
+    value class Success(val documentFile: DocumentFile) : PreMoveCheckResult
+
+    @JvmInline
+    value class Failure(val failure: MoveResult.Failure) : PreMoveCheckResult
+}
+
+internal fun sharedPreMoveChecks(destination: DocumentUri, context: Context): PreMoveCheckResult {
+    val documentFile = destination.documentFile(context)
+
+    return when {
+        !isExternalStorageManger -> PreMoveCheckResult.Failure(MoveResult.Failure.ManageAllFilesPermissionMissing)
+        documentFile == null -> PreMoveCheckResult.Failure(MoveResult.Failure.InternalError)
+        else -> PreMoveCheckResult.Success(documentFile)
+    }
+}
+
 internal fun MoveBundle.move(context: Context): MoveResult {
-    // Exit if 'manage all files' permission not granted
-    if (!isExternalStorageManger) {
-        return MoveResult.Failure.ManageAllFilesPermissionMissing
+    val destinationDocumentFile = sharedPreMoveChecks(destination, context).run {
+        when (this) {
+            is PreMoveCheckResult.Success -> documentFile
+            is PreMoveCheckResult.Failure -> return failure
+        }
     }
 
-    if (!file.mediaStoreData.fileExists) {
+    return file.moveTo(
+        destination = destinationDocumentFile,
+        context = context,
+        makeMoveBundle = { this }
+    )
+}
+
+internal fun MoveFile.moveTo(
+    destination: DocumentFile,
+    context: Context,
+    makeMoveBundle: () -> MoveBundle
+): MoveResult {
+    if (!mediaStoreData.fileExists) {
         return MoveResult.Failure.MoveFileNotFound
     }
 
-    // Exit on unsuccessful conversion to SimpleStorage objects
-    val moveDestinationDocumentFile = destination.documentFile(context)
-    val moveMediaFile = file.simpleStorageMediaFile(context)
-
-    if (moveDestinationDocumentFile == null || moveMediaFile == null) {
-        return MoveResult.Failure.InternalError
-    }
+    val mediaFile = simpleStorageMediaFile(context) ?: return MoveResult.Failure.InternalError
 
     // Exit if file already at destination
-    if (moveDestinationDocumentFile.hasChild(  // TODO: optimizable?
+    if (destination.hasChild(  // TODO: optimizable?
             context = context,
-            path = file.mediaStoreData.name,
+            path = mediaStoreData.name,
             requiresWriteAccess = false
         )
     ) {
         return MoveResult.Failure.FileAlreadyAtDestination
     }
 
-    return moveMediaFile.moveTo(
-        targetFolder = moveDestinationDocumentFile,
+    return mediaFile.moveTo(
+        targetFolder = destination,
         isFileSizeAllowed = { freeSpace, fileSize -> fileSize <= freeSpace },
         onConflict = onFileConflict
     )
@@ -56,7 +84,7 @@ internal fun MoveBundle.move(context: Context): MoveResult {
 
                     when (moveState.errorCode) {
                         SingleFileErrorCode.TARGET_FOLDER_NOT_FOUND -> MoveResult.Failure.MoveDestinationNotFound(
-                            this
+                            makeMoveBundle()
                         )
 
                         SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.Failure.NotEnoughSpaceOnDestination
@@ -67,7 +95,7 @@ internal fun MoveBundle.move(context: Context): MoveResult {
                 }
 
                 is SingleFileResult.Completed -> {
-                    MoveResult.Success(this)
+                    MoveResult.Success(makeMoveBundle())
                 }
 
                 else -> {

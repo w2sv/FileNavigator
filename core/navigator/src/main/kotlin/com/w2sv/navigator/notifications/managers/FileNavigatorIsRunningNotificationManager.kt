@@ -12,16 +12,12 @@ import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.shared.mainActivityPendingIntent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 internal class FileNavigatorIsRunningNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager
 ) : AppNotificationManager<AppNotificationManager.BuilderArgs.Empty>(
-    notificationChannel = AppNotificationChannel.FileNavigatorIsRunning.getNotificationChannel(
-        context
-    ),
+    appNotificationChannel = AppNotificationChannel.FileNavigatorIsRunning,
     notificationManager = notificationManager,
     context = context
 ) {

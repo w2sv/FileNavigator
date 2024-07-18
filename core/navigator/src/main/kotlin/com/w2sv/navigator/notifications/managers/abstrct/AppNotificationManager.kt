@@ -6,12 +6,16 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
+import com.w2sv.navigator.notifications.AppNotificationChannel
 
 internal abstract class AppNotificationManager<A : AppNotificationManager.BuilderArgs>(
-    protected val notificationChannel: NotificationChannel,
+    appNotificationChannel: AppNotificationChannel,
     protected val notificationManager: NotificationManager,
     protected val context: Context
 ) {
+    protected val notificationChannel: NotificationChannel =
+        appNotificationChannel.getNotificationChannel(context)
+
     init {
         notificationManager.createNotificationChannel(notificationChannel)
     }
