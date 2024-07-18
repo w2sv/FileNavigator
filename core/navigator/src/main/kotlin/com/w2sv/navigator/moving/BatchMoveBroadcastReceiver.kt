@@ -9,6 +9,7 @@ import com.w2sv.common.utils.DocumentUri
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
+import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +34,8 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
             }
 
             is PreMoveCheckResult.Success -> {
-                batchMoveProgressNotificationManager.buildAndPost(
+                val moveResults = mutableListOf<MoveResult>()
+                batchMoveProgressNotificationManager.buildAndPostNotification(
                     current = 0,
                     max = args.moveFiles.size
                 )
@@ -50,14 +52,16 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
                             )
                         }
                     )
-                    batchMoveProgressNotificationManager.buildAndPost(
+                    batchMoveProgressNotificationManager.buildAndPostNotification(
                         current = it.index + 1,
                         max = args.moveFiles.size
                     )
-                    moveResultListener.invoke(  // TODO
+                    moveResultListener.invoke(
                         moveResult = moveResult,
-                        notificationResources = notificationResources
+                        notificationResources = notificationResources,
+                        showToast = false
                     )
+                    moveResults.add(moveResult)
                 }
             }
         }

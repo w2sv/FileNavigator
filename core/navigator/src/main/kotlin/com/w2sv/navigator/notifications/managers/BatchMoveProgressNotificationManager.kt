@@ -24,7 +24,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
         val max: Int
     ) : AppNotificationManager.BuilderArgs
 
-    fun buildAndPost(
+    fun buildAndPostNotification(
         current: Int,
         max: Int
     ) {

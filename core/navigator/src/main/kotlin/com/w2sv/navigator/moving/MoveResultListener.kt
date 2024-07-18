@@ -43,17 +43,20 @@ internal class MoveResultListener @Inject constructor(
     operator fun invoke(
         moveResult: MoveResult,
         notificationResources: NotificationResources? = null,
+        showToast: Boolean = true
     ) {
         if (moveResult.cancelNotification) {
             cancelNotification(notificationResources)
         }
         when (moveResult) {
             is MoveResult.Success -> {
-                onSuccess(moveResult.moveBundle)
+                onSuccess(moveResult.moveBundle, showToast = showToast)
             }
 
             is MoveResult.Failure.Generic -> {
-                context.showMoveFailureToast(moveResult.explanationStringRes)
+                if (showToast) {
+                    context.showMoveFailureToast(moveResult.explanationStringRes)
+                }
             }
 
             is MoveResult.Failure.MoveDestinationNotFound -> {
@@ -63,7 +66,11 @@ internal class MoveResultListener @Inject constructor(
                     }
 
                     MoveMode.Quick -> {
-                        onQuickMoveDestinationNotFound(moveResult.moveBundle, notificationResources)
+                        onQuickMoveDestinationNotFound(
+                            moveBundle = moveResult.moveBundle,
+                            notificationResources = notificationResources,
+                            showToast = showToast
+                        )
                     }
 
                     MoveMode.ManualSelection -> {  // Shouldn't normally occur
@@ -80,16 +87,19 @@ internal class MoveResultListener @Inject constructor(
 
     private fun onQuickMoveDestinationNotFound(
         moveBundle: MoveBundle,
-        notificationResources: NotificationResources?
+        notificationResources: NotificationResources?,
+        showToast: Boolean
     ) {
-        cancelNotification(notificationResources)
+        cancelNotification(notificationResources)  // TODO
+        if (showToast) {
+            context.showMoveFailureToast(R.string.quick_move_destination_doesnt_exist)
+        }
         scope.launch {
             navigatorConfigDataSource.unsetLastMoveDestination(
                 fileType = moveBundle.file.fileType,
                 sourceType = moveBundle.file.sourceType
             )
         }
-        context.showMoveFailureToast(R.string.quick_move_destination_doesnt_exist)
         newMoveFileNotificationManager.buildAndPost(moveBundle.file)
     }
 
@@ -108,11 +118,13 @@ internal class MoveResultListener @Inject constructor(
         )
     }
 
-    private fun onSuccess(moveBundle: MoveBundle) {
-        context.showMoveSuccessToast(
-            moveBundle = moveBundle,
-            moveDestinationDocumentFile = moveBundle.destination.documentFile(context)!!  // TODO
-        )
+    private fun onSuccess(moveBundle: MoveBundle, showToast: Boolean) {
+        if (showToast) {
+            context.showMoveSuccessToast(
+                moveBundle = moveBundle,
+                moveDestinationDocumentFile = moveBundle.destination.documentFile(context)!!  // TODO
+            )
+        }
 
         scope.launch {
             val movedFileDocumentUri = movedFileDocumentUri(
