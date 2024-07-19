@@ -83,7 +83,7 @@ internal class DestinationPickerActivity : ComponentActivity() {
                     moveBundle = MoveBundle(
                         file = capturedArgs.moveFile,
                         destination = moveDestination,
-                        mode = MoveMode.ManualSelection
+                        mode = MoveMode.DestinationPicked
                     ),
                     notificationResources = capturedArgs.notificationResources
                 ),

@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 import slimber.log.i
 import java.time.LocalDateTime
 import javax.inject.Inject
-import javax.inject.Singleton
 
 internal class MoveResultListener @Inject constructor(
     private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
@@ -40,7 +39,7 @@ internal class MoveResultListener @Inject constructor(
         notificationResources: NotificationResources? = null,
         showToast: Boolean = true
     ) {
-        if (moveResult.cancelNotification) {
+        if (moveResult.cancelNewMoveFileNotification) {
             cancelNotification(notificationResources)
         }
         when (moveResult) {
@@ -68,7 +67,7 @@ internal class MoveResultListener @Inject constructor(
                         )
                     }
 
-                    MoveMode.ManualSelection -> {  // Shouldn't normally occur
+                    MoveMode.DestinationPicked -> {  // Shouldn't normally occur
                         invoke(MoveResult.Failure.InternalError, notificationResources)
                     }
                 }
