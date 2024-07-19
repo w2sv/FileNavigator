@@ -5,11 +5,11 @@ import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.callback.SingleFileConflictCallback
 import com.anggrayudi.storage.result.SingleFileErrorCode
 import com.anggrayudi.storage.result.SingleFileResult
-import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.kotlinutils.coroutines.firstBlocking
 import com.w2sv.navigator.moving.model.MoveBundle
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
 import kotlinx.coroutines.flow.filterNotNull
@@ -28,7 +28,10 @@ internal sealed interface PreMoveCheckResult {
     data object InternalError : Failure(MoveResult.Failure.InternalError)
 }
 
-internal fun sharedPreMoveChecks(destination: DocumentUri, context: Context): PreMoveCheckResult {
+internal fun sharedPreMoveChecks(
+    destination: MoveDestination,
+    context: Context
+): PreMoveCheckResult {
     val documentFile = destination.documentFile(context)
 
     return when {

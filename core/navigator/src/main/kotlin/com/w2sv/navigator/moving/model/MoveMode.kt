@@ -1,6 +1,6 @@
 package com.w2sv.navigator.moving.model
 
-enum class MoveMode {
+internal enum class MoveMode {
     ManualSelection, Quick, Auto;
 
     val updateLastMoveDestinations: Boolean

@@ -8,6 +8,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.navigator.moving.model.MoveBundle
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.moving.model.MoveResult
@@ -94,7 +95,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
     @Parcelize
     data class Args(
         val moveFiles: List<MoveFile>,
-        val destination: DocumentUri,
+        val destination: MoveDestination,
         val notificationResources: List<NotificationResources>
     ) : Parcelable {
         companion object {

@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 @Parcelize
 internal data class MoveBundle(
     val file: MoveFile,
-    val destination: DocumentUri,
+    val destination: MoveDestination,
     val mode: MoveMode
 ) : Parcelable {
 
@@ -30,7 +30,7 @@ internal data class MoveBundle(
             fileName = file.mediaStoreData.name,
             fileType = file.fileType,
             sourceType = file.sourceType,
-            destinationDocumentUri = destination,
+            destinationDocumentUri = destination.documentUri,
             movedFileDocumentUri = movedFileDocumentUri,
             movedFileMediaUri = movedFileMediaUri,
             dateTime = dateTime,

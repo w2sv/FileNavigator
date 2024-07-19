@@ -1,7 +1,6 @@
 package com.w2sv.navigator.moving
 
 import android.content.Context
-import android.net.Uri
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.core.text.bold
@@ -10,8 +9,6 @@ import com.w2sv.androidutils.res.getText
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.common.utils.DocumentUri
-import com.w2sv.common.utils.fileName
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
@@ -125,10 +122,8 @@ internal class MoveResultListener @Inject constructor(
         }
 
         scope.launch {
-            val movedFileDocumentUri = movedFileDocumentUri(
-                moveDestinationDocumentUri = moveBundle.destination,
-                fileName = moveBundle.file.mediaStoreData.name
-            )
+            val movedFileDocumentUri =
+                moveBundle.destination.documentUri.childDocumentUri(fileName = moveBundle.file.mediaStoreData.name)
             insertMoveEntryUseCase(
                 moveBundle.moveEntry(
                     movedFileDocumentUri = movedFileDocumentUri,
@@ -142,34 +137,22 @@ internal class MoveResultListener @Inject constructor(
                 navigatorConfigDataSource.saveLastMoveDestination(
                     fileType = moveBundle.file.fileType,
                     sourceType = moveBundle.file.sourceType,
-                    destination = moveBundle.destination
+                    destination = moveBundle.destination.documentUri
                 )
             }
         }
     }
 }
 
-private fun movedFileDocumentUri(
-    moveDestinationDocumentUri: DocumentUri,
-    fileName: String
-): DocumentUri =
-    DocumentUri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
-
 private fun Context.showMoveSuccessToast(moveBundle: MoveBundle) {
     showToast(
         resources.getText(
             id = if (moveBundle.mode.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
             moveBundle.file.fileAndSourceType.label(context = this, isGif = moveBundle.file.isGif),
-            shortMoveDestinationRepresentation(moveBundle.destination, this)
+            moveBundle.destination.shortRepresentation(this)
         )
     )
 }
-
-internal fun shortMoveDestinationRepresentation(
-    moveDestination: DocumentUri,
-    context: Context
-): String =
-    "/${moveDestination.documentFile(context)!!.fileName(context)}"
 
 private fun Context.showMoveFailureToast(@StringRes explanationStringRes: Int) {
     showToast(

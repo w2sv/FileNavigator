@@ -6,10 +6,9 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
-import com.w2sv.common.utils.DocumentUri
 import com.w2sv.core.navigator.R
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveResult
-import com.w2sv.navigator.moving.shortMoveDestinationRepresentation
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.SingleInstanceAppNotificationManager
@@ -31,7 +30,10 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
             val max: Int
         ) : BuilderArgs
 
-        data class MoveResults(val moveResults: List<MoveResult>, val destination: DocumentUri) :
+        data class MoveResults(
+            val moveResults: List<MoveResult>,
+            val destination: MoveDestination
+        ) :
             BuilderArgs
     }
 
@@ -71,7 +73,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
 
             private fun resultsContentText(
                 moveResults: List<MoveResult>,
-                destination: DocumentUri
+                destination: MoveDestination
             ): CharSequence {
                 val moveResultTypeToCount = moveResults.groupingBy { it::class.java }.eachCount()
                 return buildSpannedString {
@@ -79,10 +81,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                         append(context.getString(R.string.successfully_moved_files_to, it))
                         bold {
                             append(
-                                shortMoveDestinationRepresentation(
-                                    moveDestination = destination,
-                                    context = context
-                                )
+                                destination.shortRepresentation(context)
                             )
                         }
                     }

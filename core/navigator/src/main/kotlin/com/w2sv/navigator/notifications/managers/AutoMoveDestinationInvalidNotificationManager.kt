@@ -5,10 +5,10 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
-import com.w2sv.common.utils.DocumentUri
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.usecase.DocumentUriToPathConverter
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
@@ -30,13 +30,13 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
 ) {
     data class BuilderArgs(
         val fileAndSourceType: FileAndSourceType,
-        val autoMoveDestination: DocumentUri,
+        val autoMoveDestination: MoveDestination,
         override val resources: NotificationResources
     ) : MultiInstanceAppNotificationManager.BuilderArgs
 
     fun buildAndPost(
         fileAndSourceType: FileAndSourceType,
-        autoMoveDestination: DocumentUri,
+        autoMoveDestination: MoveDestination,
     ) {
         buildNotification(
             BuilderArgs(
@@ -61,7 +61,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
                         bold {
                             append(
                                 documentUriToPathConverter.invoke(
-                                    documentUri = args.autoMoveDestination,
+                                    documentUri = args.autoMoveDestination.documentUri,
                                     context = context
                                 )
                             )

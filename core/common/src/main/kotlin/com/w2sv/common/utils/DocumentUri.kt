@@ -29,6 +29,9 @@ value class DocumentUri(val uri: Uri) : Parcelable {
     fun mediaUri(context: Context): MediaUri? =
         MediaUri.fromDocumentUri(context, this)
 
+    fun childDocumentUri(fileName: String): DocumentUri =
+        parse("$uri%2F${Uri.encode(fileName)}")
+
     override fun toString(): String =
         uri.toString()
 
