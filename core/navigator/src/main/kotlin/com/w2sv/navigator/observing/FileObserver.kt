@@ -10,6 +10,7 @@ import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.cancelIfActive
 import com.w2sv.domain.model.FileAndSourceType
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.launchDelayed
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
@@ -139,5 +140,5 @@ internal abstract class FileObserver(
     protected abstract fun enabledFileAndSourceTypeOrNull(mediaStoreData: MediaStoreData): FileAndSourceType?
 }
 
-private val AutoMoveConfig.enabledDestinationOrNull: DocumentUri?
+private val AutoMoveConfig.enabledDestinationOrNull: MoveDestination?
     get() = if (enabled) destination else null

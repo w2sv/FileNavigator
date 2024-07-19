@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.model.SourceType
 import java.time.LocalDateTime
@@ -25,7 +26,7 @@ data class MoveEntryEntity(
         fileName = moveEntry.fileName,
         fileType = moveEntry.fileType,
         sourceType = moveEntry.sourceType,
-        destinationDocumentUri = moveEntry.destinationDocumentUri.uri,
+        destinationDocumentUri = moveEntry.destination.documentUri.uri,
         movedFileDocumentUri = moveEntry.movedFileDocumentUri.uri,
         movedFileMediaUri = moveEntry.movedFileMediaUri.uri,
         dateTime = moveEntry.dateTime,
@@ -37,7 +38,7 @@ data class MoveEntryEntity(
             fileName = fileName,
             fileType = fileType,
             sourceType = sourceType,
-            destinationDocumentUri = DocumentUri(destinationDocumentUri),
+            destination = MoveDestination(DocumentUri(destinationDocumentUri)),
             movedFileDocumentUri = DocumentUri(movedFileDocumentUri),
             movedFileMediaUri = MediaUri(movedFileMediaUri),
             dateTime = dateTime,

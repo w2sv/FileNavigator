@@ -12,6 +12,7 @@ import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
@@ -70,8 +71,8 @@ internal class DestinationPickerActivity : ComponentActivity() {
         contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
 
         // Build DocumentUri, exit if unsuccessful
-        val moveDestinationDocumentUri =
-            DocumentUri.fromTreeUri(this, treeUri)
+        val moveDestination =
+            DocumentUri.fromTreeUri(this, treeUri)?.let { MoveDestination(it) }
                 ?: return finishAndRemoveTask(MoveResult.Failure.InternalError)
 
         i { args.toString() }
@@ -81,7 +82,7 @@ internal class DestinationPickerActivity : ComponentActivity() {
                 MoveBroadcastReceiver.Args(
                     moveBundle = MoveBundle(
                         file = capturedArgs.moveFile,
-                        destination = moveDestinationDocumentUri,
+                        destination = moveDestination,
                         mode = MoveMode.ManualSelection
                     ),
                     notificationResources = capturedArgs.notificationResources
@@ -92,7 +93,7 @@ internal class DestinationPickerActivity : ComponentActivity() {
             is Args.FileBatch -> BatchMoveBroadcastReceiver.sendBroadcast(
                 BatchMoveBroadcastReceiver.Args(
                     moveFiles = capturedArgs.moveFiles,
-                    destination = moveDestinationDocumentUri,
+                    destination = moveDestination,
                     notificationResources = capturedArgs.notificationResources
                 ),
                 applicationContext

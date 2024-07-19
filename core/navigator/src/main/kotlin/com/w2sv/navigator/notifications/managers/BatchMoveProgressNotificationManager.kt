@@ -7,7 +7,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.core.navigator.R
-import com.w2sv.navigator.moving.model.MoveDestination
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager

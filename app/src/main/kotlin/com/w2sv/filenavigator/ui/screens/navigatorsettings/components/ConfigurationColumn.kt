@@ -39,7 +39,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
-import com.w2sv.domain.usecase.DocumentUriToPathConverter
+import com.w2sv.domain.model.MoveDestination
+import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.DefaultItemRowIcon
 import com.w2sv.filenavigator.ui.designsystem.Padding
@@ -48,7 +49,7 @@ import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
 import com.w2sv.filenavigator.ui.designsystem.drawer.IconSize
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
-import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
+import com.w2sv.filenavigator.ui.utils.LocalMoveDestinationPathConverter
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.update
 import slimber.log.i
@@ -70,13 +71,13 @@ fun SubDirectoryIcon(
 
 @Composable
 fun rememberAutoMoveDestinationPath(
-    destination: DocumentUri?,
+    destination: MoveDestination?,
     context: Context = LocalContext.current,
-    documentUriToPathConverter: DocumentUriToPathConverter = LocalDocumentUriToPathConverter.current,
+    moveDestinationPathConverter: MoveDestinationPathConverter = LocalMoveDestinationPathConverter.current,
 ): State<String?> =
     remember(destination) {
         mutableStateOf(
-            destination?.let { documentUriToPathConverter.invoke(it, context) }
+            destination?.let { moveDestinationPathConverter.invoke(it, context) }
         )
     }
 
@@ -114,13 +115,18 @@ fun AutoMoveRow(
 }
 
 @Composable
-fun rememberSelectAutoMoveDestination(onDestinationSelected: (DocumentUri) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
+fun rememberSelectAutoMoveDestination(onDestinationSelected: (MoveDestination) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
     val context: Context = LocalContext.current
     return rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { optionalTreeUri ->
         optionalTreeUri?.let { treeUri ->
             context.contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
             onDestinationSelected(
-                DocumentUri.fromTreeUri(context, treeUri)!!  // TODO: null case possible?
+                MoveDestination(
+                    DocumentUri.fromTreeUri(
+                        context,
+                        treeUri
+                    )!!
+                )  // TODO: null case possible?
             )
         }
     }

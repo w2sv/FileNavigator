@@ -9,7 +9,7 @@ import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.kotlinutils.coroutines.firstBlocking
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveDestination
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
 import kotlinx.coroutines.flow.filterNotNull

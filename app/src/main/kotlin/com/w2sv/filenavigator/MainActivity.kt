@@ -41,7 +41,7 @@ import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
 import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
 import com.w2sv.filenavigator.ui.states.rememberObservedPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
+import com.w2sv.filenavigator.ui.utils.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.utils.LocalNavHostController
 import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
 import com.w2sv.kotlinutils.coroutines.collectFromFlow
@@ -119,7 +119,7 @@ class MainActivity : ComponentActivity() {
 
                     CompositionLocalProvider(
                         LocalNavHostController provides navController,
-                        LocalDocumentUriToPathConverter provides appVM.documentUriToPathConverter
+                        LocalMoveDestinationPathConverter provides appVM.moveDestinationPathConverter
                     ) {
                         Surface(modifier = Modifier.fillMaxSize()) {
                             DestinationsNavHost(

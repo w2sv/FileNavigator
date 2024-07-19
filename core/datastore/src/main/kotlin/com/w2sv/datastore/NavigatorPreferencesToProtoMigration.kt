@@ -6,9 +6,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.w2sv.common.utils.DocumentUri
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigMapper
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.kotlinutils.coroutines.firstBlocking
@@ -90,7 +90,7 @@ internal class NavigatorPreferencesToProtoMigration(
                                                             sourceType
                                                         )]?.let { lastMoveDestination ->
                                                             add(
-                                                                DocumentUri.parse(
+                                                                MoveDestination.parse(
                                                                     lastMoveDestination
                                                                 )
                                                             )

@@ -12,7 +12,6 @@ import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.formattedFileSize
 import com.w2sv.common.utils.lineBreakSuffixed
 import com.w2sv.common.utils.loadBitmapFileNotFoundHandled
@@ -21,6 +20,7 @@ import com.w2sv.common.utils.slashPrefixed
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.moving.DestinationPickerActivity
@@ -55,7 +55,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 ) {
     data class BuilderArgs(
         val moveFile: MoveFile,
-        val quickMoveDestination: DocumentUri?,
+        val quickMoveDestination: MoveDestination?,
         override val resources: NotificationResources
     ) : MultiInstanceNotificationManager.BuilderArgs
 
@@ -232,7 +232,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         DestinationPickerActivity.makeRestartActivityIntent(
                             args = DestinationPickerActivity.Args.SingleFile(
                                 moveFile = args.moveFile,
-                                pickerStartDestination = args.quickMoveDestination,
+                                pickerStartDestination = args.quickMoveDestination?.documentUri,
                                 notificationResources = args.resources,
                             ),
                             context = context
@@ -243,7 +243,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
             private fun getQuickMoveAction(
                 requestCode: Int,
-                lastMoveDestination: DocumentUri,
+                lastMoveDestination: MoveDestination,
                 lastMoveDestinationDirectoryName: String
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
@@ -285,10 +285,10 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 private class FileAndSourceTypeToLastMoveDestinationStateFlow(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val scope: CoroutineScope,
-    private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<DocumentUri>>> = mutableMapOf()
-) : Map<FileAndSourceType, StateFlow<List<DocumentUri>>> by mutableMap {
+    private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<MoveDestination>>> = mutableMapOf()
+) : Map<FileAndSourceType, StateFlow<List<MoveDestination>>> by mutableMap {
 
-    fun lastMoveDestination(fileAndSourceType: FileAndSourceType): DocumentUri? =
+    fun lastMoveDestination(fileAndSourceType: FileAndSourceType): MoveDestination? =
         mutableMap.getOrPut(
             key = fileAndSourceType,
             defaultValue = {

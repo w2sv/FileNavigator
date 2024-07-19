@@ -137,7 +137,7 @@ internal class MoveResultListener @Inject constructor(
                 navigatorConfigDataSource.saveLastMoveDestination(
                     fileType = moveBundle.file.fileType,
                     sourceType = moveBundle.file.sourceType,
-                    destination = moveBundle.destination.documentUri
+                    destination = moveBundle.destination
                 )
             }
         }

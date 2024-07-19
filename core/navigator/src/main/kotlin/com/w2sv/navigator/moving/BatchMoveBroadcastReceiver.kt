@@ -6,9 +6,8 @@ import android.content.Intent
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
 import com.w2sv.androidutils.os.getParcelableCompat
-import com.w2sv.common.utils.DocumentUri
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveDestination
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.moving.model.MoveResult

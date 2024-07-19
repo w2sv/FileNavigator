@@ -9,7 +9,7 @@ import com.w2sv.androidutils.os.postNotificationsPermissionRequired
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
-import com.w2sv.domain.usecase.DocumentUriToPathConverter
+import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.kotlinutils.coroutines.combineStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
-    val documentUriToPathConverter: DocumentUriToPathConverter,
+    val moveDestinationPathConverter: MoveDestinationPathConverter,
     @ApplicationContext context: Context
 ) :
     ViewModel() {

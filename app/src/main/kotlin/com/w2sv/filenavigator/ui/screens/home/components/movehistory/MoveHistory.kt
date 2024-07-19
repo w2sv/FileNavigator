@@ -41,13 +41,13 @@ import androidx.lifecycle.Lifecycle
 import com.w2sv.composed.OnLifecycleEvent
 import com.w2sv.composed.extensions.thenIf
 import com.w2sv.domain.model.MoveEntry
-import com.w2sv.domain.usecase.DocumentUriToPathConverter
+import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.model.movedFileExists
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.model.rememberFirstDateRepresentations
-import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
+import com.w2sv.filenavigator.ui.utils.LocalMoveDestinationPathConverter
 import eu.wewox.textflow.TextFlow
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -95,7 +95,7 @@ private fun MoveEntryView(
     onClick: suspend (MoveEntry, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
-    documentUriToPathConverter: DocumentUriToPathConverter = LocalDocumentUriToPathConverter.current,
+    moveDestinationPathConverter: MoveDestinationPathConverter = LocalMoveDestinationPathConverter.current,
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     var movedFileExists by remember(moveEntry) {
@@ -144,9 +144,9 @@ private fun MoveEntryView(
         }
         WeightedBox(weight = 0.5f) {
             Text(
-                text = remember(moveEntry.destinationDocumentUri) {
-                    documentUriToPathConverter.invoke(
-                        moveEntry.destinationDocumentUri,
+                text = remember(moveEntry.destination) {
+                    moveDestinationPathConverter.invoke(
+                        moveEntry.destination,
                         context
                     )!!
                 },

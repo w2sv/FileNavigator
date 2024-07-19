@@ -1,4 +1,4 @@
-package com.w2sv.navigator.moving.model
+package com.w2sv.domain.model
 
 import android.content.Context
 import android.os.Parcelable
@@ -9,11 +9,16 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @JvmInline
-internal value class MoveDestination(val documentUri: DocumentUri) : Parcelable {
+value class MoveDestination(val documentUri: DocumentUri) : Parcelable {
 
     fun documentFile(context: Context): DocumentFile? =
         documentUri.documentFile(context)
 
     fun shortRepresentation(context: Context): String =
         "/${documentFile(context)!!.fileName(context)}"
+
+    companion object {
+        fun parse(uriString: String): MoveDestination =
+            MoveDestination(DocumentUri.parse(uriString))
+    }
 }

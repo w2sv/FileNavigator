@@ -7,8 +7,8 @@ import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.usecase.DocumentUriToPathConverter
-import com.w2sv.navigator.moving.model.MoveDestination
+import com.w2sv.domain.model.MoveDestination
+import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
@@ -21,7 +21,7 @@ import javax.inject.Singleton
 internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
-    private val documentUriToPathConverter: DocumentUriToPathConverter
+    private val moveDestinationPathConverter: MoveDestinationPathConverter
 ) : MultiInstanceNotificationManager<AutoMoveDestinationInvalidNotificationManager.BuilderArgs>(
     appNotificationChannel = AppNotificationChannel.AutoMoveDestinationInvalid,
     notificationManager = notificationManager,
@@ -60,8 +60,8 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
                     buildSpannedString {
                         bold {
                             append(
-                                documentUriToPathConverter.invoke(
-                                    documentUri = args.autoMoveDestination.documentUri,
+                                moveDestinationPathConverter.invoke(
+                                    moveDestination = args.autoMoveDestination,
                                     context = context
                                 )
                             )

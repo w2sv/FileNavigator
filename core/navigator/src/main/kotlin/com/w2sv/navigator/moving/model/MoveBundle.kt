@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.MoveEntry
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
@@ -30,7 +31,7 @@ internal data class MoveBundle(
             fileName = file.mediaStoreData.name,
             fileType = file.fileType,
             sourceType = file.sourceType,
-            destinationDocumentUri = destination.documentUri,
+            destination = destination,
             movedFileDocumentUri = movedFileDocumentUri,
             movedFileMediaUri = movedFileMediaUri,
             dateTime = dateTime,
