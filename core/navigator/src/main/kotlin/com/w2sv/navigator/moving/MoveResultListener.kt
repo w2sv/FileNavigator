@@ -34,41 +34,54 @@ internal class MoveResultListener @Inject constructor(
     @GlobalScope(AppDispatcher.IO) private val scope: CoroutineScope,
     @ApplicationContext private val context: Context
 ) {
-    operator fun invoke(
-        moveResult: MoveResult,
-        notificationResources: NotificationResources? = null,
-        showToast: Boolean = true
+    fun onPreMoveCancellation(
+        moveFailure: MoveResult.Failure,
+        notificationResources: NotificationResources?
     ) {
-        if (moveResult.cancelNewMoveFileNotification) {
+        if (moveFailure.cancelNotification && notificationResources != null) {
             cancelNotification(notificationResources)
+        }
+        moveFailure.explanationStringRes?.let {
+            context.showMoveFailureToast(it)
+        }
+    }
+
+    operator fun invoke(
+        moveBundle: MoveBundle,
+        moveResult: MoveResult
+    ) {
+        if (moveResult.cancelNotification && moveBundle.mode is MoveMode.NotificationBased) {
+            cancelNotification(moveBundle.mode.notificationResources)
         }
         when (moveResult) {
             is MoveResult.Success -> {
-                onSuccess(moveResult.moveBundle, showToast = showToast)
+                onSuccess(moveBundle)
             }
 
-            is MoveResult.Failure.Generic -> {
-                if (showToast) {
+            is MoveResult.Failure -> {
+                if (moveResult.explanationStringRes != null && moveBundle.mode.showMoveResultToast) {
                     context.showMoveFailureToast(moveResult.explanationStringRes)
                 }
-            }
+                if (moveResult == MoveResult.Failure.MoveDestinationNotFound) {
+                    when (moveBundle.mode) {
+                        is MoveMode.Auto -> {
+                            onAutoMoveDestinationNotFound(moveBundle)
+                        }
 
-            is MoveResult.Failure.MoveDestinationNotFound -> {
-                when (moveResult.moveBundle.mode) {
-                    MoveMode.Auto -> {
-                        onAutoMoveDestinationNotFound(moveResult.moveBundle)
-                    }
+                        is MoveMode.Quick -> {
+                            onQuickMoveDestinationNotFound(
+                                moveBundle = moveBundle
+                            )
+                        }
 
-                    MoveMode.Quick -> {
-                        onQuickMoveDestinationNotFound(
-                            moveBundle = moveResult.moveBundle,
-                            notificationResources = notificationResources,
-                            showToast = showToast
-                        )
-                    }
+                        is MoveMode.DestinationPicked -> {  // Shouldn't normally occur
+                            invoke(
+                                moveBundle = moveBundle,
+                                moveResult = MoveResult.Failure.InternalError
+                            )
+                        }
 
-                    MoveMode.DestinationPicked -> {  // Shouldn't normally occur
-                        invoke(MoveResult.Failure.InternalError, notificationResources)
+                        else -> Unit  // TODO
                     }
                 }
             }
@@ -80,21 +93,20 @@ internal class MoveResultListener @Inject constructor(
     }
 
     private fun onQuickMoveDestinationNotFound(
-        moveBundle: MoveBundle,
-        notificationResources: NotificationResources?,
-        showToast: Boolean
+        moveBundle: MoveBundle
     ) {
-        cancelNotification(notificationResources)  // TODO
-        if (showToast) {
-            context.showMoveFailureToast(R.string.quick_move_destination_doesnt_exist)
+        (moveBundle.mode as? MoveMode.NotificationBased)?.let {
+            cancelNotification(it.notificationResources)  // TODO
         }
+
         scope.launch {
             navigatorConfigDataSource.unsetLastMoveDestination(
                 fileType = moveBundle.file.fileType,
                 sourceType = moveBundle.file.sourceType
             )
+
+            newMoveFileNotificationManager.buildAndPost(moveBundle.file)
         }
-        newMoveFileNotificationManager.buildAndPost(moveBundle.file)
     }
 
     private fun onAutoMoveDestinationNotFound(moveBundle: MoveBundle) {
@@ -112,8 +124,8 @@ internal class MoveResultListener @Inject constructor(
         )
     }
 
-    private fun onSuccess(moveBundle: MoveBundle, showToast: Boolean) {
-        if (showToast) {
+    private fun onSuccess(moveBundle: MoveBundle) {
+        if (moveBundle.mode.showMoveResultToast) {
             context.showMoveSuccessToast(
                 moveBundle = moveBundle
             )
@@ -129,8 +141,9 @@ internal class MoveResultListener @Inject constructor(
                     dateTime = LocalDateTime.now(),
                 )
             )
-
-            if (moveBundle.mode.updateLastMoveDestinations) {
+        }
+        if (moveBundle.mode.updateLastMoveDestinations) {
+            scope.launch {
                 i { "Saving last move destination" }
                 navigatorConfigDataSource.saveLastMoveDestination(
                     fileType = moveBundle.file.fileType,

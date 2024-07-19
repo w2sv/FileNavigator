@@ -3,44 +3,41 @@ package com.w2sv.navigator.moving.model
 import androidx.annotation.StringRes
 import com.w2sv.core.navigator.R
 
-internal sealed class MoveResult(val cancelNewMoveFileNotification: Boolean) {
+internal sealed class MoveResult(val cancelNotification: Boolean) {
 
-    sealed class Failure(cancelNotification: Boolean) :
-        MoveResult(cancelNewMoveFileNotification = cancelNotification) {
+    data object Success : MoveResult(true)
 
-        sealed class Generic(
-            @StringRes val explanationStringRes: Int,
-            cancelNewMoveFileNotification: Boolean
-        ) : Failure(cancelNewMoveFileNotification)
+    sealed class Failure(
+        cancelNewMoveFileNotification: Boolean,
+        @StringRes val explanationStringRes: Int?
+    ) : MoveResult(cancelNewMoveFileNotification) {
 
         data object ManageAllFilesPermissionMissing :
-            Generic(
+            Failure(
                 explanationStringRes = R.string.manage_all_files_permission_missing,
                 cancelNewMoveFileNotification = false
             )
 
-        data object MoveFileNotFound : Generic(
+        data object MoveFileNotFound : Failure(
             explanationStringRes = R.string.file_has_already_been_moved_or_deleted,
             cancelNewMoveFileNotification = true
         )
 
-        data object InternalError : Generic(
+        data object InternalError : Failure(
             explanationStringRes = R.string.internal_error,
             cancelNewMoveFileNotification = false
         )
 
-        data object FileAlreadyAtDestination : Generic(
+        data object FileAlreadyAtDestination : Failure(
             explanationStringRes = R.string.file_already_at_selected_location,
             cancelNewMoveFileNotification = true
         )
 
-        data object NotEnoughSpaceOnDestination : Generic(
+        data object NotEnoughSpaceOnDestination : Failure(
             explanationStringRes = R.string.not_enough_space_on_destination,
             cancelNewMoveFileNotification = false
         )
 
-        data class MoveDestinationNotFound(val moveBundle: MoveBundle) : Failure(false)
+        data object MoveDestinationNotFound : Failure(false, null)
     }
-
-    data class Success(val moveBundle: MoveBundle) : MoveResult(true)
 }

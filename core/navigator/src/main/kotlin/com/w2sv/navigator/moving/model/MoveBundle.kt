@@ -1,6 +1,8 @@
 package com.w2sv.navigator.moving.model
 
+import android.content.Intent
 import android.os.Parcelable
+import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.domain.model.MoveDestination
@@ -33,4 +35,11 @@ internal data class MoveBundle(
             dateTime = dateTime,
             autoMoved = mode.isAuto
         )
+
+    companion object {
+        const val EXTRA = "com.w2sv.navigator.extra.MoveBroadcastReceiver.Args"
+
+        fun fromIntent(intent: Intent): MoveBundle =
+            intent.getParcelableCompat<MoveBundle>(EXTRA)!!
+    }
 }

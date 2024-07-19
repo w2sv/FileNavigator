@@ -7,9 +7,9 @@ import com.anggrayudi.storage.result.SingleFileErrorCode
 import com.anggrayudi.storage.result.SingleFileResult
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.kotlinutils.coroutines.firstBlocking
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
 import kotlinx.coroutines.flow.filterNotNull
@@ -52,14 +52,12 @@ internal fun MoveBundle.move(context: Context): MoveResult {
     return file.moveTo(
         destination = destinationDocumentFile,
         context = context,
-        makeMoveBundle = { this }
     )
 }
 
 internal fun MoveFile.moveTo(
     destination: DocumentFile,
-    context: Context,
-    makeMoveBundle: () -> MoveBundle
+    context: Context
 ): MoveResult {
     if (!mediaStoreData.fileExists) {
         return MoveResult.Failure.MoveFileNotFound
@@ -90,10 +88,7 @@ internal fun MoveFile.moveTo(
                     i { moveState.errorCode.toString() }
 
                     when (moveState.errorCode) {
-                        SingleFileErrorCode.TARGET_FOLDER_NOT_FOUND -> MoveResult.Failure.MoveDestinationNotFound(
-                            makeMoveBundle()
-                        )
-
+                        SingleFileErrorCode.TARGET_FOLDER_NOT_FOUND -> MoveResult.Failure.MoveDestinationNotFound
                         SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.Failure.NotEnoughSpaceOnDestination
                         SingleFileErrorCode.SOURCE_FILE_NOT_FOUND -> MoveResult.Failure.MoveFileNotFound
                         SingleFileErrorCode.STORAGE_PERMISSION_DENIED, SingleFileErrorCode.CANNOT_CREATE_FILE_IN_TARGET -> MoveResult.Failure.ManageAllFilesPermissionMissing
@@ -101,13 +96,8 @@ internal fun MoveFile.moveTo(
                     }
                 }
 
-                is SingleFileResult.Completed -> {
-                    MoveResult.Success(makeMoveBundle())
-                }
-
-                else -> {
-                    null
-                }
+                is SingleFileResult.Completed -> MoveResult.Success
+                else -> null
             }
         }
         .filterNotNull()

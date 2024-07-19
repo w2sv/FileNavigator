@@ -79,13 +79,10 @@ internal class DestinationPickerActivity : ComponentActivity() {
 
         when (val capturedArgs = args) {
             is Args.SingleFile -> MoveBroadcastReceiver.sendBroadcast(
-                MoveBroadcastReceiver.Args(
-                    moveBundle = MoveBundle(
-                        file = capturedArgs.moveFile,
-                        destination = moveDestination,
-                        mode = MoveMode.DestinationPicked
-                    ),
-                    notificationResources = capturedArgs.notificationResources
+                moveBundle = MoveBundle(
+                    file = capturedArgs.moveFile,
+                    destination = moveDestination,
+                    mode = MoveMode.DestinationPicked(capturedArgs.notificationResources)
                 ),
                 applicationContext
             )
@@ -102,10 +99,10 @@ internal class DestinationPickerActivity : ComponentActivity() {
         finishAndRemoveTask()
     }
 
-    private fun finishAndRemoveTask(moveResult: MoveResult? = null) {
-        moveResult?.let {
-            moveResultListener.invoke(
-                moveResult = it,
+    private fun finishAndRemoveTask(moveFailure: MoveResult.Failure? = null) {
+        moveFailure?.let {
+            moveResultListener.onPreMoveCancellation(
+                moveFailure = it,
                 notificationResources = (args as? Args.SingleFile)?.notificationResources
             )
         }

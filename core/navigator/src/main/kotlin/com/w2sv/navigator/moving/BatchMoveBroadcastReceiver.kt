@@ -31,7 +31,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
 
         when (val preMoveCheckResult = sharedPreMoveChecks(args.destination, context)) {
             is PreMoveCheckResult.Failure -> {
-                moveResultListener.invoke(preMoveCheckResult.failure)
+                moveResultListener.onPreMoveCancellation(preMoveCheckResult.failure, null)
             }
 
             is PreMoveCheckResult.Success -> {
@@ -66,14 +66,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
             val (moveFile, notificationResources) = it.value
             val moveResult = moveFile.moveTo(
                 destination = destinationDocumentFile,
-                context = context,
-                makeMoveBundle = {
-                    MoveBundle(
-                        file = moveFile,
-                        destination = args.destination,
-                        mode = MoveMode.Quick
-                    )
-                }
+                context = context
             )
             batchMoveProgressNotificationManager.buildAndPostNotification(
                 BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
