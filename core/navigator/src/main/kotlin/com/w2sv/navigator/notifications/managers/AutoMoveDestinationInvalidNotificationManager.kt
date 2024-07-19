@@ -10,6 +10,7 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.navigator.notifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceNotificationManager
@@ -26,7 +27,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
     appNotificationChannel = AppNotificationChannel.AutoMoveDestinationInvalid,
     notificationManager = notificationManager,
     context = context,
-    resourcesBaseSeed = 2
+    appNotificationId = AppNotificationId.AutoMoveDestinationInvalid
 ) {
     data class BuilderArgs(
         val fileAndSourceType: FileAndSourceType,

@@ -10,6 +10,7 @@ import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.SingleInstanceNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -22,7 +23,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
     appNotificationChannel = AppNotificationChannel.MoveProgress,
     notificationManager = notificationManager,
     context = context,
-    notificationId = 97892
+    appNotificationId = AppNotificationId.MoveProgress,
 ) {
     sealed interface BuilderArgs : AppNotificationManager.BuilderArgs {
         data class MoveProgress(

@@ -7,6 +7,7 @@ import android.content.Context
 import androidx.annotation.CallSuper
 import com.w2sv.androidutils.UniqueIds
 import com.w2sv.navigator.notifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.NotificationResources
 import slimber.log.i
 
@@ -14,7 +15,7 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
     appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,
     context: Context,
-    resourcesBaseSeed: Int,
+    appNotificationId: AppNotificationId,
     private val summaryProperties: SummaryProperties? = null,
 ) : AppNotificationManager<A>(
     appNotificationChannel = appNotificationChannel,
@@ -27,8 +28,8 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
     @JvmInline
     value class SummaryProperties(val id: Int)
 
-    private val notificationIds = UniqueIds(resourcesBaseSeed)
-    private val pendingIntentRequestCodes = UniqueIds(resourcesBaseSeed)
+    private val notificationIds = UniqueIds(appNotificationId.id)
+    private val pendingIntentRequestCodes = UniqueIds(appNotificationId.id)
 
     protected val activeNotificationCount: Int
         get() = notificationIds.size

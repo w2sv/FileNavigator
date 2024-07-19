@@ -29,6 +29,7 @@ import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.notifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.ViewFileIfPresentActivity
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceNotificationManager
@@ -50,7 +51,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     appNotificationChannel = AppNotificationChannel.NewNavigatableFile,
     notificationManager = notificationManager,
     context = context,
-    resourcesBaseSeed = 1,
+    appNotificationId = AppNotificationId.NewNavigatableFile,
     summaryProperties = SummaryProperties(999)
 ) {
     data class BuilderArgs(

@@ -9,6 +9,7 @@ import com.w2sv.core.navigator.R
 import com.w2sv.navigator.moving.DestinationPickerActivity
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.notifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.SingleInstanceNotificationManager
@@ -22,7 +23,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
     appNotificationChannel = AppNotificationChannel.BatchMoveFiles,
     notificationManager = notificationManager,
     context = context,
-    notificationId = 9867234
+    appNotificationId = AppNotificationId.BatchMoveFiles
 ) {
     data class BuilderArgs(
         val moveFiles: List<MoveFile>,

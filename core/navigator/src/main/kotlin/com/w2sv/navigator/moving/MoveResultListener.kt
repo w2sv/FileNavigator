@@ -27,7 +27,6 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 internal class MoveResultListener @Inject constructor(
     private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
     private val navigatorConfigDataSource: NavigatorConfigDataSource,

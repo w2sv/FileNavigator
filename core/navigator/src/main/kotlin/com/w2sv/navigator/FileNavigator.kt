@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.UnboundService
+import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.observing.FileObserver
@@ -78,7 +79,7 @@ class FileNavigator : UnboundService() {
 
     private fun start() {
         startForeground(
-            1,
+            AppNotificationId.FileNavigatorIsRunning.id,
             isRunningNotificationManager.buildNotification(
                 AppNotificationManager.BuilderArgs.Empty
             )
