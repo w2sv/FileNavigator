@@ -11,14 +11,14 @@ import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
-import com.w2sv.navigator.notifications.managers.abstrct.SingleInstanceAppNotificationManager
+import com.w2sv.navigator.notifications.managers.abstrct.SingleInstanceNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 internal class BatchMoveProgressNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
-) : SingleInstanceAppNotificationManager<BatchMoveProgressNotificationManager.BuilderArgs>(
+) : SingleInstanceNotificationManager<BatchMoveProgressNotificationManager.BuilderArgs>(
     appNotificationChannel = AppNotificationChannel.MoveProgress,
     notificationManager = notificationManager,
     context = context,

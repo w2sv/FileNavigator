@@ -4,7 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import com.w2sv.navigator.notifications.AppNotificationChannel
 
-internal abstract class SingleInstanceAppNotificationManager<A : AppNotificationManager.BuilderArgs>(
+internal abstract class SingleInstanceNotificationManager<A : AppNotificationManager.BuilderArgs>(
     appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,
     context: Context,

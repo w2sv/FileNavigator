@@ -5,9 +5,6 @@ import android.content.Context
 import com.w2sv.androidutils.getNotificationManager
 import com.w2sv.androidutils.isServiceRunning
 import com.w2sv.navigator.FileNavigator
-import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
-import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
-import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

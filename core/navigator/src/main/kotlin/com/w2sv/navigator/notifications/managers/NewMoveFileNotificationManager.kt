@@ -31,7 +31,7 @@ import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.ViewFileIfPresentActivity
-import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
+import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -46,7 +46,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
     private val batchMoveNotificationManager: BatchMoveNotificationManager,
-) : MultiInstanceAppNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
+) : MultiInstanceNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
     appNotificationChannel = AppNotificationChannel.NewNavigatableFile,
     notificationManager = notificationManager,
     context = context,
@@ -57,7 +57,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
         val moveFile: MoveFile,
         val quickMoveDestination: DocumentUri?,
         override val resources: NotificationResources
-    ) : MultiInstanceAppNotificationManager.BuilderArgs
+    ) : MultiInstanceNotificationManager.BuilderArgs
 
     fun buildAndPost(moveFile: MoveFile) {
         buildAndPost(

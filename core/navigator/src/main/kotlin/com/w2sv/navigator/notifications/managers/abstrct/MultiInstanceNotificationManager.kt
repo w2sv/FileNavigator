@@ -10,7 +10,7 @@ import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
 import slimber.log.i
 
-internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceAppNotificationManager.BuilderArgs>(
+internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotificationManager.BuilderArgs>(
     appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,
     context: Context,
@@ -24,7 +24,8 @@ internal abstract class MultiInstanceAppNotificationManager<A : MultiInstanceApp
     val resourcesIdentifier: String
         get() = this::class.java.simpleName
 
-    data class SummaryProperties(val id: Int)
+    @JvmInline
+    value class SummaryProperties(val id: Int)
 
     private val notificationIds = UniqueIds(resourcesBaseSeed)
     private val pendingIntentRequestCodes = UniqueIds(resourcesBaseSeed)

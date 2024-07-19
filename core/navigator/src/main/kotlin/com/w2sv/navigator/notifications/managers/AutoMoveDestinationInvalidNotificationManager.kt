@@ -12,7 +12,7 @@ import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
-import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
+import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,7 +22,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
     private val documentUriToPathConverter: DocumentUriToPathConverter
-) : MultiInstanceAppNotificationManager<AutoMoveDestinationInvalidNotificationManager.BuilderArgs>(
+) : MultiInstanceNotificationManager<AutoMoveDestinationInvalidNotificationManager.BuilderArgs>(
     appNotificationChannel = AppNotificationChannel.AutoMoveDestinationInvalid,
     notificationManager = notificationManager,
     context = context,
@@ -32,7 +32,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
         val fileAndSourceType: FileAndSourceType,
         val autoMoveDestination: MoveDestination,
         override val resources: NotificationResources
-    ) : MultiInstanceAppNotificationManager.BuilderArgs
+    ) : MultiInstanceNotificationManager.BuilderArgs
 
     fun buildAndPost(
         fileAndSourceType: FileAndSourceType,
