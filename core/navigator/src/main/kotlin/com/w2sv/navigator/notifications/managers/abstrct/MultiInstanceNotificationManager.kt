@@ -16,7 +16,6 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
     notificationManager: NotificationManager,
     context: Context,
     appNotificationId: AppNotificationId,
-    private val summaryProperties: SummaryProperties? = null,
 ) : AppNotificationManager<A>(
     appNotificationChannel = appNotificationChannel,
     notificationManager = notificationManager,
@@ -24,9 +23,6 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
 ) {
     val resourcesIdentifier: String
         get() = this::class.java.simpleName
-
-    @JvmInline
-    value class SummaryProperties(val id: Int)
 
     private val notificationIds = UniqueIds(appNotificationId.id)
     private val pendingIntentRequestCodes = UniqueIds(appNotificationId.id)
@@ -77,20 +73,8 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
 
     @CallSuper
     open fun buildAndPost(args: A) {
-        super.buildAndPostNotification(args.resources.id, args)
-
-        if (activeNotificationCount >= 2 && summaryProperties != null) {
-            emitSummaryNotification()
-        }
+        buildAndPostNotification(args.resources.id, args)
     }
-
-    private fun emitSummaryNotification() {
-        requireNotNull(summaryProperties)
-
-        notificationManager.notify(summaryProperties.id, buildSummaryNotification())
-    }
-
-    open fun buildSummaryNotification(): Notification? = null
 
     // ================
     // Cancelling
@@ -100,11 +84,6 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
     open fun cancelNotificationAndFreeResources(resources: NotificationResources) {
         notificationManager.cancel(resources.id)
         freeNotificationResources(resources)
-        if (activeNotificationCount == 0 && summaryProperties != null) {
-            notificationManager.cancel(summaryProperties.id)
-        } else {
-            emitSummaryNotification()
-        }
     }
 
     private fun freeNotificationResources(resources: NotificationResources) {

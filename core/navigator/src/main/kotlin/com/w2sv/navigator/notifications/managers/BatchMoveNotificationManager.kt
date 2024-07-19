@@ -20,7 +20,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
 ) : SingleInstanceNotificationManager<BatchMoveNotificationManager.BuilderArgs>(
-    appNotificationChannel = AppNotificationChannel.BatchMoveFiles,
+    appNotificationChannel = AppNotificationChannel.NewNavigatableFile,
     notificationManager = notificationManager,
     context = context,
     appNotificationId = AppNotificationId.BatchMoveFiles

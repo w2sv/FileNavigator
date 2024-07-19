@@ -13,7 +13,6 @@ internal enum class AppNotificationChannel(@StringRes val nameRes: Int) {
     FileNavigatorIsRunning(R.string.file_navigator_is_running),
     NewNavigatableFile(R.string.new_navigatable_file),
     AutoMoveDestinationInvalid(R.string.auto_move_destination_invalid),
-    BatchMoveFiles(R.string.batch_move_files),
     MoveProgress(R.string.move_progress);
 
     fun getNotificationChannel(

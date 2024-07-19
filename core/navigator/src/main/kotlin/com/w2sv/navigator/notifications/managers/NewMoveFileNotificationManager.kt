@@ -33,6 +33,7 @@ import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.ViewFileIfPresentActivity
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceNotificationManager
+import com.w2sv.navigator.notifications.managers.abstrct.SummarizedMultiInstanceNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -47,12 +48,11 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
     private val batchMoveNotificationManager: BatchMoveNotificationManager,
-) : MultiInstanceNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
+) : SummarizedMultiInstanceNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
     appNotificationChannel = AppNotificationChannel.NewNavigatableFile,
     notificationManager = notificationManager,
     context = context,
-    appNotificationId = AppNotificationId.NewNavigatableFile,
-    summaryProperties = SummaryProperties(999)
+    appNotificationId = AppNotificationId.NewNavigatableFile
 ) {
     data class BuilderArgs(
         val moveFile: MoveFile,
