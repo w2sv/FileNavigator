@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
+import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.notifications.NotificationResources
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,9 +18,11 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     internal lateinit var moveResultListener: MoveResultListener
 
     override fun onReceive(context: Context, intent: Intent) {
+        val args = intent.getParcelableCompat<Args>(Args.EXTRA)!!
+
         moveResultListener.invoke(
-            moveResult = MoveBundle.fromIntent(intent).move(context),
-            notificationResources = NotificationResources.fromIntent(intent)
+            moveResult = args.moveBundle.move(context),
+            notificationResources = args.notificationResources
         )
     }
 

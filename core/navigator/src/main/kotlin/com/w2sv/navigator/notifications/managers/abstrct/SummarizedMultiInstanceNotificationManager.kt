@@ -9,7 +9,7 @@ import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.NotificationResources
 
 /**
- * Notification manager for multi-instance notifications that post a summary.
+ * Manager for multi-instance notifications that post a summary.
  */
 internal abstract class SummarizedMultiInstanceNotificationManager<A : MultiInstanceNotificationManager.BuilderArgs>(
     appNotificationChannel: AppNotificationChannel,

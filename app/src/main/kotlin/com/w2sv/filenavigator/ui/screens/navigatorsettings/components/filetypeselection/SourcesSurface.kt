@@ -85,7 +85,7 @@ fun SourcesSurface(
                     autoMoveDestinationPath?.let { path ->
                         AutoMoveRow(
                             destinationPath = path,
-                            changeDestination = { selectAutoMoveDestination.launch(autoMoveConfig.destination?.uri) },
+                            changeDestination = { selectAutoMoveDestination.launch(autoMoveConfig.destination?.documentUri?.uri) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 22.dp, end = 10.dp)

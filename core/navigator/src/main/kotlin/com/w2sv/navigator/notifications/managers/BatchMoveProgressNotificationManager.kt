@@ -41,8 +41,6 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
     override fun getBuilder(args: BuilderArgs): AppNotificationManager<BuilderArgs>.Builder {
         return object : Builder() {
             override fun build(): Notification {
-                setSilent(true)
-
                 when (args) {
                     is BuilderArgs.MoveProgress -> {
                         setContentTitle(
@@ -51,6 +49,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                                 args.max
                             )
                         )
+                        setSilent(true)
                         setProgress(args.max, args.current, false)
                     }
 

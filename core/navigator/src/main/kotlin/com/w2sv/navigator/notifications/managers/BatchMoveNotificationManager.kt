@@ -49,8 +49,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
                 return super.build()
             }
 
-            private fun getMoveFilesAction(
-            ): NotificationCompat.Action =
+            private fun getMoveFilesAction(): NotificationCompat.Action =
                 NotificationCompat.Action(
                     com.w2sv.core.common.R.drawable.ic_app_logo_24,
                     context.getString(R.string.move),

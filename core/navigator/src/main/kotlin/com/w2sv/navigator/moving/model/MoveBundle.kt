@@ -1,8 +1,6 @@
 package com.w2sv.navigator.moving.model
 
-import android.content.Intent
 import android.os.Parcelable
-import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.domain.model.MoveDestination
@@ -11,9 +9,7 @@ import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
 /**
- * Bundle of all the data required for the actual move operation and all possible downstream actions.
- *
- * Consumed by MoveBroadcastReceiver.
+ * Bundle of all the data required for the move operation and all possible downstream actions.
  */
 @Parcelize
 internal data class MoveBundle(
@@ -37,11 +33,4 @@ internal data class MoveBundle(
             dateTime = dateTime,
             autoMoved = mode.isAuto
         )
-
-    companion object {
-        const val EXTRA = "com.w2sv.filenavigator.extra.MoveBundle"
-
-        fun fromIntent(intent: Intent): MoveBundle =
-            intent.getParcelableCompat<MoveBundle>(EXTRA)!!
-    }
 }

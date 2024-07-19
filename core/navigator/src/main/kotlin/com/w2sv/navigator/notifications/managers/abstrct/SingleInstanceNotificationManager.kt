@@ -5,6 +5,9 @@ import android.content.Context
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.AppNotificationId
 
+/**
+ * Manager for notifications of which only a single instance may be active at a time.
+ */
 internal abstract class SingleInstanceNotificationManager<A : AppNotificationManager.BuilderArgs>(
     appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,

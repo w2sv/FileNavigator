@@ -11,6 +11,9 @@ import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.NotificationResources
 import slimber.log.i
 
+/**
+ * Manager for notifications of which several instances may be active at the same time.
+ */
 internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotificationManager.BuilderArgs>(
     appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,

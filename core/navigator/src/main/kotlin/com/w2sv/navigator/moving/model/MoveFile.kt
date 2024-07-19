@@ -70,8 +70,4 @@ internal data class MoveFile(
                 }
             }
         }
-
-    companion object {
-        const val EXTRA = "com.w2sv.filenavigator.extra.MoveFile"
-    }
 }
