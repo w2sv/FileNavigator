@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
+import androidx.documentfile.provider.DocumentFile
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.navigator.moving.model.MoveBundle
@@ -34,37 +35,60 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
             }
 
             is PreMoveCheckResult.Success -> {
-                val moveResults = mutableListOf<MoveResult>()
-                batchMoveProgressNotificationManager.buildAndPostNotification(
-                    current = 0,
-                    max = args.moveFiles.size
+                val moveResults = batchMove(
+                    args = args,
+                    destinationDocumentFile = preMoveCheckResult.documentFile,
+                    context = context
                 )
-                args.moveFiles.zip(args.notificationResources).withIndex().forEach {
-                    val (moveFile, notificationResources) = it.value
-                    val moveResult = moveFile.moveTo(
-                        preMoveCheckResult.documentFile,
-                        context,
-                        makeMoveBundle = {
-                            MoveBundle(
-                                file = moveFile,
-                                destination = args.destination,
-                                mode = MoveMode.Quick
-                            )
-                        }
+                batchMoveProgressNotificationManager.buildAndPostNotification(
+                    BatchMoveProgressNotificationManager.BuilderArgs.MoveResults(
+                        moveResults = moveResults,
+                        destination = args.destination
                     )
-                    batchMoveProgressNotificationManager.buildAndPostNotification(
-                        current = it.index + 1,
-                        max = args.moveFiles.size
-                    )
-                    moveResultListener.invoke(
-                        moveResult = moveResult,
-                        notificationResources = notificationResources,
-                        showToast = false
-                    )
-                    moveResults.add(moveResult)
-                }
+                )
             }
         }
+    }
+
+    private fun batchMove(
+        args: Args,
+        destinationDocumentFile: DocumentFile,
+        context: Context
+    ): List<MoveResult> {
+        val moveResults = mutableListOf<MoveResult>()
+        batchMoveProgressNotificationManager.buildAndPostNotification(
+            BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
+                current = 0,
+                max = args.moveFiles.size
+            )
+        )
+        args.moveFiles.zip(args.notificationResources).withIndex().forEach {
+            val (moveFile, notificationResources) = it.value
+            val moveResult = moveFile.moveTo(
+                destination = destinationDocumentFile,
+                context = context,
+                makeMoveBundle = {
+                    MoveBundle(
+                        file = moveFile,
+                        destination = args.destination,
+                        mode = MoveMode.Quick
+                    )
+                }
+            )
+            batchMoveProgressNotificationManager.buildAndPostNotification(
+                BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
+                    current = it.index + 1,
+                    max = args.moveFiles.size
+                )
+            )
+            moveResultListener.invoke(
+                moveResult = moveResult,
+                notificationResources = notificationResources,
+                showToast = false
+            )
+            moveResults.add(moveResult)
+        }
+        return moveResults
     }
 
     @Parcelize
@@ -91,7 +115,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
             )
         }
 
-        fun getIntent(
+        private fun getIntent(
             args: Args,
             context: Context
         ): Intent =

@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
-import androidx.documentfile.provider.DocumentFile
 import com.w2sv.androidutils.res.getText
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.di.AppDispatcher
@@ -121,8 +120,7 @@ internal class MoveResultListener @Inject constructor(
     private fun onSuccess(moveBundle: MoveBundle, showToast: Boolean) {
         if (showToast) {
             context.showMoveSuccessToast(
-                moveBundle = moveBundle,
-                moveDestinationDocumentFile = moveBundle.destination.documentFile(context)!!  // TODO
+                moveBundle = moveBundle
             )
         }
 
@@ -157,18 +155,21 @@ private fun movedFileDocumentUri(
 ): DocumentUri =
     DocumentUri.parse("$moveDestinationDocumentUri%2F${Uri.encode(fileName)}")
 
-private fun Context.showMoveSuccessToast(
-    moveBundle: MoveBundle,
-    moveDestinationDocumentFile: DocumentFile
-) {
+private fun Context.showMoveSuccessToast(moveBundle: MoveBundle) {
     showToast(
         resources.getText(
             id = if (moveBundle.mode.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
             moveBundle.file.fileAndSourceType.label(context = this, isGif = moveBundle.file.isGif),
-            "/${moveDestinationDocumentFile.fileName(this)}"
+            shortMoveDestinationRepresentation(moveBundle.destination, this)
         )
     )
 }
+
+internal fun shortMoveDestinationRepresentation(
+    moveDestination: DocumentUri,
+    context: Context
+): String =
+    "/${moveDestination.documentFile(context)!!.fileName(context)}"
 
 private fun Context.showMoveFailureToast(@StringRes explanationStringRes: Int) {
     showToast(

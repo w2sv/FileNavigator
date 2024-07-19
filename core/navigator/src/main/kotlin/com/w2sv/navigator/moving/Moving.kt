@@ -20,16 +20,20 @@ internal sealed interface PreMoveCheckResult {
     @JvmInline
     value class Success(val documentFile: DocumentFile) : PreMoveCheckResult
 
-    @JvmInline
-    value class Failure(val failure: MoveResult.Failure) : PreMoveCheckResult
+    abstract class Failure(val failure: MoveResult.Failure) : PreMoveCheckResult
+
+    data object ManageAllFilesPermissionMissing :
+        Failure(MoveResult.Failure.ManageAllFilesPermissionMissing)
+
+    data object InternalError : Failure(MoveResult.Failure.InternalError)
 }
 
 internal fun sharedPreMoveChecks(destination: DocumentUri, context: Context): PreMoveCheckResult {
     val documentFile = destination.documentFile(context)
 
     return when {
-        !isExternalStorageManger -> PreMoveCheckResult.Failure(MoveResult.Failure.ManageAllFilesPermissionMissing)
-        documentFile == null -> PreMoveCheckResult.Failure(MoveResult.Failure.InternalError)
+        !isExternalStorageManger -> PreMoveCheckResult.ManageAllFilesPermissionMissing
+        documentFile == null -> PreMoveCheckResult.InternalError
         else -> PreMoveCheckResult.Success(documentFile)
     }
 }
