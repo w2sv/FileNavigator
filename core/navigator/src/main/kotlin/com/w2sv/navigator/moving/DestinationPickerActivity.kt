@@ -70,9 +70,9 @@ internal class DestinationPickerActivity : ComponentActivity() {
         // Required for quick move
         contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
 
-        // Build DocumentUri, exit if unsuccessful
+        // Build moveDestination, exit if unsuccessful
         val moveDestination =
-            DocumentUri.fromTreeUri(this, treeUri)?.let { MoveDestination(it) }
+            MoveDestination.fromTreeUri(this, treeUri)
                 ?: return finishAndRemoveTask(MoveResult.Failure.InternalError)
 
         i { args.toString() }

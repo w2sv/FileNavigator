@@ -37,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
@@ -121,12 +120,10 @@ fun rememberSelectAutoMoveDestination(onDestinationSelected: (MoveDestination) -
         optionalTreeUri?.let { treeUri ->
             context.contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
             onDestinationSelected(
-                MoveDestination(
-                    DocumentUri.fromTreeUri(
-                        context,
-                        treeUri
-                    )!!
-                )  // TODO: null case possible?
+                MoveDestination.fromTreeUri(
+                    context,
+                    treeUri
+                )!!  // TODO: null case possible?
             )
         }
     }

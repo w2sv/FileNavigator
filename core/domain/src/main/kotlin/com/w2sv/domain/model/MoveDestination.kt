@@ -1,6 +1,7 @@
 package com.w2sv.domain.model
 
 import android.content.Context
+import android.net.Uri
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
 import com.w2sv.common.utils.DocumentUri
@@ -20,5 +21,8 @@ value class MoveDestination(val documentUri: DocumentUri) : Parcelable {
     companion object {
         fun parse(uriString: String): MoveDestination =
             MoveDestination(DocumentUri.parse(uriString))
+
+        fun fromTreeUri(context: Context, treeUri: Uri): MoveDestination? =
+            DocumentUri.fromTreeUri(context, treeUri)?.let { MoveDestination(it) }
     }
 }

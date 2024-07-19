@@ -23,7 +23,7 @@ class MoveDestinationPathConverter @Inject constructor(
         moveDestination.documentUri.documentFilePath(context)
             ?.run {
                 if (showStorageVolumeNames.value) {
-                    this
+                    "/$this"
                 } else {
                     substringAfter(":")
                 }
