@@ -38,11 +38,11 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
             BuilderArgs
     }
 
-    override fun getBuilder(args: BuilderArgs): AppNotificationManager<BuilderArgs>.Builder {
-        return object : Builder() {
-            override fun build(): Notification {
-                when (args) {
-                    is BuilderArgs.MoveProgress -> {
+    override fun getBuilder(args: BuilderArgs): AppNotificationManager<BuilderArgs>.Builder =
+        when (args) {
+            is BuilderArgs.MoveProgress -> {
+                object : Builder() {
+                    override fun build(): Notification {
                         setContentTitle(
                             context.getString(
                                 R.string.move_progress_notification_title,
@@ -51,64 +51,67 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                         )
                         setSilent(true)
                         setProgress(args.max, args.current, false)
+                        return super.build()
                     }
+                }
+            }
 
-                    is BuilderArgs.MoveResults -> {
+            is BuilderArgs.MoveResults -> {
+                object : Builder() {
+                    override fun build(): Notification {
                         setProgress(0, 0, false)  // Hides progress bar
                         setContentTitle(context.getString(R.string.move_results))
                         setStyle(
                             NotificationCompat.BigTextStyle()
                                 .bigText(
-                                    resultsContentText(
+                                    contentText(
                                         moveResults = args.moveResults,
                                         destination = args.destination
                                     )
                                 )
                         )
+                        return super.build()
                     }
-                }
 
-                return super.build()
-            }
-
-            private fun resultsContentText(
-                moveResults: List<MoveResult>,
-                destination: MoveDestination
-            ): CharSequence {
-                val moveResultToCount = moveResults.groupingBy { it }.eachCount()
-                return buildSpannedString {
-                    moveResultToCount[MoveResult.Success]?.let {
-                        append(context.getString(R.string.successfully_moved_files_to, it))
-                        bold {
-                            append(
-                                destination.shortRepresentation(context)
-                            )
-                        }
-                    }
-                    if (moveResultToCount.keys.any { it != MoveResult.Success }) {
-                        moveResultToCount.keys.filter { it != MoveResult.Success }
-                            .forEachIndexed { index, moveFailureType ->
-                                if (index != 0 || moveResultToCount.containsKey(MoveResult.Success)) {
-                                    append("\n")
-                                }
-                                append(
-                                    context.resources.getQuantityString(
-                                        R.plurals.couldn_t_move_files_due_to,
-                                        moveResultToCount.getValue(moveFailureType),
-                                        moveResultToCount.getValue(moveFailureType),
-                                        when (moveFailureType) {
-                                            MoveResult.Failure.InternalError::class.java -> "internal error"
-                                            MoveResult.Failure.MoveFileNotFound::class.java -> "file not found"
-                                            MoveResult.Failure.FileAlreadyAtDestination::class.java -> "file already at destination"
-                                            MoveResult.Failure.NotEnoughSpaceOnDestination::class.java -> "not enough space on destination"
-                                            else -> ""
-                                        }
+                    private fun contentText(
+                        moveResults: List<MoveResult>,
+                        destination: MoveDestination
+                    ): CharSequence {
+                        val moveResultToCount = moveResults.groupingBy { it }.eachCount()
+                        return buildSpannedString {
+                            moveResultToCount[MoveResult.Success]?.let {
+                                append(context.getString(R.string.successfully_moved_files_to, it))
+                                bold {
+                                    append(
+                                        destination.shortRepresentation(context)
                                     )
-                                )
+                                }
                             }
+                            if (moveResultToCount.keys.any { it != MoveResult.Success }) {
+                                moveResultToCount.keys.filter { it != MoveResult.Success }
+                                    .forEachIndexed { index, moveFailureType ->
+                                        if (index != 0 || moveResultToCount.containsKey(MoveResult.Success)) {
+                                            append("\n")
+                                        }
+                                        append(
+                                            context.resources.getQuantityString(
+                                                R.plurals.couldn_t_move_files_due_to,
+                                                moveResultToCount.getValue(moveFailureType),
+                                                moveResultToCount.getValue(moveFailureType),
+                                                when (moveFailureType) {
+                                                    MoveResult.Failure.InternalError::class.java -> "internal error"
+                                                    MoveResult.Failure.MoveFileNotFound::class.java -> "file not found"
+                                                    MoveResult.Failure.FileAlreadyAtDestination::class.java -> "file already at destination"
+                                                    MoveResult.Failure.NotEnoughSpaceOnDestination::class.java -> "not enough space on destination"
+                                                    else -> ""
+                                                }
+                                            )
+                                        )
+                                    }
+                            }
+                        }
                     }
                 }
             }
         }
-    }
 }
