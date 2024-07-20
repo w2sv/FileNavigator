@@ -102,7 +102,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
             )
         }
 
-        private fun getIntent(
+        fun getIntent(
             args: Args,
             context: Context
         ): Intent =

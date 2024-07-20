@@ -23,24 +23,24 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
     private val moveDestinationPathConverter: MoveDestinationPathConverter
-) : MultiInstanceNotificationManager<AutoMoveDestinationInvalidNotificationManager.BuilderArgs>(
+) : MultiInstanceNotificationManager<AutoMoveDestinationInvalidNotificationManager.Args>(
     appNotificationChannel = AppNotificationChannel.AutoMoveDestinationInvalid,
     notificationManager = notificationManager,
     context = context,
     appNotificationId = AppNotificationId.AutoMoveDestinationInvalid
 ) {
-    data class BuilderArgs(
+    data class Args(
         val fileAndSourceType: FileAndSourceType,
         val autoMoveDestination: MoveDestination,
         override val resources: NotificationResources
-    ) : MultiInstanceNotificationManager.BuilderArgs
+    ) : MultiInstanceNotificationManager.Args
 
-    fun buildAndPost(
+    fun buildAndPostNotification(
         fileAndSourceType: FileAndSourceType,
         autoMoveDestination: MoveDestination,
     ) {
         buildNotification(
-            BuilderArgs(
+            Args(
                 fileAndSourceType = fileAndSourceType,
                 autoMoveDestination = autoMoveDestination,
                 resources = getNotificationResources(
@@ -50,7 +50,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
         )
     }
 
-    override fun getBuilder(args: BuilderArgs): AppNotificationManager<BuilderArgs>.Builder {
+    override fun getBuilder(args: Args): AppNotificationManager<Args>.Builder {
         return object : Builder() {
             override fun build(): Notification {
                 setContentTitle(context.getString(R.string.auto_move_destination_invalid))

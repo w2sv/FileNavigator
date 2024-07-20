@@ -8,18 +8,18 @@ import com.w2sv.navigator.notifications.AppNotificationId
 /**
  * Manager for notifications of which only a single instance may be active at a time.
  */
-internal abstract class SingleInstanceNotificationManager<A : AppNotificationManager.BuilderArgs>(
+internal abstract class SingleInstanceNotificationManager<Args>(
     appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,
     context: Context,
     private val appNotificationId: AppNotificationId
-) : AppNotificationManager<A>(
+) : AppNotificationManager<Args>(
     appNotificationChannel = appNotificationChannel,
     notificationManager = notificationManager,
     context = context
 ) {
-    fun buildAndPostNotification(args: A) {
-        notificationManager.notify(appNotificationId.id, buildNotification(args))
+    fun buildAndPostNotification(args: Args) {
+        buildAndPostNotification(appNotificationId.id, args)
     }
 
     fun cancelNotification() {

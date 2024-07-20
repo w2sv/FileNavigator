@@ -16,12 +16,12 @@ import javax.inject.Inject
 internal class FileNavigatorIsRunningNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager
-) : AppNotificationManager<AppNotificationManager.BuilderArgs.Empty>(
+) : AppNotificationManager<Unit>(
     appNotificationChannel = AppNotificationChannel.FileNavigatorIsRunning,
     notificationManager = notificationManager,
     context = context
 ) {
-    override fun getBuilder(args: BuilderArgs.Empty): Builder =
+    override fun getBuilder(args: Unit): Builder =
         object : Builder() {
             override fun build(): Notification {
                 setContentTitle(context.getString(R.string.file_navigator_is_running))

@@ -11,7 +11,7 @@ import com.w2sv.navigator.notifications.NotificationResources
 /**
  * Manager for multi-instance notifications that post a summary.
  */
-internal abstract class SummarizedMultiInstanceNotificationManager<A : MultiInstanceNotificationManager.BuilderArgs>(
+internal abstract class SummarizedMultiInstanceNotificationManager<A : MultiInstanceNotificationManager.Args>(
     appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,
     context: Context,

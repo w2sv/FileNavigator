@@ -13,8 +13,10 @@ import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.MoveDestination
+import com.w2sv.navigator.moving.model.BatchMoveBundle
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
+import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
@@ -89,9 +91,16 @@ internal class DestinationPickerActivity : ComponentActivity() {
 
             is Args.FileBatch -> BatchMoveBroadcastReceiver.sendBroadcast(
                 BatchMoveBroadcastReceiver.Args(
-                    moveFiles = capturedArgs.moveFiles,
+                    batchMoveBundles = capturedArgs.moveFilesWithNotificationResources.map {
+                        BatchMoveBundle(
+                            moveFile = it.moveFile,
+                            moveMode = MoveMode.DestinationPicked(
+                                notificationResources = it.notificationResources,
+                                isPartOfBatch = true
+                            )
+                        )
+                    },
                     destination = moveDestination,
-                    notificationResources = capturedArgs.notificationResources
                 ),
                 applicationContext
             )
@@ -116,15 +125,14 @@ internal class DestinationPickerActivity : ComponentActivity() {
         @Parcelize
         data class SingleFile(
             val moveFile: MoveFile,
-            override val pickerStartDestination: DocumentUri?,
             val notificationResources: NotificationResources,
+            override val pickerStartDestination: DocumentUri?,
         ) : Args
 
         @Parcelize
         data class FileBatch(
-            val moveFiles: List<MoveFile>,
+            val moveFilesWithNotificationResources: List<MoveFileWithNotificationResources>,
             override val pickerStartDestination: DocumentUri?,
-            val notificationResources: List<NotificationResources>
         ) : Args
 
         companion object {

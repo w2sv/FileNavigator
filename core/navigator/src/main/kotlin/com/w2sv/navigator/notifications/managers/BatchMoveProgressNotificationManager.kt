@@ -25,7 +25,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
     context = context,
     appNotificationId = AppNotificationId.MoveProgress,
 ) {
-    sealed interface BuilderArgs : AppNotificationManager.BuilderArgs {
+    sealed interface BuilderArgs {
         data class MoveProgress(
             val current: Int,
             val max: Int
@@ -75,9 +75,9 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                 moveResults: List<MoveResult>,
                 destination: MoveDestination
             ): CharSequence {
-                val moveResultTypeToCount = moveResults.groupingBy { it::class.java }.eachCount()
+                val moveResultToCount = moveResults.groupingBy { it }.eachCount()
                 return buildSpannedString {
-                    moveResultTypeToCount[MoveResult.Success::class.java]?.let {
+                    moveResultToCount[MoveResult.Success]?.let {
                         append(context.getString(R.string.successfully_moved_files_to, it))
                         bold {
                             append(
@@ -85,17 +85,17 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                             )
                         }
                     }
-                    if (moveResultTypeToCount.keys.any { it != MoveResult.Success::class.java }) {
-                        moveResultTypeToCount.keys.filter { it != MoveResult.Success::class.java }
+                    if (moveResultToCount.keys.any { it != MoveResult.Success }) {
+                        moveResultToCount.keys.filter { it != MoveResult.Success }
                             .forEachIndexed { index, moveFailureType ->
-                                if (index != 0 || moveResultTypeToCount.containsKey(MoveResult.Success::class.java)) {
+                                if (index != 0 || moveResultToCount.containsKey(MoveResult.Success)) {
                                     append("\n")
                                 }
                                 append(
                                     context.resources.getQuantityString(
                                         R.plurals.couldn_t_move_files_due_to,
-                                        moveResultTypeToCount.getValue(moveFailureType),
-                                        moveResultTypeToCount.getValue(moveFailureType),
+                                        moveResultToCount.getValue(moveFailureType),
+                                        moveResultToCount.getValue(moveFailureType),
                                         when (moveFailureType) {
                                             MoveResult.Failure.InternalError::class.java -> "internal error"
                                             MoveResult.Failure.MoveFileNotFound::class.java -> "file not found"

@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import androidx.annotation.RequiresApi
-import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.cancelIfActive
 import com.w2sv.domain.model.FileAndSourceType
@@ -116,17 +115,15 @@ internal abstract class FileObserver(
                     procedureJob = scope.launchDelayed(CANCEL_PERIOD_MILLIS) {
                         when (enabledAutoMoveDestination) {
                             null -> {
-                                newMoveFileNotificationManager.buildAndPost(moveFile)
+                                newMoveFileNotificationManager.buildAndPostNotification(moveFile)
                             }
 
                             else -> {
                                 MoveBroadcastReceiver.sendBroadcast(
-                                    MoveBroadcastReceiver.Args(
-                                        MoveBundle(
-                                            file = moveFile,
-                                            destination = enabledAutoMoveDestination,
-                                            mode = MoveMode.Auto
-                                        )
+                                    moveBundle = MoveBundle(
+                                        file = moveFile,
+                                        destination = enabledAutoMoveDestination,
+                                        mode = MoveMode.Auto
                                     ),
                                     context = context,
                                 )

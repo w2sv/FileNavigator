@@ -14,7 +14,7 @@ import slimber.log.i
 /**
  * Manager for notifications of which several instances may be active at the same time.
  */
-internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotificationManager.BuilderArgs>(
+internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotificationManager.Args>(
     appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,
     context: Context,
@@ -61,7 +61,7 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
             )
     }
 
-    interface BuilderArgs : AppNotificationManager.BuilderArgs {
+    interface Args {
         val resources: NotificationResources
     }
 

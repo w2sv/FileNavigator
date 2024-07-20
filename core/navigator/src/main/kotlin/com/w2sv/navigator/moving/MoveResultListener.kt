@@ -103,7 +103,7 @@ internal class MoveResultListener @Inject constructor(
                 sourceType = moveBundle.file.sourceType
             )
 
-            newMoveFileNotificationManager.buildAndPost(moveBundle.file)
+            newMoveFileNotificationManager.buildAndPostNotification(moveBundle.file)
         }
     }
 
@@ -115,8 +115,8 @@ internal class MoveResultListener @Inject constructor(
             )
             FileNavigator.reregisterFileObservers(context)
         }
-        newMoveFileNotificationManager.buildAndPost(moveBundle.file)
-        autoMoveDestinationInvalidNotificationManager.buildAndPost(
+        newMoveFileNotificationManager.buildAndPostNotification(moveBundle.file)
+        autoMoveDestinationInvalidNotificationManager.buildAndPostNotification(
             fileAndSourceType = moveBundle.file.fileAndSourceType,
             autoMoveDestination = moveBundle.destination
         )

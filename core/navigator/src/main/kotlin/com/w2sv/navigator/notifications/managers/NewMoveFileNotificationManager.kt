@@ -48,21 +48,21 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
     private val batchMoveNotificationManager: BatchMoveNotificationManager,
-) : SummarizedMultiInstanceNotificationManager<NewMoveFileNotificationManager.BuilderArgs>(
+) : SummarizedMultiInstanceNotificationManager<NewMoveFileNotificationManager.Args>(
     appNotificationChannel = AppNotificationChannel.NewNavigatableFile,
     notificationManager = notificationManager,
     context = context,
     appNotificationId = AppNotificationId.NewNavigatableFile
 ) {
-    data class BuilderArgs(
+    data class Args(
         val moveFile: MoveFile,
         val quickMoveDestination: MoveDestination?,
         override val resources: NotificationResources
-    ) : MultiInstanceNotificationManager.BuilderArgs
+    ) : MultiInstanceNotificationManager.Args
 
-    fun buildAndPost(moveFile: MoveFile) {
-        buildAndPost(
-            BuilderArgs(
+    fun buildAndPostNotification(moveFile: MoveFile) {
+        buildAndPostNotification(
+            Args(
                 moveFile = moveFile,
                 quickMoveDestination = fileAndSourceTypeToLastMoveDestinationStateFlow.lastMoveDestination(
                     moveFile.fileAndSourceType
@@ -75,15 +75,15 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     private val fileAndSourceTypeToLastMoveDestinationStateFlow =
         FileAndSourceTypeToLastMoveDestinationStateFlow(navigatorConfigDataSource, scope)
 
-    private val activeNotificationBuilderArgs = mutableListOf<BuilderArgs>()
+    private val activeNotificationBuilderArgs = mutableListOf<Args>()
 
-    override fun buildAndPost(args: BuilderArgs) {
+    private fun buildAndPostNotification(args: Args) {
         super.buildAndPost(args)
 
         activeNotificationBuilderArgs.add(args)
 
         if (activeNotificationCount >= 2) {
-            batchMoveNotificationManager.buildAndPost(activeNotificationBuilderArgs)
+            batchMoveNotificationManager.buildAndPostNotification(activeNotificationBuilderArgs)
         }
     }
 
@@ -94,7 +94,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
         batchMoveNotificationManager.cancelOrUpdate(activeNotificationBuilderArgs)
     }
 
-    override fun getBuilder(args: BuilderArgs): Builder =
+    override fun getBuilder(args: Args): Builder =
         object : Builder() {
 
             override fun build(): Notification {
@@ -254,13 +254,10 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                         context,
                         requestCode,
                         MoveBroadcastReceiver.getIntent(
-                            MoveBroadcastReceiver.Args(
-                                moveBundle = MoveBundle(
-                                    file = args.moveFile,
-                                    destination = lastMoveDestination,
-                                    mode = MoveMode.Quick
-                                ),
-                                notificationResources = args.resources,
+                            moveBundle = MoveBundle(
+                                file = args.moveFile,
+                                destination = lastMoveDestination,
+                                mode = MoveMode.Quick(args.resources)
                             ),
                             context = context
                         ),
