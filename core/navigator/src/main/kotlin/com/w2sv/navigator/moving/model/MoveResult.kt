@@ -8,34 +8,34 @@ internal sealed class MoveResult(val cancelNotification: Boolean) {
     data object Success : MoveResult(true)
 
     sealed class Failure(
-        cancelNewMoveFileNotification: Boolean,
+        cancelNotification: Boolean,
         @StringRes val explanationStringRes: Int?
-    ) : MoveResult(cancelNewMoveFileNotification) {
+    ) : MoveResult(cancelNotification) {
 
         data object ManageAllFilesPermissionMissing :
             Failure(
                 explanationStringRes = R.string.manage_all_files_permission_missing,
-                cancelNewMoveFileNotification = false
+                cancelNotification = false
             )
 
         data object MoveFileNotFound : Failure(
             explanationStringRes = R.string.file_has_already_been_moved_or_deleted,
-            cancelNewMoveFileNotification = true
+            cancelNotification = true
         )
 
         data object InternalError : Failure(
             explanationStringRes = R.string.internal_error,
-            cancelNewMoveFileNotification = false
+            cancelNotification = false
         )
 
         data object FileAlreadyAtDestination : Failure(
             explanationStringRes = R.string.file_already_at_selected_location,
-            cancelNewMoveFileNotification = true
+            cancelNotification = true
         )
 
         data object NotEnoughSpaceOnDestination : Failure(
             explanationStringRes = R.string.not_enough_space_on_destination,
-            cancelNewMoveFileNotification = false
+            cancelNotification = false
         )
 
         data object MoveDestinationNotFound : Failure(false, null)

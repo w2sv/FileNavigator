@@ -6,12 +6,9 @@ import android.content.Intent
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
 import com.w2sv.androidutils.os.getParcelableCompat
-import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.domain.model.MoveDestination
-import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.moving.model.MoveMode
+import com.w2sv.navigator.moving.model.BatchMoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
-import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
@@ -59,25 +56,23 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
         batchMoveProgressNotificationManager.buildAndPostNotification(
             BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
                 current = 0,
-                max = args.moveFiles.size
+                max = args.batchMoveBundles.size
             )
         )
-        args.moveFiles.zip(args.notificationResources).withIndex().forEach {
-            val (moveFile, notificationResources) = it.value
-            val moveResult = moveFile.moveTo(
+        args.batchMoveBundles.forEachIndexed { index, batchMoveBundle ->
+            val moveResult = batchMoveBundle.moveFile.moveTo(
                 destination = destinationDocumentFile,
                 context = context
             )
             batchMoveProgressNotificationManager.buildAndPostNotification(
                 BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
-                    current = it.index + 1,
-                    max = args.moveFiles.size
+                    current = index + 1,
+                    max = args.batchMoveBundles.size
                 )
             )
             moveResultListener.invoke(
                 moveResult = moveResult,
-                notificationResources = notificationResources,
-                showToast = false
+                moveBundle = batchMoveBundle.moveBundle(args.destination)
             )
             moveResults.add(moveResult)
         }
@@ -86,9 +81,8 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
 
     @Parcelize
     data class Args(
-        val moveFiles: List<MoveFile>,
+        val batchMoveBundles: List<BatchMoveBundle>,
         val destination: MoveDestination,
-        val notificationResources: List<NotificationResources>
     ) : Parcelable {
         companion object {
             const val EXTRA = "com.w2sv.navigator.extra.BatchMoveBroadcastReceiver.Args"

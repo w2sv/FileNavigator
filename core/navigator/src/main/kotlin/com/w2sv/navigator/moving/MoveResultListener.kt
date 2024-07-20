@@ -80,8 +80,6 @@ internal class MoveResultListener @Inject constructor(
                                 moveResult = MoveResult.Failure.InternalError
                             )
                         }
-
-                        else -> Unit  // TODO
                     }
                 }
             }
