@@ -5,6 +5,7 @@ import com.w2sv.domain.model.SourceType
 
 data class NavigatorConfig(
     val fileTypeConfigMap: Map<FileType, FileTypeConfig>,
+    val showBatchMoveNotification: Boolean,
     val disableOnLowBattery: Boolean,
     val startOnBoot: Boolean
 ) {
@@ -117,6 +118,7 @@ data class NavigatorConfig(
                     FileType.APK to nonMediaFileTypeConfig,
                     FileType.EBook to nonMediaFileTypeConfig
                 ),
+                showBatchMoveNotification = true,
                 disableOnLowBattery = false,
                 startOnBoot = false
             )

@@ -37,6 +37,7 @@ import com.w2sv.navigator.notifications.managers.abstrct.SummarizedMultiInstance
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import slimber.log.i
 import java.io.IOException
 import javax.inject.Inject
@@ -77,6 +78,11 @@ internal class NewMoveFileNotificationManager @Inject constructor(
     private val fileAndSourceTypeToLastMoveDestinationStateFlow =
         FileAndSourceTypeToLastMoveDestinationStateFlow(navigatorConfigDataSource, scope)
 
+    private val showBatchMoveNotification =
+        navigatorConfigDataSource.navigatorConfig
+            .map { it.showBatchMoveNotification }
+            .stateInWithSynchronousInitial(scope)
+
     private val activeNotificationBuilderArgs = mutableListOf<Args>()
 
     private fun buildAndPostNotification(args: Args) {
@@ -84,7 +90,7 @@ internal class NewMoveFileNotificationManager @Inject constructor(
 
         activeNotificationBuilderArgs.add(args)
 
-        if (activeNotificationCount >= 2) {
+        if (activeNotificationCount >= 2 && showBatchMoveNotification.value) {
             batchMoveNotificationManager.buildAndPostNotification(activeNotificationBuilderArgs)
         }
     }
@@ -93,7 +99,9 @@ internal class NewMoveFileNotificationManager @Inject constructor(
         super.cancelNotificationAndFreeResources(resources)
 
         activeNotificationBuilderArgs.removeAt(activeNotificationBuilderArgs.indexOfFirst { it.resources == resources })
-        batchMoveNotificationManager.cancelOrUpdate(activeNotificationBuilderArgs)
+        if (showBatchMoveNotification.value) {
+            batchMoveNotificationManager.cancelOrUpdate(activeNotificationBuilderArgs)
+        }
     }
 
     override fun getBuilder(args: Args): Builder =

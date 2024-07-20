@@ -23,6 +23,7 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
             fileTypeConfigMap = proto.fileTypeToConfigMap.entries.associate { (fileTypeIndex, configProto) ->
                 FileType.values[fileTypeIndex] to FileTypeConfigMapper.toExternal(configProto)
             },
+            showBatchMoveNotification = proto.showBatchMoveNotification,
             disableOnLowBattery = proto.disableOnLowBattery,
             startOnBoot = proto.startOnBoot
         )
@@ -37,6 +38,7 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
                     FileType.values.indexOf(fileType) to FileTypeConfigMapper.toProto(config)
                 }
             )
+            showBatchMoveNotification = external.showBatchMoveNotification
             disableOnLowBattery = external.disableOnLowBattery
             startOnBoot = external.startOnBoot
             hasBeenMigrated?.let {

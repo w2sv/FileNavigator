@@ -207,6 +207,10 @@ fun NavigatorConfigurationColumn(
                 text = stringResource(id = R.string.more),
             )
             MoreColumnItems(
+                showBatchMoveNotification = config.showBatchMoveNotification,
+                setShowBatchMoveNotification = { checked ->
+                    reversibleConfig.update { it.copy(showBatchMoveNotification = checked) }
+                },
                 disableOnLowBattery = config.disableOnLowBattery,
                 setDisableOnLowBattery = { checked ->
                     reversibleConfig.update { it.copy(disableOnLowBattery = checked) }
@@ -237,6 +241,8 @@ private val defaultSectionHeaderModifier = Modifier.padding(vertical = verticalP
 
 @Composable
 private fun MoreColumnItems(
+    showBatchMoveNotification: Boolean,
+    setShowBatchMoveNotification: (Boolean) -> Unit,
     disableOnLowBattery: Boolean,
     setDisableOnLowBattery: (Boolean) -> Unit,
     startOnBoot: Boolean,
@@ -247,6 +253,12 @@ private fun MoreColumnItems(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Spacing.VerticalItemRow)
     ) {
+        SwitchItemRow(
+            icon = { DefaultItemRowIcon(res = com.w2sv.core.navigator.R.drawable.ic_files_24) },
+            labelRes = R.string.show_batch_move_notification,
+            checked = showBatchMoveNotification,
+            onCheckedChange = setShowBatchMoveNotification
+        )
         SwitchItemRow(
             icon = { DefaultItemRowIcon(res = R.drawable.ic_battery_low_24) },
             labelRes = R.string.disable_on_low_battery,
