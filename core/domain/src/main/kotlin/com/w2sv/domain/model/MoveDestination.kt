@@ -18,6 +18,9 @@ value class MoveDestination(val documentUri: DocumentUri) : Parcelable {
     fun shortRepresentation(context: Context): String =
         "/${documentFile(context)!!.fileName(context)}"
 
+    override fun toString(): String =
+        documentUri.toString()
+
     companion object {
         fun parse(uriString: String): MoveDestination =
             MoveDestination(DocumentUri.parse(uriString))

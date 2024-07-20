@@ -37,6 +37,7 @@ import com.w2sv.navigator.notifications.managers.abstrct.SummarizedMultiInstance
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
+import slimber.log.i
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -66,7 +67,8 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 moveFile = moveFile,
                 quickMoveDestination = fileAndSourceTypeToLastMoveDestinationStateFlow.lastMoveDestination(
                     moveFile.fileAndSourceType
-                ),
+                )
+                    .also { i { "Retrieved quickMoveDestination: $it" } },
                 resources = getNotificationResources(pendingIntentRequestCodeCount = 4)
             )
         )
@@ -182,6 +184,8 @@ internal class NewMoveFileNotificationManager @Inject constructor(
                 // Add quickMoveAction if quickMoveDestination present.
                 args.quickMoveDestination
                     ?.let { lastMoveDestination ->
+                        i { "lastMoveDestination=$lastMoveDestination" }
+
                         // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
                         lastMoveDestination.documentFile(context)?.name?.let { directoryName ->
                             addAction(

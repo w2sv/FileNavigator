@@ -4,9 +4,9 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.Color
 import androidx.core.app.NotificationCompat
+import com.w2sv.androidutils.res.isNightModeActiveCompat
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.BatchMoveBroadcastReceiver
@@ -47,7 +47,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
                 setLargeIcon(
                     context.drawableBitmap(
                         drawable = R.drawable.ic_files_24,
-                        tint = if (context.isDarkModeEnabled) null else Color.BLACK
+                        tint = if (context.resources.configuration.isNightModeActiveCompat) null else Color.BLACK
                     )
                 )
                 setSilent(true)
@@ -137,6 +137,3 @@ internal class BatchMoveNotificationManager @Inject constructor(
         }
     }
 }
-
-private val Context.isDarkModeEnabled: Boolean
-    get() = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
