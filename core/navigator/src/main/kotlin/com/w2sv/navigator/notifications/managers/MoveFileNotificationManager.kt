@@ -58,7 +58,7 @@ internal class MoveFileNotificationManager @Inject constructor(
 ) {
     data class Args(
         val moveFile: MoveFile,
-        val quickMoveDestination: MoveDestination?,
+        val quickMoveDestinations: List<MoveDestination>,
         override val resources: NotificationResources
     ) : MultiInstanceNotificationManager.Args
 
@@ -66,17 +66,17 @@ internal class MoveFileNotificationManager @Inject constructor(
         buildAndPostNotification(
             Args(
                 moveFile = moveFile,
-                quickMoveDestination = fileAndSourceTypeToLastMoveDestinationStateFlow.lastMoveDestination(
+                quickMoveDestinations = fileAndSourceTypeToQuickMoveDestinationStateFlow.quickMoveDestinations(
                     moveFile.fileAndSourceType
                 )
                     .also { i { "Retrieved quickMoveDestination: $it" } },
-                resources = getNotificationResources(pendingIntentRequestCodeCount = 4)
+                resources = getNotificationResources(pendingIntentRequestCodeCount = 5)
             )
         )
     }
 
-    private val fileAndSourceTypeToLastMoveDestinationStateFlow =
-        FileAndSourceTypeToLastMoveDestinationStateFlow(navigatorConfigDataSource, scope)
+    private val fileAndSourceTypeToQuickMoveDestinationStateFlow =
+        FileAndSourceTypeToQuickMoveDestinationStateFlow(navigatorConfigDataSource, scope)
 
     private val showBatchMoveNotification =
         navigatorConfigDataSource.navigatorConfig
@@ -190,21 +190,20 @@ internal class MoveFileNotificationManager @Inject constructor(
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 
                 // Add quickMoveAction if quickMoveDestination present.
-                args.quickMoveDestination
-                    ?.let { lastMoveDestination ->
-                        i { "lastMoveDestination=$lastMoveDestination" }
+                args.quickMoveDestinations.forEach { quickMoveDestination ->
+                    i { "quickMoveDestinations=$quickMoveDestination" }
 
-                        // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
-                        lastMoveDestination.documentFile(context)?.name?.let { directoryName ->
-                            addAction(
-                                getQuickMoveAction(
-                                    requestCode = requestCodeIterator.next(),
-                                    lastMoveDestination = lastMoveDestination,
-                                    lastMoveDestinationDirectoryName = directoryName
-                                )
+                    // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
+                    quickMoveDestination.documentFile(context)?.name?.let { directoryName ->
+                        addAction(
+                            getQuickMoveAction(
+                                requestCode = requestCodeIterator.next(),
+                                destination = quickMoveDestination,
+                                directoryName = directoryName
                             )
-                        }
+                        )
                     }
+                }
 
                 setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
 
@@ -245,7 +244,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                         DestinationPickerActivity.makeRestartActivityIntent(
                             args = DestinationPickerActivity.Args.SingleFile(
                                 moveFile = args.moveFile,
-                                pickerStartDestination = args.quickMoveDestination?.documentUri,
+                                pickerStartDestination = args.quickMoveDestinations.firstOrNull()?.documentUri,
                                 notificationResources = args.resources,
                             ),
                             context = context
@@ -256,19 +255,19 @@ internal class MoveFileNotificationManager @Inject constructor(
 
             private fun getQuickMoveAction(
                 requestCode: Int,
-                lastMoveDestination: MoveDestination,
-                lastMoveDestinationDirectoryName: String
+                destination: MoveDestination,
+                directoryName: String
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
                     com.w2sv.core.common.R.drawable.ic_app_logo_24,
-                    context.getString(R.string.to, lastMoveDestinationDirectoryName),
+                    context.getString(R.string.to, directoryName),
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,
                         MoveBroadcastReceiver.getIntent(
                             moveBundle = MoveBundle(
                                 file = args.moveFile,
-                                destination = lastMoveDestination,
+                                destination = destination,
                                 mode = MoveMode.Quick(args.resources)
                             ),
                             context = context
@@ -292,18 +291,18 @@ internal class MoveFileNotificationManager @Inject constructor(
             .build()
 }
 
-private class FileAndSourceTypeToLastMoveDestinationStateFlow(
+private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val scope: CoroutineScope,
     private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<MoveDestination>>> = mutableMapOf()
 ) : Map<FileAndSourceType, StateFlow<List<MoveDestination>>> by mutableMap {
 
-    fun lastMoveDestination(fileAndSourceType: FileAndSourceType): MoveDestination? =
+    fun quickMoveDestinations(fileAndSourceType: FileAndSourceType): List<MoveDestination> =
         mutableMap.getOrPut(
             key = fileAndSourceType,
             defaultValue = {
                 navigatorConfigDataSource
-                    .lastMoveDestination(
+                    .quickMoveDestinations(
                         fileType = fileAndSourceType.fileType,
                         sourceType = fileAndSourceType.sourceType
                     )
@@ -311,5 +310,4 @@ private class FileAndSourceTypeToLastMoveDestinationStateFlow(
             }
         )
             .value
-            .firstOrNull()
 }

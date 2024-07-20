@@ -36,7 +36,7 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
         }
     }
 
-    override suspend fun saveLastMoveDestination(
+    override suspend fun saveQuickMoveDestination(
         fileType: FileType,
         sourceType: SourceType,
         destination: MoveDestination
@@ -49,13 +49,27 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
                         fileType,
                         sourceType
                     ) {
-                        it.copy(lastMoveDestinations = listOf(destination))
+                        it.copy(
+                            lastMoveDestinations = it.lastMoveDestinations.let { currentDestinations ->
+                                when (destination) {
+                                    currentDestinations.firstOrNull() -> currentDestinations
+                                    currentDestinations.getOrNull(1) -> currentDestinations.reversed()
+                                    else -> buildList {
+                                        add(destination)
+                                        currentDestinations.firstOrNull()
+                                            ?.let { firstCurrentElement ->
+                                                add(firstCurrentElement)
+                                            }
+                                    }
+                                }
+                            }
+                        )
                     }
             )
         }
     }
 
-    override suspend fun unsetLastMoveDestination(
+    override suspend fun unsetQuickMoveDestination(
         fileType: FileType,
         sourceType: SourceType,
     ) {
@@ -73,7 +87,7 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
         }
     }
 
-    override fun lastMoveDestination(
+    override fun quickMoveDestinations(
         fileType: FileType,
         sourceType: SourceType
     ): Flow<List<MoveDestination>> =

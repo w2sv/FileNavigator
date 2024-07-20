@@ -12,18 +12,18 @@ interface NavigatorConfigDataSource {
 
     suspend fun unsetAutoMoveConfig(fileType: FileType, sourceType: SourceType)
 
-    suspend fun saveLastMoveDestination(
+    suspend fun saveQuickMoveDestination(
         fileType: FileType,
         sourceType: SourceType,
         destination: MoveDestination
     )
 
-    suspend fun unsetLastMoveDestination(
+    suspend fun unsetQuickMoveDestination(
         fileType: FileType,
         sourceType: SourceType,
     )
 
-    fun lastMoveDestination(
+    fun quickMoveDestinations(
         fileType: FileType,
         sourceType: SourceType
     ): Flow<List<MoveDestination>>

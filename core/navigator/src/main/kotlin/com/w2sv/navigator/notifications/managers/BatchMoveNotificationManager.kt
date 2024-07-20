@@ -52,7 +52,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
                 )
                 setSilent(true)
                 addAction(getMoveFilesAction())
-                addQuickMoveAction()
+                addQuickMoveActions()
                 return super.build()
             }
 
@@ -79,13 +79,15 @@ internal class BatchMoveNotificationManager @Inject constructor(
                     )
                 )
 
-            private fun addQuickMoveAction() {
+            private fun addQuickMoveActions() {
                 val occurrenceOrderedQuickMoveDestinations =
                     args
-                        .mapNotNull { it.quickMoveDestination }
+                        .map { it.quickMoveDestinations }
+                        .flatten()
                         .groupingBy { it }
                         .eachCount().entries.sortedByDescending { it.value }
                         .map { it.key }
+                var addedQuickMoveActions = 0
                 for (moveDestination in occurrenceOrderedQuickMoveDestinations) {
                     // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
                     moveDestination.documentFile(context)?.name?.let { directoryName ->
@@ -93,22 +95,28 @@ internal class BatchMoveNotificationManager @Inject constructor(
                             getQuickMoveAction(
                                 destination = moveDestination,
                                 destinationDirectoryName = directoryName,
+                                requestCode = PendingIntentRequestCode.QuickMoveAction.ordinal + addedQuickMoveActions
                             )
                         )
+                        addedQuickMoveActions += 1
+                        if (addedQuickMoveActions == 2) {
+                            return
+                        }
                     }
                 }
             }
 
             private fun getQuickMoveAction(
                 destination: MoveDestination,
-                destinationDirectoryName: String
+                destinationDirectoryName: String,
+                requestCode: Int
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
                     com.w2sv.core.common.R.drawable.ic_app_logo_24,
                     context.getString(R.string.to, destinationDirectoryName),
                     PendingIntent.getBroadcast(
                         context,
-                        PendingIntentRequestCode.QuickMoveAction.ordinal,
+                        requestCode,
                         BatchMoveBroadcastReceiver.getIntent(
                             args = BatchMoveBroadcastReceiver.Args(
                                 batchMoveBundles = args.map {  // TODO: optimizable?

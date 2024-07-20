@@ -98,7 +98,7 @@ internal class MoveResultListener @Inject constructor(
         }
 
         scope.launch {
-            navigatorConfigDataSource.unsetLastMoveDestination(
+            navigatorConfigDataSource.unsetQuickMoveDestination(
                 fileType = moveBundle.file.fileType,
                 sourceType = moveBundle.file.sourceType
             )
@@ -143,7 +143,7 @@ internal class MoveResultListener @Inject constructor(
         if (moveBundle.mode.updateLastMoveDestinations) {
             scope.launch {
                 i { "Saving last move destination" }
-                navigatorConfigDataSource.saveLastMoveDestination(
+                navigatorConfigDataSource.saveQuickMoveDestination(
                     fileType = moveBundle.file.fileType,
                     sourceType = moveBundle.file.sourceType,
                     destination = moveBundle.destination
