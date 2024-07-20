@@ -23,7 +23,7 @@ import javax.inject.Inject
 internal class BatchMoveNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
-) : SingleInstanceNotificationManager<List<NewMoveFileNotificationManager.Args>>(
+) : SingleInstanceNotificationManager<Collection<MoveFileNotificationManager.Args>>(
     appNotificationChannel = AppNotificationChannel.NewNavigatableFile,
     notificationManager = notificationManager,
     context = context,
@@ -34,7 +34,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
         QuickMoveAction
     }
 
-    override fun getBuilder(args: List<NewMoveFileNotificationManager.Args>): Builder =
+    override fun getBuilder(args: Collection<MoveFileNotificationManager.Args>): Builder =
         object : Builder() {
             override fun build(): Notification {
                 setGroup(notificationChannel.id)
@@ -65,7 +65,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
                         PendingIntentRequestCode.MoveAction.ordinal,
                         DestinationPickerActivity.makeRestartActivityIntent(
                             DestinationPickerActivity.Args.FileBatch(
-                                moveFilesWithNotificationResources = args.map {
+                                moveFilesWithNotificationResources = args.map {  // TODO: optimizable?
                                     MoveFileWithNotificationResources(
                                         it.moveFile,
                                         it.resources
@@ -111,7 +111,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
                         PendingIntentRequestCode.QuickMoveAction.ordinal,
                         BatchMoveBroadcastReceiver.getIntent(
                             args = BatchMoveBroadcastReceiver.Args(
-                                batchMoveBundles = args.map {
+                                batchMoveBundles = args.map {  // TODO: optimizable?
                                     BatchMoveBundle(
                                         moveFile = it.moveFile,
                                         moveMode = MoveMode.Quick(
@@ -129,7 +129,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
                 )
         }
 
-    fun cancelOrUpdate(newMoveFileNotificationBuilderArgs: List<NewMoveFileNotificationManager.Args>) {
+    fun cancelOrUpdate(newMoveFileNotificationBuilderArgs: Collection<MoveFileNotificationManager.Args>) {
         if (newMoveFileNotificationBuilderArgs.size <= 1) {
             cancelNotification()
         } else {

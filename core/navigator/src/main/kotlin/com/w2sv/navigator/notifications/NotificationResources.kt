@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
-import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
@@ -31,14 +31,14 @@ internal data class NotificationResources(
     class CleanupBroadcastReceiver : BroadcastReceiver() {
 
         @Inject
-        lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
+        lateinit var moveFileNotificationManager: MoveFileNotificationManager
 
         @Inject
         lateinit var autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager
 
         private val notificationManagers by lazy {
             listOf(
-                newMoveFileNotificationManager, autoMoveDestinationInvalidNotificationManager
+                moveFileNotificationManager, autoMoveDestinationInvalidNotificationManager
             )
         }
 

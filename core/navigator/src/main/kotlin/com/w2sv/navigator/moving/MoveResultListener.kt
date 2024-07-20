@@ -18,7 +18,7 @@ import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
-import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -29,7 +29,7 @@ import javax.inject.Inject
 internal class MoveResultListener @Inject constructor(
     private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
-    private val newMoveFileNotificationManager: NewMoveFileNotificationManager,
+    private val moveFileNotificationManager: MoveFileNotificationManager,
     private val autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager,
     @GlobalScope(AppDispatcher.IO) private val scope: CoroutineScope,
     @ApplicationContext private val context: Context
@@ -103,7 +103,7 @@ internal class MoveResultListener @Inject constructor(
                 sourceType = moveBundle.file.sourceType
             )
 
-            newMoveFileNotificationManager.buildAndPostNotification(moveBundle.file)
+            moveFileNotificationManager.buildAndPostNotification(moveBundle.file)
         }
     }
 
@@ -115,7 +115,7 @@ internal class MoveResultListener @Inject constructor(
             )
             FileNavigator.reregisterFileObservers(context)
         }
-        newMoveFileNotificationManager.buildAndPostNotification(moveBundle.file)
+        moveFileNotificationManager.buildAndPostNotification(moveBundle.file)
         autoMoveDestinationInvalidNotificationManager.buildAndPostNotification(
             fileAndSourceType = moveBundle.file.fileAndSourceType,
             autoMoveDestination = moveBundle.destination

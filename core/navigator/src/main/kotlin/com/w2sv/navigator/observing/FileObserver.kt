@@ -16,7 +16,7 @@ import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
-import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.FileChangeOperation
 import com.w2sv.navigator.observing.model.MediaStoreData
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
@@ -32,7 +32,7 @@ private const val CANCEL_PERIOD_MILLIS = 300L
 
 internal abstract class FileObserver(
     private val context: Context,
-    private val newMoveFileNotificationManager: NewMoveFileNotificationManager,
+    private val moveFileNotificationManager: MoveFileNotificationManager,
     private val mediaStoreDataProducer: MediaStoreDataProducer,
     private val fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
     handler: Handler
@@ -115,7 +115,7 @@ internal abstract class FileObserver(
                     procedureJob = scope.launchDelayed(CANCEL_PERIOD_MILLIS) {
                         when (enabledAutoMoveDestination) {
                             null -> {
-                                newMoveFileNotificationManager.buildAndPostNotification(moveFile)
+                                moveFileNotificationManager.buildAndPostNotification(moveFile)
                             }
 
                             else -> {

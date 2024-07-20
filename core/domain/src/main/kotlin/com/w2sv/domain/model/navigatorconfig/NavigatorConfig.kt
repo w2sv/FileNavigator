@@ -66,6 +66,7 @@ data class NavigatorConfig(
         copyWithAlteredFileConfig(
             fileType = fileType,
         ) {
+            @Suppress("SimplifyNestedEachInScopeFunction")
             it.copy(
                 sourceTypeConfigMap = it.sourceTypeConfigMap.toMutableMap()
                     .apply {

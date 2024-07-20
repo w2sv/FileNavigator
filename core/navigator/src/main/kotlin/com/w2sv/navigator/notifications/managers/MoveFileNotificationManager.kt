@@ -44,13 +44,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class NewMoveFileNotificationManager @Inject constructor(
+internal class MoveFileNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
     navigatorConfigDataSource: NavigatorConfigDataSource,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
     private val batchMoveNotificationManager: BatchMoveNotificationManager,
-) : SummarizedMultiInstanceNotificationManager<NewMoveFileNotificationManager.Args>(
+) : SummarizedMultiInstanceNotificationManager<MoveFileNotificationManager.Args>(
     appNotificationChannel = AppNotificationChannel.NewNavigatableFile,
     notificationManager = notificationManager,
     context = context,
@@ -83,24 +83,24 @@ internal class NewMoveFileNotificationManager @Inject constructor(
             .map { it.showBatchMoveNotification }
             .stateInWithSynchronousInitial(scope)
 
-    private val activeNotificationBuilderArgs = mutableListOf<Args>()
+    private val notificationIdToArgs = mutableMapOf<Int, Args>()
 
     private fun buildAndPostNotification(args: Args) {
         super.buildAndPost(args)
 
-        activeNotificationBuilderArgs.add(args)
+        notificationIdToArgs[args.resources.id] = args
 
         if (activeNotificationCount >= 2 && showBatchMoveNotification.value) {
-            batchMoveNotificationManager.buildAndPostNotification(activeNotificationBuilderArgs)
+            batchMoveNotificationManager.buildAndPostNotification(notificationIdToArgs.values)
         }
     }
 
     override fun cancelNotificationAndFreeResources(resources: NotificationResources) {
         super.cancelNotificationAndFreeResources(resources)
 
-        activeNotificationBuilderArgs.removeAt(activeNotificationBuilderArgs.indexOfFirst { it.resources == resources })
+        notificationIdToArgs.remove(resources.id)
         if (showBatchMoveNotification.value) {
-            batchMoveNotificationManager.cancelOrUpdate(activeNotificationBuilderArgs)
+            batchMoveNotificationManager.cancelOrUpdate(notificationIdToArgs.values)
         }
     }
 
