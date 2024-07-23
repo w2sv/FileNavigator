@@ -32,7 +32,7 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
 
     override suspend fun saveNavigatorConfig(config: NavigatorConfig) {
         navigatorConfigProtoDataStore.updateData {
-            NavigatorConfigMapper.toProto(config, it.hasBeenMigrated)
+            NavigatorConfigMapper.toProto(config)
         }
     }
 

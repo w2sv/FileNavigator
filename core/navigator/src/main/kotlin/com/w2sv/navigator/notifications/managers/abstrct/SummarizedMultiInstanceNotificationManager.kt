@@ -7,6 +7,7 @@ import androidx.annotation.CallSuper
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.NotificationResources
+import slimber.log.i
 
 /**
  * Manager for multi-instance notifications that post a summary.
@@ -33,6 +34,7 @@ internal abstract class SummarizedMultiInstanceNotificationManager<A : MultiInst
         super.cancelNotificationAndFreeResources(resources)
 
         if (activeNotificationCount == 0) {
+            i { "Cancelling summary" }
             notificationManager.cancel(summaryNotificationId)
         } else {
             // Update notification

@@ -7,7 +7,8 @@ data class NavigatorConfig(
     val fileTypeConfigMap: Map<FileType, FileTypeConfig>,
     val showBatchMoveNotification: Boolean,
     val disableOnLowBattery: Boolean,
-    val startOnBoot: Boolean
+    val startOnBoot: Boolean,
+    val hasBeenMigrated: Boolean
 ) {
     val enabledFileTypes: List<FileType> by lazy {
         fileTypeConfigMap.run { keys.filter { getValue(it).enabled } }
@@ -121,7 +122,8 @@ data class NavigatorConfig(
                 ),
                 showBatchMoveNotification = true,
                 disableOnLowBattery = false,
-                startOnBoot = false
+                startOnBoot = false,
+                hasBeenMigrated = false
             )
         }
     }

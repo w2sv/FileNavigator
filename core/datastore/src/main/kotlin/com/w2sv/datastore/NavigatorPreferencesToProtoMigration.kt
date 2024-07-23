@@ -22,9 +22,8 @@ internal class NavigatorPreferencesToProtoMigration(
     private val preferencesDataStore: DataStore<Preferences>
 ) : DataMigration<NavigatorConfigProto> {
 
-    override suspend fun shouldMigrate(currentData: NavigatorConfigProto): Boolean {
-        return !currentData.hasBeenMigrated.also { i { "hasBeenMigrated=$it" } }
-    }
+    override suspend fun shouldMigrate(currentData: NavigatorConfigProto): Boolean =
+        !currentData.hasBeenMigrated.also { i { "hasBeenMigrated=$it" } }
 
     override suspend fun cleanUp() {}
 

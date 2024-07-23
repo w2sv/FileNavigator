@@ -6,11 +6,16 @@ import android.content.Intent
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
 import com.w2sv.androidutils.os.getParcelableCompat
+import com.w2sv.common.di.AppDispatcher
+import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.model.BatchMoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -23,7 +28,18 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
     @Inject
     lateinit var batchMoveProgressNotificationManager: BatchMoveProgressNotificationManager
 
+    @Inject
+    @GlobalScope(AppDispatcher.Default)
+    lateinit var scope: CoroutineScope
+
+    private var batchMoveJob: Job? = null
+
     override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action == ACTION_CANCEL_BATCH_MOVE) {
+            batchMoveJob?.cancel()
+            return
+        }
+
         val args = intent.getParcelableCompat<Args>(Args.EXTRA)!!
 
         when (val preMoveCheckResult = sharedPreMoveChecks(args.destination, context)) {
@@ -32,17 +48,19 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
             }
 
             is PreMoveCheckResult.Success -> {
-                val moveResults = batchMove(
-                    args = args,
-                    destinationDocumentFile = preMoveCheckResult.documentFile,
-                    context = context
-                )
-                batchMoveProgressNotificationManager.buildAndPostNotification(
-                    BatchMoveProgressNotificationManager.BuilderArgs.MoveResults(
-                        moveResults = moveResults,
-                        destination = args.destination
+                batchMoveJob = scope.launch {
+                    val moveResults = batchMove(
+                        args = args,
+                        destinationDocumentFile = preMoveCheckResult.documentFile,
+                        context = context
                     )
-                )
+                    batchMoveProgressNotificationManager.buildAndPostNotification(
+                        BatchMoveProgressNotificationManager.BuilderArgs.MoveResults(
+                            moveResults = moveResults,
+                            destination = args.destination
+                        )
+                    )
+                }
             }
         }
     }
@@ -101,6 +119,13 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
                 )
             )
         }
+
+        private const val ACTION_CANCEL_BATCH_MOVE =
+            "com.w2sv.filenavigator.action.CANCEL_BATCH_MOVE"
+
+        fun cancelBatchMoveIntent(context: Context): Intent =
+            Intent(context, BatchMoveBroadcastReceiver::class.java)
+                .setAction(ACTION_CANCEL_BATCH_MOVE)
 
         fun getIntent(
             args: Args,
