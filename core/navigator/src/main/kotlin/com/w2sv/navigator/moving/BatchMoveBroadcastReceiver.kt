@@ -15,11 +15,13 @@ import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationMa
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @AndroidEntryPoint
 internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
@@ -30,18 +32,19 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
     @Inject
     lateinit var batchMoveProgressNotificationManager: BatchMoveProgressNotificationManager
 
+    @Singleton
+    class JobHolder @Inject constructor() {
+        var job: Job? = null
+    }
+
+    @Inject
+    lateinit var jobHolder: JobHolder
+
     @Inject
     @GlobalScope(AppDispatcher.Default)
     lateinit var scope: CoroutineScope
 
-    private var batchMoveJob: Job? = null
-
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == ACTION_CANCEL_BATCH_MOVE) {
-            batchMoveJob?.cancel()
-            return
-        }
-
         val args = intent.getParcelableCompat<Args>(Args.EXTRA)!!
 
         when (val preMoveCheckResult = sharedPreMoveChecks(args.destination, context)) {
@@ -50,18 +53,42 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
             }
 
             is PreMoveCheckResult.Success -> {
-                batchMoveJob = scope.launch {
-                    val moveResults = batchMove(
-                        args = args,
-                        destinationDocumentFile = preMoveCheckResult.documentFile,
-                        context = context
-                    )
+                jobHolder.job = scope.launch {
                     batchMoveProgressNotificationManager.buildAndPostNotification(
-                        BatchMoveProgressNotificationManager.BuilderArgs.MoveResults(
-                            moveResults = moveResults,
-                            destination = args.destination
+                        BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
+                            current = 0,
+                            max = args.batchMoveBundles.size
                         )
                     )
+                    val moveResults = mutableListOf<MoveResult>()
+                    try {
+                        args.batchMoveBundles.forEachIndexed { index, batchMoveBundle ->
+                            if (isActive) {
+                                val moveResult = batchMoveBundle.moveFile.moveTo(
+                                    destination = preMoveCheckResult.documentFile,
+                                    context = context
+                                )
+                                batchMoveProgressNotificationManager.buildAndPostNotification(
+                                    BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
+                                        current = index + 1,
+                                        max = args.batchMoveBundles.size
+                                    )
+                                )
+                                moveResultListener.invoke(
+                                    moveResult = moveResult,
+                                    moveBundle = batchMoveBundle.moveBundle(args.destination)
+                                )
+                                moveResults.add(moveResult)
+                            }
+                        }
+                    } finally {
+                        batchMoveProgressNotificationManager.buildAndPostNotification(
+                            BatchMoveProgressNotificationManager.BuilderArgs.MoveResults(
+                                moveResults = moveResults,
+                                destination = args.destination
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -71,34 +98,24 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
         args: Args,
         destinationDocumentFile: DocumentFile,
         context: Context
-    ): List<MoveResult> = coroutineScope {
-        val moveResults = mutableListOf<MoveResult>()
-        batchMoveProgressNotificationManager.buildAndPostNotification(
-            BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
-                current = 0,
-                max = args.batchMoveBundles.size
-            )
-        )
+    ): Flow<MoveResult> = flow {
         args.batchMoveBundles.forEachIndexed { index, batchMoveBundle ->
-            if (isActive) {  // Make cancellable
-                val moveResult = batchMoveBundle.moveFile.moveTo(
-                    destination = destinationDocumentFile,
-                    context = context
+            val moveResult = batchMoveBundle.moveFile.moveTo(
+                destination = destinationDocumentFile,
+                context = context
+            )
+            batchMoveProgressNotificationManager.buildAndPostNotification(
+                BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
+                    current = index + 1,
+                    max = args.batchMoveBundles.size
                 )
-                batchMoveProgressNotificationManager.buildAndPostNotification(
-                    BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
-                        current = index + 1,
-                        max = args.batchMoveBundles.size
-                    )
-                )
-                moveResultListener.invoke(
-                    moveResult = moveResult,
-                    moveBundle = batchMoveBundle.moveBundle(args.destination)
-                )
-                moveResults.add(moveResult)
-            }
+            )
+            moveResultListener.invoke(
+                moveResult = moveResult,
+                moveBundle = batchMoveBundle.moveBundle(args.destination)
+            )
+            emit(moveResult)
         }
-        moveResults
     }
 
     @Parcelize
@@ -123,13 +140,6 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
                 )
             )
         }
-
-        private const val ACTION_CANCEL_BATCH_MOVE =
-            "com.w2sv.filenavigator.action.CANCEL_BATCH_MOVE"
-
-        fun cancelBatchMoveIntent(context: Context): Intent =
-            Intent(context, BatchMoveBroadcastReceiver::class.java)
-                .setAction(ACTION_CANCEL_BATCH_MOVE)
 
         fun getIntent(
             args: Args,

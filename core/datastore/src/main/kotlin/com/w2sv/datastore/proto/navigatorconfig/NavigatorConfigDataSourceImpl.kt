@@ -2,7 +2,6 @@ package com.w2sv.datastore.proto.navigatorconfig
 
 import androidx.datastore.core.DataStore
 import com.w2sv.datastore.NavigatorConfigProto
-import com.w2sv.datastore.copy
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.SourceType

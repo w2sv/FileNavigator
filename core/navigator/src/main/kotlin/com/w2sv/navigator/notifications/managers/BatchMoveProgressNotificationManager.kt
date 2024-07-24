@@ -9,7 +9,7 @@ import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.MoveDestination
-import com.w2sv.navigator.moving.BatchMoveBroadcastReceiver
+import com.w2sv.navigator.moving.CancelBatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.AppNotificationId
@@ -52,6 +52,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                             )
                         )
                         setSilent(true)
+                        setOngoing(true)
                         setProgress(args.max, args.current, false)
                         addAction(
                             NotificationCompat.Action(
@@ -60,7 +61,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                                 PendingIntent.getBroadcast(
                                     context.applicationContext,
                                     0,
-                                    BatchMoveBroadcastReceiver.cancelBatchMoveIntent(context.applicationContext),
+                                    CancelBatchMoveBroadcastReceiver.intent(context.applicationContext),
                                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
                                 )
                             )
@@ -113,10 +114,10 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                                                 moveResultToCount.getValue(moveFailureType),
                                                 moveResultToCount.getValue(moveFailureType),
                                                 when (moveFailureType) {
-                                                    MoveResult.Failure.InternalError::class.java -> "internal error"
-                                                    MoveResult.Failure.MoveFileNotFound::class.java -> "file not found"
-                                                    MoveResult.Failure.FileAlreadyAtDestination::class.java -> "file already at destination"
-                                                    MoveResult.Failure.NotEnoughSpaceOnDestination::class.java -> "not enough space on destination"
+                                                    MoveResult.Failure.InternalError -> "internal error"
+                                                    MoveResult.Failure.MoveFileNotFound -> "file not found"
+                                                    MoveResult.Failure.FileAlreadyAtDestination -> "file already at destination"
+                                                    MoveResult.Failure.NotEnoughSpaceOnDestination -> "not enough space on destination"
                                                     else -> ""
                                                 }
                                             )
