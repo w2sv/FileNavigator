@@ -15,6 +15,8 @@ import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationMa
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -65,11 +67,11 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun batchMove(
+    private suspend fun batchMove(
         args: Args,
         destinationDocumentFile: DocumentFile,
         context: Context
-    ): List<MoveResult> {
+    ): List<MoveResult> = coroutineScope {
         val moveResults = mutableListOf<MoveResult>()
         batchMoveProgressNotificationManager.buildAndPostNotification(
             BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
@@ -78,23 +80,25 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
             )
         )
         args.batchMoveBundles.forEachIndexed { index, batchMoveBundle ->
-            val moveResult = batchMoveBundle.moveFile.moveTo(
-                destination = destinationDocumentFile,
-                context = context
-            )
-            batchMoveProgressNotificationManager.buildAndPostNotification(
-                BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
-                    current = index + 1,
-                    max = args.batchMoveBundles.size
+            if (isActive) {  // Make cancellable
+                val moveResult = batchMoveBundle.moveFile.moveTo(
+                    destination = destinationDocumentFile,
+                    context = context
                 )
-            )
-            moveResultListener.invoke(
-                moveResult = moveResult,
-                moveBundle = batchMoveBundle.moveBundle(args.destination)
-            )
-            moveResults.add(moveResult)
+                batchMoveProgressNotificationManager.buildAndPostNotification(
+                    BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
+                        current = index + 1,
+                        max = args.batchMoveBundles.size
+                    )
+                )
+                moveResultListener.invoke(
+                    moveResult = moveResult,
+                    moveBundle = batchMoveBundle.moveBundle(args.destination)
+                )
+                moveResults.add(moveResult)
+            }
         }
-        return moveResults
+        moveResults
     }
 
     @Parcelize

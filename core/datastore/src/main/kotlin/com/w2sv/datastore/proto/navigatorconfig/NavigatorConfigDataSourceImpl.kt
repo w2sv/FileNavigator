@@ -2,6 +2,7 @@ package com.w2sv.datastore.proto.navigatorconfig
 
 import androidx.datastore.core.DataStore
 import com.w2sv.datastore.NavigatorConfigProto
+import com.w2sv.datastore.copy
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.SourceType
@@ -21,18 +22,23 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
         navigatorConfigProtoDataStore.data.map { NavigatorConfigMapper.toExternal(it) }
 
     override suspend fun unsetAutoMoveConfig(fileType: FileType, sourceType: SourceType) {
-        navigatorConfigProtoDataStore.updateData {
-            NavigatorConfigMapper.toExternal(it)
+        navigatorConfigProtoDataStore.updateData { configProto ->
+            NavigatorConfigMapper.toExternal(configProto)
                 .copyWithAlteredSourceAutoMoveConfig(fileType, sourceType) {
                     AutoMoveConfig.Empty
                 }
-                .let { external -> NavigatorConfigMapper.toProto(external) }
+                .let { external ->
+                    NavigatorConfigMapper.toProto(
+                        external = external,
+                        hasBeenMigrated = configProto.hasBeenMigrated
+                    )
+                }
         }
     }
 
     override suspend fun saveNavigatorConfig(config: NavigatorConfig) {
         navigatorConfigProtoDataStore.updateData {
-            NavigatorConfigMapper.toProto(config)
+            NavigatorConfigMapper.toProto(external = config, hasBeenMigrated = it.hasBeenMigrated)
         }
     }
 
@@ -64,7 +70,8 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
                                 }
                             }
                         )
-                    }
+                    },
+                hasBeenMigrated = configProto.hasBeenMigrated
             )
         }
     }
@@ -75,14 +82,15 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
     ) {
         navigatorConfigProtoDataStore.updateData { configProto ->
             NavigatorConfigMapper.toProto(
-                NavigatorConfigMapper
+                external = NavigatorConfigMapper
                     .toExternal(configProto)
                     .copyWithAlteredSourceConfig(
                         fileType,
                         sourceType
                     ) {
                         it.copy(lastMoveDestinations = listOf())
-                    }
+                    },
+                hasBeenMigrated = configProto.hasBeenMigrated
             )
         }
     }

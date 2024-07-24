@@ -43,7 +43,6 @@ object DataStoreModule {
             },
             migrations = listOf(
                 NavigatorPreferencesToProtoMigration(
-                    context = context,
                     preferencesDataStore = preferencesDataStore
                 )
             )

@@ -1,6 +1,5 @@
 package com.w2sv.datastore
 
-import android.content.Context
 import androidx.datastore.core.DataMigration
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -11,53 +10,47 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
-import com.w2sv.kotlinutils.coroutines.firstBlocking
-import com.w2sv.kotlinutils.time.durationToNow
-import com.w2sv.kotlinutils.time.localDateTimeFromMilliSecondsUnixTimestamp
 import com.w2sv.kotlinutils.update
+import kotlinx.coroutines.flow.first
 import slimber.log.i
 
 internal class NavigatorPreferencesToProtoMigration(
-    private val context: Context,
     private val preferencesDataStore: DataStore<Preferences>
 ) : DataMigration<NavigatorConfigProto> {
 
     override suspend fun shouldMigrate(currentData: NavigatorConfigProto): Boolean =
         !currentData.hasBeenMigrated.also { i { "hasBeenMigrated=$it" } }
 
-    override suspend fun cleanUp() {}
+    private lateinit var presentPreMigrationKeys: List<Preferences.Key<*>>
 
     override suspend fun migrate(currentData: NavigatorConfigProto): NavigatorConfigProto {
         i { "Migrating" }
 
-        return if (doFullMigration) {
-            fullMigration(preferencesDataStore.data.firstBlocking())
+        val preferences = preferencesDataStore.data.first()
+
+        presentPreMigrationKeys = PreMigrationNavigatorPreferencesKey
+            .keys()
+            .filter { key -> preferences.contains(key) }
+            .toList()
+            .also { i { "presentPreMigrationKeys: $it" } }
+
+        return if (presentPreMigrationKeys.isNotEmpty()) {
+            performMigration(preferences)
         } else {
             currentData
         }
-            .toBuilder().setHasBeenMigrated(true).build()
+            .toBuilder()
+            .setHasBeenMigrated(true)
+            .build()
     }
 
-    private val doFullMigration by lazy {
-        localDateTimeFromMilliSecondsUnixTimestamp(
-            context.packageManager.getPackageInfo(
-                context.packageName,
-                0
-            )
-                .firstInstallTime
-        )
-            .durationToNow()
-            .toMinutes()
-            .also { i { "Minutes delta: $it" } } > 5
-    }
-
-    private fun fullMigration(preferences: Preferences): NavigatorConfigProto {
+    private fun performMigration(preferences: Preferences): NavigatorConfigProto {
         i { "Preferences content: ${preferences.asMap()}" }
 
         return NavigatorConfigMapper.toProto(
             NavigatorConfig.default.copy(
                 disableOnLowBattery = preferences.getOrDefault(
-                    booleanPreferencesKey(PreMigrationNavigatorPreferencesKey.DISABLE_ON_LOW_BATTERY),
+                    PreMigrationNavigatorPreferencesKey.disableOnLowBattery,
                     true
                 ),
                 fileTypeConfigMap = NavigatorConfig.default.fileTypeConfigMap.toMutableMap().apply {
@@ -107,11 +100,52 @@ internal class NavigatorPreferencesToProtoMigration(
                 .also { i { "Migrated: $it" } }
         )
     }
+
+    override suspend fun cleanUp() {
+        preferencesDataStore.updateData {
+            it
+                .toMutablePreferences()
+                .apply {
+                    presentPreMigrationKeys.forEach { key -> remove(key) }
+                }
+        }
+
+        i { "Preferences post cleanUp: ${preferencesDataStore.data.first().asMap()}" }
+    }
 }
 
 private object PreMigrationNavigatorPreferencesKey {
 
-    const val DISABLE_ON_LOW_BATTERY = "disableNavigatorOnLowBattery"
+    val disableOnLowBattery = booleanPreferencesKey("disableNavigatorOnLowBattery")
+
+    fun keys(): Sequence<Preferences.Key<*>> =
+        sequence {
+            yield(disableOnLowBattery)
+            yieldAll(
+                FileType
+                    .values
+                    .flatMap { it.associatedPreMigrationKeys() }
+            )
+        }
+
+    private fun FileType.associatedPreMigrationKeys(): Sequence<Preferences.Key<*>> = sequence {
+        yield(fileTypeEnabled(this@associatedPreMigrationKeys))
+
+        this@associatedPreMigrationKeys.sourceTypes.forEach { sourceType ->
+            yield(
+                sourceTypeEnabled(
+                    this@associatedPreMigrationKeys,
+                    sourceType
+                )
+            )
+            yield(
+                lastMoveDestination(
+                    this@associatedPreMigrationKeys,
+                    sourceType
+                )
+            )
+        }
+    }
 
     fun fileTypeEnabled(fileType: FileType): Preferences.Key<Boolean> =
         booleanPreferencesKey(fileType.preferencesKeyNameIdentifier)

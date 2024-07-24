@@ -26,10 +26,12 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
             showBatchMoveNotification = proto.showBatchMoveNotification,
             disableOnLowBattery = proto.disableOnLowBattery,
             startOnBoot = proto.startOnBoot,
-            hasBeenMigrated = proto.hasBeenMigrated
         )
 
     override fun toProto(external: NavigatorConfig): NavigatorConfigProto =
+        toProto(external, false)
+
+    fun toProto(external: NavigatorConfig, hasBeenMigrated: Boolean): NavigatorConfigProto =
         navigatorConfigProto {
             fileTypeToConfig.putAll(
                 external.fileTypeConfigMap.entries.associate { (fileType, config) ->
@@ -39,7 +41,7 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
             showBatchMoveNotification = external.showBatchMoveNotification
             disableOnLowBattery = external.disableOnLowBattery
             startOnBoot = external.startOnBoot
-            hasBeenMigrated = external.hasBeenMigrated
+            this.hasBeenMigrated = hasBeenMigrated
         }
 }
 
