@@ -4,7 +4,11 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.res.Resources
+import androidx.annotation.IntRange
+import androidx.annotation.PluralsRes
 import androidx.core.app.NotificationCompat
+import androidx.core.text.HtmlCompat
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.core.navigator.R
@@ -93,40 +97,49 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                         destination: MoveDestination
                     ): CharSequence {
                         val moveResultToCount = moveResults.groupingBy { it }.eachCount()
+                        val resultRowPrefix = if (moveResultToCount.size >= 2) "• " else null
                         return buildSpannedString {
-                            moveResultToCount[MoveResult.Success]?.let {
-                                append(context.getString(R.string.successfully_moved_files_to, it))
+                            moveResultToCount[MoveResult.Success]?.let { moveSuccessCount ->
+                                resultRowPrefix?.let { append(it) }
+                                append(
+                                    context.resources.getQuantityString(
+                                        R.plurals.successfully_moved_files_to,
+                                        moveSuccessCount,
+                                        moveSuccessCount
+                                    )
+                                )
                                 bold {
                                     append(
                                         destination.shortRepresentation(context)
                                     )
                                 }
                             }
-                            if (moveResultToCount.keys.any { it != MoveResult.Success }) {
-                                moveResultToCount.keys.filter { it != MoveResult.Success }
-                                    .forEachIndexed { index, moveFailureType ->
-                                        if (index != 0 || moveResultToCount.containsKey(MoveResult.Success)) {
-                                            append("\n")
-                                        }
-                                        append(
-                                            context.resources.getQuantityString(
-                                                R.plurals.couldn_t_move_files_due_to,
-                                                moveResultToCount.getValue(moveFailureType),
-                                                moveResultToCount.getValue(moveFailureType),
-                                                when (moveFailureType) {
-                                                    MoveResult.Failure.InternalError -> "internal error"
-                                                    MoveResult.Failure.MoveFileNotFound -> "file not found"
-                                                    MoveResult.Failure.FileAlreadyAtDestination -> "file already at destination"
-                                                    MoveResult.Failure.NotEnoughSpaceOnDestination -> "not enough space on destination"
-                                                    else -> ""
-                                                }
-                                            )
-                                        )
+                            moveResultToCount.keys
+                                .filter { it != MoveResult.Success }
+                                .forEachIndexed { index, moveFailureType ->
+                                    if (index != 0 || moveResultToCount.containsKey(MoveResult.Success)) {
+                                        append("\n")
                                     }
-                            }
+                                    resultRowPrefix?.let { append(it) }
+                                    append(
+                                        context.resources.getQuantityText(
+                                            R.plurals.couldn_t_move_files_due_to,
+                                            moveResultToCount.getValue(moveFailureType),
+                                            moveResultToCount.getValue(moveFailureType),
+                                            moveFailureType.javaClass.simpleName
+                                        )
+                                    )
+                                }
                         }
                     }
                 }
             }
         }
 }
+
+private fun Resources.getQuantityText(
+    @PluralsRes id: Int,
+    @IntRange(from = 0) quantity: Int,
+    vararg args: Any?
+): CharSequence =
+    HtmlCompat.fromHtml(getQuantityString(id, quantity, *args), HtmlCompat.FROM_HTML_MODE_COMPACT)
