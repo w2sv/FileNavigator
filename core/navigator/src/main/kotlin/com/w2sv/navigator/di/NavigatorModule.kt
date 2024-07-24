@@ -26,15 +26,4 @@ object NavigatorModule {
     @Provides
     fun fileNavigatorIsRunning(@ApplicationContext context: Context): FileNavigator.IsRunning =
         FileNavigator.IsRunning(mutableStateFlow = MutableStateFlow(context.isServiceRunning<FileNavigator>()))
-
-//    @Singleton
-//    @Provides
-//    internal fun multiInstanceAppNotificationManagers(
-//        newMoveFileNotificationManager: NewMoveFileNotificationManager,
-//        autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager
-//    ): List<MultiInstanceAppNotificationManager<*>> =
-//        listOf(
-//            newMoveFileNotificationManager,
-//            autoMoveDestinationInvalidNotificationManager
-//        )
 }

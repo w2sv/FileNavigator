@@ -29,7 +29,7 @@ datastoreutils = "0.0.3-rc1"
 [libraries]
 
 # Owned
-androidutils = "com.github.w2sv.AndroidUtils:core:0.4.1-rc2"
+androidutils = "com.github.w2sv.AndroidUtils:core:0.4.2-rc2"
 kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "kotlinutils" }
 composed = { module = "com.github.w2sv.Composed:composed", version.ref = "composed" }
 composed-permissions = { module = "com.github.w2sv.Composed:permissions", version.ref = "composed" }

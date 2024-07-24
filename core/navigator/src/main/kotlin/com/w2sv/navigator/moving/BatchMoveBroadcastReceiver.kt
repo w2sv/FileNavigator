@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
-import androidx.documentfile.provider.DocumentFile
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
@@ -15,8 +14,6 @@ import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationMa
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -91,30 +88,6 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
                     }
                 }
             }
-        }
-    }
-
-    private suspend fun batchMove(
-        args: Args,
-        destinationDocumentFile: DocumentFile,
-        context: Context
-    ): Flow<MoveResult> = flow {
-        args.batchMoveBundles.forEachIndexed { index, batchMoveBundle ->
-            val moveResult = batchMoveBundle.moveFile.moveTo(
-                destination = destinationDocumentFile,
-                context = context
-            )
-            batchMoveProgressNotificationManager.buildAndPostNotification(
-                BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
-                    current = index + 1,
-                    max = args.batchMoveBundles.size
-                )
-            )
-            moveResultListener.invoke(
-                moveResult = moveResult,
-                moveBundle = batchMoveBundle.moveBundle(args.destination)
-            )
-            emit(moveResult)
         }
     }
 

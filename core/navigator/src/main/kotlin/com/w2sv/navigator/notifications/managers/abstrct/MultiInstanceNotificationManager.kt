@@ -27,8 +27,8 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
     val resourcesIdentifier: String
         get() = this::class.java.simpleName
 
-    private val notificationIds = UniqueIds(appNotificationId.id)
-    private val pendingIntentRequestCodes = UniqueIds(appNotificationId.id)
+    private val notificationIds = UniqueIds(appNotificationId.multiInstanceIdBase)
+    private val pendingIntentRequestCodes = UniqueIds(appNotificationId.multiInstanceIdBase)
 
     protected val activeNotificationCount: Int
         get() = notificationIds.size
@@ -68,7 +68,7 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
     protected fun getNotificationResources(pendingIntentRequestCodeCount: Int): NotificationResources =
         NotificationResources(
             id = notificationIds.addNewId(),
-            pendingIntentRequestCodes = pendingIntentRequestCodes.addMultipleNewIds(
+            pendingIntentRequestCodes = pendingIntentRequestCodes.addNewIds(
                 pendingIntentRequestCodeCount
             ),
             resourcesIdentifier = resourcesIdentifier

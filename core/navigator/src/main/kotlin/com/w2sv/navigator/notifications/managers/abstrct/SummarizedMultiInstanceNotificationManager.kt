@@ -23,7 +23,7 @@ internal abstract class SummarizedMultiInstanceNotificationManager<A : MultiInst
     context = context,
     appNotificationId = appNotificationId
 ) {
-    private val summaryNotificationId = appNotificationId.id + 999  // TODO
+    private val summaryNotificationId = appNotificationId.summaryId
 
     /**
      * Implicitly cancels or updates the summary notification depending on the number of active

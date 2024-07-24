@@ -16,7 +16,7 @@ import javax.inject.Inject
 @Parcelize
 internal data class NotificationResources(
     val id: Int,
-    val pendingIntentRequestCodes: ArrayList<Int>,
+    val pendingIntentRequestCodes: List<Int>,
     private val resourcesIdentifier: String
 ) : Parcelable {
 

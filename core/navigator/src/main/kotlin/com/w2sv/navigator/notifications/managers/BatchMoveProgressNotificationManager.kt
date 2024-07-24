@@ -4,13 +4,10 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.res.Resources
-import androidx.annotation.IntRange
-import androidx.annotation.PluralsRes
 import androidx.core.app.NotificationCompat
-import androidx.core.text.HtmlCompat
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
+import com.w2sv.androidutils.res.getQuantityText
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.CancelBatchMoveBroadcastReceiver
@@ -136,10 +133,3 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
             }
         }
 }
-
-private fun Resources.getQuantityText(
-    @PluralsRes id: Int,
-    @IntRange(from = 0) quantity: Int,
-    vararg args: Any?
-): CharSequence =
-    HtmlCompat.fromHtml(getQuantityString(id, quantity, *args), HtmlCompat.FROM_HTML_MODE_COMPACT)
