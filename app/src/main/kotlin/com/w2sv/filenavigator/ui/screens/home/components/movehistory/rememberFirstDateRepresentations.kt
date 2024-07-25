@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.home.components.movehistory.model
+package com.w2sv.filenavigator.ui.screens.home.components.movehistory
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting

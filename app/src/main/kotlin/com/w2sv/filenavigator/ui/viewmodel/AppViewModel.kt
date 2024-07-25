@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.sharedviewmodels
+package com.w2sv.filenavigator.ui.viewmodel
 
 import android.Manifest
 import android.content.Context

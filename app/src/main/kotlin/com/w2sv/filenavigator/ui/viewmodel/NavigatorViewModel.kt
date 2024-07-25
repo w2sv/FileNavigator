@@ -1,11 +1,11 @@
-package com.w2sv.filenavigator.ui.sharedviewmodels
+package com.w2sv.filenavigator.ui.viewmodel
 
 import android.content.Context
 import androidx.compose.material3.SnackbarVisuals
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.filenavigator.ui.states.ReversibleNavigatorConfig
+import com.w2sv.filenavigator.ui.state.ReversibleNavigatorConfig
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

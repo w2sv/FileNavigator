@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.sharedviewmodels
+package com.w2sv.filenavigator.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

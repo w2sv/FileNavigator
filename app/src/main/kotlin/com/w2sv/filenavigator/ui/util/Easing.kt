@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.utils
+package com.w2sv.filenavigator.ui.util
 
 import android.view.animation.AnticipateInterpolator
 import android.view.animation.AnticipateOvershootInterpolator

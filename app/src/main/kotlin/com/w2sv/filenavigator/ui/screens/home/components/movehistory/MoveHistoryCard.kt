@@ -46,9 +46,9 @@ import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.model.launchViewActivity
-import com.w2sv.filenavigator.ui.sharedviewmodels.MoveHistoryViewModel
+import com.w2sv.filenavigator.ui.viewmodel.MoveHistoryViewModel
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
-import com.w2sv.filenavigator.ui.utils.activityViewModel
+import com.w2sv.filenavigator.ui.util.activityViewModel
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
