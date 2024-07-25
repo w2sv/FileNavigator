@@ -6,7 +6,6 @@ import android.content.Context
 import androidx.annotation.CallSuper
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.AppNotificationId
-import com.w2sv.navigator.notifications.NotificationResources
 import slimber.log.i
 
 /**
@@ -27,11 +26,11 @@ internal abstract class SummarizedMultiInstanceNotificationManager<A : MultiInst
 
     /**
      * Implicitly cancels or updates the summary notification depending on the number of active
-     * notifications after cancelling the one specified by [resources].
+     * notifications after cancelling the one specified by [id].
      */
     @CallSuper
-    override fun cancelNotificationAndFreeResources(resources: NotificationResources) {
-        super.cancelNotificationAndFreeResources(resources)
+    override fun cancelNotification(id: Int) {
+        super.cancelNotification(id)
 
         if (activeNotificationCount == 0) {
             i { "Cancelling summary" }

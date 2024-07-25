@@ -43,9 +43,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
             Args(
                 fileAndSourceType = fileAndSourceType,
                 autoMoveDestination = autoMoveDestination,
-                resources = getNotificationResources(
-                    pendingIntentRequestCodeCount = 1
-                )
+                resources = getNotificationResources()
             )
         )
     }
@@ -80,7 +78,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
 
                 setDeleteIntent(
                     getCleanupNotificationResourcesPendingIntent(
-                        requestCode = args.resources.pendingIntentRequestCodes.first(),
+                        requestCode = args.resources.pendingIntentRequestCodes(1).first(),
                         notificationResources = args.resources
                     )
                 )

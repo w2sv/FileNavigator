@@ -16,9 +16,11 @@ import javax.inject.Inject
 @Parcelize
 internal data class NotificationResources(
     val id: Int,
-    val pendingIntentRequestCodes: List<Int>,
-    private val resourcesIdentifier: String
+    private val managerClassName: String
 ) : Parcelable {
+
+    fun pendingIntentRequestCodes(count: Int): List<Int> =
+        (id until id + count).toList()
 
     fun cancelNotification(context: Context) {
         CleanupBroadcastReceiver.start(
@@ -36,20 +38,17 @@ internal data class NotificationResources(
         @Inject
         lateinit var autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager
 
-        private val notificationManagers by lazy {
-            listOf(
-                moveFileNotificationManager, autoMoveDestinationInvalidNotificationManager
-            )
-        }
-
         override fun onReceive(context: Context, intent: Intent) {
             fromIntent(intent)
                 ?.let { resources ->
-                    notificationManagers.first { notificationManager ->
-                        resources.resourcesIdentifier == notificationManager.resourcesIdentifier
-                    }
+                    listOf(
+                        moveFileNotificationManager, autoMoveDestinationInvalidNotificationManager
+                    )
+                        .first { notificationManager ->
+                            resources.managerClassName == notificationManager.resourcesIdentifier
+                        }
                         .also { i { "Cleaning up ${it.resourcesIdentifier} resources" } }
-                        .cancelNotificationAndFreeResources(resources)
+                        .cancelNotification(resources.id)
                 }
         }
 

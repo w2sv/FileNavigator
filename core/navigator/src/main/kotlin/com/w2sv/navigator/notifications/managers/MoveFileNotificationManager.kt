@@ -70,7 +70,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                     moveFile.fileAndSourceType
                 )
                     .also { i { "Retrieved quickMoveDestination: $it" } },
-                resources = getNotificationResources(pendingIntentRequestCodeCount = 5)
+                resources = getNotificationResources()
             )
         )
     }
@@ -95,10 +95,10 @@ internal class MoveFileNotificationManager @Inject constructor(
         }
     }
 
-    override fun cancelNotificationAndFreeResources(resources: NotificationResources) {
-        super.cancelNotificationAndFreeResources(resources)
+    override fun cancelNotification(id: Int) {
+        super.cancelNotification(id)
 
-        notificationIdToArgs.remove(resources.id)
+        notificationIdToArgs.remove(id)
         if (showBatchMoveNotification.value) {
             batchMoveNotificationManager.cancelOrUpdate(notificationIdToArgs.values)
         }
@@ -185,7 +185,7 @@ internal class MoveFileNotificationManager @Inject constructor(
 
             private fun setActionsAndIntents() {
                 // Set actions & intents
-                val requestCodeIterator = args.resources.pendingIntentRequestCodes.iterator()
+                val requestCodeIterator = args.resources.pendingIntentRequestCodes(5).iterator()
 
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 

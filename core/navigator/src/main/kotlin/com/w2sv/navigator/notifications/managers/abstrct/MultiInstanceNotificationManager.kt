@@ -28,7 +28,6 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
         get() = this::class.java.simpleName
 
     private val notificationIds = UniqueIds(appNotificationId.multiInstanceIdBase)
-    private val pendingIntentRequestCodes = UniqueIds(appNotificationId.multiInstanceIdBase)
 
     protected val activeNotificationCount: Int
         get() = notificationIds.size
@@ -65,13 +64,10 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
         val resources: NotificationResources
     }
 
-    protected fun getNotificationResources(pendingIntentRequestCodeCount: Int): NotificationResources =
+    protected fun getNotificationResources(): NotificationResources =
         NotificationResources(
             id = notificationIds.addNewId(),
-            pendingIntentRequestCodes = pendingIntentRequestCodes.addNewIds(
-                pendingIntentRequestCodeCount
-            ),
-            resourcesIdentifier = resourcesIdentifier
+            managerClassName = resourcesIdentifier
         )
 
     @CallSuper
@@ -84,15 +80,10 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
     // ================
 
     @CallSuper
-    open fun cancelNotificationAndFreeResources(resources: NotificationResources) {
-        notificationManager.cancel(resources.id)
-        freeNotificationResources(resources)
-    }
+    open fun cancelNotification(id: Int) {
+        notificationManager.cancel(id)
+        notificationIds.remove(id)
 
-    private fun freeNotificationResources(resources: NotificationResources) {
-        notificationIds.remove(resources.id)
-        pendingIntentRequestCodes.removeAll(resources.pendingIntentRequestCodes.toSet())
-
-        i { "Post-freeNotificationResources: NotificationIds: $notificationIds | pendingIntentRequestCodes: $pendingIntentRequestCodes" }
+        i { "Post-freeNotificationResources: NotificationIds: $notificationIds" }
     }
 }
