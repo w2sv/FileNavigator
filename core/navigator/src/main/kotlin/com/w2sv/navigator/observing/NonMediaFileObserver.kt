@@ -6,7 +6,7 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
-import com.w2sv.navigator.observing.model.MediaStoreData
+import com.w2sv.navigator.observing.model.MediaStoreFileData
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
@@ -38,10 +38,10 @@ internal class NonMediaFileObserver(
     }
 
     override fun enabledFileAndSourceTypeOrNull(
-        mediaStoreData: MediaStoreData
+        mediaStoreFileData: MediaStoreFileData
     ): FileAndSourceType? =
         enabledFileTypes
-            .firstOrNull { it.matchesFileExtension(mediaStoreData.extension) }
+            .firstOrNull { it.matchesFileExtension(mediaStoreFileData.extension) }
             ?.let { fileType ->
                 FileAndSourceType(fileType, SourceType.Download)
             }

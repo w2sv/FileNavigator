@@ -35,7 +35,7 @@ internal class DestinationPickerActivity : ComponentActivity() {
     private fun preemptiveMoveFailure(): MoveResult.Failure? =
         when {
             !isExternalStorageManger -> MoveResult.Failure.ManageAllFilesPermissionMissing
-            (args as? Args.SingleFile)?.moveFile?.mediaStoreData?.fileExists == false -> MoveResult.Failure.MoveFileNotFound
+            (args as? Args.SingleFile)?.moveFile?.mediaStoreFileData?.fileExists == false -> MoveResult.Failure.MoveFileNotFound
             else -> null
         }
 

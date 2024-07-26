@@ -7,7 +7,7 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.kotlinutils.coroutines.mapState
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
-import com.w2sv.navigator.observing.model.MediaStoreData
+import com.w2sv.navigator.observing.model.MediaStoreFileData
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
@@ -47,9 +47,9 @@ internal class MediaFileObserver(
     }
 
     override fun enabledFileAndSourceTypeOrNull(
-        mediaStoreData: MediaStoreData
+        mediaStoreFileData: MediaStoreFileData
     ): FileAndSourceType? {
-        val sourceType = mediaStoreData.sourceType()
+        val sourceType = mediaStoreFileData.sourceType()
 
         return if (enabledSourceTypes.contains(sourceType)) {
             FileAndSourceType(fileType, sourceType)

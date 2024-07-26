@@ -5,12 +5,12 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.observing.model.MediaStoreData
+import com.w2sv.navigator.observing.model.MediaStoreFileData
 import java.time.LocalDateTime
 
 internal object TestInstance {
 
-    val mediaStoreDataDefault = MediaStoreData(
+    val mediaStoreFileDataDefault = MediaStoreFileData(
         rowId = "1000012597",
         absPath = "primary/0/DCIM/Screenshots/somepicture.jpg",
         volumeRelativeDirPath = "DCIM/Screenshots",
@@ -20,7 +20,7 @@ internal object TestInstance {
         isTrashed = false
     )
 
-    fun mediaStoreData(
+    fun mediaStoreFileData(
         absPath: String,
         volumeRelativeDirPath: String,
         rowId: String = "1000012597",
@@ -28,8 +28,8 @@ internal object TestInstance {
         size: Long = 7862183L,
         isPending: Boolean = false,
         isTrashed: Boolean = false
-    ): MediaStoreData =
-        MediaStoreData(
+    ): MediaStoreFileData =
+        MediaStoreFileData(
             rowId = rowId,
             absPath = absPath,
             volumeRelativeDirPath = volumeRelativeDirPath,
@@ -41,7 +41,7 @@ internal object TestInstance {
 
     fun moveFile(
         mediaUri: MediaUri = MediaUri.parse("content://media/external/images/media/1000012597"),
-        mediaStoreData: MediaStoreData = mediaStoreDataDefault,
+        mediaStoreFileData: MediaStoreFileData = mediaStoreFileDataDefault,
         fileAndSourceType: FileAndSourceType = FileAndSourceType(
             fileType = FileType.Image,
             sourceType = SourceType.Screenshot
@@ -49,7 +49,7 @@ internal object TestInstance {
     ): MoveFile =
         MoveFile(
             mediaUri = mediaUri,
-            mediaStoreData = mediaStoreData,
+            mediaStoreFileData = mediaStoreFileData,
             fileAndSourceType = fileAndSourceType
         )
 }

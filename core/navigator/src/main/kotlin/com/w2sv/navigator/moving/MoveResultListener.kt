@@ -131,7 +131,7 @@ internal class MoveResultListener @Inject constructor(
 
         scope.launch {
             val movedFileDocumentUri =
-                moveBundle.destination.documentUri.childDocumentUri(fileName = moveBundle.file.mediaStoreData.name)
+                moveBundle.destination.documentUri.childDocumentUri(fileName = moveBundle.file.mediaStoreFileData.name)
             insertMoveEntryUseCase(
                 moveBundle.moveEntry(
                     movedFileDocumentUri = movedFileDocumentUri,

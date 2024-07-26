@@ -170,16 +170,16 @@ internal class MoveFileNotificationManager @Inject constructor(
 
             private fun getContentText(): SpannedString =
                 buildSpannedString {
-                    append(args.moveFile.mediaStoreData.name.lineBreakSuffixed())
+                    append(args.moveFile.mediaStoreFileData.name.lineBreakSuffixed())
                     bold { append(context.getString(R.string.directory).lineBreakSuffixed()) }
                     append(
-                        args.moveFile.mediaStoreData.volumeRelativeDirPath.removeSlashSuffix()
+                        args.moveFile.mediaStoreFileData.volumeRelativeDirPath.removeSlashSuffix()
                             .slashPrefixed()
                             .lineBreakSuffixed()
                     )
                     bold { append(context.getString(R.string.size).lineBreakSuffixed()) }
                     append(
-                        formattedFileSize(args.moveFile.mediaStoreData.size)
+                        formattedFileSize(args.moveFile.mediaStoreFileData.size)
                     )
                 }
 
@@ -224,7 +224,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                         context = context,
                         args = ViewFileIfPresentActivity.Args(
                             mediaUri = args.moveFile.mediaUri,
-                            absPath = args.moveFile.mediaStoreData.absPath,
+                            absPath = args.moveFile.mediaStoreFileData.absPath,
                             mimeType = args.moveFile.fileType.simpleStorageMediaType.mimeType,
                         ),
                         notificationResources = args.resources

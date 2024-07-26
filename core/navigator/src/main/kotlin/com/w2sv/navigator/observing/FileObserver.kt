@@ -16,7 +16,7 @@ import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.FileChangeOperation
-import com.w2sv.navigator.observing.model.MediaStoreData
+import com.w2sv.navigator.observing.model.MediaStoreFileData
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -92,7 +92,7 @@ internal abstract class FileObserver(
             ?.let { fileAndSourceType ->
                 val moveFile = MoveFile(
                     mediaUri = mediaUri,
-                    mediaStoreData = mediaStoreDataRetrievalResult.data,
+                    mediaStoreFileData = mediaStoreDataRetrievalResult.data,
                     fileAndSourceType = fileAndSourceType
                 )
                     .also {
@@ -131,7 +131,7 @@ internal abstract class FileObserver(
             }
     }
 
-    protected abstract fun enabledFileAndSourceTypeOrNull(mediaStoreData: MediaStoreData): FileAndSourceType?
+    protected abstract fun enabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType?
 }
 
 private val AutoMoveConfig.enabledDestinationOrNull: MoveDestination?

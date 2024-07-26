@@ -9,34 +9,42 @@ import org.robolectric.RobolectricTestRunner
 import util.TestInstance
 
 @RunWith(RobolectricTestRunner::class)
-internal class MediaStoreDataTest {
+internal class MediaStoreFileDataTest {
 
     @Test
     fun testName() {
-        assertEquals("somepicture.jpg", TestInstance.mediaStoreDataDefault.name)
+        assertEquals("somepicture.jpg", TestInstance.mediaStoreFileDataDefault.name)
     }
 
     @Test
     fun testParcelling() {
-        TestInstance.mediaStoreDataDefault.testParceling()
+        TestInstance.mediaStoreFileDataDefault.testParceling()
     }
 
     @Test
     fun testFileExtension() {
-        assertEquals("jpg", TestInstance.mediaStoreDataDefault.extension)
+        assertEquals("jpg", TestInstance.mediaStoreFileDataDefault.extension)
+        assertEquals(
+            "",
+            TestInstance.mediaStoreFileData(
+                absPath = "primary/0/DCIM",
+                volumeRelativeDirPath = "DCIM/"
+            )
+                .extension
+        )
     }
 
     @Test
-    fun testContainingDirName() {
-        assertEquals("Screenshots", TestInstance.mediaStoreDataDefault.containingDirName)
+    fun testParentDirName() {
+        assertEquals("Screenshots", TestInstance.mediaStoreFileDataDefault.parentDirName)
     }
 
     @Test
     fun testSourceType() {
-        assertEquals(SourceType.Screenshot, TestInstance.mediaStoreDataDefault.sourceType())
+        assertEquals(SourceType.Screenshot, TestInstance.mediaStoreFileDataDefault.sourceType())
         assertEquals(
             SourceType.Camera,
-            TestInstance.mediaStoreData(
+            TestInstance.mediaStoreFileData(
                 absPath = "primary/0/DCIM/somepicture.jpg",
                 volumeRelativeDirPath = "DCIM/"
             )
@@ -44,7 +52,7 @@ internal class MediaStoreDataTest {
         )
         assertEquals(
             SourceType.Recording,
-            TestInstance.mediaStoreData(
+            TestInstance.mediaStoreFileData(
                 absPath = "primary/0/Recordings/record.mp3",
                 volumeRelativeDirPath = "Recordings/"
             )
@@ -52,23 +60,11 @@ internal class MediaStoreDataTest {
         )
         assertEquals(
             SourceType.OtherApp,
-            TestInstance.mediaStoreData(
+            TestInstance.mediaStoreFileData(
                 absPath = "primary/0/Pictures/Wikipedia/picture.jpg",
                 volumeRelativeDirPath = "Pictures/Wikipedia/"
             )
                 .sourceType()
         )
     }
-
-//    @Test
-//    fun testNonIncrementedNameWOExtension() {
-//        val instance = TestInstancesProvider.mediaStoreData(name = "someName.jpeg")
-//        assertEquals("someName", instance.nonIncrementedNameWOExtension)
-//
-//        val instance1 = TestInstancesProvider.mediaStoreData(name = "someName(1).jpeg")
-//        assertEquals("someName", instance1.nonIncrementedNameWOExtension)
-//
-//        val instance2 = TestInstancesProvider.mediaStoreData(name = "someName (435).jpeg")
-//        assertEquals("someName ", instance2.nonIncrementedNameWOExtension)
-//    }
 }

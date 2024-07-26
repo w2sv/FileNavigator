@@ -26,7 +26,7 @@ internal data class MoveBundle(
         dateTime: LocalDateTime,
     ): MoveEntry =
         MoveEntry(
-            fileName = file.mediaStoreData.name,
+            fileName = file.mediaStoreFileData.name,
             fileType = file.fileType,
             sourceType = file.sourceType,
             destination = destination,

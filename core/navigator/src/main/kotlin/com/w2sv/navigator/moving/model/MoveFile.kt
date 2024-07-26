@@ -9,14 +9,14 @@ import com.w2sv.core.domain.R
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
-import com.w2sv.navigator.observing.model.MediaStoreData
+import com.w2sv.navigator.observing.model.MediaStoreFileData
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 internal data class MoveFile(
     val mediaUri: MediaUri,
-    val mediaStoreData: MediaStoreData,
+    val mediaStoreFileData: MediaStoreFileData,
     val fileAndSourceType: FileAndSourceType
 ) : Parcelable {
 
@@ -24,7 +24,7 @@ internal data class MoveFile(
         MediaStoreCompat.fromMediaId(
             context = context,
             mediaType = fileType.simpleStorageMediaType,
-            id = mediaStoreData.rowId
+            id = mediaStoreFileData.rowId
         )
 
     val fileType: FileType
@@ -35,7 +35,7 @@ internal data class MoveFile(
 
     @IgnoredOnParcel
     val isGif: Boolean by lazy {
-        fileType is FileType.Image && mediaStoreData.extension.lowercase() == "gif"
+        fileType is FileType.Image && mediaStoreFileData.extension.lowercase() == "gif"
     }
 
     fun moveNotificationLabel(
@@ -62,7 +62,7 @@ internal data class MoveFile(
                         context.getString(fileType.labelRes),
                     )
 
-                    SourceType.OtherApp -> "/${mediaStoreData.containingDirName} ${
+                    SourceType.OtherApp -> "/${mediaStoreFileData.parentDirName} ${
                         context.getString(
                             fileType.labelRes
                         )

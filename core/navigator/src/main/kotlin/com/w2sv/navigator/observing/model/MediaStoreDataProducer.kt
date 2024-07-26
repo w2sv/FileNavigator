@@ -14,7 +14,7 @@ internal class MediaStoreDataProducer @Inject constructor() {
 
     sealed interface Result {
         data class Success(
-            val data: MediaStoreData,
+            val data: MediaStoreFileData,
             val isUpdateOfAlreadySeenFile: Boolean
         ) : Result
 
@@ -37,7 +37,7 @@ internal class MediaStoreDataProducer @Inject constructor() {
     ): Result {
         // Fetch MediaStoreColumnData; exit if impossible
         val columnData =
-            MediaStoreData.queryFor(mediaUri, contentResolver)
+            MediaStoreFileData.queryFor(mediaUri, contentResolver)
                 ?: return Result.CouldntRetrieve
 
         // Exit if file is pending or trashed

@@ -59,7 +59,7 @@ internal fun MoveFile.moveTo(
     destination: DocumentFile,
     context: Context
 ): MoveResult {
-    if (!mediaStoreData.fileExists) {
+    if (!mediaStoreFileData.fileExists) {
         return MoveResult.Failure.MoveFileNotFound
     }
 
@@ -68,7 +68,7 @@ internal fun MoveFile.moveTo(
     // Exit if file already at destination
     if (destination.hasChild(  // TODO: optimizable?
             context = context,
-            path = mediaStoreData.name,
+            path = mediaStoreFileData.name,
             requiresWriteAccess = false
         )
     ) {

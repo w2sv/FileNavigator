@@ -23,7 +23,7 @@ import java.time.LocalDateTime
  * @param volumeRelativeDirPath Relative to the storage volume, e.g. "Documents/", "DCIM/Camera/".
  */
 @Parcelize
-internal data class MediaStoreData(
+internal data class MediaStoreFileData(
     val rowId: String,
     val absPath: String,
     val volumeRelativeDirPath: String,
@@ -38,23 +38,16 @@ internal data class MediaStoreData(
         absPath.substringAfterLast(File.separator)
     }
 
+    /**
+     * Equals empty string if no extension present (=> directory).
+     */
     @IgnoredOnParcel
     val extension: String by lazy {
-        name.substringAfterLast(".")
+        name.substringAfterLast(".", "")
     }
 
-//    @IgnoredOnParcel
-//    val nonIncrementedNameWOExtension: String by lazy {
-//        name
-//            .substringBeforeLast(".")  // remove file extension
-//            .replace(  // remove trailing file incrementation parentheses
-//                Regex("\\(\\d+\\)$"),
-//                ""
-//            )
-//    }
-
     @IgnoredOnParcel
-    val containingDirName: String by lazy {
+    val parentDirName: String by lazy {
         volumeRelativeDirPath
             .removeSuffix(File.separator)
             .substringAfterLast(File.separator)
@@ -96,13 +89,13 @@ internal data class MediaStoreData(
         fun queryFor(
             mediaUri: MediaUri,
             contentResolver: ContentResolver
-        ): MediaStoreData? =
+        ): MediaStoreFileData? =
             try {
                 contentResolver.query(
                     uri = mediaUri.uri,
                     columns = queryColumns
                 ) {
-                    MediaStoreData(
+                    MediaStoreFileData(
                         rowId = it.getStringOrThrow(MediaStore.MediaColumns._ID),
                         absPath = it.getStringOrThrow(MediaStore.MediaColumns.DATA),
                         volumeRelativeDirPath = it.getStringOrThrow(MediaStore.MediaColumns.RELATIVE_PATH),
