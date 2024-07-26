@@ -8,7 +8,7 @@ import com.w2sv.test.testParceling
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import util.TestInstancesProvider
+import util.TestInstance
 
 @RunWith(RobolectricTestRunner::class)
 internal class MoveBundleTest {
@@ -16,7 +16,7 @@ internal class MoveBundleTest {
     @Test
     fun testParceling() {
         MoveBundle(
-            file = TestInstancesProvider.moveFile(),
+            file = TestInstance.moveFile(),
             destination = MoveDestination.parse("lkasjdflkajhlk"),
             mode = MoveMode.DestinationPicked(
                 notificationResources = NotificationResources(

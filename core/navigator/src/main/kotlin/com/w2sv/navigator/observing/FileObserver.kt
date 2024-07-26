@@ -3,9 +3,7 @@ package com.w2sv.navigator.observing
 import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
-import android.os.Build
 import android.os.Handler
-import androidx.annotation.RequiresApi
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.cancelIfActive
 import com.w2sv.domain.model.FileAndSourceType
@@ -50,7 +48,6 @@ internal abstract class FileObserver(
 
     override fun deliverSelfNotifications(): Boolean = false
 
-    @RequiresApi(Build.VERSION_CODES.R)
     override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
         val fileChangeOperation =
             FileChangeOperation.determine(flags).also { emitOnChangeLog(uri, it) }

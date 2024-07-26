@@ -35,7 +35,7 @@ internal data class MoveFile(
 
     @IgnoredOnParcel
     val isGif: Boolean by lazy {
-        fileType is FileType.Image && mediaStoreData.fileExtension.lowercase() == "gif"
+        fileType is FileType.Image && mediaStoreData.extension.lowercase() == "gif"
     }
 
     fun moveNotificationLabel(
@@ -62,7 +62,7 @@ internal data class MoveFile(
                         context.getString(fileType.labelRes),
                     )
 
-                    SourceType.OtherApp -> "/${mediaStoreData.dirName} ${
+                    SourceType.OtherApp -> "/${mediaStoreData.containingDirName} ${
                         context.getString(
                             fileType.labelRes
                         )

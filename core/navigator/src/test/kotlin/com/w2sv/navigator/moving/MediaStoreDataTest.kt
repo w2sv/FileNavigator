@@ -1,25 +1,63 @@
 package com.w2sv.navigator.moving
 
+import com.w2sv.domain.model.SourceType
 import com.w2sv.test.testParceling
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import util.TestInstancesProvider
+import util.TestInstance
 
 @RunWith(RobolectricTestRunner::class)
 internal class MediaStoreDataTest {
 
     @Test
+    fun testName() {
+        assertEquals("somepicture.jpg", TestInstance.mediaStoreDataDefault.name)
+    }
+
+    @Test
     fun testParcelling() {
-        TestInstancesProvider.mediaStoreData().testParceling()
+        TestInstance.mediaStoreDataDefault.testParceling()
     }
 
     @Test
     fun testFileExtension() {
-        val instance = TestInstancesProvider.mediaStoreData(name = "someName.jpeg")
+        assertEquals("jpg", TestInstance.mediaStoreDataDefault.extension)
+    }
 
-        assertEquals("jpeg", instance.fileExtension)
+    @Test
+    fun testContainingDirName() {
+        assertEquals("Screenshots", TestInstance.mediaStoreDataDefault.containingDirName)
+    }
+
+    @Test
+    fun testSourceType() {
+        assertEquals(SourceType.Screenshot, TestInstance.mediaStoreDataDefault.sourceType())
+        assertEquals(
+            SourceType.Camera,
+            TestInstance.mediaStoreData(
+                absPath = "primary/0/DCIM/somepicture.jpg",
+                volumeRelativeDirPath = "DCIM/"
+            )
+                .sourceType()
+        )
+        assertEquals(
+            SourceType.Recording,
+            TestInstance.mediaStoreData(
+                absPath = "primary/0/Recordings/record.mp3",
+                volumeRelativeDirPath = "Recordings/"
+            )
+                .sourceType()
+        )
+        assertEquals(
+            SourceType.OtherApp,
+            TestInstance.mediaStoreData(
+                absPath = "primary/0/Pictures/Wikipedia/picture.jpg",
+                volumeRelativeDirPath = "Pictures/Wikipedia/"
+            )
+                .sourceType()
+        )
     }
 
 //    @Test

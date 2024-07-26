@@ -41,7 +41,7 @@ internal class NonMediaFileObserver(
         mediaStoreData: MediaStoreData
     ): FileAndSourceType? =
         enabledFileTypes
-            .firstOrNull { it.matchesFileExtension(mediaStoreData.fileExtension) }
+            .firstOrNull { it.matchesFileExtension(mediaStoreData.extension) }
             ?.let { fileType ->
                 FileAndSourceType(fileType, SourceType.Download)
             }

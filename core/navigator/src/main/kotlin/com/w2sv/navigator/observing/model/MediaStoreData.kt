@@ -27,7 +27,6 @@ internal data class MediaStoreData(
     val rowId: String,
     val absPath: String,
     val volumeRelativeDirPath: String,
-    val name: String,
     val dateTimeAdded: LocalDateTime,
     val size: Long,
     val isPending: Boolean,
@@ -35,7 +34,12 @@ internal data class MediaStoreData(
 ) : Parcelable {
 
     @IgnoredOnParcel
-    val fileExtension: String by lazy {
+    val name: String by lazy {
+        absPath.substringAfterLast(File.separator)
+    }
+
+    @IgnoredOnParcel
+    val extension: String by lazy {
         name.substringAfterLast(".")
     }
 
@@ -50,23 +54,23 @@ internal data class MediaStoreData(
 //    }
 
     @IgnoredOnParcel
-    val dirName: String by lazy {
+    val containingDirName: String by lazy {
         volumeRelativeDirPath
             .removeSuffix(File.separator)
             .substringAfterLast(File.separator)
     }
 
-    fun file(): File =
+    @IgnoredOnParcel
+    val file: File by lazy {
         File(absPath)
+    }
 
     val fileExists: Boolean
-        get() = file().exists()
+        get() = file.exists()
 
-    fun sourceType(): SourceType =  // TODO: test
+    fun sourceType(): SourceType =
         when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && volumeRelativeDirPath.contains(
-                Environment.DIRECTORY_RECORDINGS
-            ) || volumeRelativeDirPath.contains("Recordings") -> SourceType.Recording
+            volumeRelativeDirPath.contains(directoryRecordingsCompat) -> SourceType.Recording
             // NOTE: Don't change the order of the Screenshot and Camera branches, as Environment.DIRECTORY_SCREENSHOTS
             // may be a child dir of Environment.DIRECTORY_DCIM
             volumeRelativeDirPath.contains(Environment.DIRECTORY_SCREENSHOTS) -> SourceType.Screenshot
@@ -79,6 +83,16 @@ internal data class MediaStoreData(
             }
 
     companion object {
+        private val queryColumns = arrayOf(
+            MediaStore.MediaColumns._ID,
+            MediaStore.MediaColumns.DATA,
+            MediaStore.MediaColumns.RELATIVE_PATH,
+            MediaStore.MediaColumns.DATE_ADDED,
+            MediaStore.MediaColumns.SIZE,
+            MediaStore.MediaColumns.IS_PENDING,
+            MediaStore.MediaColumns.IS_TRASHED,
+        )
+
         fun queryFor(
             mediaUri: MediaUri,
             contentResolver: ContentResolver
@@ -86,22 +100,12 @@ internal data class MediaStoreData(
             try {
                 contentResolver.query(
                     uri = mediaUri.uri,
-                    columns = arrayOf(
-                        MediaStore.MediaColumns._ID,
-                        MediaStore.MediaColumns.DATA,
-                        MediaStore.MediaColumns.RELATIVE_PATH,
-                        MediaStore.MediaColumns.DISPLAY_NAME,
-                        MediaStore.MediaColumns.DATE_ADDED,
-                        MediaStore.MediaColumns.SIZE,
-                        MediaStore.MediaColumns.IS_PENDING,
-                        MediaStore.MediaColumns.IS_TRASHED,
-                    )
+                    columns = queryColumns
                 ) {
                     MediaStoreData(
                         rowId = it.getStringOrThrow(MediaStore.MediaColumns._ID),
                         absPath = it.getStringOrThrow(MediaStore.MediaColumns.DATA),
                         volumeRelativeDirPath = it.getStringOrThrow(MediaStore.MediaColumns.RELATIVE_PATH),
-                        name = it.getStringOrThrow(MediaStore.MediaColumns.DISPLAY_NAME),
                         dateTimeAdded = localDateTimeFromSecondsUnixTimestamp(
                             it.getLongOrThrow(MediaStore.MediaColumns.DATE_ADDED)
                         ),
@@ -119,3 +123,6 @@ internal data class MediaStoreData(
             }
     }
 }
+
+private val directoryRecordingsCompat: String =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) Environment.DIRECTORY_RECORDINGS else "Recordings"
