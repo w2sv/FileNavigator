@@ -10,7 +10,6 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
-import com.w2sv.kotlinutils.update
 import kotlinx.coroutines.flow.first
 import slimber.log.i
 
@@ -45,58 +44,48 @@ internal class NavigatorPreferencesToProtoMigration(
     }
 
     private fun performMigration(preferences: Preferences): NavigatorConfigProto {
-        i { "Preferences content: ${preferences.asMap()}" }
-
         return NavigatorConfigMapper.toProto(
-            NavigatorConfig.default.copy(
-                disableOnLowBattery = preferences.getOrDefault(
-                    PreMigrationNavigatorPreferencesKey.disableOnLowBattery,
-                    true
-                ),
-                fileTypeConfigMap = NavigatorConfig.default.fileTypeConfigMap.toMutableMap().apply {
-                    FileType.values.forEach { fileType ->
+            NavigatorConfig.default.let { defaultConfig ->
+                defaultConfig.copy(
+                    fileTypeConfigMap = defaultConfig.fileTypeConfigMap.mapValues { (fileType, fileTypeConfig) ->
                         i { "Migrating $fileType" }
-                        update(fileType) { fileTypeConfig ->
-                            fileTypeConfig.copy(
-                                enabled = preferences.getOrDefault(
-                                    PreMigrationNavigatorPreferencesKey.fileTypeEnabled(fileType),
-                                    true
-                                ),
-                                sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.toMutableMap()
-                                    .apply {
-                                        fileType.sourceTypes.forEach { sourceType ->
-                                            i { "Migrating $fileType.$sourceType" }
 
-                                            update(sourceType) { sourceConfig ->
-                                                sourceConfig.copy(
-                                                    enabled = preferences.getOrDefault(
-                                                        PreMigrationNavigatorPreferencesKey.sourceTypeEnabled(
-                                                            fileType,
-                                                            sourceType
-                                                        ),
-                                                        true
-                                                    ),
-                                                    lastMoveDestinations = buildList {
-                                                        preferences[PreMigrationNavigatorPreferencesKey.lastMoveDestination(
-                                                            fileType,
-                                                            sourceType
-                                                        )]?.let { lastMoveDestination ->
-                                                            add(
-                                                                MoveDestination.parse(
-                                                                    lastMoveDestination
-                                                                )
-                                                            )
-                                                        }
-                                                    }
-                                                )
-                                            }
-                                        }
-                                    }
-                            )
-                        }
-                    }
-                }
-            )
+                        fileTypeConfig.copy(
+                            enabled = preferences.getOrDefault(
+                                PreMigrationNavigatorPreferencesKey.fileTypeEnabled(fileType),
+                                fileTypeConfig.enabled
+                            ),
+                            sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.mapValues { (sourceType, sourceConfig) ->
+                                i { "Migrating $fileType.$sourceType" }
+
+                                sourceConfig.copy(
+                                    enabled = preferences.getOrDefault(
+                                        PreMigrationNavigatorPreferencesKey.sourceTypeEnabled(
+                                            fileType,
+                                            sourceType
+                                        ),
+                                        sourceConfig.enabled
+                                    ),
+                                    lastMoveDestinations = preferences[PreMigrationNavigatorPreferencesKey.lastMoveDestination(
+                                        fileType = fileType,
+                                        sourceType = sourceType
+                                    )]?.let { lastMoveDestination ->
+                                        listOf(
+                                            MoveDestination.parse(
+                                                lastMoveDestination
+                                            )
+                                        )
+                                    } ?: emptyList()
+                                )
+                            }
+                        )
+                    },
+                    disableOnLowBattery = preferences.getOrDefault(
+                        PreMigrationNavigatorPreferencesKey.disableOnLowBattery,
+                        defaultConfig.disableOnLowBattery
+                    )
+                )
+            }
                 .also { i { "Migrated: $it" } }
         )
     }

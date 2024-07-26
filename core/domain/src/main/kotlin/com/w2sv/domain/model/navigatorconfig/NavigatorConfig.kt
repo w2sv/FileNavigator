@@ -88,37 +88,8 @@ data class NavigatorConfig(
 
     companion object {
         val default by lazy {
-            val nonMediaFileTypeConfig = FileTypeConfig.default(listOf(SourceType.Download))
             NavigatorConfig(
-                fileTypeConfigMap = mapOf(
-                    FileType.Image to FileTypeConfig.default(
-                        listOf(
-                            SourceType.Camera,
-                            SourceType.Screenshot,
-                            SourceType.OtherApp,
-                            SourceType.Download,
-                        )
-                    ),
-                    FileType.Video to FileTypeConfig.default(
-                        listOf(
-                            SourceType.Camera,
-                            SourceType.OtherApp,
-                            SourceType.Download,
-                        )
-                    ),
-                    FileType.Audio to FileTypeConfig.default(
-                        listOf(
-                            SourceType.Recording,
-                            SourceType.OtherApp,
-                            SourceType.Download,
-                        )
-                    ),
-                    FileType.PDF to nonMediaFileTypeConfig,
-                    FileType.Text to nonMediaFileTypeConfig,
-                    FileType.Archive to nonMediaFileTypeConfig,
-                    FileType.APK to nonMediaFileTypeConfig,
-                    FileType.EBook to nonMediaFileTypeConfig
-                ),
+                fileTypeConfigMap = FileType.values.associateWith { defaultFileTypeConfig(it) },
                 showBatchMoveNotification = true,
                 disableOnLowBattery = false,
                 startOnBoot = false,
@@ -126,3 +97,9 @@ data class NavigatorConfig(
         }
     }
 }
+
+private fun defaultFileTypeConfig(fileType: FileType): FileTypeConfig =
+    FileTypeConfig(
+        enabled = true,
+        sourceTypeConfigMap = fileType.sourceTypes.associateWith { SourceConfig() },
+    )
