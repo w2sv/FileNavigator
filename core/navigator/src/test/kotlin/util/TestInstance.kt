@@ -15,6 +15,7 @@ internal object TestInstance {
         absPath = "primary/0/DCIM/Screenshots/somepicture.jpg",
         volumeRelativeDirPath = "DCIM/Screenshots",
         dateTimeAdded = LocalDateTime.now(),
+        dateTimeModified = LocalDateTime.now(),
         size = 7862183L,
         isPending = false,
         isTrashed = false
@@ -25,6 +26,7 @@ internal object TestInstance {
         volumeRelativeDirPath: String,
         rowId: String = "1000012597",
         dateTimeAdded: LocalDateTime = LocalDateTime.now(),
+        dateTimeModified: LocalDateTime = LocalDateTime.now(),
         size: Long = 7862183L,
         isPending: Boolean = false,
         isTrashed: Boolean = false
@@ -34,6 +36,7 @@ internal object TestInstance {
             absPath = absPath,
             volumeRelativeDirPath = volumeRelativeDirPath,
             dateTimeAdded = dateTimeAdded,
+            dateTimeModified = dateTimeModified,
             size = size,
             isPending = isPending,
             isTrashed = isTrashed

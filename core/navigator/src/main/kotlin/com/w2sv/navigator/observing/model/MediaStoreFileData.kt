@@ -28,6 +28,7 @@ internal data class MediaStoreFileData(
     val absPath: String,
     val volumeRelativeDirPath: String,
     val dateTimeAdded: LocalDateTime,
+    val dateTimeModified: LocalDateTime,
     val size: Long,
     val isPending: Boolean,
     val isTrashed: Boolean
@@ -81,6 +82,7 @@ internal data class MediaStoreFileData(
             MediaStore.MediaColumns.DATA,
             MediaStore.MediaColumns.RELATIVE_PATH,
             MediaStore.MediaColumns.DATE_ADDED,
+            MediaStore.MediaColumns.DATE_MODIFIED,
             MediaStore.MediaColumns.SIZE,
             MediaStore.MediaColumns.IS_PENDING,
             MediaStore.MediaColumns.IS_TRASHED,
@@ -101,6 +103,9 @@ internal data class MediaStoreFileData(
                         volumeRelativeDirPath = it.getStringOrThrow(MediaStore.MediaColumns.RELATIVE_PATH),
                         dateTimeAdded = localDateTimeFromSecondsUnixTimestamp(
                             it.getLongOrThrow(MediaStore.MediaColumns.DATE_ADDED)
+                        ),
+                        dateTimeModified = localDateTimeFromSecondsUnixTimestamp(
+                            it.getLongOrThrow(MediaStore.MediaColumns.DATE_MODIFIED)
                         ),
                         size = it.getLongOrThrow(MediaStore.MediaColumns.SIZE),
                         isPending = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_PENDING),
