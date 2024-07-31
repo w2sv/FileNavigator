@@ -1,14 +1,11 @@
-package com.w2sv.datastore
+package com.w2sv.datastore.migration
 
 import androidx.datastore.core.DataMigration
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
+import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigMapper
-import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveDestination
-import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import kotlinx.coroutines.flow.first
 import slimber.log.i
@@ -27,8 +24,7 @@ internal class NavigatorPreferencesToProtoMigration(
 
         val preferences = preferencesDataStore.data.first()
 
-        presentPreMigrationKeys = PreMigrationNavigatorPreferencesKey
-            .keys()
+        presentPreMigrationKeys = PreMigrationNavigatorPreferencesKey.keys()
             .filter { key -> preferences.contains(key) }
             .toList()
             .also { i { "presentPreMigrationKeys: $it" } }
@@ -43,8 +39,8 @@ internal class NavigatorPreferencesToProtoMigration(
             .build()
     }
 
-    private fun performMigration(preferences: Preferences): NavigatorConfigProto {
-        return NavigatorConfigMapper.toProto(
+    private fun performMigration(preferences: Preferences): NavigatorConfigProto =
+        NavigatorConfigMapper.toProto(
             NavigatorConfig.default.let { defaultConfig ->
                 defaultConfig.copy(
                     fileTypeConfigMap = defaultConfig.fileTypeConfigMap.mapValues { (fileType, fileTypeConfig) ->
@@ -88,7 +84,6 @@ internal class NavigatorPreferencesToProtoMigration(
             }
                 .also { i { "Migrated: $it" } }
         )
-    }
 
     override suspend fun cleanUp() {
         preferencesDataStore.updateData {
@@ -101,58 +96,6 @@ internal class NavigatorPreferencesToProtoMigration(
 
         i { "Preferences post cleanUp: ${preferencesDataStore.data.first().asMap()}" }
     }
-}
-
-private object PreMigrationNavigatorPreferencesKey {
-
-    val disableOnLowBattery = booleanPreferencesKey("disableNavigatorOnLowBattery")
-
-    fun keys(): Sequence<Preferences.Key<*>> =
-        sequence {
-            yield(disableOnLowBattery)
-            yieldAll(
-                FileType
-                    .values
-                    .flatMap { it.associatedPreMigrationKeys() }
-            )
-        }
-
-    private fun FileType.associatedPreMigrationKeys(): Sequence<Preferences.Key<*>> = sequence {
-        yield(fileTypeEnabled(this@associatedPreMigrationKeys))
-
-        this@associatedPreMigrationKeys.sourceTypes.forEach { sourceType ->
-            yield(
-                sourceTypeEnabled(
-                    this@associatedPreMigrationKeys,
-                    sourceType
-                )
-            )
-            yield(
-                lastMoveDestination(
-                    this@associatedPreMigrationKeys,
-                    sourceType
-                )
-            )
-        }
-    }
-
-    fun fileTypeEnabled(fileType: FileType): Preferences.Key<Boolean> =
-        booleanPreferencesKey(fileType.preferencesKeyNameIdentifier)
-
-    fun sourceTypeEnabled(
-        fileType: FileType,
-        sourceType: SourceType
-    ): Preferences.Key<Boolean> =
-        booleanPreferencesKey("${fileType.preferencesKeyNameIdentifier}.${sourceType.name}.IS_ENABLED")
-
-    fun lastMoveDestination(
-        fileType: FileType,
-        sourceType: SourceType
-    ): Preferences.Key<String> =
-        stringPreferencesKey("${fileType.preferencesKeyNameIdentifier}.${sourceType.name}.LAST_MOVE_DESTINATION")
-
-    private val FileType.preferencesKeyNameIdentifier: String
-        get() = this::class.java.simpleName
 }
 
 private fun <K> Preferences.getOrDefault(k: Preferences.Key<K>, default: K): K =
