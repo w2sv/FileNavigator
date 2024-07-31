@@ -23,8 +23,6 @@ sealed class FileType(
     val isMediaType: Boolean
         get() = this is Media
 
-    abstract fun matchesFileExtension(extension: String): Boolean
-
     sealed class Media(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
@@ -38,10 +36,6 @@ sealed class FileType(
         simpleStorageMediaType = mediaType,
         sourceTypes = sourceTypes
     ) {
-
-        override fun matchesFileExtension(extension: String): Boolean =
-            true
-
         companion object {
             @JvmStatic
             val values: List<Media>
@@ -53,7 +47,7 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
         @ColorLong colorLong: Long,
-        private val fileExtensions: Set<String>,
+        val fileExtensions: Set<String>,
     ) : FileType(
         labelRes = labelRes,
         iconRes = iconRes,
@@ -61,10 +55,6 @@ sealed class FileType(
         simpleStorageMediaType = MediaType.DOWNLOADS,
         sourceTypes = listOf(SourceType.Download)
     ) {
-
-        override fun matchesFileExtension(extension: String): Boolean =
-            fileExtensions.contains(extension)
-
         companion object {
             @JvmStatic
             val values: List<NonMedia>
