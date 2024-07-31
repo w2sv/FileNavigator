@@ -33,14 +33,14 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
 
     fun toProto(external: NavigatorConfig, hasBeenMigrated: Boolean): NavigatorConfigProto =
         navigatorConfigProto {
-            fileTypeToConfig.putAll(
+            this.fileTypeToConfig.putAll(
                 external.fileTypeConfigMap.entries.associate { (fileType, config) ->
                     FileType.values.indexOf(fileType) to FileTypeConfigMapper.toProto(config)
                 }
             )
-            showBatchMoveNotification = external.showBatchMoveNotification
-            disableOnLowBattery = external.disableOnLowBattery
-            startOnBoot = external.startOnBoot
+            this.showBatchMoveNotification = external.showBatchMoveNotification
+            this.disableOnLowBattery = external.disableOnLowBattery
+            this.startOnBoot = external.startOnBoot
             this.hasBeenMigrated = hasBeenMigrated
         }
 }

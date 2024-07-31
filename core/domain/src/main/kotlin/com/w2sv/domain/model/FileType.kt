@@ -7,7 +7,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.core.domain.R
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 sealed class FileType(
@@ -21,7 +20,6 @@ sealed class FileType(
     val logIdentifier: String
         get() = this::class.java.simpleName
 
-    @IgnoredOnParcel
     val isMediaType: Boolean
         get() = this is Media
 
