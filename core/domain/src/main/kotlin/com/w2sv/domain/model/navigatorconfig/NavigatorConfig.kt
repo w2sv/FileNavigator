@@ -1,5 +1,8 @@
 package com.w2sv.domain.model.navigatorconfig
 
+import com.w2sv.common.utils.copy
+import com.w2sv.common.utils.map
+import com.w2sv.common.utils.update
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 
@@ -37,13 +40,14 @@ data class NavigatorConfig(
     // Copying
     // ================
 
-    fun copyWithAlteredFileConfig(
+    fun copyWithAlteredFileTypeConfig(
         fileType: FileType,
-        alterFileConfig: (FileTypeConfig) -> FileTypeConfig
+        alterFileTypeConfig: (FileTypeConfig) -> FileTypeConfig
     ): NavigatorConfig =
         copy(
-            fileTypeConfigMap = fileTypeConfigMap.toMutableMap()
-                .apply { put(fileType, alterFileConfig(getValue(fileType))) }
+            fileTypeConfigMap = fileTypeConfigMap.copy {
+                update(fileType, alterFileTypeConfig)
+            }
         )
 
     fun copyWithAlteredSourceConfig(
@@ -51,33 +55,31 @@ data class NavigatorConfig(
         sourceType: SourceType,
         alterSourceConfig: (SourceConfig) -> SourceConfig
     ): NavigatorConfig =
-        copyWithAlteredFileConfig(
+        copyWithAlteredFileTypeConfig(
             fileType = fileType,
         ) {
             it.copy(
-                sourceTypeConfigMap = it.sourceTypeConfigMap.toMutableMap()
-                    .apply { put(sourceType, alterSourceConfig(getValue(sourceType))) })
-        }
-
-    fun copyWithAlteredSourceAutoMoveConfigs(
-        fileType: FileType,
-        autoMoveConfig: AutoMoveConfig
-    ): NavigatorConfig =
-        copyWithAlteredFileConfig(
-            fileType = fileType,
-        ) {
-            @Suppress("SimplifyNestedEachInScopeFunction")
-            it.copy(
-                sourceTypeConfigMap = it.sourceTypeConfigMap.toMutableMap()
-                    .apply {
-                        forEach { (sourceType, sourceConfig) ->
-                            this[sourceType] = sourceConfig.copy(autoMoveConfig = autoMoveConfig)
-                        }
-                    }
+                sourceTypeConfigMap = it.sourceTypeConfigMap.copy {
+                    update(sourceType, alterSourceConfig)
+                }
             )
         }
 
-    fun copyWithAlteredSourceAutoMoveConfig(
+    fun copyWithAlteredAutoMoveConfigs(
+        fileType: FileType,
+        autoMoveConfig: AutoMoveConfig
+    ): NavigatorConfig =
+        copyWithAlteredFileTypeConfig(
+            fileType = fileType,
+        ) {
+            it.copy(
+                sourceTypeConfigMap = it.sourceTypeConfigMap.map { (sourceType, sourceConfig) ->
+                    sourceType to sourceConfig.copy(autoMoveConfig = autoMoveConfig)
+                }
+            )
+        }
+
+    fun copyWithAlteredAutoMoveConfig(
         fileType: FileType,
         sourceType: SourceType,
         alterSourceAutoMoveConfig: (AutoMoveConfig) -> AutoMoveConfig

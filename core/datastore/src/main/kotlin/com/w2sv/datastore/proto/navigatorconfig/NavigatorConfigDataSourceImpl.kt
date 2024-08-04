@@ -45,7 +45,7 @@ class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorCon
 
     override suspend fun unsetAutoMoveConfig(fileType: FileType, sourceType: SourceType) {
         updateData {
-            it.copyWithAlteredSourceAutoMoveConfig(fileType, sourceType) {
+            it.copyWithAlteredAutoMoveConfig(fileType, sourceType) {
                 AutoMoveConfig.Empty
             }
         }

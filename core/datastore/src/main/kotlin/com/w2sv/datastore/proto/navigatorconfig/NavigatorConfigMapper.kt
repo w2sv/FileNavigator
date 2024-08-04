@@ -1,5 +1,6 @@
 package com.w2sv.datastore.proto.navigatorconfig
 
+import com.w2sv.common.utils.map
 import com.w2sv.datastore.AutoMoveConfigProto
 import com.w2sv.datastore.FileTypeConfigProto
 import com.w2sv.datastore.NavigatorConfigProto
@@ -100,7 +101,3 @@ private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveC
         destination = external.destination?.toString() ?: ""
     }
 }
-
-// TODO: KotlinUtils
-private inline fun <K, V, RK, RV> Map<K, V>.map(transform: (Map.Entry<K, V>) -> Pair<RK, RV>): Map<RK, RV> =
-    entries.associate(transform)

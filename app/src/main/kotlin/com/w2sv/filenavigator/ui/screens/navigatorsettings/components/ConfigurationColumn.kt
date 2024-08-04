@@ -174,7 +174,7 @@ fun NavigatorConfigurationColumn(
                 },
                 setSourceAutoMoveConfigs = { autoMoveConfig ->
                     reversibleConfig.update {
-                        it.copyWithAlteredSourceAutoMoveConfigs(
+                        it.copyWithAlteredAutoMoveConfigs(
                             fileType = fileType,
                             autoMoveConfig = autoMoveConfig
                         )
@@ -192,7 +192,7 @@ fun NavigatorConfigurationColumn(
                 },
                 setSourceAutoMoveConfig = { sourceType, autoMoveConfig ->
                     reversibleConfig.update {
-                        it.copyWithAlteredSourceAutoMoveConfig(fileType, sourceType) {
+                        it.copyWithAlteredAutoMoveConfig(fileType, sourceType) {
                             autoMoveConfig
                         }
                     }

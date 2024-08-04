@@ -3,7 +3,6 @@ package com.w2sv.datastore.migration
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.preferencesOf
-import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigMapper
 import com.w2sv.domain.model.FileType
@@ -83,13 +82,13 @@ internal class NavigatorPreferencesToProtoMigrationTest {
             NavigatorConfig
                 .default
                 .copy(disableOnLowBattery = true)
-                .copyWithAlteredFileConfig(FileType.Image) {
+                .copyWithAlteredFileTypeConfig(FileType.Image) {
                     it.copy(enabled = false)
                 }
-                .copyWithAlteredFileConfig(FileType.Video) {
+                .copyWithAlteredFileTypeConfig(FileType.Video) {
                     it.copy(enabled = false)
                 }
-                .copyWithAlteredFileConfig(FileType.PDF) {
+                .copyWithAlteredFileTypeConfig(FileType.PDF) {
                     it.copy(enabled = false)
                 }
                 .copyWithAlteredSourceConfig(FileType.Audio, SourceType.Recording) {

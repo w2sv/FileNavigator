@@ -11,7 +11,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-internal class NavigatorConfigTest {
+internal class NavigatorConfigMapperTest {
 
     @Test
     fun testDefaultMapping() {
@@ -22,16 +22,16 @@ internal class NavigatorConfigTest {
     fun testNonDefaultMapping() {
         val nonDefaultConfig = NavigatorConfig.default
             .copy(disableOnLowBattery = true, startOnBoot = true)
-            .copyWithAlteredFileConfig(FileType.Video) {
+            .copyWithAlteredFileTypeConfig(FileType.Video) {
                 it.copy(enabled = false)
             }
-            .copyWithAlteredSourceAutoMoveConfig(FileType.APK, SourceType.Download) {
+            .copyWithAlteredAutoMoveConfig(FileType.APK, SourceType.Download) {
                 AutoMoveConfig(
                     enabled = true,
                     destination = MoveDestination.parse("some/move/destination")
                 )
             }
-            .copyWithAlteredSourceAutoMoveConfig(FileType.Image, SourceType.Download) {
+            .copyWithAlteredAutoMoveConfig(FileType.Image, SourceType.Download) {
                 AutoMoveConfig(
                     enabled = true,
                     destination = MoveDestination.parse("some/other/move/destination")

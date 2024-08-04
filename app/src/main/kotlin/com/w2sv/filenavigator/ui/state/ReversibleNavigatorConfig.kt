@@ -54,7 +54,7 @@ class ReversibleNavigatorConfig(
             checkedCount = value.enabledFileTypes.size,
             update = {
                 update { config ->
-                    config.copyWithAlteredFileConfig(fileType) { it.copy(enabled = checkedNew) }
+                    config.copyWithAlteredFileTypeConfig(fileType) { it.copy(enabled = checkedNew) }
                 }
             },
             makeSnackbarVisuals = {
