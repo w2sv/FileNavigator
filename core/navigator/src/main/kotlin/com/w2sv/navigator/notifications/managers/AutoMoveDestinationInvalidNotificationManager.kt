@@ -5,13 +5,15 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
-import com.w2sv.common.utils.DocumentUri
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.usecase.DocumentUriToPathConverter
+import com.w2sv.domain.model.MoveDestination
+import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.navigator.notifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.AppNotificationId
+import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
-import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceAppNotificationManager
+import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,23 +22,33 @@ import javax.inject.Singleton
 internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
-    private val documentUriToPathConverter: DocumentUriToPathConverter
-) : MultiInstanceAppNotificationManager<AutoMoveDestinationInvalidNotificationManager.BuilderArgs>(
-    notificationChannel = AppNotificationChannel.NewNavigatableFile.getNotificationChannel(context),
+    private val moveDestinationPathConverter: MoveDestinationPathConverter
+) : MultiInstanceNotificationManager<AutoMoveDestinationInvalidNotificationManager.Args>(
+    appNotificationChannel = AppNotificationChannel.AutoMoveDestinationInvalid,
     notificationManager = notificationManager,
     context = context,
-    resourcesBaseSeed = 2
+    appNotificationId = AppNotificationId.AutoMoveDestinationInvalid
 ) {
-    inner class BuilderArgs(
+    data class Args(
         val fileAndSourceType: FileAndSourceType,
-        val autoMoveDestination: DocumentUri
-    ) : MultiInstanceAppNotificationManager.BuilderArgs(
-        resources = getNotificationResources(
-            pendingIntentRequestCodeCount = 1
-        )
-    )
+        val autoMoveDestination: MoveDestination,
+        override val resources: NotificationResources
+    ) : MultiInstanceNotificationManager.Args
 
-    override fun getBuilder(args: AutoMoveDestinationInvalidNotificationManager.BuilderArgs): AppNotificationManager<BuilderArgs>.Builder {
+    fun buildAndPostNotification(
+        fileAndSourceType: FileAndSourceType,
+        autoMoveDestination: MoveDestination,
+    ) {
+        buildNotification(
+            Args(
+                fileAndSourceType = fileAndSourceType,
+                autoMoveDestination = autoMoveDestination,
+                resources = getNotificationResources()
+            )
+        )
+    }
+
+    override fun getBuilder(args: Args): AppNotificationManager<Args>.Builder {
         return object : Builder() {
             override fun build(): Notification {
                 setContentTitle(context.getString(R.string.auto_move_destination_invalid))
@@ -47,8 +59,8 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
                     buildSpannedString {
                         bold {
                             append(
-                                documentUriToPathConverter.invoke(
-                                    documentUri = args.autoMoveDestination,
+                                moveDestinationPathConverter.invoke(
+                                    moveDestination = args.autoMoveDestination,
                                     context = context
                                 )
                             )
@@ -66,7 +78,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
 
                 setDeleteIntent(
                     getCleanupNotificationResourcesPendingIntent(
-                        requestCode = args.resources.pendingIntentRequestCodes.first(),
+                        requestCode = args.resources.pendingIntentRequestCodes(1).first(),
                         notificationResources = args.resources
                     )
                 )

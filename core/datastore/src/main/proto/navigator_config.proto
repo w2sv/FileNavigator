@@ -8,6 +8,7 @@ message NavigatorConfigProto {
   bool disable_on_low_battery = 2;
   bool start_on_boot = 3;
   bool has_been_migrated = 4;
+  bool show_batch_move_notification = 5;
 }
 
 message FileTypeConfigProto {
@@ -15,29 +16,11 @@ message FileTypeConfigProto {
   map<int32, SourceConfigProto> source_type_to_config = 2;
 }
 
-//enum FileTypeProto {
-//  Image = 0;
-//  Video = 1;
-//  Audio = 2;
-//  PDF = 3;
-//  Text = 4;
-//  Archive = 5;
-//  APK = 6;
-//}
-
 message SourceConfigProto {
   bool enabled = 1;
   repeated string last_move_destinations = 2;
   AutoMoveConfigProto auto_move_config = 3;
 }
-
-//enum SourceTypeProto {
-//  Camera = 0;
-//  Screenshot = 1;
-//  Recording = 2;
-//  Download = 3;
-//  OtherApp = 4;
-//}
 
 message AutoMoveConfigProto {
   bool enabled = 1;

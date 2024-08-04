@@ -61,4 +61,6 @@ dependencies {
     implementation(libs.datastoreutils.datastoreflow)
     implementation(libs.androidutils)
     implementation(libs.slimber)
+
+    testImplementation(libs.bundles.unitTest)
 }

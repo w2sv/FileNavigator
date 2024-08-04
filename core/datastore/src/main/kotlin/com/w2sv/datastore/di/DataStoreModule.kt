@@ -9,7 +9,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.w2sv.datastore.NavigatorConfigProto
-import com.w2sv.datastore.NavigatorPreferencesToProtoMigration
+import com.w2sv.datastore.migration.NavigatorPreferencesToProtoMigration
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigProtoSerializer
 import dagger.Module
 import dagger.Provides
@@ -43,7 +43,6 @@ object DataStoreModule {
             },
             migrations = listOf(
                 NavigatorPreferencesToProtoMigration(
-                    context = context,
                     preferencesDataStore = preferencesDataStore
                 )
             )

@@ -4,21 +4,39 @@
     <string name="move">Move</string>
     <string name="file_navigator_is_running">File Navigator is running</string>
     <string name="stop">Stop</string>
-    <string name="found_at">found at</string>
 
     <string name="new_move_file_notification_title">New %1$s</string>
     <string name="new_navigatable_file">New navigatable file</string>
-    <string name="couldnt_move_manage_all_files_permission_missing">Couldn\'t move: Manage all files permission missing</string>
-    <string name="couldnt_move_file_internal_error">Couldn\'t move: Internal Error</string>
+    <string name="batch_move_files">Batch move files</string>
+    <string name="move_progress">Move progress</string>
+    <string name="manage_all_files_permission_missing">Manage all files permission missing</string>
+    <string name="internal_error">Internal Error</string>
     <string name="file_has_already_been_moved_or_deleted">File has already been moved or deleted</string>
     <plurals name="navigatable_file">
         <item quantity="one">%1$d navigatable file</item>
         <item quantity="other">%1$d navigatable files</item>
     </plurals>
     <string name="foreground_service_notification_content">You will be notified when a new file corresponding to your enabled file types enters the file system.</string>
-    <string name="file_already_at_selected_location">File is already at the selected location</string>
+    <string name="file_already_at_selected_location">File already at the selected destination</string>
+    <string name="not_enough_space_on_destination">Not enough space on destination</string>
     <string name="to">to /%1$s</string>
     <string name="starting_navigator">Launching File Navigator…</string>
     <string name="auto_move_destination_invalid">Auto Move Destination invalid</string>
     <string name="has_been_deleted_and_got_therefore_removed_from">"has been deleted and got therefore removed from"</string>
+    <string name="quick_move_destination_doesnt_exist">Quick move destination doesn\'t exist</string>
+    <string name="couldnt_move">Couldn\'t move</string>
+    <string name="directory">Directory</string>
+    <string name="size">Size</string>
+    <string name="move_files">Move %1$d files</string>
+    <string name="move_progress_notification_title">Moving %1$d files…</string>
+    <string name="move_results">Move Results</string>
+    <plurals name="successfully_moved_files_to">
+        <item quantity="one">Successfully moved %1$d file to </item>
+        <item quantity="other">Successfully moved %1$d files to </item>
+    </plurals>
+    <string name="cancel">Cancel</string>
+    <plurals name="couldn_t_move_files_due_to">
+        <item quantity="one"><![CDATA[Couldn\'t move %1$s file due to <b>%2$s</b> exception]]></item>
+        <item quantity="other"><![CDATA[Couldn\'t move %1$s files due to <b>%2$s</b> exception]]></item>
+    </plurals>
 </resources>

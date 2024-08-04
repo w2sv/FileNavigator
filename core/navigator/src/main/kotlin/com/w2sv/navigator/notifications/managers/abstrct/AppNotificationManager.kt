@@ -6,12 +6,16 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
+import com.w2sv.navigator.notifications.AppNotificationChannel
 
-internal abstract class AppNotificationManager<A : AppNotificationManager.BuilderArgs>(
-    protected val notificationChannel: NotificationChannel,
+internal abstract class AppNotificationManager<Args>(
+    appNotificationChannel: AppNotificationChannel,
     protected val notificationManager: NotificationManager,
     protected val context: Context
 ) {
+    protected val notificationChannel: NotificationChannel =
+        appNotificationChannel.getNotificationChannel(context)
+
     init {
         notificationManager.createNotificationChannel(notificationChannel)
     }
@@ -28,16 +32,12 @@ internal abstract class AppNotificationManager<A : AppNotificationManager.Builde
         }
     }
 
-    interface BuilderArgs {
-        data object Empty : BuilderArgs
-    }
-
-    fun buildAndEmit(id: Int, args: A) {
+    protected fun buildAndPostNotification(id: Int, args: Args) {
         notificationManager.notify(id, buildNotification(args))
     }
 
-    fun buildNotification(args: A): Notification =
+    fun buildNotification(args: Args): Notification =
         getBuilder(args).build()
 
-    protected abstract fun getBuilder(args: A): Builder
+    protected abstract fun getBuilder(args: Args): Builder
 }

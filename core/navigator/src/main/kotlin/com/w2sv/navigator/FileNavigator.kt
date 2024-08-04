@@ -2,12 +2,14 @@ package com.w2sv.navigator
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.HandlerThread
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.UnboundService
-import com.w2sv.navigator.fileobservers.FileObserver
-import com.w2sv.navigator.fileobservers.FileObserverFactory
+import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
-import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
+import com.w2sv.navigator.observing.FileObserver
+import com.w2sv.navigator.observing.FileObserverFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,8 +32,16 @@ class FileNavigator : UnboundService() {
 
     private var mediaTypeToFileObserver: MediaTypeToFileObserver? = null
 
+    private val fileObserverHandlerThread by lazy {
+        HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
+    }
+
     private fun getRegisteredFileObservers(): MediaTypeToFileObserver {
-        return fileObserverFactory.invoke()
+        if (!fileObserverHandlerThread.isAlive) {
+            fileObserverHandlerThread.start()
+        }
+
+        return fileObserverFactory.invoke(handler = Handler(fileObserverHandlerThread.looper))
             .onEach { (mediaType, fileObserver) ->
                 contentResolver.registerContentObserver(
                     mediaType.readUri!!,
@@ -68,10 +78,8 @@ class FileNavigator : UnboundService() {
 
     private fun start() {
         startForeground(
-            1,
-            isRunningNotificationManager.buildNotification(
-                AppNotificationManager.BuilderArgs.Empty
-            )
+            AppNotificationId.FileNavigatorIsRunning.id,
+            isRunningNotificationManager.buildNotification(Unit)
         )
 
         i { "Registering file observers" }
@@ -97,7 +105,7 @@ class FileNavigator : UnboundService() {
         super.onDestroy()
 
         unregisterFileObservers()
-        fileObserverFactory.quitThread()
+        fileObserverHandlerThread.quit()
     }
 
     class IsRunning internal constructor(private val mutableStateFlow: MutableStateFlow<Boolean>) :

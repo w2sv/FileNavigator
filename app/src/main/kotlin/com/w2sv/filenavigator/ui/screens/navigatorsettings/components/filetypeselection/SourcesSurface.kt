@@ -36,7 +36,7 @@ import com.w2sv.filenavigator.ui.model.color
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.AutoMoveRow
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.rememberAutoMoveDestinationPath
 import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.rememberSelectAutoMoveDestination
-import com.w2sv.filenavigator.ui.utils.orOnSurfaceDisabledIf
+import com.w2sv.filenavigator.ui.util.orOnSurfaceDisabledIf
 import kotlinx.collections.immutable.ImmutableMap
 
 @Composable
@@ -85,7 +85,7 @@ fun SourcesSurface(
                     autoMoveDestinationPath?.let { path ->
                         AutoMoveRow(
                             destinationPath = path,
-                            changeDestination = { selectAutoMoveDestination.launch(autoMoveConfig.destination?.uri) },
+                            changeDestination = { selectAutoMoveDestination.launch(autoMoveConfig.destination?.documentUri?.uri) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 22.dp, end = 10.dp)

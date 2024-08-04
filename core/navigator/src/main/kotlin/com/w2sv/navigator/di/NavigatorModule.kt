@@ -19,7 +19,7 @@ object NavigatorModule {
 
     @Singleton
     @Provides
-    fun notificationManager(@ApplicationContext context: Context): NotificationManager =
+    internal fun notificationManager(@ApplicationContext context: Context): NotificationManager =
         context.getNotificationManager()
 
     @Singleton

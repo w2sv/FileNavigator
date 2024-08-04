@@ -36,8 +36,6 @@ internal class FileNavigatorTileService : TileService() {
      * Called every time the quick tile pan is expanded. onStopListening behaves vice-versa.
      */
     override fun onStartListening() {
-        super.onStartListening()
-
         i { "onStartListening" }
 
         // Update tile state reactively on navigator status change
@@ -47,8 +45,6 @@ internal class FileNavigatorTileService : TileService() {
     }
 
     override fun onClick() {
-        super.onClick()
-
         when (qsTile.state) {
             Tile.STATE_ACTIVE -> {
                 FileNavigator.stop(this)

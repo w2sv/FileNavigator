@@ -42,7 +42,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
-import com.w2sv.filenavigator.ui.utils.LocalNavHostController
+import com.w2sv.filenavigator.ui.util.LocalNavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

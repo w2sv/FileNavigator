@@ -7,9 +7,10 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import com.w2sv.androidutils.os.getParcelableCompat
+import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.utils.MediaUri
-import com.w2sv.common.utils.showToast
-import com.w2sv.navigator.moving.MoveException
+import com.w2sv.core.navigator.R
+import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import kotlinx.parcelize.Parcelize
 import java.io.File
 
@@ -29,20 +30,17 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val args = Args.fromIntent(intent)
+        val (mediaUri, mimeType, absPath) = Args.fromIntent(intent)
 
-        if (File(args.absPath).exists()) {
+        if (File(absPath).exists()) {
             startActivity(
                 Intent()
-                    .setAction(Intent.ACTION_VIEW).setDataAndType(args.mediaUri.uri, args.mimeType)
+                    .setAction(Intent.ACTION_VIEW).setDataAndType(mediaUri.uri, mimeType)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             )
         } else {
-            showToast(MoveException.MoveFileNotFound.toastProperties)
-            NotificationResources.CleanupBroadcastReceiver.startFromResourcesComprisingIntent(
-                context = this,
-                intent = intent
-            )
+            showToast(R.string.file_has_already_been_moved_or_deleted)
+            NotificationResources.fromIntent(intent)?.cancelNotification(this)
         }
         finishAndRemoveTask()
     }
