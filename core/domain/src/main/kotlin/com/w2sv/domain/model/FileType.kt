@@ -6,6 +6,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.core.domain.R
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 sealed class FileType(
@@ -21,6 +22,11 @@ sealed class FileType(
 
     val isMediaType: Boolean
         get() = this is Media
+
+    @IgnoredOnParcel
+    val ordinal: Int by lazy {
+        values.indexOf(this)
+    }
 
     sealed class Media(
         @StringRes labelRes: Int,

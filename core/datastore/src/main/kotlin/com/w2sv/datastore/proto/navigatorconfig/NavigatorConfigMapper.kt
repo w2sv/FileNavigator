@@ -20,7 +20,7 @@ import com.w2sv.domain.model.navigatorconfig.SourceConfig
 internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, NavigatorConfig> {
     override fun toExternal(proto: NavigatorConfigProto): NavigatorConfig =
         NavigatorConfig(
-            fileTypeConfigMap = proto.fileTypeToConfigMap.entries.associate { (fileTypeIndex, configProto) ->
+            fileTypeConfigMap = proto.fileTypeToConfigMap.map { (fileTypeIndex, configProto) ->
                 FileType.values[fileTypeIndex] to FileTypeConfigMapper.toExternal(configProto)
             },
             showBatchMoveNotification = proto.showBatchMoveNotification,
@@ -34,8 +34,8 @@ internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Naviga
     fun toProto(external: NavigatorConfig, hasBeenMigrated: Boolean): NavigatorConfigProto =
         navigatorConfigProto {
             this.fileTypeToConfig.putAll(
-                external.fileTypeConfigMap.entries.associate { (fileType, config) ->
-                    FileType.values.indexOf(fileType) to FileTypeConfigMapper.toProto(config)
+                external.fileTypeConfigMap.map { (fileType, config) ->
+                    fileType.ordinal to FileTypeConfigMapper.toProto(config)
                 }
             )
             this.showBatchMoveNotification = external.showBatchMoveNotification
@@ -49,7 +49,7 @@ private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeC
     override fun toExternal(proto: FileTypeConfigProto): FileTypeConfig =
         FileTypeConfig(
             enabled = proto.enabled,
-            sourceTypeConfigMap = proto.sourceTypeToConfigMap.entries.associate { (sourceTypeIndex, config) ->
+            sourceTypeConfigMap = proto.sourceTypeToConfigMap.map { (sourceTypeIndex, config) ->
                 SourceType.entries[sourceTypeIndex] to SourceConfigMapper.toExternal(config)
             },
         )
@@ -58,7 +58,7 @@ private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeC
         fileTypeConfigProto {
             enabled = external.enabled
             sourceTypeToConfig.putAll(
-                external.sourceTypeConfigMap.entries.associate { (type, config) ->
+                external.sourceTypeConfigMap.map { (type, config) ->
                     type.ordinal to SourceConfigMapper.toProto(config)
                 }
             )
@@ -100,3 +100,7 @@ private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveC
         destination = external.destination?.toString() ?: ""
     }
 }
+
+// TODO: KotlinUtils
+private inline fun <K, V, RK, RV> Map<K, V>.map(transform: (Map.Entry<K, V>) -> Pair<RK, RV>): Map<RK, RV> =
+    entries.associate(transform)

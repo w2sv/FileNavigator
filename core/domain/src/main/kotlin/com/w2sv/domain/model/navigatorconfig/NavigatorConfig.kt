@@ -16,7 +16,7 @@ data class NavigatorConfig(
     val disabledFileTypes: List<FileType> by lazy {
         (fileTypeConfigMap.keys - enabledFileTypes.toSet())
             .sortedBy { fileType ->
-                FileType.values.indexOf(fileType)
+                fileType.ordinal
             }
     }
 
@@ -81,7 +81,7 @@ data class NavigatorConfig(
         fileType: FileType,
         sourceType: SourceType,
         alterSourceAutoMoveConfig: (AutoMoveConfig) -> AutoMoveConfig
-    ): NavigatorConfig =
+    ) =
         copyWithAlteredSourceConfig(fileType, sourceType) {
             it.copy(autoMoveConfig = alterSourceAutoMoveConfig(it.autoMoveConfig))
         }
