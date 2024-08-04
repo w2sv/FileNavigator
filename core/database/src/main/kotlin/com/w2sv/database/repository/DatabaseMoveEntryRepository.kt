@@ -1,7 +1,7 @@
 package com.w2sv.database.repository
 
 import com.w2sv.database.dao.MoveEntryDao
-import com.w2sv.database.model.MoveEntryEntity
+import com.w2sv.database.entity.MoveEntryEntity
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.repository.MoveEntryRepository
 import kotlinx.coroutines.flow.Flow

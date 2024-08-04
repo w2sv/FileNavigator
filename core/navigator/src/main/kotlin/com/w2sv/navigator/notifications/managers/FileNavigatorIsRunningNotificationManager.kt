@@ -12,20 +12,16 @@ import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
 import com.w2sv.navigator.shared.mainActivityPendingIntent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 internal class FileNavigatorIsRunningNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager
-) : AppNotificationManager<AppNotificationManager.BuilderArgs.Empty>(
-    notificationChannel = AppNotificationChannel.FileNavigatorIsRunning.getNotificationChannel(
-        context
-    ),
+) : AppNotificationManager<Unit>(
+    appNotificationChannel = AppNotificationChannel.FileNavigatorIsRunning,
     notificationManager = notificationManager,
     context = context
 ) {
-    override fun getBuilder(args: BuilderArgs.Empty): Builder =
+    override fun getBuilder(args: Unit): Builder =
         object : Builder() {
             override fun build(): Notification {
                 setContentTitle(context.getString(R.string.file_navigator_is_running))
@@ -46,7 +42,7 @@ internal class FileNavigatorIsRunningNotificationManager @Inject constructor(
                 // add stop action
                 addAction(
                     NotificationCompat.Action(
-                        R.drawable.ic_cancel_24,
+                        com.w2sv.core.common.R.drawable.ic_cancel_24,
                         context.getString(R.string.stop),
                         PendingIntent.getService(
                             context,

@@ -60,11 +60,13 @@
 
         <receiver android:name="com.w2sv.navigator.moving.MoveBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.notifications.NotificationResources$CleanupBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.moving.BatchMoveBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.moving.CancelBatchMoveBroadcastReceiver" />
 
         <!-- Activity -->
 
         <activity
-            android:name="com.w2sv.navigator.moving.FileMoveActivity"
+            android:name="com.w2sv.navigator.moving.DestinationPickerActivity"
             android:taskAffinity="com.w2sv.filenavigator.filemoving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity

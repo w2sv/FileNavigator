@@ -44,12 +44,12 @@ import com.ramcosta.composedestinations.generated.destinations.NavigatorSettings
 import com.ramcosta.composedestinations.navigation.navigate
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
-import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
+import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
-import com.w2sv.filenavigator.ui.utils.Easing
-import com.w2sv.filenavigator.ui.utils.LocalNavHostController
-import com.w2sv.filenavigator.ui.utils.activityViewModel
+import com.w2sv.filenavigator.ui.util.Easing
+import com.w2sv.filenavigator.ui.util.LocalNavHostController
+import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.navigator.FileNavigator
 
 @Composable
@@ -59,7 +59,7 @@ fun NavigatorStatusCard(
     navController: NavController = LocalNavHostController.current,
     context: Context = LocalContext.current
 ) {
-    val navigatorIsRunning by navigatorVM.isRunning.collectAsStateWithLifecycle()
+    val navigatorIsRunning by navigatorVM.navigatorIsRunning.collectAsStateWithLifecycle()
 
     val navigatorIsRunningDependentPropertiesMap = remember {
         mapOf(
@@ -71,7 +71,7 @@ fun NavigatorStatusCard(
                 toggleButtonProperties = ToggleNavigatorButtonProperties(
                     color = AppColor.success,
                     iconRes = R.drawable.ic_start_24,
-                    labelRes = R.string.start_navigator
+                    labelRes = R.string.start
                 ) { FileNavigator.start(context) }
             ),
             true to NavigatorIsRunningDependentProperties(
@@ -82,7 +82,7 @@ fun NavigatorStatusCard(
                 toggleButtonProperties = ToggleNavigatorButtonProperties(
                     color = AppColor.error,
                     iconRes = R.drawable.ic_stop_24,
-                    labelRes = R.string.stop_navigator
+                    labelRes = R.string.stop
                 ) { FileNavigator.stop(context) }
             )
         )
@@ -132,7 +132,7 @@ fun NavigatorStatusCard(
                     onClick = { navController.navigate(NavigatorSettingsScreenDestination) }
                 ) {
                     Icon(
-                        painter = painterResource(id = com.w2sv.core.navigator.R.drawable.ic_settings_24),
+                        painter = painterResource(id = com.w2sv.core.common.R.drawable.ic_settings_24),
                         contentDescription = null
                     )
                 }

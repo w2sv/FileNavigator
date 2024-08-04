@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import com.w2sv.core.domain.R
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -14,43 +15,14 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
      * - Screenshot, Camera, Recording -> sourceTypeIcon
      * - else -> fileTypeIcon
      */
+    @IgnoredOnParcel
     @get:DrawableRes
-    val iconRes: Int
-        get() = when (sourceType) {
+    val iconRes: Int by lazy {
+        when (sourceType) {
             SourceType.Screenshot, SourceType.Camera, SourceType.Recording -> sourceType.iconRes
             else -> fileType.iconRes
         }
-
-    fun moveFileLabel(context: Context, isGif: Boolean, sourceDirName: String): String =
-        when {
-            isGif -> context.getString(R.string.gif)
-            else -> {
-                when (sourceType) {
-                    SourceType.Screenshot, SourceType.Recording -> context.getString(
-                        sourceType.labelRes
-                    )
-
-                    SourceType.Camera -> context.getString(
-                        when (fileType) {
-                            FileType.Image -> R.string.photo
-                            FileType.Video -> R.string.video
-                            else -> throw Error()
-                        }
-                    )
-
-                    SourceType.Download -> context.getString(
-                        R.string.file_type_download,
-                        context.getString(fileType.labelRes),
-                    )
-
-                    SourceType.OtherApp -> "$sourceDirName ${
-                        context.getString(
-                            fileType.labelRes
-                        )
-                    }"
-                }
-            }
-        }
+    }
 
     /**
      * @return

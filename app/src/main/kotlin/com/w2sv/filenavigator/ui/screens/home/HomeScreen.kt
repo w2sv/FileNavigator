@@ -30,8 +30,8 @@ import com.w2sv.filenavigator.ui.designsystem.drawer.drawerRepelledAnimation
 import com.w2sv.filenavigator.ui.designsystem.drawer.rememberDrawerRepelledAnimationState
 import com.w2sv.filenavigator.ui.screens.home.components.movehistory.MoveHistoryCard
 import com.w2sv.filenavigator.ui.screens.home.components.statusdisplay.NavigatorStatusCard
-import com.w2sv.filenavigator.ui.utils.ModifierReceivingComposable
-import com.w2sv.filenavigator.ui.utils.rememberMovableContentOf
+import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
+import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

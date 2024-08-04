@@ -37,13 +37,13 @@ import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
 import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.Theme
-import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
-import com.w2sv.filenavigator.ui.sharedviewmodels.NavigatorViewModel
-import com.w2sv.filenavigator.ui.states.rememberObservedPostNotificationsPermissionState
+import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
+import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
+import com.w2sv.filenavigator.ui.state.rememberObservedPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.utils.LocalDocumentUriToPathConverter
-import com.w2sv.filenavigator.ui.utils.LocalNavHostController
-import com.w2sv.filenavigator.ui.utils.LocalUseDarkTheme
+import com.w2sv.filenavigator.ui.util.LocalMoveDestinationPathConverter
+import com.w2sv.filenavigator.ui.util.LocalNavHostController
+import com.w2sv.filenavigator.ui.util.LocalUseDarkTheme
 import com.w2sv.kotlinutils.coroutines.collectFromFlow
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.system_action_broadcastreceiver.BootCompletedReceiver
@@ -119,7 +119,7 @@ class MainActivity : ComponentActivity() {
 
                     CompositionLocalProvider(
                         LocalNavHostController provides navController,
-                        LocalDocumentUriToPathConverter provides appVM.documentUriToPathConverter
+                        LocalMoveDestinationPathConverter provides appVM.moveDestinationPathConverter
                     ) {
                         Surface(modifier = Modifier.fillMaxSize()) {
                             DestinationsNavHost(
@@ -179,7 +179,7 @@ class MainActivity : ComponentActivity() {
         super.onStart()
 
         appVM.updateManageAllFilesPermissionGranted().let { isGranted ->
-            if (!isGranted && navigatorVM.isRunning.value) {
+            if (!isGranted && navigatorVM.navigatorIsRunning.value) {
                 FileNavigator.stop(this)
             }
         }

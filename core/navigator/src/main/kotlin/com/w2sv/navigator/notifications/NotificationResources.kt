@@ -6,7 +6,8 @@ import android.content.Intent
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
-import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
+import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
+import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
@@ -15,34 +16,39 @@ import javax.inject.Inject
 @Parcelize
 internal data class NotificationResources(
     val id: Int,
-    val pendingIntentRequestCodes: ArrayList<Int>,
-    private val notificationManagerIdentifier: String
+    private val managerClassName: String
 ) : Parcelable {
+
+    fun pendingIntentRequestCodes(count: Int): List<Int> =
+        (id until id + count).toList()
+
+    fun cancelNotification(context: Context) {
+        CleanupBroadcastReceiver.start(
+            context = context,
+            notificationResources = this
+        )
+    }
 
     @AndroidEntryPoint
     class CleanupBroadcastReceiver : BroadcastReceiver() {
 
         @Inject
-        lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
+        lateinit var moveFileNotificationManager: MoveFileNotificationManager
 
         @Inject
         lateinit var autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager
 
-        private val notificationManagers by lazy {
-            listOf(newMoveFileNotificationManager, autoMoveDestinationInvalidNotificationManager)
-        }
-
-        override fun onReceive(context: Context?, intent: Intent?) {
-            intent
-                ?.let {
-                    fromIntent(it)
-                        ?.let { resources ->
-                            notificationManagers.first { notificationManager ->
-                                resources.notificationManagerIdentifier == notificationManager.identifier
-                            }
-                                .also { i { "Cleaning up ${it.identifier} resources" } }
-                                .cancelNotificationAndFreeResources(resources)
+        override fun onReceive(context: Context, intent: Intent) {
+            fromIntent(intent)
+                ?.let { resources ->
+                    listOf(
+                        moveFileNotificationManager, autoMoveDestinationInvalidNotificationManager
+                    )
+                        .first { notificationManager ->
+                            resources.managerClassName == notificationManager.resourcesIdentifier
                         }
+                        .also { i { "Cleaning up ${it.resourcesIdentifier} resources" } }
+                        .cancelNotification(resources.id)
                 }
         }
 
@@ -60,15 +66,10 @@ internal data class NotificationResources(
                         notificationResources
                     )
 
-            /**
-             * @param intent Intent, whose extras contain the [NotificationResources].
-             */
-            fun startFromResourcesComprisingIntent(
-                context: Context,
-                intent: Intent
-            ) {
+            fun start(context: Context, notificationResources: NotificationResources) {
                 context.sendBroadcast(
-                    intent.setClass(context, CleanupBroadcastReceiver::class.java)
+                    Intent(context, CleanupBroadcastReceiver::class.java)
+                        .putOptionalNotificationResourcesExtra(notificationResources)
                 )
             }
         }

@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.w2sv.database.model.MoveEntryEntity
+import com.w2sv.database.entity.MoveEntryEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

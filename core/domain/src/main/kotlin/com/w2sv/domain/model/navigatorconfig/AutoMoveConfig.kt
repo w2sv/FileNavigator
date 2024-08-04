@@ -1,13 +1,13 @@
 package com.w2sv.domain.model.navigatorconfig
 
 import android.os.Parcelable
-import com.w2sv.common.utils.DocumentUri
+import com.w2sv.domain.model.MoveDestination
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AutoMoveConfig(
     val enabled: Boolean,
-    val destination: DocumentUri?
+    val destination: MoveDestination?
 ) : Parcelable {
 
     companion object {

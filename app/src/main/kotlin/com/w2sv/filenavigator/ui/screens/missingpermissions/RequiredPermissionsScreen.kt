@@ -38,10 +38,10 @@ import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
-import com.w2sv.filenavigator.ui.sharedviewmodels.AppViewModel
-import com.w2sv.filenavigator.ui.states.PostNotificationsPermissionState
-import com.w2sv.filenavigator.ui.utils.ModifierReceivingComposable
-import com.w2sv.filenavigator.ui.utils.activityViewModel
+import com.w2sv.filenavigator.ui.state.PostNotificationsPermissionState
+import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
+import com.w2sv.filenavigator.ui.util.activityViewModel
+import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

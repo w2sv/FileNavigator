@@ -34,15 +34,15 @@ import com.ramcosta.composedestinations.generated.destinations.NavigatorSettings
 import com.ramcosta.composedestinations.navigation.navigate
 import com.w2sv.androidutils.openUrl
 import com.w2sv.androidutils.packagePlayStoreUrl
+import com.w2sv.androidutils.startActivity
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.AppUrl
-import com.w2sv.common.utils.startActivityWithActivityNotFoundExceptionHandling
 import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
-import com.w2sv.filenavigator.ui.utils.LocalNavHostController
+import com.w2sv.filenavigator.ui.util.LocalNavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -62,7 +62,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     modifier = Modifier
                 ),
                 NavigationDrawerSheetElement.Item(
-                    iconRes = com.w2sv.core.navigator.R.drawable.ic_settings_24,
+                    iconRes = com.w2sv.core.common.R.drawable.ic_settings_24,
                     labelRes = R.string.app_settings,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
                         scope.launch {
@@ -72,7 +72,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     },
                 ),
                 NavigationDrawerSheetElement.Item(
-                    iconRes = com.w2sv.core.navigator.R.drawable.ic_app_logo_24,
+                    iconRes = com.w2sv.core.common.R.drawable.ic_app_logo_24,
                     labelRes = R.string.navigator_settings,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
                         scope.launch {
@@ -106,7 +106,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     labelRes = R.string.rate,
                     explanationRes = R.string.rate_the_app_in_the_playstore,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.startActivityWithActivityNotFoundExceptionHandling(
+                        context.startActivity(
                             intent = Intent(
                                 Intent.ACTION_VIEW,
                                 Uri.parse(context.packagePlayStoreUrl)

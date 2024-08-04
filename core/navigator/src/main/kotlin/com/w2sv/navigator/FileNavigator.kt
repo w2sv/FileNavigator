@@ -6,20 +6,15 @@ import android.os.Handler
 import android.os.HandlerThread
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.UnboundService
-import com.w2sv.androidutils.isServiceRunning
-import com.w2sv.navigator.fileobservers.FileObserver
-import com.w2sv.navigator.fileobservers.FileObserverProvider
-import com.w2sv.navigator.moving.MoveBroadcastReceiver
-import com.w2sv.navigator.moving.MoveMode
+import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
-import com.w2sv.navigator.notifications.managers.NewMoveFileNotificationManager
-import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
+import com.w2sv.navigator.observing.FileObserver
+import com.w2sv.navigator.observing.FileObserverFactory
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 import javax.inject.Inject
-import javax.inject.Singleton
 
 internal typealias MediaTypeToFileObserver = Map<MediaType, FileObserver>
 
@@ -27,52 +22,26 @@ internal typealias MediaTypeToFileObserver = Map<MediaType, FileObserver>
 class FileNavigator : UnboundService() {
 
     @Inject
-    internal lateinit var isRunningStateFlow: IsRunningStateFlow
+    internal lateinit var isRunning: IsRunning
 
     @Inject
-    internal lateinit var fileNavigatorIsRunningNotificationManager: FileNavigatorIsRunningNotificationManager
+    internal lateinit var isRunningNotificationManager: FileNavigatorIsRunningNotificationManager
 
     @Inject
-    internal lateinit var newMoveFileNotificationManager: NewMoveFileNotificationManager
+    internal lateinit var fileObserverFactory: FileObserverFactory
 
-    @Inject
-    internal lateinit var fileObserverProvider: FileObserverProvider
+    private var mediaTypeToFileObserver: MediaTypeToFileObserver? = null
 
-    private var fileObservers: MediaTypeToFileObserver? = null
-
-    private val contentObserverHandlerThread by lazy {
+    private val fileObserverHandlerThread by lazy {
         HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
     }
 
     private fun getRegisteredFileObservers(): MediaTypeToFileObserver {
-        if (!contentObserverHandlerThread.isAlive) {
-            contentObserverHandlerThread.start()
+        if (!fileObserverHandlerThread.isAlive) {
+            fileObserverHandlerThread.start()
         }
-        return fileObserverProvider(
-            contentResolver = contentResolver,
-            onNewMoveFile = { moveFile ->
-                when (moveFile.moveMode) {
-                    is MoveMode.Auto -> {
-                        MoveBroadcastReceiver.sendBroadcast(
-                            context = applicationContext,
-                            moveFile = moveFile
-                        )
-                    }
 
-                    else -> {
-                        // with scope because construction of inner class BuilderArgs requires inner class scope
-                        with(newMoveFileNotificationManager) {
-                            buildAndEmit(
-                                BuilderArgs(
-                                    moveFile = moveFile
-                                )
-                            )
-                        }
-                    }
-                }
-            },
-            handler = Handler(contentObserverHandlerThread.looper)
-        )
+        return fileObserverFactory.invoke(handler = Handler(fileObserverHandlerThread.looper))
             .onEach { (mediaType, fileObserver) ->
                 contentResolver.registerContentObserver(
                     mediaType.readUri!!,
@@ -93,7 +62,7 @@ class FileNavigator : UnboundService() {
 
             Action.REREGISTER_MEDIA_OBSERVERS -> {
                 unregisterFileObservers()
-                fileObservers = getRegisteredFileObservers()
+                mediaTypeToFileObserver = getRegisteredFileObservers()
             }
 
             else -> try {
@@ -109,26 +78,24 @@ class FileNavigator : UnboundService() {
 
     private fun start() {
         startForeground(
-            1,
-            fileNavigatorIsRunningNotificationManager.buildNotification(
-                AppNotificationManager.BuilderArgs.Empty
-            )
+            AppNotificationId.FileNavigatorIsRunning.id,
+            isRunningNotificationManager.buildNotification(Unit)
         )
 
         i { "Registering file observers" }
-        fileObservers = getRegisteredFileObservers()
-        isRunningStateFlow.value = true
+        mediaTypeToFileObserver = getRegisteredFileObservers()
+        isRunning.setState(true)
     }
 
     private fun stop() {
         i { "FileNavigator.stop" }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
-        isRunningStateFlow.value = false
+        isRunning.setState(false)
     }
 
     private fun unregisterFileObservers() {
-        fileObservers?.values?.forEach {
+        mediaTypeToFileObserver?.values?.forEach {
             contentResolver.unregisterContentObserver(it)
         }
         i { "Unregistered fileObservers" }
@@ -138,13 +105,16 @@ class FileNavigator : UnboundService() {
         super.onDestroy()
 
         unregisterFileObservers()
-        contentObserverHandlerThread.quit()
+        fileObserverHandlerThread.quit()
     }
 
-    @Singleton
-    class IsRunningStateFlow @Inject constructor(
-        @ApplicationContext context: Context
-    ) : MutableStateFlow<Boolean> by MutableStateFlow(context.isServiceRunning<FileNavigator>())
+    class IsRunning internal constructor(private val mutableStateFlow: MutableStateFlow<Boolean>) :
+        StateFlow<Boolean> by mutableStateFlow {
+
+        internal fun setState(value: Boolean) {
+            mutableStateFlow.value = value
+        }
+    }
 
     private data object Action {
         const val REREGISTER_MEDIA_OBSERVERS =
