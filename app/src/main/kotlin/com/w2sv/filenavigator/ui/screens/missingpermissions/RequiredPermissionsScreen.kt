@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screens.missingpermissions
 
 import android.content.Context
-import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,10 +38,10 @@ import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
-import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
 import com.w2sv.filenavigator.ui.state.PostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.activityViewModel
+import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
@@ -167,9 +166,7 @@ private fun rememberMovablePermissionCards(
                         iconRes = R.drawable.ic_folder_open_24,
                         textRes = R.string.manage_external_storage_permission_rational,
                         onGrantButtonClick = {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                goToManageExternalStorageSettings(context)
-                            }
+                            goToManageExternalStorageSettings(context)
                         }
                     )
                 )
