@@ -11,7 +11,7 @@ protobuf-plugin = "0.9.4"
 
 compose-tooling = "1.7.0-beta06"
 compose-material3 = "1.2.1"
-hilt = "2.51.1"
+hilt = "2.52"
 junit = "4.13.2"
 lifecycle = "2.8.4"
 room = "2.6.1"
