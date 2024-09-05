@@ -73,8 +73,7 @@ fun AddFileTypesBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        modifier = modifier,
-        windowInsets = emptyWindowInsets,
+        modifier = modifier
     ) {
         Text(
             text = stringResource(R.string.add_file_types),

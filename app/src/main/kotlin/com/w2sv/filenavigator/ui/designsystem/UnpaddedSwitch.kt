@@ -18,6 +18,7 @@ package com.w2sv.filenavigator.ui.designsystem
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.TweenSpec
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.indication
@@ -35,11 +36,14 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalUseFallbackRippleImplementation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -213,7 +217,7 @@ private fun BoxScope.SwitchImpl(
                 .offset { IntOffset(thumbOffset.roundToInt(), 0) }
                 .indication(
                     interactionSource = interactionSource,
-                    indication = rememberRipple(
+                    indication = rippleOrFallbackImplementation(
                         bounded = false,
                         StateLayerSize / 2
                     )
@@ -230,6 +234,21 @@ private fun BoxScope.SwitchImpl(
                 )
             }
         }
+    }
+}
+
+@Suppress("DEPRECATION_ERROR")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun rippleOrFallbackImplementation(
+    bounded: Boolean = true,
+    radius: Dp = Dp.Unspecified,
+    color: Color = Color.Unspecified
+): Indication {
+    return if (LocalUseFallbackRippleImplementation.current) {
+        rememberRipple(bounded, radius, color)
+    } else {
+        ripple(bounded, radius, color)
     }
 }
 

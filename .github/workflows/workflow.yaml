@@ -13,7 +13,6 @@ jobs:
           java-version: 17
           distribution: temurin
 
-      - name: Check & assembleDebug
+      - name: Build
         run: |
-          ./gradlew check
-          ./gradlew assembleDebug
+          ./gradlew build
