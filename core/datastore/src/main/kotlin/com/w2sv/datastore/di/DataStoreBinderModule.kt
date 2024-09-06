@@ -11,7 +11,7 @@ import dagger.hilt.components.SingletonComponent
 
 @InstallIn(SingletonComponent::class)
 @Module
-interface DataStoreBinderModule {
+internal interface DataStoreBinderModule {
 
     @Binds
     fun bindsNavigatorConfigDataSource(impl: NavigatorConfigDataSourceImpl): NavigatorConfigDataSource

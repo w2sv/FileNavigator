@@ -1,10 +1,7 @@
-package com.w2sv.navigator.di
+package com.w2sv.navigator
 
-import android.app.NotificationManager
 import android.content.Context
-import com.w2sv.androidutils.getNotificationManager
 import com.w2sv.androidutils.isServiceRunning
-import com.w2sv.navigator.FileNavigator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,12 +12,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-object NavigatorModule {
-
-    @Singleton
-    @Provides
-    internal fun notificationManager(@ApplicationContext context: Context): NotificationManager =
-        context.getNotificationManager()
+object FileNavigatorModule {
 
     @Singleton
     @Provides

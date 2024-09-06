@@ -1,4 +1,4 @@
-package com.w2sv.navigator.system_action_broadcastreceiver
+package com.w2sv.navigator.system_broadcastreceiver
 
 import android.content.Context
 import android.content.Intent
@@ -9,8 +9,8 @@ import slimber.log.i
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class PowerSaveModeChangedReceiver :
-    SystemActionBroadcastReceiver(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) {
+internal class PowerSaveModeChangedReceiver :
+    SystemBroadcastReceiver(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) {
 
     @Inject
     internal lateinit var powerManager: PowerManager

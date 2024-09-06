@@ -9,8 +9,8 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface DataBaseBinderModule {
+internal interface DataBaseBinderModule {
 
     @Binds
-    fun bindsMoveEntryRepository(databaseMoveEntryRepository: DatabaseMoveEntryRepository): MoveEntryRepository
+    fun bindsMoveEntryRepository(impl: DatabaseMoveEntryRepository): MoveEntryRepository
 }

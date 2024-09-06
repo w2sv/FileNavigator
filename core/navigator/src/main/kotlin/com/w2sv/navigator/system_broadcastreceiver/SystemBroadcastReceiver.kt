@@ -1,4 +1,4 @@
-package com.w2sv.navigator.system_action_broadcastreceiver
+package com.w2sv.navigator.system_broadcastreceiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -6,7 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import slimber.log.i
 
-abstract class SystemActionBroadcastReceiver(private val action: String) : BroadcastReceiver() {
+abstract class SystemBroadcastReceiver(private val action: String) : BroadcastReceiver() {
 
     private val logIdentifier: String
         get() = this::class.java.simpleName
