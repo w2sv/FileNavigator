@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 
 object AppCardDefaults {
-    val moreElevatedCardElevation
+    val elevation
         @Composable
         get() = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
 }

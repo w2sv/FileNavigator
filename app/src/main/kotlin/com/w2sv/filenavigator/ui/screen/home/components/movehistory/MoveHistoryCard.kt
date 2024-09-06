@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.home.components.movehistory
+package com.w2sv.filenavigator.ui.screen.home.components.movehistory
 
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
@@ -7,13 +7,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -39,16 +37,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.model.launchViewActivity
-import com.w2sv.filenavigator.ui.viewmodel.MoveHistoryViewModel
+import com.w2sv.filenavigator.ui.modelext.launchViewActivity
+import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.util.activityViewModel
+import com.w2sv.filenavigator.ui.viewmodel.MoveHistoryViewModel
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -71,58 +69,49 @@ fun MoveHistoryCard(
         )
     }
 
-    ElevatedCard(
-        modifier = modifier,
-        elevation = AppCardDefaults.moreElevatedCardElevation
-    ) {
-        Column(
+    HomeScreenCard(modifier) {
+        Row(
+            verticalAlignment = Alignment.Top,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
+                .weight(0.12f)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier
-                    .weight(0.12f)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.history),
-                    style = MaterialTheme.typography.headlineMedium,
-                )
+            Text(
+                text = stringResource(R.string.history),
+                style = MaterialTheme.typography.headlineMedium,
+            )
 
-                AnimatedVisibility(visible = !moveHistoryIsEmpty) {
-                    IconButton(
-                        onClick = { showHistoryDeletionDialog = true },
-                        modifier = Modifier.size(38.dp),
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_delete_history_24),
-                            contentDescription = stringResource(R.string.delete_move_history),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            AnimatedContent(
-                targetState = moveHistoryIsEmpty,
-                label = "",
-                modifier = Modifier
-                    .weight(0.8f)
-                    .fillMaxWidth()
-            ) {
-                if (it) {
-                    NoHistoryPlaceHolder()
-                } else {
-                    MoveHistory(
-                        history = moveHistory.toImmutableList(),
-                        onRowClick = rememberMoveEntryRowOnClick()
+            AnimatedVisibility(visible = !moveHistoryIsEmpty) {
+                IconButton(
+                    onClick = { showHistoryDeletionDialog = true },
+                    modifier = Modifier.size(38.dp),
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_delete_history_24),
+                        contentDescription = stringResource(R.string.delete_move_history),
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        AnimatedContent(
+            targetState = moveHistoryIsEmpty,
+            label = "",
+            modifier = Modifier
+                .weight(0.8f)
+                .fillMaxWidth()
+        ) {
+            if (it) {
+                NoHistoryPlaceHolder()
+            } else {
+                MoveHistory(
+                    history = moveHistory.toImmutableList(),
+                    onRowClick = rememberMoveEntryRowOnClick()
+                )
             }
         }
     }

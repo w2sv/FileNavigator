@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeselection
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -36,9 +36,9 @@ import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
-import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.SubDirectoryIcon
-import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.rememberSelectAutoMoveDestination
+import com.w2sv.filenavigator.ui.modelext.color
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.SubDirectoryIcon
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.rememberSelectAutoMoveDestination
 import kotlinx.collections.immutable.ImmutableMap
 
 @Composable

@@ -34,8 +34,9 @@ class AppViewModel @Inject constructor(
     val manageAllFilesPermissionGranted get() = _manageAllFilesPermissionGranted.asStateFlow()
     private val _manageAllFilesPermissionGranted = MutableStateFlow(isExternalStorageManger)
 
-    fun updateManageAllFilesPermissionGranted(): Boolean =
-        isExternalStorageManger.also { _manageAllFilesPermissionGranted.value = it }
+    fun updateManageAllFilesPermissionGranted() {
+        _manageAllFilesPermissionGranted.value = isExternalStorageManger
+    }
 
     private val _postNotificationsPermissionGranted =
         MutableStateFlow(

@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.navigatorsettings
+package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
@@ -66,8 +66,8 @@ import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.AddFileTypesBottomSheet
-import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.NavigatorConfigurationColumn
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AddFileTypesBottomSheet
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
 import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme

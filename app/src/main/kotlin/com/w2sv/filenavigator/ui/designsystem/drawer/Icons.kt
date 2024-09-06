@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.domain.model.FileType
-import com.w2sv.filenavigator.ui.model.color
+import com.w2sv.filenavigator.ui.modelext.color
 
 object IconSize {
     val Default = 24.dp

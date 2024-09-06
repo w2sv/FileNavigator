@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.model
+package com.w2sv.filenavigator.ui.modelext
 
 import androidx.compose.ui.graphics.Color
 import com.w2sv.domain.model.FileType

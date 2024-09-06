@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.appsettings
+package com.w2sv.filenavigator.ui.screen.appsettings
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
@@ -137,7 +137,7 @@ private fun SettingsCard(
 ) {
     ElevatedCard(
         modifier = modifier,
-        elevation = AppCardDefaults.moreElevatedCardElevation
+        elevation = AppCardDefaults.elevation
     ) {
         Column(
             modifier = Modifier

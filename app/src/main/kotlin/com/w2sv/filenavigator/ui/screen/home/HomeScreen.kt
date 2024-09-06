@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.home
+package com.w2sv.filenavigator.ui.screen.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -28,8 +28,8 @@ import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.designsystem.drawer.drawerRepelledAnimation
 import com.w2sv.filenavigator.ui.designsystem.drawer.rememberDrawerRepelledAnimationState
-import com.w2sv.filenavigator.ui.screens.home.components.movehistory.MoveHistoryCard
-import com.w2sv.filenavigator.ui.screens.home.components.statusdisplay.NavigatorStatusCard
+import com.w2sv.filenavigator.ui.screen.home.components.movehistory.MoveHistoryCard
+import com.w2sv.filenavigator.ui.screen.home.components.statusdisplay.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
 import kotlinx.coroutines.CoroutineScope
@@ -106,10 +106,7 @@ private fun PortraitMode(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        statusDisplayCard(
-            Modifier
-                .fillMaxHeight(0.26f)
-        )
+        statusDisplayCard(Modifier)
         moveHistoryCard(Modifier.fillMaxHeight(0.7f))
     }
 }
@@ -128,7 +125,6 @@ private fun LandscapeMode(
         statusDisplayCard(
             Modifier
                 .fillMaxWidth(0.4f)
-                .fillMaxHeight(0.65f)
         )
         moveHistoryCard(
             Modifier

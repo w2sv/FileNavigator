@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.navigatorsettings.components
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
@@ -46,7 +46,6 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
-import com.w2sv.filenavigator.ui.designsystem.emptyWindowInsets
 import com.w2sv.kotlinutils.toggle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -156,7 +155,7 @@ private fun FileTypeCard(
                     shape = MaterialTheme.shapes.medium
                 )
             },
-        elevation = AppCardDefaults.moreElevatedCardElevation
+        elevation = AppCardDefaults.elevation
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

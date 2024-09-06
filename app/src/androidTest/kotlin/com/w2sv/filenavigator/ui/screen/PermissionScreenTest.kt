@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens
+package com.w2sv.filenavigator.ui.screen
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule

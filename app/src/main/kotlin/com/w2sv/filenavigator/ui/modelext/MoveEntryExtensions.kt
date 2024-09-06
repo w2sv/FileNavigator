@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.model
+package com.w2sv.filenavigator.ui.modelext
 
 import android.content.Context
 import android.content.Intent

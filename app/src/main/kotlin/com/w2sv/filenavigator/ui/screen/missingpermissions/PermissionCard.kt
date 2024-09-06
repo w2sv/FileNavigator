@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.missingpermissions
+package com.w2sv.filenavigator.ui.screen.missingpermissions
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -56,7 +56,7 @@ fun PermissionCard(
 ) {
     ElevatedCard(
         modifier = modifier,
-        elevation = AppCardDefaults.moreElevatedCardElevation
+        elevation = AppCardDefaults.elevation
     ) {
         Column(
             modifier = Modifier

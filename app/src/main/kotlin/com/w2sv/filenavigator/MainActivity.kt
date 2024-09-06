@@ -37,19 +37,20 @@ import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
 import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.Theme
-import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
-import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import com.w2sv.filenavigator.ui.state.rememberObservedPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.util.LocalNavHostController
 import com.w2sv.filenavigator.ui.util.LocalUseDarkTheme
+import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
+import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import com.w2sv.kotlinutils.coroutines.collectFromFlow
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.system_action_broadcastreceiver.BootCompletedReceiver
 import com.w2sv.navigator.system_action_broadcastreceiver.PowerSaveModeChangedReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.drop
 import slimber.log.i
 
 @AndroidEntryPoint
@@ -102,18 +103,23 @@ class MainActivity : ComponentActivity() {
                             onStatusChanged = appVM::setPostNotificationsPermissionGranted
                         )
 
-                    OnChange(appVM.allPermissionsGranted.collectAsStateWithLifecycle().value) { allPermissionsGranted ->
-                        if (!allPermissionsGranted && !navController.isRouteOnBackStack(
-                                RequiredPermissionsScreenDestination
-                            )
-                        ) {
-                            navController.navigate(
-                                direction = RequiredPermissionsScreenDestination,
-                                navOptionsBuilder = {
-                                    launchSingleTop = true
-                                    popUpTo(RequiredPermissionsScreenDestination)
-                                }
-                            )
+                    val allPermissionsGranted by appVM.allPermissionsGranted.collectAsStateWithLifecycle()
+                    OnChange(allPermissionsGranted) {
+                        if (!allPermissionsGranted) {
+                            FileNavigator.stop(this)
+
+                            if (!navController.isRouteOnBackStack(
+                                    RequiredPermissionsScreenDestination
+                                )
+                            ) {
+                                navController.navigate(
+                                    direction = RequiredPermissionsScreenDestination,
+                                    navOptionsBuilder = {
+                                        launchSingleTop = true
+                                        popUpTo(RequiredPermissionsScreenDestination)
+                                    }
+                                )
+                            }
                         }
                     }
 
@@ -127,8 +133,7 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 dependenciesContainerBuilder = {
                                     dependency(postNotificationsPermissionState)
-                                },
-//                                startRoute = NavigatorSettingsScreenDestination
+                                }
                             )
                         }
                     }
@@ -138,7 +143,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun CoroutineScope.collectFromFlows() {
-        collectFromFlow(navigatorVM.disabledOnLowBatteryDistinctUntilChanged) {
+        collectFromFlow(navigatorVM.disabledOnLowBatteryDistinctUntilChanged.drop(1)) {
             i { "Collected disableOnLowBattery=$it" }
             val intent =
                 PowerSaveModeChangedReceiver.HostService.getIntent(applicationContext)
@@ -153,7 +158,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        collectFromFlow(navigatorVM.startOnBootDistinctUntilChanged) {
+        collectFromFlow(navigatorVM.startOnBootDistinctUntilChanged.drop(1)) {
             i { "Collected startOnBootCompleted=$it" }
 
             try {
@@ -166,7 +171,7 @@ class MainActivity : ComponentActivity() {
                         bootCompletedReceiver.unregister(applicationContext)
                     }
                 }
-            } catch (_: IllegalArgumentException) {  // Thrown when unregistered receiver is attempted to be unregistered
+            } catch (_: IllegalArgumentException) {  // Thrown upon attempting to unregister unregistered receiver
             }
         }
     }
@@ -178,11 +183,7 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        appVM.updateManageAllFilesPermissionGranted().let { isGranted ->
-            if (!isGranted && navigatorVM.navigatorIsRunning.value) {
-                FileNavigator.stop(this)
-            }
-        }
+        appVM.updateManageAllFilesPermissionGranted()
     }
 }
 

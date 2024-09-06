@@ -51,7 +51,6 @@ androidx-compose-animation = { module = "androidx.compose.animation:animation", 
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidxActivity" }
 androidx-compose-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
-androidx-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-datastore-preferences = "androidx.datastore:datastore-preferences:1.1.1"
 androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose-tooling" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }

@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.missingpermissions
+package com.w2sv.filenavigator.ui.screen.missingpermissions
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement

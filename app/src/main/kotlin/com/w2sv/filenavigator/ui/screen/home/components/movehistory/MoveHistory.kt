@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.home.components.movehistory
+package com.w2sv.filenavigator.ui.screen.home.components.movehistory
 
 import android.content.Context
 import androidx.compose.foundation.background
@@ -44,8 +44,8 @@ import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
-import com.w2sv.filenavigator.ui.model.color
-import com.w2sv.filenavigator.ui.model.movedFileExists
+import com.w2sv.filenavigator.ui.modelext.color
+import com.w2sv.filenavigator.ui.modelext.movedFileExists
 import com.w2sv.filenavigator.ui.util.LocalMoveDestinationPathConverter
 import eu.wewox.textflow.TextFlow
 import kotlinx.collections.immutable.ImmutableList

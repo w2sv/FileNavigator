@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.home.components.statusdisplay
+package com.w2sv.filenavigator.ui.screen.home.components.statusdisplay
 
 import android.content.Context
 import androidx.annotation.DrawableRes
@@ -10,17 +10,13 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,13 +39,13 @@ import androidx.navigation.NavController
 import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
-import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
+import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.LocalNavHostController
 import com.w2sv.filenavigator.ui.util.activityViewModel
+import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import com.w2sv.navigator.FileNavigator
 
 @Composable
@@ -92,50 +88,41 @@ fun NavigatorStatusCard(
         navigatorIsRunningDependentPropertiesMap.getValue(navigatorIsRunning)
     }
 
-    ElevatedCard(
-        modifier = modifier.fillMaxSize(),
-        elevation = AppCardDefaults.moreElevatedCardElevation
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+    HomeScreenCard(modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = stringResource(R.string.navigator_status),
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            UpSlidingAnimatedContent(targetState = navigatorIsRunningDependentProperties.statusTextProperties) {
                 Text(
-                    text = stringResource(R.string.navigator_status),
-                    style = MaterialTheme.typography.headlineMedium
+                    text = stringResource(id = it.textRes),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = it.color
                 )
-                Spacer(modifier = Modifier.width(14.dp))
-                UpSlidingAnimatedContent(targetState = navigatorIsRunningDependentProperties.statusTextProperties) {
-                    Text(
-                        text = stringResource(id = it.textRes),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = it.color
-                    )
-                }
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.fillMaxWidth()
+        }
+        Spacer(modifier = Modifier.height(32.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ToggleNavigatorButton(
+                properties = navigatorIsRunningDependentProperties.toggleButtonProperties,
+                modifier = Modifier
+                    .height(65.dp)
+                    .width(180.dp)
+            )
+            FilledIconButton(
+                onClick = { navController.navigate(NavigatorSettingsScreenDestination) }
             ) {
-                ToggleNavigatorButton(
-                    properties = navigatorIsRunningDependentProperties.toggleButtonProperties,
-                    modifier = Modifier
-                        .height(65.dp)
-                        .width(180.dp)
+                Icon(
+                    painter = painterResource(id = com.w2sv.core.common.R.drawable.ic_settings_24),
+                    contentDescription = null
                 )
-                FilledIconButton(
-                    onClick = { navController.navigate(NavigatorSettingsScreenDestination) }
-                ) {
-                    Icon(
-                        painter = painterResource(id = com.w2sv.core.common.R.drawable.ic_settings_24),
-                        contentDescription = null
-                    )
-                }
             }
         }
     }

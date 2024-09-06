@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screens.navigatorsettings.components
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
 import android.content.Context
 import android.net.Uri
@@ -46,7 +46,7 @@ import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.Spacing
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
 import com.w2sv.filenavigator.ui.designsystem.drawer.IconSize
-import com.w2sv.filenavigator.ui.screens.navigatorsettings.components.filetypeselection.FileTypeAccordion
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.state.ReversibleNavigatorConfig
 import com.w2sv.filenavigator.ui.util.LocalMoveDestinationPathConverter
 import kotlinx.collections.immutable.toImmutableMap
