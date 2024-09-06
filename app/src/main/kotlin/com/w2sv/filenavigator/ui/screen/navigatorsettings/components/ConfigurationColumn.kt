@@ -255,19 +255,20 @@ private fun MoreColumnItems(
     ) {
         SwitchItemRow(
             icon = { DefaultItemRowIcon(res = com.w2sv.core.navigator.R.drawable.ic_files_24) },
-            labelRes = R.string.show_batch_move_notification,
+            labelRes = R.string.batch_move_notification,
             checked = showBatchMoveNotification,
-            onCheckedChange = setShowBatchMoveNotification
+            onCheckedChange = setShowBatchMoveNotification,
+            explanation = stringResource(R.string.batch_move_explanation)
         )
         SwitchItemRow(
             icon = { DefaultItemRowIcon(res = R.drawable.ic_battery_low_24) },
-            labelRes = R.string.disable_on_low_battery,
+            labelRes = R.string.disable_navigator_on_low_battery,
             checked = disableOnLowBattery,
             onCheckedChange = setDisableOnLowBattery
         )
         SwitchItemRow(
             icon = { DefaultItemRowIcon(res = R.drawable.ic_restart_24) },
-            labelRes = R.string.start_on_system_boot,
+            labelRes = R.string.start_navigator_on_system_boot,
             checked = startOnBoot,
             onCheckedChange = setStartOnBoot
         )

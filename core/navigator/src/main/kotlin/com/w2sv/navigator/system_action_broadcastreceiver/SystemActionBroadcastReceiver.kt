@@ -11,15 +11,26 @@ abstract class SystemActionBroadcastReceiver(private val action: String) : Broad
     private val logIdentifier: String
         get() = this::class.java.simpleName
 
-    override fun onReceive(context: Context?, intent: Intent?) {
+    override fun onReceive(context: Context, intent: Intent) {
         i { "$logIdentifier.onReceive" }
 
-        if (intent == null || intent.action != action || context == null) return
+        if (intent.action != action) return
 
         onReceiveMatchingIntent(context, intent)
     }
 
     protected abstract fun onReceiveMatchingIntent(context: Context, intent: Intent)
+
+    fun toggle(register: Boolean, context: Context) {
+        try {
+            if (register) {
+                register(context)
+            } else {
+                unregister(context)
+            }
+        } catch (_: IllegalArgumentException) {  // Thrown upon attempting to unregister unregistered receiver
+        }
+    }
 
     fun register(context: Context) {
         context.registerReceiver(

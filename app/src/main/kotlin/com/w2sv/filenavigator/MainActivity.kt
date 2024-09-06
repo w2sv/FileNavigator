@@ -26,7 +26,6 @@ import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
@@ -43,21 +42,13 @@ import com.w2sv.filenavigator.ui.util.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.util.LocalNavHostController
 import com.w2sv.filenavigator.ui.util.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
-import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
-import com.w2sv.kotlinutils.coroutines.collectFromFlow
 import com.w2sv.navigator.FileNavigator
-import com.w2sv.navigator.system_action_broadcastreceiver.BootCompletedReceiver
-import com.w2sv.navigator.system_action_broadcastreceiver.PowerSaveModeChangedReceiver
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.drop
-import slimber.log.i
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val appVM by viewModels<AppViewModel>()
-    private val navigatorVM by viewModels<NavigatorViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         var triggerStatusBarStyleUpdate by mutableStateOf(false)
@@ -69,8 +60,6 @@ class MainActivity : ComponentActivity() {
         )
 
         super.onCreate(savedInstanceState)
-
-        lifecycleScope.collectFromFlows()
 
         setContent {
             CompositionLocalProvider(
@@ -140,44 +129,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun CoroutineScope.collectFromFlows() {
-        collectFromFlow(navigatorVM.disabledOnLowBatteryDistinctUntilChanged.drop(1)) {
-            i { "Collected disableOnLowBattery=$it" }
-            val intent =
-                PowerSaveModeChangedReceiver.HostService.getIntent(applicationContext)
-
-            when (it) {
-                true -> {
-                    startService(intent)
-                }
-
-                false -> {
-                    stopService(intent)
-                }
-            }
-        }
-        collectFromFlow(navigatorVM.startOnBootDistinctUntilChanged.drop(1)) {
-            i { "Collected startOnBootCompleted=$it" }
-
-            try {
-                when (it) {
-                    true -> {
-                        bootCompletedReceiver.register(applicationContext)
-                    }
-
-                    false -> {
-                        bootCompletedReceiver.unregister(applicationContext)
-                    }
-                }
-            } catch (_: IllegalArgumentException) {  // Thrown upon attempting to unregister unregistered receiver
-            }
-        }
-    }
-
-    private val bootCompletedReceiver by lazy {
-        BootCompletedReceiver()
     }
 
     override fun onStart() {
