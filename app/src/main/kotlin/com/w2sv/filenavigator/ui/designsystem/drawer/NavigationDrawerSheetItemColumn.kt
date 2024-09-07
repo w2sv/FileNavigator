@@ -39,10 +39,11 @@ import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.AppUrl
 import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.LocalNavHostController
+import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
-import com.w2sv.filenavigator.ui.LocalNavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -62,7 +63,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     modifier = Modifier
                 ),
                 NavigationDrawerSheetElement.Item(
-                    iconRes = com.w2sv.core.common.R.drawable.ic_settings_24,
+                    iconRes = R.drawable.ic_smartphone_24,
                     labelRes = R.string.app_settings,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
                         scope.launch {

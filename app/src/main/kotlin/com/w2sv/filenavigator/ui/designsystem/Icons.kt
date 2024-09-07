@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.designsystem.drawer
+package com.w2sv.filenavigator.ui.designsystem
 
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable

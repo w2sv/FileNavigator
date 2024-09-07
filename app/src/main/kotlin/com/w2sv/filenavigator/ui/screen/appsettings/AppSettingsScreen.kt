@@ -37,7 +37,7 @@ import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.Spacing
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
-import com.w2sv.filenavigator.ui.designsystem.drawer.IconSize
+import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.drawer.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.designsystem.drawer.model.AppPreferences
 import com.w2sv.filenavigator.ui.designsystem.drawer.model.rememberAppPreferences

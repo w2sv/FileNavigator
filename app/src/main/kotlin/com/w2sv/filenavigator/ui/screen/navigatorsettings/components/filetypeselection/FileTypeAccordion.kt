@@ -35,7 +35,7 @@ import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.designsystem.drawer.FileTypeIcon
+import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.SubDirectoryIcon
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.rememberSelectAutoMoveDestination
