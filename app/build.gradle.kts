@@ -95,7 +95,6 @@ android {
 
 // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-compiler.html#compose-compiler-options-dsl
 composeCompiler {
-    enableStrongSkippingMode = true
     includeSourceInformation = true
     stabilityConfigurationFile.set(rootProject.file("compose_compiler_config.conf"))
     metricsDestination.set(project.layout.buildDirectory.dir("compose_compiler"))
