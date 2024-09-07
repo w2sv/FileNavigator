@@ -29,6 +29,7 @@ internal class NavigatorConfigControlledSystemBroadcastReceiverManagerImpl @Inje
             }
         }
     }
+
     private val disabledOnLowBatteryDistinctUntilChanged =
         navigatorConfigDataSource.navigatorConfig.map { it.disableOnLowBattery }
             .distinctUntilChanged()

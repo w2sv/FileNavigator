@@ -11,7 +11,10 @@ import com.w2sv.domain.model.FileAndSourceType
 internal fun FileAndSourceType.coloredIconBitmap(context: Context): Bitmap? =
     context.drawableBitmap(iconRes, fileType.colorInt)
 
-internal fun Context.drawableBitmap(@DrawableRes drawable: Int, @ColorInt tint: Int? = null): Bitmap? =
+internal fun Context.drawableBitmap(
+    @DrawableRes drawable: Int,
+    @ColorInt tint: Int? = null
+): Bitmap? =
     AppCompatResources.getDrawable(this, drawable)
         ?.apply { tint?.let { setTint(it) } }
         ?.toBitmap()

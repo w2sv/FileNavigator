@@ -36,11 +36,11 @@ import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
 import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.Theme
-import com.w2sv.filenavigator.ui.state.rememberObservedPostNotificationsPermissionState
-import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.LocalNavHostController
 import com.w2sv.filenavigator.ui.LocalUseDarkTheme
+import com.w2sv.filenavigator.ui.state.rememberObservedPostNotificationsPermissionState
+import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint

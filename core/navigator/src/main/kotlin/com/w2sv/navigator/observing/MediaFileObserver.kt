@@ -7,8 +7,8 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.kotlinutils.coroutines.mapState
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
-import com.w2sv.navigator.observing.model.MediaStoreFileData
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
+import com.w2sv.navigator.observing.model.MediaStoreFileData
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 

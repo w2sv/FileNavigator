@@ -29,19 +29,19 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.androidutils.os.dynamicColorsSupported
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.DefaultItemRowIcon
+import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRow
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.Spacing
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
-import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.drawer.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.designsystem.drawer.model.AppPreferences
 import com.w2sv.filenavigator.ui.designsystem.drawer.model.rememberAppPreferences
-import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 
 @OptIn(ExperimentalLayoutApi::class)
 @Destination<RootGraph>(style = NavigationTransitions::class)

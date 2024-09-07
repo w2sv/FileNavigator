@@ -16,8 +16,8 @@ import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.FileChangeOperation
-import com.w2sv.navigator.observing.model.MediaStoreFileData
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
+import com.w2sv.navigator.observing.model.MediaStoreFileData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
