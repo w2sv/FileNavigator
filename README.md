@@ -6,6 +6,7 @@
 <p align="center">
   <img src="https://img.shields.io/endpoint?color=green&logo=google-play&logoColor=green&url=https%3A%2F%2Fplay.cuzi.workers.dev%2Fplay%3Fi%3Dcom.w2sv.filenavigator%26l%3DPlay%2520Store%26m%3D%24version"/>
   <img alt="F-Droid" src="https://img.shields.io/f-droid/v/com.w2sv.filenavigator">
+  <img alt="IzzyOnDroid" src="https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.w2sv.filenavigator">
   <img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/w2sv/FileNavigator?include_prereleases"/>
 
   <br>
@@ -34,6 +35,7 @@
 <p align="center">
 <a href="https://play.google.com/store/apps/details?id=com.w2sv.filenavigator"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" height="80"/></a>
 <a href="https://f-droid.org/packages/com.w2sv.filenavigator/"><img alt="Download from F-Droid" src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="80"/></a>
+<a href='https://apt.izzysoft.de/fdroid/index/apk/com.w2sv.filenavigator'><img alt='Get it on IzzyOnDroid' src='https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png' height="80" /></a>
 <a href="https://github.com/w2sv/FileNavigator/releases/latest"><img alt="Get it on GitHub" src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" height="80"/></a>
 </p>
 
