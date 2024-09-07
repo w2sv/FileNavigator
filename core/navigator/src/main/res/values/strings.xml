@@ -30,9 +30,9 @@
     <string name="move_files">Move %1$d files</string>
     <string name="move_progress_notification_title">Moving %1$d files…</string>
     <string name="move_results">Move Results</string>
-    <plurals name="successfully_moved_files_to">
-        <item quantity="one">Successfully moved %1$d file to </item>
-        <item quantity="other">Successfully moved %1$d files to </item>
+    <plurals name="moved_files_to">
+        <item quantity="one"><![CDATA[Moved %1$d file to <b>%2$s</b>]]></item>
+        <item quantity="other"><![CDATA[Moved %1$d files to <b>%2$s</b>]]></item>
     </plurals>
     <string name="cancel">Cancel</string>
     <plurals name="couldn_t_move_files_due_to">

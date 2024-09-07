@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.materialkolor.PaletteStyle
 import com.materialkolor.rememberDynamicColorScheme
-import com.w2sv.filenavigator.ui.util.LocalUseDarkTheme
+import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 
 private val seedColor = Color(color = 0xFF00696E)
 

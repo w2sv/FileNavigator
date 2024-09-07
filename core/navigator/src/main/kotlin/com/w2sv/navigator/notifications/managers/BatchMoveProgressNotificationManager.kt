@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
-import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.androidutils.res.getQuantityText
 import com.w2sv.core.navigator.R
@@ -76,40 +75,46 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                 object : Builder() {
                     override fun build(): Notification {
                         setProgress(0, 0, false)  // Hides progress bar
-                        setContentTitle(context.getString(R.string.move_results))
-                        setStyle(
-                            NotificationCompat.BigTextStyle()
-                                .bigText(
-                                    contentText(
-                                        moveResults = args.moveResults,
-                                        destination = args.destination
-                                    )
-                                )
+
+                        val moveResultToCount = args.moveResults.groupingBy { it }.eachCount()
+                        val contentText = contentText(
+                            moveResultToCount = moveResultToCount,
+                            destination = args.destination
                         )
+                        if (moveResultToCount.size == 1) {
+                            setContentTitle(contentText)
+                        } else {
+                            setContentTitle(context.getString(R.string.move_results))
+                            setStyle(
+                                NotificationCompat.BigTextStyle()
+                                    .bigText(
+                                        contentText(
+                                            moveResultToCount = moveResultToCount,
+                                            destination = args.destination
+                                        )
+                                    )
+                            )
+                        }
+
                         return super.build()
                     }
 
                     private fun contentText(
-                        moveResults: List<MoveResult>,
+                        moveResultToCount: Map<MoveResult, Int>,
                         destination: MoveDestination
                     ): CharSequence {
-                        val moveResultToCount = moveResults.groupingBy { it }.eachCount()
                         val resultRowPrefix = if (moveResultToCount.size >= 2) "• " else null
                         return buildSpannedString {
                             moveResultToCount[MoveResult.Success]?.let { moveSuccessCount ->
                                 resultRowPrefix?.let { append(it) }
                                 append(
-                                    context.resources.getQuantityString(
-                                        R.plurals.successfully_moved_files_to,
+                                    context.resources.getQuantityText(
+                                        R.plurals.moved_files_to,
                                         moveSuccessCount,
-                                        moveSuccessCount
-                                    )
-                                )
-                                bold {
-                                    append(
+                                        moveSuccessCount,
                                         destination.shortRepresentation(context)
                                     )
-                                }
+                                )
                             }
                             moveResultToCount.keys
                                 .filter { it != MoveResult.Success }

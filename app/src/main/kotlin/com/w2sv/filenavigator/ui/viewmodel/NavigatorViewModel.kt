@@ -39,7 +39,7 @@ class NavigatorViewModel @Inject constructor(
     val reversibleConfig = ReversibleNavigatorConfig(
         scope = viewModelScope,
         navigatorConfigDataSource = navigatorConfigDataSource,
-        emitMakeSnackbarVisuals = {
+        makeSnackbarVisuals = {
             viewModelScope.launch {
                 _makeSnackbarVisuals.emit(it)
             }

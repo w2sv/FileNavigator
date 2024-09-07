@@ -68,18 +68,17 @@ import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AddFileTypesBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
-import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
-import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
+import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
+import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import slimber.log.i
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(style = NavigationTransitions::class)
@@ -162,7 +161,7 @@ fun NavigatorSettingsScreen(
                     }
                 },
                 onVisibilityStateChange = {
-                    fabButtonRowIsShowing = it.also { i { "Set fabButtonRowIsShowing=$it" } }
+                    fabButtonRowIsShowing = it
                 },
                 modifier = Modifier
                     .padding(

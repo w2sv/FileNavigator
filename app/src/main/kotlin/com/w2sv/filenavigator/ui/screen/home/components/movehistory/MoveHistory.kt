@@ -46,7 +46,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.modelext.movedFileExists
-import com.w2sv.filenavigator.ui.util.LocalMoveDestinationPathConverter
+import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import eu.wewox.textflow.TextFlow
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope

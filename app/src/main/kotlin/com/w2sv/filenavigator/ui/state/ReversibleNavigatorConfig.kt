@@ -20,14 +20,14 @@ import kotlinx.coroutines.flow.update
 @Stable
 class ReversibleNavigatorConfig(
     reversibleStateFlow: ReversibleStateFlow<NavigatorConfig>,
-    private val emitMakeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
+    private val makeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
 ) : ReversibleState by reversibleStateFlow,
     MutableStateFlow<NavigatorConfig> by reversibleStateFlow {
 
     constructor(
         scope: CoroutineScope,
         navigatorConfigDataSource: NavigatorConfigDataSource,
-        emitMakeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
+        makeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
         onStateSynced: () -> Unit
     ) : this(
         reversibleStateFlow = ReversibleStateFlow(
@@ -42,7 +42,7 @@ class ReversibleNavigatorConfig(
                 onStateSynced()
             }
         ),
-        emitMakeSnackbarVisuals = emitMakeSnackbarVisuals,
+        makeSnackbarVisuals = makeSnackbarVisuals,
     )
 
     fun onFileTypeCheckedChange(
@@ -102,7 +102,7 @@ class ReversibleNavigatorConfig(
         crossinline makeSnackbarVisuals: MakeSnackbarVisuals
     ) {
         if (!checkedNew && checkedCount <= 1) {
-            emitMakeSnackbarVisuals { makeSnackbarVisuals(it) }
+            makeSnackbarVisuals { makeSnackbarVisuals(it) }
         } else {
             update()
         }

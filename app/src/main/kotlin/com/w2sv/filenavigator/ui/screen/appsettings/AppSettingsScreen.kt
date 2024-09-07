@@ -41,7 +41,7 @@ import com.w2sv.filenavigator.ui.designsystem.drawer.IconSize
 import com.w2sv.filenavigator.ui.designsystem.drawer.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.designsystem.drawer.model.AppPreferences
 import com.w2sv.filenavigator.ui.designsystem.drawer.model.rememberAppPreferences
-import com.w2sv.filenavigator.ui.util.LocalUseDarkTheme
+import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 
 @OptIn(ExperimentalLayoutApi::class)
 @Destination<RootGraph>(style = NavigationTransitions::class)

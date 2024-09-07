@@ -48,7 +48,7 @@ import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
 import com.w2sv.filenavigator.ui.designsystem.drawer.IconSize
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.state.ReversibleNavigatorConfig
-import com.w2sv.filenavigator.ui.util.LocalMoveDestinationPathConverter
+import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.update
 import slimber.log.i

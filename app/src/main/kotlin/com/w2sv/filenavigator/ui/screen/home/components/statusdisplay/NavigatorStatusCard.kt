@@ -43,7 +43,7 @@ import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
 import com.w2sv.filenavigator.ui.util.Easing
-import com.w2sv.filenavigator.ui.util.LocalNavHostController
+import com.w2sv.filenavigator.ui.LocalNavHostController
 import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import com.w2sv.navigator.FileNavigator
