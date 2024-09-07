@@ -1,7 +1,6 @@
-- New Features:
-    - File source-specific auto moving
-    - Optional automatic navigator restart on boot
-    - New eBook file type
-    - App Settings screen
-    - Show/hide storage volume names
+- New Feature:
+    - Batch moving: enables collectively moving files to a destination
+- Fixed:
+    - Automatic navigator disablement on low battery
+    - Resetting of navigator settings
 - Performance improvements & UI refinements

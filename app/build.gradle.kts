@@ -104,7 +104,7 @@ composeCompiler {
 
 // https://github.com/Triple-T/gradle-play-publisher
 play {
-//    serviceAccountCredentials.set(file("service-account-key.json"))
+    serviceAccountCredentials.set(file("service-account-key.json"))
     defaultToAppBundles.set(true)
     artifactDir.set(file("build/outputs/bundle/release"))
 }
