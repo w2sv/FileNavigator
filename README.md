@@ -1,19 +1,17 @@
 <p align="center">
-  <a href=""><img width="200" height="200" src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/icon/1.png"></a>
+  <a href=""><img width="200" height="200" src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp"></a>
 </p>
 <h1 align="center">File Navigator</h1>
 
 <p align="center">
   <img src="https://img.shields.io/endpoint?color=green&logo=google-play&logoColor=green&url=https%3A%2F%2Fplay.cuzi.workers.dev%2Fplay%3Fi%3Dcom.w2sv.filenavigator%26l%3DPlay%2520Store%26m%3D%24version"/>
-  <img alt="F-Droid" src="https://img.shields.io/f-droid/v/com.w2sv.filenavigator">
+  <img alt="F-Droid" src="https://img.shields.io/f-droid/v/com.w2sv.filenavigator?label=F-Droid&logo=fdroid">
   <img alt="IzzyOnDroid" src="https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.w2sv.filenavigator">
-  <img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/w2sv/FileNavigator?include_prereleases"/>
+  <img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/w2sv/FileNavigator?label=GitHub&logo=github&color=purple"/>
 
   <br>
-
-  <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/w2sv/FileNavigator/total">
   <img src="https://img.shields.io/endpoint?color=green&logo=google-play&logoColor=green&url=https%3A%2F%2Fplay.cuzi.workers.dev%2Fplay%3Fi%3Dcom.w2sv.filenavigator%26l%3DDownloads%26m%3D%24totalinstalls"/>
-
+  <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/w2sv/FileNavigator/total?label=Downloads&logo=github&color=purple">
   <br>
 
   <img src="https://img.shields.io/github/license/w2sv/WiFi-Widget">
