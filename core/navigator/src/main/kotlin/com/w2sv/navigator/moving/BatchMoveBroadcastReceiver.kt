@@ -44,7 +44,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val args = intent.getParcelableCompat<Args>(Args.EXTRA)!!
 
-        when (val preMoveCheckResult = sharedPreMoveChecks(args.destination, context)) {
+        when (val preMoveCheckResult = PreMoveCheckResult.get(args.destination, context)) {
             is PreMoveCheckResult.Failure -> {
                 moveResultListener.onPreMoveCancellation(preMoveCheckResult.failure, null)
             }

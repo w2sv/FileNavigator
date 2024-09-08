@@ -18,7 +18,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
         moveResultListener.invoke(
             moveBundle = moveBundle,
-            moveResult = moveBundle.move(context),
+            moveResult = moveBundle.copyToDestinationAndDelete(context),
         )
     }
 

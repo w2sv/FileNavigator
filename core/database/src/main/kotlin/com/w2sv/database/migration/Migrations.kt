@@ -11,6 +11,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.anggrayudi.storage.file.child
 import com.w2sv.androidutils.database.getStringOrThrow
+import com.w2sv.common.utils.log
 import slimber.log.i
 
 internal object Migrations {
@@ -82,7 +83,7 @@ internal object Migrations {
                         cursor.getStringOrThrow("dateTime")
                     )
                 )
-                    .also { i { "Updated $it row(s)" } }
+                    .log { "Updated $it row(s)" }
             }
         }
     }

@@ -36,6 +36,7 @@ composed-permissions = { module = "com.github.w2sv.Composed:permissions", versio
 reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.3-rc1"
 datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:preferences", version.ref = "datastoreutils" }
 datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:datastoreflow", version.ref = "datastoreutils" }
+simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.0.2-rc2"
 
 # Androidx
 androidx-appcompat = "androidx.appcompat:appcompat:1.7.0"
@@ -75,7 +76,6 @@ google-hilt-android-testing = { module = "com.google.dagger:hilt-android-testing
 
 # Other
 slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
-simplestorage = "com.anggrayudi:storage:2.0.0"
 compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "compose-lint-checks" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }

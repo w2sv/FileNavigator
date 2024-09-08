@@ -3,6 +3,7 @@ package com.w2sv.datastore.migration
 import androidx.datastore.core.DataMigration
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.w2sv.common.utils.log
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigMapper
 import com.w2sv.domain.model.MoveDestination
@@ -15,7 +16,7 @@ internal class NavigatorPreferencesToProtoMigration(
 ) : DataMigration<NavigatorConfigProto> {
 
     override suspend fun shouldMigrate(currentData: NavigatorConfigProto): Boolean =
-        !currentData.hasBeenMigrated.also { i { "hasBeenMigrated=$it" } }
+        !currentData.hasBeenMigrated.log { "hasBeenMigrated=$it" }
 
     private lateinit var presentPreMigrationKeys: List<Preferences.Key<*>>
 
@@ -27,7 +28,7 @@ internal class NavigatorPreferencesToProtoMigration(
         presentPreMigrationKeys = PreMigrationNavigatorPreferencesKey.keys()
             .filter { key -> preferences.contains(key) }
             .toList()
-            .also { i { "presentPreMigrationKeys: $it" } }
+            .log { "presentPreMigrationKeys: $it" }
 
         return if (presentPreMigrationKeys.isNotEmpty()) {
             performMigration(preferences)
@@ -82,7 +83,7 @@ internal class NavigatorPreferencesToProtoMigration(
                     )
                 )
             }
-                .also { i { "Migrated: $it" } }
+                .log { "Migrated: $it" }
         )
 
     override suspend fun cleanUp() {

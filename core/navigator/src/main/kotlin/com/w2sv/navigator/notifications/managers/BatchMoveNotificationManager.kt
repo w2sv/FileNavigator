@@ -11,6 +11,7 @@ import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.DestinationPickerActivity
+import com.w2sv.navigator.moving.FileBatchDestinationPickerActivity
 import com.w2sv.navigator.moving.model.BatchMoveBundle
 import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
 import com.w2sv.navigator.moving.model.MoveMode
@@ -63,8 +64,8 @@ internal class BatchMoveNotificationManager @Inject constructor(
                     PendingIntent.getActivity(
                         context,
                         PendingIntentRequestCode.MoveAction.ordinal,
-                        DestinationPickerActivity.makeRestartActivityIntent(
-                            DestinationPickerActivity.Args.FileBatch(
+                        DestinationPickerActivity.makeRestartActivityIntent<FileBatchDestinationPickerActivity>(
+                            FileBatchDestinationPickerActivity.Args(
                                 moveFilesWithNotificationResources = args.map {  // TODO: optimizable?
                                     MoveFileWithNotificationResources(
                                         it.moveFile,

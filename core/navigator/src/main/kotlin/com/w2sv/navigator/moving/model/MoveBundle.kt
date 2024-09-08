@@ -37,9 +37,9 @@ internal data class MoveBundle(
         )
 
     companion object {
-        const val EXTRA = "com.w2sv.navigator.extra.MoveBroadcastReceiver.Args"
+        const val EXTRA = "com.w2sv.navigator.extra.MoveBundle"
 
-        fun fromIntent(intent: Intent): MoveBundle =
+        fun fromIntent(intent: Intent): MoveBundle =  // TODO: is it possible to make this a Parcelable extension function?
             intent.getParcelableCompat<MoveBundle>(EXTRA)!!
     }
 }

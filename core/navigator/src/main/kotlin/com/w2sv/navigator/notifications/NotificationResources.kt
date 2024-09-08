@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
+import com.w2sv.common.utils.log
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
@@ -47,7 +48,7 @@ internal data class NotificationResources(
                         .first { notificationManager ->
                             resources.managerClassName == notificationManager.resourcesIdentifier
                         }
-                        .also { i { "Cleaning up ${it.resourcesIdentifier} resources" } }
+                        .log { "Cleaning up ${it.resourcesIdentifier} resources" }
                         .cancelNotification(resources.id)
                 }
         }

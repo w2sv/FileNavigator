@@ -14,35 +14,40 @@ import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import slimber.log.e
 import slimber.log.i
 
 internal sealed interface PreMoveCheckResult {
+
     @JvmInline
     value class Success(val documentFile: DocumentFile) : PreMoveCheckResult
 
-    abstract class Failure(val failure: MoveResult.Failure) : PreMoveCheckResult
+    abstract class Failure(val failure: MoveResult.Failure) : PreMoveCheckResult {
 
-    data object ManageAllFilesPermissionMissing :
-        Failure(MoveResult.Failure.ManageAllFilesPermissionMissing)
+        data object ManageAllFilesPermissionMissing :
+            Failure(MoveResult.Failure.ManageAllFilesPermissionMissing)
 
-    data object InternalError : Failure(MoveResult.Failure.InternalError)
-}
+        data object InternalError : Failure(MoveResult.Failure.InternalError)
+    }
 
-internal fun sharedPreMoveChecks(
-    destination: MoveDestination,
-    context: Context
-): PreMoveCheckResult {
-    val documentFile = destination.documentFile(context)
+    companion object {
+        fun get(
+            destination: MoveDestination,
+            context: Context
+        ): PreMoveCheckResult {
+            val documentFile = destination.documentFile(context)  // TODO
 
-    return when {
-        !isExternalStorageManger -> PreMoveCheckResult.ManageAllFilesPermissionMissing
-        documentFile == null -> PreMoveCheckResult.InternalError
-        else -> PreMoveCheckResult.Success(documentFile)
+            return when {
+                !isExternalStorageManger -> Failure.ManageAllFilesPermissionMissing
+                documentFile == null -> Failure.InternalError
+                else -> Success(documentFile)
+            }
+        }
     }
 }
 
 internal fun MoveBundle.move(context: Context): MoveResult {
-    val destinationDocumentFile = sharedPreMoveChecks(destination, context).run {
+    val destinationDocumentFile = PreMoveCheckResult.get(destination, context).run {  // TODO
         when (this) {
             is PreMoveCheckResult.Success -> documentFile
             is PreMoveCheckResult.Failure -> return failure
@@ -77,7 +82,6 @@ internal fun MoveFile.moveTo(
 
     return mediaFile.moveTo(
         targetFolder = destination,
-        isFileSizeAllowed = { freeSpace, fileSize -> fileSize <= freeSpace },
         onConflict = onFileConflict
     )
         .map { moveState ->
@@ -97,6 +101,62 @@ internal fun MoveFile.moveTo(
                 }
 
                 is SingleFileResult.Completed -> MoveResult.Success
+                else -> null
+            }
+        }
+        .filterNotNull()
+        .firstBlocking()
+}
+
+// $$$$$$$$$$$$$$$$$$$$$$
+// Copy and delete
+// $$$$$$$$$$$$$$$$$$$$$$
+
+internal fun MoveBundle.copyToDestinationAndDelete(context: Context): MoveResult {
+    val destinationDocumentFile = PreMoveCheckResult.get(destination, context).run {  // TODO
+        when (this) {
+            is PreMoveCheckResult.Success -> documentFile
+            is PreMoveCheckResult.Failure -> return failure
+        }
+    }
+
+    return file.copyAndDelete(
+        destination = destinationDocumentFile,
+        context = context,
+    )
+}
+
+internal fun MoveFile.copyAndDelete(destination: DocumentFile, context: Context): MoveResult {
+    if (!mediaStoreFileData.fileExists) {
+        return MoveResult.Failure.MoveFileNotFound
+    }
+
+    val mediaFile = simpleStorageMediaFile(context) ?: return MoveResult.Failure.InternalError
+
+    return mediaFile.copyToFile(
+        targetFile = destination,
+        isEnoughSpace = null,
+        deleteOnSuccess = true
+    )
+        .map { moveState ->
+            i { moveState.javaClass.name }
+
+            when (moveState) {
+                is SingleFileResult.Error -> {
+                    e { "${moveState.errorCode}: ${moveState.message}" }
+
+//                    destination.delete().log { "Deleted destination file: $it" }
+
+                    when (moveState.errorCode) {
+                        SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.Failure.NotEnoughSpaceOnDestination
+                        SingleFileErrorCode.SOURCE_FILE_NOT_FOUND -> MoveResult.Failure.MoveFileNotFound
+                        SingleFileErrorCode.STORAGE_PERMISSION_DENIED -> MoveResult.Failure.ManageAllFilesPermissionMissing
+                        else -> MoveResult.Failure.InternalError
+                    }
+                }
+
+                is SingleFileResult.Completed -> MoveResult.Success
+
                 else -> null
             }
         }

@@ -15,6 +15,7 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.formattedFileSize
 import com.w2sv.common.utils.lineBreakSuffixed
 import com.w2sv.common.utils.loadBitmapFileNotFoundHandled
+import com.w2sv.common.utils.log
 import com.w2sv.common.utils.removeSlashSuffix
 import com.w2sv.common.utils.slashPrefixed
 import com.w2sv.core.navigator.R
@@ -24,6 +25,7 @@ import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.moving.DestinationPickerActivity
+import com.w2sv.navigator.moving.FileDestinationPickerActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
@@ -69,7 +71,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                 quickMoveDestinations = fileAndSourceTypeToQuickMoveDestinationStateFlow.quickMoveDestinations(
                     moveFile.fileAndSourceType
                 )
-                    .also { i { "Retrieved quickMoveDestination: $it" } },
+                    .log { "Retrieved quickMoveDestination: $it" },
                 resources = getNotificationResources()
             )
         )
@@ -241,8 +243,8 @@ internal class MoveFileNotificationManager @Inject constructor(
                     PendingIntent.getActivity(
                         context,
                         requestCode,
-                        DestinationPickerActivity.makeRestartActivityIntent(
-                            args = DestinationPickerActivity.Args.SingleFile(
+                        DestinationPickerActivity.makeRestartActivityIntent<FileDestinationPickerActivity>(
+                            args = FileDestinationPickerActivity.Args(
                                 moveFile = args.moveFile,
                                 pickerStartDestination = args.quickMoveDestinations.firstOrNull()?.documentUri,
                                 notificationResources = args.resources,

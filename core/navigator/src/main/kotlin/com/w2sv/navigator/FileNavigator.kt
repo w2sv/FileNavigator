@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.UnboundService
+import com.w2sv.common.utils.log
 import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
 import com.w2sv.navigator.observing.FileObserver
@@ -49,7 +50,7 @@ class FileNavigator : UnboundService() {
                     fileObserver
                 )
             }
-            .also { i { "Registered ${it.size} FileObserver(s)" } }
+            .log { "Registered ${it.size} FileObserver(s)" }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

@@ -27,5 +27,8 @@ value class MoveDestination(val documentUri: DocumentUri) : Parcelable {
 
         fun fromTreeUri(context: Context, treeUri: Uri): MoveDestination? =
             DocumentUri.fromTreeUri(context, treeUri)?.let { MoveDestination(it) }
+
+        fun fromDocumentFile(documentFile: DocumentFile): MoveDestination =
+            MoveDestination(DocumentUri(documentFile.uri))
     }
 }
