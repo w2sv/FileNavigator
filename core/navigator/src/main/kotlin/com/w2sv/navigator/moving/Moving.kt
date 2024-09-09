@@ -8,7 +8,6 @@ import com.anggrayudi.storage.result.SingleFileResult
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
 import com.w2sv.domain.model.MoveDestination
-import com.w2sv.kotlinutils.coroutines.firstBlocking
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
@@ -17,24 +16,24 @@ import kotlinx.coroutines.flow.map
 import slimber.log.e
 import slimber.log.i
 
-internal sealed interface PreMoveCheckResult {
+internal sealed interface PreCheckResult {
 
     @JvmInline
-    value class Success(val documentFile: DocumentFile) : PreMoveCheckResult
+    value class Success(val documentFile: DocumentFile) : PreCheckResult
 
-    abstract class Failure(val failure: MoveResult.Failure) : PreMoveCheckResult {
+    abstract class Failure(val failure: MoveResult.Failure) : PreCheckResult {
 
         data object ManageAllFilesPermissionMissing :
-            Failure(MoveResult.Failure.ManageAllFilesPermissionMissing)
+            Failure(MoveResult.ManageAllFilesPermissionMissing)
 
-        data object InternalError : Failure(MoveResult.Failure.InternalError)
+        data object InternalError : Failure(MoveResult.InternalError)
     }
 
     companion object {
         fun get(
             destination: MoveDestination,
             context: Context
-        ): PreMoveCheckResult {
+        ): PreCheckResult {
             val documentFile = destination.documentFile(context)  // TODO
 
             return when {
@@ -46,29 +45,16 @@ internal sealed interface PreMoveCheckResult {
     }
 }
 
-internal fun MoveBundle.move(context: Context): MoveResult {
-    val destinationDocumentFile = PreMoveCheckResult.get(destination, context).run {  // TODO
-        when (this) {
-            is PreMoveCheckResult.Success -> documentFile
-            is PreMoveCheckResult.Failure -> return failure
-        }
-    }
-
-    return file.moveTo(
-        destination = destinationDocumentFile,
-        context = context,
-    )
-}
-
 internal fun MoveFile.moveTo(
     destination: DocumentFile,
-    context: Context
-): MoveResult {
+    context: Context,
+    onResult: (MoveResult) -> Unit
+) {
     if (!mediaStoreFileData.fileExists) {
-        return MoveResult.Failure.MoveFileNotFound
+        return onResult(MoveResult.MoveFileNotFound)
     }
 
-    val mediaFile = simpleStorageMediaFile(context) ?: return MoveResult.Failure.InternalError
+    val mediaFile = simpleStorageMediaFile(context) ?: return onResult(MoveResult.InternalError)
 
     // Exit if file already at destination
     if (destination.hasChild(  // TODO: optimizable?
@@ -77,10 +63,10 @@ internal fun MoveFile.moveTo(
             requiresWriteAccess = false
         )
     ) {
-        return MoveResult.Failure.FileAlreadyAtDestination
+        return onResult(MoveResult.FileAlreadyAtDestination)
     }
 
-    return mediaFile.moveTo(
+    mediaFile.moveTo(
         targetFolder = destination,
         onConflict = onFileConflict
     )
@@ -89,53 +75,60 @@ internal fun MoveFile.moveTo(
 
             when (moveState) {
                 is SingleFileResult.Error -> {
-                    i { moveState.errorCode.toString() }
+                    e { "${moveState.errorCode}: ${moveState.message}" }
 
-                    when (moveState.errorCode) {
-                        SingleFileErrorCode.TARGET_FOLDER_NOT_FOUND -> MoveResult.Failure.MoveDestinationNotFound
-                        SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.Failure.NotEnoughSpaceOnDestination
-                        SingleFileErrorCode.SOURCE_FILE_NOT_FOUND -> MoveResult.Failure.MoveFileNotFound
-                        SingleFileErrorCode.STORAGE_PERMISSION_DENIED, SingleFileErrorCode.CANNOT_CREATE_FILE_IN_TARGET -> MoveResult.Failure.ManageAllFilesPermissionMissing
-                        else -> MoveResult.Failure.InternalError
-                    }
+                    onResult(
+                        when (moveState.errorCode) {
+                            SingleFileErrorCode.TARGET_FOLDER_NOT_FOUND -> MoveResult.MoveDestinationNotFound
+                            SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.NotEnoughSpaceOnDestination
+                            SingleFileErrorCode.SOURCE_FILE_NOT_FOUND -> MoveResult.MoveFileNotFound
+                            SingleFileErrorCode.STORAGE_PERMISSION_DENIED, SingleFileErrorCode.CANNOT_CREATE_FILE_IN_TARGET -> MoveResult.ManageAllFilesPermissionMissing
+                            else -> MoveResult.InternalError
+                        }
+                    )
                 }
 
-                is SingleFileResult.Completed -> MoveResult.Success
+                is SingleFileResult.Completed -> onResult(MoveResult.Success)
                 else -> null
             }
         }
-        .filterNotNull()
-        .firstBlocking()
 }
 
 // $$$$$$$$$$$$$$$$$$$$$$
 // Copy and delete
 // $$$$$$$$$$$$$$$$$$$$$$
 
-internal fun MoveBundle.copyToDestinationAndDelete(context: Context): MoveResult {
-    val destinationDocumentFile = PreMoveCheckResult.get(destination, context).run {  // TODO
-        when (this) {
-            is PreMoveCheckResult.Success -> documentFile
-            is PreMoveCheckResult.Failure -> return failure
+internal suspend fun MoveBundle.copyToDestinationAndDelete(
+    context: Context,
+    onResult: (MoveResult) -> Unit
+) {
+    val destinationDocumentFile = PreCheckResult.get(destination, context).let { preCheckResult ->
+        when (preCheckResult) {
+            is PreCheckResult.Success -> preCheckResult.documentFile
+            is PreCheckResult.Failure -> return onResult(preCheckResult.failure)
         }
     }
 
-    return file.copyAndDelete(
+    file.copyAndDelete(
         destination = destinationDocumentFile,
         context = context,
+        onResult = onResult
     )
 }
 
-internal fun MoveFile.copyAndDelete(destination: DocumentFile, context: Context): MoveResult {
-    if (!mediaStoreFileData.fileExists) {
-        return MoveResult.Failure.MoveFileNotFound
+private suspend fun MoveFile.copyAndDelete(
+    destination: DocumentFile,
+    context: Context,
+    onResult: (MoveResult) -> Unit
+) {
+    if (!mediaStoreFileData.fileExists) {  // TODO
+        return onResult(MoveResult.MoveFileNotFound)
     }
 
-    val mediaFile = simpleStorageMediaFile(context) ?: return MoveResult.Failure.InternalError
+    val mediaFile = simpleStorageMediaFile(context) ?: return onResult(MoveResult.InternalError)
 
-    return mediaFile.copyToFile(
+    mediaFile.copyToFile(
         targetFile = destination,
-        isEnoughSpace = null,
         deleteOnSuccess = true
     )
         .map { moveState ->
@@ -148,10 +141,10 @@ internal fun MoveFile.copyAndDelete(destination: DocumentFile, context: Context)
 //                    destination.delete().log { "Deleted destination file: $it" }
 
                     when (moveState.errorCode) {
-                        SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.Failure.NotEnoughSpaceOnDestination
-                        SingleFileErrorCode.SOURCE_FILE_NOT_FOUND -> MoveResult.Failure.MoveFileNotFound
-                        SingleFileErrorCode.STORAGE_PERMISSION_DENIED -> MoveResult.Failure.ManageAllFilesPermissionMissing
-                        else -> MoveResult.Failure.InternalError
+                        SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.NotEnoughSpaceOnDestination
+                        SingleFileErrorCode.SOURCE_FILE_NOT_FOUND -> MoveResult.MoveFileNotFound
+                        SingleFileErrorCode.STORAGE_PERMISSION_DENIED -> MoveResult.ManageAllFilesPermissionMissing
+                        else -> MoveResult.InternalError
                     }
                 }
 
@@ -161,7 +154,7 @@ internal fun MoveFile.copyAndDelete(destination: DocumentFile, context: Context)
             }
         }
         .filterNotNull()
-        .firstBlocking()
+        .collect(onResult)
 }
 
 private val onFileConflict = object : SingleFileConflictCallback<DocumentFile>() {}

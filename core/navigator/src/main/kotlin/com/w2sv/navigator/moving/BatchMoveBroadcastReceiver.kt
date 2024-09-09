@@ -8,6 +8,7 @@ import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.MoveDestination
+import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.BatchMoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationManager
@@ -24,7 +25,7 @@ import javax.inject.Singleton
 internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
-    lateinit var moveResultListener: MoveResultListener
+    lateinit var moveResultChannel: MoveResultChannel
 
     @Inject
     lateinit var batchMoveProgressNotificationManager: BatchMoveProgressNotificationManager
@@ -44,12 +45,12 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val args = intent.getParcelableCompat<Args>(Args.EXTRA)!!
 
-        when (val preMoveCheckResult = PreMoveCheckResult.get(args.destination, context)) {
-            is PreMoveCheckResult.Failure -> {
-                moveResultListener.onPreMoveCancellation(preMoveCheckResult.failure, null)
+        when (val preCheckResult = PreCheckResult.get(args.destination, context)) {
+            is PreCheckResult.Failure -> {
+                moveResultChannel.trySend(preCheckResult.failure bundleWith null)
             }
 
-            is PreMoveCheckResult.Success -> {
+            is PreCheckResult.Success -> {
                 jobHolder.job = scope.launch {
                     batchMoveProgressNotificationManager.buildAndPostNotification(
                         BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
@@ -61,21 +62,23 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
                     try {
                         args.batchMoveBundles.forEachIndexed { index, batchMoveBundle ->
                             if (isActive) {
-                                val moveResult = batchMoveBundle.moveFile.moveTo(
-                                    destination = preMoveCheckResult.documentFile,
+                                batchMoveBundle.moveFile.moveTo(
+                                    destination = preCheckResult.documentFile,
                                     context = context
-                                )
-                                batchMoveProgressNotificationManager.buildAndPostNotification(
-                                    BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
-                                        current = index + 1,
-                                        max = args.batchMoveBundles.size
+                                ) { result ->
+                                    batchMoveProgressNotificationManager.buildAndPostNotification(
+                                        BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
+                                            current = index + 1,
+                                            max = args.batchMoveBundles.size
+                                        )
                                     )
-                                )
-                                moveResultListener.invoke(
-                                    moveResult = moveResult,
-                                    moveBundle = batchMoveBundle.moveBundle(args.destination)
-                                )
-                                moveResults.add(moveResult)
+                                    moveResultChannel.trySend(
+                                        result bundleWith batchMoveBundle.moveBundle(
+                                            args.destination
+                                        )
+                                    )
+                                    moveResults.add(result)
+                                }
                             }
                         }
                     } finally {

@@ -24,8 +24,8 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
-import com.w2sv.navigator.moving.DestinationPickerActivity
-import com.w2sv.navigator.moving.FileDestinationPickerActivity
+import com.w2sv.navigator.moving.destination_picking.DestinationPickerActivity
+import com.w2sv.navigator.moving.destination_picking.FileDestinationPickerActivity
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile

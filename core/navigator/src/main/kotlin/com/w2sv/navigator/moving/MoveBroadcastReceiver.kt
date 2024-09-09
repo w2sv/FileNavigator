@@ -3,23 +3,35 @@ package com.w2sv.navigator.moving
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.w2sv.common.di.AppDispatcher
+import com.w2sv.common.di.GlobalScope
+import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import slimber.log.i
 import javax.inject.Inject
 
 @AndroidEntryPoint
 internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
-    internal lateinit var moveResultListener: MoveResultListener
+    lateinit var moveResultChannel: MoveResultChannel
+
+    @Inject
+    @GlobalScope(AppDispatcher.IO)
+    lateinit var scope: CoroutineScope
 
     override fun onReceive(context: Context, intent: Intent) {
         val moveBundle = MoveBundle.fromIntent(intent)
-
-        moveResultListener.invoke(
-            moveBundle = moveBundle,
-            moveResult = moveBundle.copyToDestinationAndDelete(context),
-        )
+        scope.launch {
+            moveBundle.copyToDestinationAndDelete(context) { result ->
+                moveResultChannel.trySend(
+                    result bundleWith moveBundle
+                )
+            }
+        }
     }
 
     companion object {

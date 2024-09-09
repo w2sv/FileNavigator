@@ -12,7 +12,9 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
+import com.w2sv.kotlinutils.coroutines.collectFromFlow
 import com.w2sv.navigator.FileNavigator
+import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.moving.model.MoveResult
@@ -20,35 +22,65 @@ import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ServiceScoped
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import slimber.log.i
 import java.time.LocalDateTime
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@ServiceScoped
 internal class MoveResultListener @Inject constructor(
+    moveResultChannel: MoveResultChannel,
     private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val moveFileNotificationManager: MoveFileNotificationManager,
     private val autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager,
-    @GlobalScope(AppDispatcher.IO) private val scope: CoroutineScope,
+    @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,  // TODO
     @ApplicationContext private val context: Context
 ) {
-    fun onPreMoveCancellation(
+    init {
+        scope.collectFromFlow(moveResultChannel.receiveAsFlow()) { moveResultBundle ->
+            i { "Received $moveResultBundle" }
+
+            when (moveResultBundle) {
+                is MoveResult.Bundle.PreCheckFailure -> {
+                    onPreCheckFailure(
+                        moveFailure = moveResultBundle.moveFailure,
+                        notificationResources = moveResultBundle.notificationResources
+                    )
+                }
+
+                is MoveResult.Bundle.PostMoveBundleCreation -> {
+                    onResult(
+                        moveResult = moveResultBundle.moveResult,
+                        moveBundle = moveResultBundle.moveBundle
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun onPreCheckFailure(
         moveFailure: MoveResult.Failure,
         notificationResources: NotificationResources?
     ) {
         if (moveFailure.cancelNotification && notificationResources != null) {
             cancelNotification(notificationResources)
         }
+
         moveFailure.explanationStringRes?.let {
             context.showMoveFailureToast(it)
         }
     }
 
-    operator fun invoke(
-        moveBundle: MoveBundle,
-        moveResult: MoveResult
+    private suspend fun onResult(
+        moveResult: MoveResult,
+        moveBundle: MoveBundle
     ) {
         if (moveResult.cancelNotification && moveBundle.mode is MoveMode.NotificationBased) {
             cancelNotification(moveBundle.mode.notificationResources)
@@ -62,7 +94,7 @@ internal class MoveResultListener @Inject constructor(
                 if (moveResult.explanationStringRes != null && moveBundle.mode.showMoveResultToast) {
                     context.showMoveFailureToast(moveResult.explanationStringRes)
                 }
-                if (moveResult == MoveResult.Failure.MoveDestinationNotFound) {
+                if (moveResult == MoveResult.MoveDestinationNotFound) {
                     when (moveBundle.mode) {
                         is MoveMode.Auto -> {
                             onAutoMoveDestinationNotFound(moveBundle)
@@ -75,9 +107,9 @@ internal class MoveResultListener @Inject constructor(
                         }
 
                         is MoveMode.DestinationPicked -> {  // Shouldn't normally occur
-                            invoke(
+                            onResult(
                                 moveBundle = moveBundle,
-                                moveResult = MoveResult.Failure.InternalError
+                                moveResult = MoveResult.InternalError
                             )
                         }
                     }
@@ -122,7 +154,7 @@ internal class MoveResultListener @Inject constructor(
         )
     }
 
-    private fun onSuccess(moveBundle: MoveBundle) {
+    private suspend fun onSuccess(moveBundle: MoveBundle) {
         if (moveBundle.mode.showMoveResultToast) {
             context.showMoveSuccessToast(
                 moveBundle = moveBundle
@@ -153,22 +185,29 @@ internal class MoveResultListener @Inject constructor(
     }
 }
 
-private fun Context.showMoveSuccessToast(moveBundle: MoveBundle) {
-    showToast(
-        resources.getText(
-            id = if (moveBundle.mode.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
-            moveBundle.file.fileAndSourceType.label(context = this, isGif = moveBundle.file.isGif),
-            moveBundle.destination.shortRepresentation(this)
+private suspend fun Context.showMoveSuccessToast(moveBundle: MoveBundle) {
+    withContext(Dispatchers.Main) {
+        showToast(
+            resources.getText(
+                id = if (moveBundle.mode.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
+                moveBundle.file.fileAndSourceType.label(
+                    context = this@showMoveSuccessToast,
+                    isGif = moveBundle.file.isGif
+                ),
+                moveBundle.destination.shortRepresentation(this@showMoveSuccessToast)
+            )
         )
-    )
+    }
 }
 
-private fun Context.showMoveFailureToast(@StringRes explanationStringRes: Int) {
-    showToast(
-        text = buildSpannedString {
-            bold { append("${getString(R.string.couldnt_move)}: ") }
-            append(getString(explanationStringRes))
-        },
-        duration = Toast.LENGTH_LONG
-    )
+private suspend fun Context.showMoveFailureToast(@StringRes explanationStringRes: Int) {
+    withContext(Dispatchers.Main) {
+        showToast(
+            text = buildSpannedString {
+                bold { append("${getString(R.string.couldnt_move)}: ") }
+                append(getString(explanationStringRes))
+            },
+            duration = Toast.LENGTH_LONG
+        )
+    }
 }

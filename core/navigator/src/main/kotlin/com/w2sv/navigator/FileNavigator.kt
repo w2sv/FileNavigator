@@ -7,6 +7,7 @@ import android.os.HandlerThread
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.UnboundService
 import com.w2sv.common.utils.log
+import com.w2sv.navigator.moving.MoveResultListener
 import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
 import com.w2sv.navigator.observing.FileObserver
@@ -30,6 +31,9 @@ class FileNavigator : UnboundService() {
 
     @Inject
     internal lateinit var fileObserverFactory: FileObserverFactory
+
+    @Inject
+    internal lateinit var moveResultListener: MoveResultListener
 
     private var mediaTypeToFileObserver: MediaTypeToFileObserver? = null
 

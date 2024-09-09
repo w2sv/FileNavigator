@@ -1,4 +1,4 @@
-package com.w2sv.navigator.moving
+package com.w2sv.navigator.moving.destination_picking
 
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
@@ -8,6 +8,8 @@ import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.log
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.MoveDestination
+import com.w2sv.navigator.MoveResultChannel
+import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
@@ -22,7 +24,7 @@ import javax.inject.Inject
 internal class FileDestinationPickerActivity : DestinationPickerActivity() {
 
     @Inject
-    override lateinit var moveResultListener: MoveResultListener
+    override lateinit var moveResultChannel: MoveResultChannel
 
     private val args: Args by lazy {
         intent.getParcelableCompat<Args>(DestinationPickerActivity.Args.EXTRA)!!
@@ -30,7 +32,7 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
 
     override fun preemptiveMoveFailure(): MoveResult.Failure? =
         when {
-            !args.moveFile.mediaStoreFileData.fileExists -> MoveResult.Failure.MoveFileNotFound
+            !args.moveFile.mediaStoreFileData.fileExists -> MoveResult.MoveFileNotFound
             else -> super.preemptiveMoveFailure()
         }
 

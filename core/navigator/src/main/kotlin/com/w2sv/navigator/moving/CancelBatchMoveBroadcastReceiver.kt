@@ -10,10 +10,10 @@ import javax.inject.Inject
 internal class CancelBatchMoveBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
-    lateinit var jobHolder: BatchMoveBroadcastReceiver.JobHolder
+    lateinit var batchMoveJobHolder: BatchMoveBroadcastReceiver.JobHolder
 
     override fun onReceive(context: Context, intent: Intent) {
-        jobHolder.job?.cancel()
+        batchMoveJobHolder.job?.cancel()
     }
 
     companion object {
