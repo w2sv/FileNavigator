@@ -16,9 +16,6 @@ value class MediaUri(val uri: Uri) : Parcelable {
     val id: MediaId?
         get() = MediaId.fromUri(uri)
 
-    override fun toString(): String =
-        uri.toString()
-
     companion object {
         fun fromDocumentUri(context: Context, documentUri: DocumentUri): MediaUri? =
             MediaStore.getMediaUri(

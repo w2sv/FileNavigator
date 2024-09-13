@@ -12,14 +12,14 @@ import kotlinx.parcelize.Parcelize
 @JvmInline
 value class MoveDestination(val documentUri: DocumentUri) : Parcelable {
 
+    /**
+     * @see DocumentFile.fromSingleUri
+     */
     fun documentFile(context: Context): DocumentFile? =
         documentUri.documentFile(context)
 
     fun shortRepresentation(context: Context): String =
         "/${documentFile(context)!!.fileName(context)}"
-
-    override fun toString(): String =
-        documentUri.toString()
 
     companion object {
         fun parse(uriString: String): MoveDestination =
@@ -32,3 +32,9 @@ value class MoveDestination(val documentUri: DocumentUri) : Parcelable {
             MoveDestination(DocumentUri(documentFile.uri))
     }
 }
+
+val DocumentUri.moveDestination: MoveDestination
+    get() = MoveDestination(this)
+
+val DocumentFile.moveDestination: MoveDestination
+    get() = MoveDestination.fromDocumentFile(this)

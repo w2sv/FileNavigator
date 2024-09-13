@@ -8,10 +8,16 @@ import com.anggrayudi.storage.file.getSimplePath
 import kotlinx.parcelize.Parcelize
 import java.io.File
 
+private const val PATH_SLASH_ENCODING = "%2F"
+//private const val PATH_COLON_ENCODING = "%3A"
+
 @Parcelize
 @JvmInline
 value class DocumentUri(val uri: Uri) : Parcelable {
 
+    /**
+     * @see DocumentFile.fromSingleUri
+     */
     fun documentFile(context: Context): DocumentFile? =
         DocumentFile.fromSingleUri(context, uri)
 
@@ -27,10 +33,18 @@ value class DocumentUri(val uri: Uri) : Parcelable {
         MediaUri.fromDocumentUri(context, this)
 
     fun childDocumentUri(fileName: String): DocumentUri =
-        parse("$uri%2F${Uri.encode(fileName)}")
+        parse(uri.toString() + PATH_SLASH_ENCODING + Uri.encode(fileName))
 
-    override fun toString(): String =
-        uri.toString()
+    val parent: DocumentUri?
+        get() = toString()
+            .substringBeforeLast(PATH_SLASH_ENCODING, missingDelimiterValue = "")
+            .run {
+                if (isEmpty()) {
+                    null
+                } else {
+                    parse(this)
+                }
+            }
 
     companion object {
         fun parse(uriString: String): DocumentUri =

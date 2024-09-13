@@ -1,5 +1,6 @@
 package com.w2sv.navigator.observing
 
+import android.content.ContentResolver
 import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
@@ -21,7 +22,6 @@ import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
-import com.w2sv.navigator.observing.model.FileChangeOperation
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import com.w2sv.navigator.observing.model.MediaStoreFileData
 import kotlinx.coroutines.CoroutineScope
@@ -36,6 +36,20 @@ import slimber.log.i
 private data class MoveFileWithProcedureJob(val moveFile: MoveFile, val procedureJob: Job)
 
 private const val CANCEL_PERIOD_MILLIS = 300L
+
+private enum class FileChangeOperation(private val flag: Int?) {
+
+    // Note: don't change the enum entry order, as the working of determine(Int): FileChangeOperation depends on it!!!
+    Update(ContentResolver.NOTIFY_UPDATE),
+    Insert(ContentResolver.NOTIFY_INSERT),
+    Delete(ContentResolver.NOTIFY_DELETE),
+    Unclassified(null);
+
+    companion object {
+        fun determine(contentObserverOnChangeFlags: Int): FileChangeOperation =
+            entries.first { it.flag == null || it.flag and contentObserverOnChangeFlags != 0 }
+    }
+}
 
 internal abstract class FileObserver(
     mediaType: MediaType,
@@ -80,9 +94,9 @@ internal abstract class FileObserver(
 
     override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
         when (FileChangeOperation.determine(flags).also { emitOnChangeLog(uri, it) }) {
-            FileChangeOperation.Delete -> cancelAndResetMoveFileProcedureJob()
             FileChangeOperation.Insert -> Unit
             FileChangeOperation.Update, FileChangeOperation.Unclassified -> onChangeCore(uri)
+            FileChangeOperation.Delete -> cancelAndResetMoveFileProcedureJob()
         }
     }
 

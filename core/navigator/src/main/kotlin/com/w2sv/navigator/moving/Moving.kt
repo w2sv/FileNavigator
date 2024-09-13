@@ -102,18 +102,19 @@ internal suspend fun MoveBundle.copyToDestinationAndDelete(
     context: Context,
     onResult: (MoveResult) -> Unit
 ) {
-    val destinationDocumentFile = PreCheckResult.get(destination, context).let { preCheckResult ->
-        when (preCheckResult) {
-            is PreCheckResult.Success -> preCheckResult.documentFile
-            is PreCheckResult.Failure -> return onResult(preCheckResult.failure)
+    when (val preCheckResult = PreCheckResult.get(destination, context)) {
+        is PreCheckResult.Success -> {
+            file.copyAndDelete(
+                destination = preCheckResult.documentFile,
+                context = context,
+                onResult = onResult
+            )
+        }
+
+        is PreCheckResult.Failure -> {
+            onResult(preCheckResult.failure)
         }
     }
-
-    file.copyAndDelete(
-        destination = destinationDocumentFile,
-        context = context,
-        onResult = onResult
-    )
 }
 
 private suspend fun MoveFile.copyAndDelete(

@@ -31,7 +31,6 @@ import kotlinx.coroutines.withContext
 import slimber.log.i
 import java.time.LocalDateTime
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @ServiceScoped
 internal class MoveResultListener @Inject constructor(
@@ -161,27 +160,27 @@ internal class MoveResultListener @Inject constructor(
             )
         }
 
-//        scope.launch {  // TODO
-//            val movedFileDocumentUri =
-//                moveBundle.destination.documentUri.childDocumentUri(fileName = moveBundle.file.mediaStoreFileData.name)
-//            insertMoveEntryUseCase(
-//                moveBundle.moveEntry(
-//                    movedFileDocumentUri = movedFileDocumentUri,
-//                    movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!,  // TODO
-//                    dateTime = LocalDateTime.now(),
-//                )
-//            )
-//        }
-//        if (moveBundle.mode.updateLastMoveDestinations) {
-//            scope.launch {
-//                i { "Saving last move destination" }
-//                navigatorConfigDataSource.saveQuickMoveDestination(
-//                    fileType = moveBundle.file.fileType,
-//                    sourceType = moveBundle.file.sourceType,
-//                    destination = moveBundle.destination
-//                )
-//            }
-//        }
+        scope.launch {  // TODO
+            val movedFileDocumentUri =
+                moveBundle.destination.documentUri.childDocumentUri(fileName = moveBundle.file.mediaStoreFileData.name)
+            insertMoveEntryUseCase(
+                moveBundle.moveEntry(
+                    movedFileDocumentUri = movedFileDocumentUri,
+                    movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!,  // TODO
+                    dateTime = LocalDateTime.now(),
+                )
+            )
+        }
+        if (moveBundle.mode.updateLastMoveDestinations) {
+            scope.launch {
+                i { "Saving last move destination" }
+                navigatorConfigDataSource.saveQuickMoveDestination(
+                    fileType = moveBundle.file.fileType,
+                    sourceType = moveBundle.file.sourceType,
+                    destination = moveBundle.destination
+                )
+            }
+        }
     }
 }
 

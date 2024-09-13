@@ -2,15 +2,15 @@ package com.w2sv.navigator.moving.destination_picking
 
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.documentUri
+import com.w2sv.common.utils.emit
 import com.w2sv.common.utils.log
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.domain.model.moveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
@@ -21,7 +21,6 @@ import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
 import javax.inject.Inject
@@ -71,27 +70,24 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
         // Take persistable read & write permission
         // Required for quick move
         contentResolver.takePersistableReadAndWriteUriPermission(contentUri)  // TODO: necessary?
+        val documentUri = contentUri.documentUri
 
-        val destination =
-            DocumentFile.fromSingleUri(this, contentUri)!!.log { "Converted documentFile: $it" }
-
-        lifecycleScope.launch {
-            blacklistedMediaUris.emit(
-                MediaIdWithMediaType(
-                    mediaId = MediaUri.fromDocumentUri(
-                        this@FileDestinationPickerActivity,
-                        destination.uri.documentUri
-                    )?.id!!,
-                    mediaType = args.moveFile.fileType.simpleStorageMediaType
-                )
-                    .log { "Emitting $it" }
+        blacklistedMediaUris.emit(
+            value = MediaIdWithMediaType(
+                mediaId = MediaUri.fromDocumentUri(
+                    this@FileDestinationPickerActivity,
+                    documentUri
+                )?.id!!,
+                mediaType = args.moveFile.fileType.simpleStorageMediaType
             )
-        }
+                .log { "Emitting $it" },
+            scope = lifecycleScope
+        )
 
         MoveBroadcastReceiver.sendBroadcast(
             moveBundle = MoveBundle(
                 file = args.moveFile,
-                destination = MoveDestination.fromDocumentFile(destination),
+                destination = documentUri.moveDestination,
                 mode = MoveMode.DestinationPicked(args.notificationResources)
             ),
             context = this
