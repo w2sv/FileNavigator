@@ -68,7 +68,7 @@ internal class NavigatorPreferencesToProtoMigration(
                                         sourceType = sourceType
                                     )]?.let { lastMoveDestination ->
                                         listOf(
-                                            MoveDestination.parse(
+                                            MoveDestination.Directory.parse(
                                                 lastMoveDestination
                                             )
                                         )

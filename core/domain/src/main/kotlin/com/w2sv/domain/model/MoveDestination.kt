@@ -5,12 +5,31 @@ import android.net.Uri
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
 import com.w2sv.common.utils.DocumentUri
+import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.fileName
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
-@JvmInline
-value class MoveDestination(val documentUri: DocumentUri) : Parcelable {
+sealed interface MoveDestination : Parcelable {
+    val documentUri: DocumentUri
+
+    @Parcelize
+    @JvmInline
+    value class Directory(override val documentUri: DocumentUri) : Parcelable, MoveDestination {
+        companion object {
+            fun parse(uriString: String): Directory =
+                Directory(DocumentUri.parse(uriString))
+
+            fun fromTreeUri(context: Context, treeUri: Uri): Directory? =
+                DocumentUri.fromTreeUri(context, treeUri)?.let { Directory(it) }
+
+            fun fromDocumentFile(documentFile: DocumentFile): Directory =
+                Directory(DocumentUri(documentFile.uri))
+        }
+    }
+
+    @Parcelize
+    data class File(override val documentUri: DocumentUri, val mediaUri: MediaUri) : Parcelable,
+        MoveDestination
 
     /**
      * @see DocumentFile.fromSingleUri
@@ -20,21 +39,4 @@ value class MoveDestination(val documentUri: DocumentUri) : Parcelable {
 
     fun shortRepresentation(context: Context): String =
         "/${documentFile(context)!!.fileName(context)}"
-
-    companion object {
-        fun parse(uriString: String): MoveDestination =
-            MoveDestination(DocumentUri.parse(uriString))
-
-        fun fromTreeUri(context: Context, treeUri: Uri): MoveDestination? =
-            DocumentUri.fromTreeUri(context, treeUri)?.let { MoveDestination(it) }
-
-        fun fromDocumentFile(documentFile: DocumentFile): MoveDestination =
-            MoveDestination(DocumentUri(documentFile.uri))
-    }
 }
-
-val DocumentUri.moveDestination: MoveDestination
-    get() = MoveDestination(this)
-
-val DocumentFile.moveDestination: MoveDestination
-    get() = MoveDestination.fromDocumentFile(this)

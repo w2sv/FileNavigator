@@ -71,7 +71,7 @@ private object SourceConfigMapper :
     override fun toExternal(proto: SourceConfigProto): SourceConfig =
         SourceConfig(
             enabled = proto.enabled,
-            lastMoveDestinations = proto.lastMoveDestinationsList.map { MoveDestination.parse(it) },
+            lastMoveDestinations = proto.lastMoveDestinationsList.map { MoveDestination.Directory.parse(it) },
             autoMoveConfig = AutoMoveConfigMapper.toExternal(proto.autoMoveConfig)
         )
 
@@ -90,7 +90,7 @@ private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveC
     override fun toExternal(proto: AutoMoveConfigProto): AutoMoveConfig = AutoMoveConfig(
         enabled = proto.enabled,
         destination = if (proto.destination.isNotEmpty()) {
-            MoveDestination.parse(proto.destination)
+            MoveDestination.Directory.parse(proto.destination)
         } else {
             null
         }

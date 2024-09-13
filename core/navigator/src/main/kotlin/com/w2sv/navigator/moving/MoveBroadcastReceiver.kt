@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.domain.model.moveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,13 +27,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         scope.launch {
             moveBundle.copyToDestinationAndDelete(context) { result ->
                 moveResultChannel.trySend(
-                    result bundleWith moveBundle.copy(
-                        destination = moveBundle
-                            .destination
-                            .documentUri
-                            .parent!!
-                            .moveDestination
-                    )
+                    result bundleWith moveBundle
                 )
             }
         }

@@ -120,9 +120,9 @@ fun rememberSelectAutoMoveDestination(onDestinationSelected: (MoveDestination) -
         optionalTreeUri?.let { treeUri ->
             context.contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
             onDestinationSelected(
-                MoveDestination.fromTreeUri(
-                    context,
-                    treeUri
+                MoveDestination.Directory.fromTreeUri(
+                    context = context,
+                    treeUri = treeUri
                 )!!  // TODO: null case possible?
             )
         }

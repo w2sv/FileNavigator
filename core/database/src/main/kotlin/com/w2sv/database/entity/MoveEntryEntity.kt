@@ -3,7 +3,6 @@ package com.w2sv.database.entity
 import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.documentUri
 import com.w2sv.common.utils.mediaUri
 import com.w2sv.domain.model.FileType
@@ -39,7 +38,7 @@ data class MoveEntryEntity(
             fileName = fileName,
             fileType = fileType,
             sourceType = sourceType,
-            destination = MoveDestination(DocumentUri(destinationDocumentUri)),
+            destination = MoveDestination.Directory(destinationDocumentUri.documentUri),
             movedFileDocumentUri = movedFileDocumentUri.documentUri,
             movedFileMediaUri = movedFileMediaUri.mediaUri,
             dateTime = dateTime,

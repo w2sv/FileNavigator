@@ -35,11 +35,10 @@ internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() 
         registerForActivityResult(
             contract = ActivityResultContracts.OpenDocumentTree(),
             callback = { treeUri ->
-                if (treeUri == null) {  // When file picker exited via back press
-                    finishAndRemoveTask()
-                } else {
+                if (treeUri != null) {
                     onMoveDestinationSelected(treeUri)
                 }
+                finishAndRemoveTask()
             }
         )
 
@@ -52,7 +51,7 @@ internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() 
 
         // Build moveDestination, exit if unsuccessful
         val moveDestination =
-            MoveDestination.fromTreeUri(this, treeUri)
+            MoveDestination.Directory.fromTreeUri(this, treeUri)
                 ?: return finishAndRemoveTask(MoveResult.InternalError)
 
         i { args.toString() }
@@ -72,8 +71,6 @@ internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() 
             ),
             context = applicationContext
         )
-
-        finishAndRemoveTask()
     }
 
     @Parcelize

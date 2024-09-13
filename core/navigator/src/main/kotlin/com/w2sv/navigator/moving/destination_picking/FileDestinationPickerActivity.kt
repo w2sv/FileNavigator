@@ -10,7 +10,7 @@ import com.w2sv.common.utils.documentUri
 import com.w2sv.common.utils.emit
 import com.w2sv.common.utils.log
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
-import com.w2sv.domain.model.moveDestination
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
@@ -52,11 +52,10 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
         registerForActivityResult(
             contract = ActivityResultContracts.CreateDocument(args.moveFile.fileType.simpleStorageMediaType.mimeType),  // TODO: set mime types for non-simpleStorageMediaTypes
             callback = { contentUri ->
-                if (contentUri == null) {  // When exited via back press
-                    finishAndRemoveTask()
-                } else {
+                if (contentUri != null) {
                     onDocumentCreated(contentUri)
                 }
+                finishAndRemoveTask()
             }
         )
     }
@@ -71,13 +70,14 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
         // Required for quick move
         contentResolver.takePersistableReadAndWriteUriPermission(contentUri)  // TODO: necessary?
         val documentUri = contentUri.documentUri
+        val mediaUri = MediaUri.fromDocumentUri(
+            this@FileDestinationPickerActivity,
+            documentUri
+        )!!
 
         blacklistedMediaUris.emit(
             value = MediaIdWithMediaType(
-                mediaId = MediaUri.fromDocumentUri(
-                    this@FileDestinationPickerActivity,
-                    documentUri
-                )?.id!!,
+                mediaId = mediaUri.id!!,
                 mediaType = args.moveFile.fileType.simpleStorageMediaType
             )
                 .log { "Emitting $it" },
@@ -87,13 +87,11 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
         MoveBroadcastReceiver.sendBroadcast(
             moveBundle = MoveBundle(
                 file = args.moveFile,
-                destination = documentUri.moveDestination,
+                destination = MoveDestination.File(documentUri, mediaUri),
                 mode = MoveMode.DestinationPicked(args.notificationResources)
             ),
             context = this
         )
-
-        finishAndRemoveTask()
     }
 
     @Parcelize
