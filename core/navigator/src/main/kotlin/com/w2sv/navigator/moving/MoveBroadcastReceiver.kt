@@ -10,7 +10,6 @@ import com.w2sv.navigator.moving.model.MoveBundle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import slimber.log.i
 import javax.inject.Inject
 
 @AndroidEntryPoint

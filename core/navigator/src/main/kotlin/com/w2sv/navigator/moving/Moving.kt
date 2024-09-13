@@ -45,7 +45,7 @@ internal sealed interface PreCheckResult {
     }
 }
 
-internal fun MoveFile.moveTo(
+internal suspend fun MoveFile.moveTo(
     destination: DocumentFile,
     context: Context,
     onResult: (MoveResult) -> Unit
@@ -77,21 +77,21 @@ internal fun MoveFile.moveTo(
                 is SingleFileResult.Error -> {
                     e { "${moveState.errorCode}: ${moveState.message}" }
 
-                    onResult(
-                        when (moveState.errorCode) {
-                            SingleFileErrorCode.TARGET_FOLDER_NOT_FOUND -> MoveResult.MoveDestinationNotFound
-                            SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.NotEnoughSpaceOnDestination
-                            SingleFileErrorCode.SOURCE_FILE_NOT_FOUND -> MoveResult.MoveFileNotFound
-                            SingleFileErrorCode.STORAGE_PERMISSION_DENIED, SingleFileErrorCode.CANNOT_CREATE_FILE_IN_TARGET -> MoveResult.ManageAllFilesPermissionMissing
-                            else -> MoveResult.InternalError
-                        }
-                    )
+                    when (moveState.errorCode) {
+                        SingleFileErrorCode.TARGET_FOLDER_NOT_FOUND -> MoveResult.MoveDestinationNotFound
+                        SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.NotEnoughSpaceOnDestination
+                        SingleFileErrorCode.SOURCE_FILE_NOT_FOUND -> MoveResult.MoveFileNotFound
+                        SingleFileErrorCode.STORAGE_PERMISSION_DENIED, SingleFileErrorCode.CANNOT_CREATE_FILE_IN_TARGET -> MoveResult.ManageAllFilesPermissionMissing
+                        else -> MoveResult.InternalError
+                    }
                 }
 
-                is SingleFileResult.Completed -> onResult(MoveResult.Success)
+                is SingleFileResult.Completed -> MoveResult.Success
                 else -> null
             }
         }
+        .filterNotNull()
+        .collect(onResult)
 }
 
 // $$$$$$$$$$$$$$$$$$$$$$

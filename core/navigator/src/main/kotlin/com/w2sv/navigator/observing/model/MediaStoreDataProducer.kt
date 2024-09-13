@@ -24,6 +24,9 @@ internal class MediaStoreDataProducer @Inject constructor() {
         data object FileIsPending : Failure
         data object FileIsTrashed : Failure
         data object AlreadySeen : Failure
+
+        val asSuccessOrNull: Success?
+            get() = this as? Success
     }
 
     private data class SeenParameters(val uri: MediaUri, val fileSize: Long)

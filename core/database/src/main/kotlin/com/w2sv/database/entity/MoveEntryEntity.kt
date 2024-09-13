@@ -4,7 +4,8 @@ import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.w2sv.common.utils.DocumentUri
-import com.w2sv.common.utils.MediaUri
+import com.w2sv.common.utils.documentUri
+import com.w2sv.common.utils.mediaUri
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.MoveEntry
@@ -39,8 +40,8 @@ data class MoveEntryEntity(
             fileType = fileType,
             sourceType = sourceType,
             destination = MoveDestination(DocumentUri(destinationDocumentUri)),
-            movedFileDocumentUri = DocumentUri(movedFileDocumentUri),
-            movedFileMediaUri = MediaUri(movedFileMediaUri),
+            movedFileDocumentUri = movedFileDocumentUri.documentUri,
+            movedFileMediaUri = movedFileMediaUri.mediaUri,
             dateTime = dateTime,
             autoMoved = autoMoved
         )

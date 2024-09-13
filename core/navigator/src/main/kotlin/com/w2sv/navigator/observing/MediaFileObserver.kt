@@ -6,9 +6,11 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.kotlinutils.coroutines.mapState
+import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import com.w2sv.navigator.observing.model.MediaStoreFileData
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
@@ -18,14 +20,17 @@ internal class MediaFileObserver(
     moveFileNotificationManager: MoveFileNotificationManager,
     mediaStoreDataProducer: MediaStoreDataProducer,
     context: Context,
-    handler: Handler
+    handler: Handler,
+    blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>
 ) :
     FileObserver(
+        mediaType = fileType.simpleStorageMediaType,
         context = context,
         moveFileNotificationManager = moveFileNotificationManager,
         mediaStoreDataProducer = mediaStoreDataProducer,
         fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
-        handler = handler
+        handler = handler,
+        blacklistedMediaUris = blacklistedMediaUris
     ) {
 
     private val enabledSourceTypesStateFlow: StateFlow<Set<SourceType>> =

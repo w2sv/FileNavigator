@@ -11,23 +11,24 @@ import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.mapState
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.MediaTypeToFileObserver
+import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import javax.inject.Singleton
 
 typealias FileTypeConfigMap = Map<FileType, FileTypeConfig>
 
-@Singleton
-internal class FileObserverFactory @Inject constructor(
+internal class FileObserverFactory @Inject constructor(  // TODO: try to inject directly into FileObserver base class
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val mediaStoreDataProducer: MediaStoreDataProducer,
     private val moveFileNotificationManager: MoveFileNotificationManager,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>
 ) {
     private val fileTypeConfigMapStateFlow by lazy {
         navigatorConfigDataSource.navigatorConfig
@@ -58,7 +59,8 @@ internal class FileObserverFactory @Inject constructor(
                     context = context,
                     moveFileNotificationManager = moveFileNotificationManager,
                     mediaStoreDataProducer = mediaStoreDataProducer,
-                    handler = handler
+                    handler = handler,
+                    blacklistedMediaUris = blacklistedMediaUris
                 )
             }
 
@@ -74,7 +76,8 @@ internal class FileObserverFactory @Inject constructor(
                         context = context,
                         moveFileNotificationManager = moveFileNotificationManager,
                         mediaStoreDataProducer = mediaStoreDataProducer,
-                        handler = handler
+                        handler = handler,
+                        blacklistedMediaUris = blacklistedMediaUris
                     )
                 } else {
                     null

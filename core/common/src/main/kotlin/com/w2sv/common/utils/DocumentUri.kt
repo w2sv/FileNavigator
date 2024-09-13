@@ -12,9 +12,6 @@ import java.io.File
 @JvmInline
 value class DocumentUri(val uri: Uri) : Parcelable {
 
-    fun isValidDocumentUri(context: Context): Boolean =
-        DocumentFile.isDocumentUri(context, uri)
-
     fun documentFile(context: Context): DocumentFile? =
         DocumentFile.fromSingleUri(context, uri)
 
@@ -37,10 +34,10 @@ value class DocumentUri(val uri: Uri) : Parcelable {
 
     companion object {
         fun parse(uriString: String): DocumentUri =
-            DocumentUri(Uri.parse(uriString))
+            Uri.parse(uriString).documentUri
 
         fun fromDocumentFile(documentFile: DocumentFile): DocumentUri =
-            DocumentUri(documentFile.uri)
+            documentFile.uri.documentUri
 
         fun fromTreeUri(context: Context, treeUri: Uri): DocumentUri? =
             DocumentFile.fromTreeUri(context, treeUri)?.let { fromDocumentFile(it) }
@@ -52,3 +49,17 @@ value class DocumentUri(val uri: Uri) : Parcelable {
             fromDocumentFile(DocumentFile.fromFile(file))
     }
 }
+
+val Uri.documentUri: DocumentUri
+    get() = DocumentUri(this)
+
+fun Uri.documentUriIfValid(context: Context): DocumentUri? {
+    return if (isValidDocumentUri(context)) {
+        documentUri
+    } else {
+        null
+    }
+}
+
+fun Uri.isValidDocumentUri(context: Context): Boolean =
+    DocumentFile.isDocumentUri(context, this)

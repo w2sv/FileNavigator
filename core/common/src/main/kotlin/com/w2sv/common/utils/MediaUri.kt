@@ -11,7 +11,13 @@ import kotlinx.parcelize.Parcelize
 value class MediaUri(val uri: Uri) : Parcelable {
 
     fun documentUri(context: Context): DocumentUri? =
-        MediaStore.getDocumentUri(context, uri)?.let { DocumentUri(it) }
+        MediaStore.getDocumentUri(context, uri)?.documentUri
+
+    val id: MediaId?
+        get() = MediaId.fromUri(uri)
+
+    override fun toString(): String =
+        uri.toString()
 
     companion object {
         fun fromDocumentUri(context: Context, documentUri: DocumentUri): MediaUri? =
@@ -19,9 +25,12 @@ value class MediaUri(val uri: Uri) : Parcelable {
                 context,
                 documentUri.uri
             )
-                ?.let { MediaUri(it) }
+                ?.mediaUri
 
         fun parse(uriString: String): MediaUri =
-            MediaUri(Uri.parse(uriString))
+            Uri.parse(uriString).mediaUri
     }
 }
+
+val Uri.mediaUri: MediaUri
+    get() = MediaUri(this)
