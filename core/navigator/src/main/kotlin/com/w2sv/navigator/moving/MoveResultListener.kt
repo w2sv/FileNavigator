@@ -43,6 +43,7 @@ internal class MoveResultListener @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     init {
+        i { "Initialized MoveResultListener" }
         scope.collectFromFlow(moveResultChannel.receiveAsFlow()) { moveResultBundle ->
             i { "Received $moveResultBundle" }
 

@@ -10,17 +10,21 @@ import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import com.w2sv.navigator.observing.model.MediaStoreFileData
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
-internal class NonMediaFileObserver(
-    private val enabledFileTypesStateFlow: StateFlow<Set<FileType.NonMedia>>,
-    fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
+internal class NonMediaFileObserver @AssistedInject constructor(
+    @Assisted private val enabledFileTypesStateFlow: StateFlow<Set<FileType.NonMedia>>,
+    @Assisted fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
+    @Assisted handler: Handler,
     moveFileNotificationManager: MoveFileNotificationManager,
     mediaStoreDataProducer: MediaStoreDataProducer,
-    context: Context,
-    handler: Handler,
+    @ApplicationContext context: Context,
     blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>
 ) :
     FileObserver(
@@ -32,6 +36,15 @@ internal class NonMediaFileObserver(
         handler = handler,
         blacklistedMediaUris = blacklistedMediaUris
     ) {
+
+    @AssistedFactory
+    interface Factory {
+        operator fun invoke(
+            enabledFileTypesStateFlow: StateFlow<Set<FileType.NonMedia>>,
+            fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
+            handler: Handler
+        ): NonMediaFileObserver
+    }
 
     private val enabledFileTypes: Set<FileType.NonMedia>
         get() = enabledFileTypesStateFlow.value
