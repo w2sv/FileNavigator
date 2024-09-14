@@ -52,7 +52,7 @@ private enum class FileChangeOperation(private val flag: Int?) {
 }
 
 internal abstract class FileObserver(
-    mediaType: MediaType,
+    val mediaType: MediaType,
     private val context: Context,
     private val moveFileNotificationManager: MoveFileNotificationManager,
     private val mediaStoreDataProducer: MediaStoreDataProducer,

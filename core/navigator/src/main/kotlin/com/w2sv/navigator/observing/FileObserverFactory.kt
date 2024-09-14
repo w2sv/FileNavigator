@@ -1,7 +1,6 @@
 package com.w2sv.navigator.observing
 
 import android.os.Handler
-import com.anggrayudi.storage.media.MediaType
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.FileType
@@ -9,7 +8,6 @@ import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.mapState
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
-import com.w2sv.navigator.MediaTypeToFileObserver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -28,22 +26,20 @@ internal class FileObserverFactory @Inject constructor(
             .stateInWithSynchronousInitial(scope)
     }
 
-    operator fun invoke(handler: Handler): MediaTypeToFileObserver {
-        return buildMap {
-            putAll(
+    operator fun invoke(handler: Handler): List<FileObserver> {
+        return buildList {
+            addAll(
                 mediaFileObservers(handler)
             )
-            nonMediaFileObserver(handler)?.let {
-                put(MediaType.DOWNLOADS, it)
-            }
+            nonMediaFileObserver(handler)?.let(::add)
         }
     }
 
-    private fun mediaFileObservers(handler: Handler): MediaTypeToFileObserver =
+    private fun mediaFileObservers(handler: Handler): List<MediaFileObserver> =
         FileType.Media.values
             .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
-            .associate { mediaFileType ->
-                mediaFileType.simpleStorageMediaType to mediaFileObserverFactory.invoke(
+            .map { mediaFileType ->
+                mediaFileObserverFactory.invoke(
                     fileType = mediaFileType,
                     fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
                     handler = handler

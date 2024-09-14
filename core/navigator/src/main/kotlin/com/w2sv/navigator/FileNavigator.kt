@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
-import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.UnboundService
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
@@ -23,8 +22,6 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import slimber.log.e
 import slimber.log.i
 import javax.inject.Inject
-
-internal typealias MediaTypeToFileObserver = Map<MediaType, FileObserver>
 
 @AndroidEntryPoint
 class FileNavigator : UnboundService() {
@@ -48,23 +45,23 @@ class FileNavigator : UnboundService() {
     @GlobalScope(AppDispatcher.IO)
     internal lateinit var scope: CoroutineScope
 
-    private var mediaTypeToFileObserver: MediaTypeToFileObserver? = null
+    private var activeFileObservers: List<FileObserver>? = null
 
     private val fileObserverHandlerThread by lazy {
         HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
     }
 
-    private fun getRegisteredFileObservers(): MediaTypeToFileObserver {
+    private fun getRegisteredFileObservers(): List<FileObserver> {
         if (!fileObserverHandlerThread.isAlive) {
             fileObserverHandlerThread.start()
         }
 
         return fileObserverFactory.invoke(handler = Handler(fileObserverHandlerThread.looper))
-            .onEach { (mediaType, fileObserver) ->
+            .onEach { observer ->
                 contentResolver.registerContentObserver(
-                    mediaType.readUri!!,
+                    observer.mediaType.readUri!!,
                     true,
-                    fileObserver
+                    observer
                 )
             }
             .log { "Registered ${it.size} FileObserver(s)" }
@@ -80,7 +77,7 @@ class FileNavigator : UnboundService() {
 
             Action.REREGISTER_MEDIA_OBSERVERS -> {
                 unregisterFileObservers()
-                mediaTypeToFileObserver = getRegisteredFileObservers()
+                activeFileObservers = getRegisteredFileObservers()
             }
 
             else -> try {
@@ -103,7 +100,7 @@ class FileNavigator : UnboundService() {
         )
 
         i { "Registering file observers" }
-        mediaTypeToFileObserver = getRegisteredFileObservers()
+        activeFileObservers = getRegisteredFileObservers()
         moveResultChannel
             .consumeAsFlow()
             .collectOn(scope = scope, collector = moveResultListener::onMoveResult)
@@ -120,9 +117,10 @@ class FileNavigator : UnboundService() {
     }
 
     private fun unregisterFileObservers() {
-        mediaTypeToFileObserver?.values?.forEach {
-            contentResolver.unregisterContentObserver(it)
-        }
+        activeFileObservers
+            ?.forEach {
+                contentResolver.unregisterContentObserver(it)
+            }
         i { "Unregistered fileObservers" }
     }
 
