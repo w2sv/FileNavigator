@@ -1,6 +1,7 @@
 package com.w2sv.navigator.observing
 
 import android.os.Handler
+import android.os.HandlerThread
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.FileType
@@ -10,6 +11,7 @@ import com.w2sv.kotlinutils.coroutines.mapState
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
+import slimber.log.i
 import javax.inject.Inject
 
 typealias FileTypeConfigMap = Map<FileType, FileTypeConfig>
@@ -18,7 +20,8 @@ internal class FileObserverFactory @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
     private val mediaFileObserverFactory: MediaFileObserver.Factory,
-    private val nonMediaFileObserverFactory: NonMediaFileObserver.Factory
+    private val nonMediaFileObserverFactory: NonMediaFileObserver.Factory,
+    @FileObserverHandlerThread private val handlerThread: HandlerThread
 ) {
     private val fileTypeConfigMapStateFlow by lazy {
         navigatorConfigDataSource.navigatorConfig
@@ -26,7 +29,9 @@ internal class FileObserverFactory @Inject constructor(
             .stateInWithSynchronousInitial(scope)
     }
 
-    operator fun invoke(handler: Handler): List<FileObserver> {
+    operator fun invoke(): List<FileObserver> {
+        val handler = handlerThread.handler()
+
         return buildList {
             addAll(
                 mediaFileObservers(handler)
@@ -62,4 +67,12 @@ internal class FileObserverFactory @Inject constructor(
                     null
                 }
             }
+
+    fun onDestroy() {
+        handlerThread.quit()
+        i { "Quit handler thread" }
+    }
 }
+
+private fun HandlerThread.handler(): Handler =
+    Handler(looper)
