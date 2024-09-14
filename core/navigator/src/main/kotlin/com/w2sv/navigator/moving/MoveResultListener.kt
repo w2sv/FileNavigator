@@ -12,9 +12,7 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
-import com.w2sv.kotlinutils.coroutines.collectFromFlow
 import com.w2sv.navigator.FileNavigator
-import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.moving.model.MoveResult
@@ -22,19 +20,15 @@ import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ServiceScoped
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import slimber.log.i
 import java.time.LocalDateTime
 import javax.inject.Inject
 
-@ServiceScoped
 internal class MoveResultListener @Inject constructor(
-    moveResultChannel: MoveResultChannel,
     private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val moveFileNotificationManager: MoveFileNotificationManager,
@@ -42,25 +36,22 @@ internal class MoveResultListener @Inject constructor(
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,  // TODO
     @ApplicationContext private val context: Context
 ) {
-    init {
-        i { "Initialized MoveResultListener" }
-        scope.collectFromFlow(moveResultChannel.receiveAsFlow()) { moveResultBundle ->
-            i { "Received $moveResultBundle" }
+    suspend fun onMoveResult(moveResultBundle: MoveResult.Bundle) {
+        i { "Received $moveResultBundle" }
 
-            when (moveResultBundle) {
-                is MoveResult.Bundle.PreCheckFailure -> {
-                    onPreCheckFailure(
-                        moveFailure = moveResultBundle.moveFailure,
-                        notificationResources = moveResultBundle.notificationResources
-                    )
-                }
+        when (moveResultBundle) {
+            is MoveResult.Bundle.PreCheckFailure -> {
+                onPreCheckFailure(
+                    moveFailure = moveResultBundle.moveFailure,
+                    notificationResources = moveResultBundle.notificationResources
+                )
+            }
 
-                is MoveResult.Bundle.PostMoveBundleCreation -> {
-                    onResult(
-                        moveResult = moveResultBundle.moveResult,
-                        moveBundle = moveResultBundle.moveBundle
-                    )
-                }
+            is MoveResult.Bundle.PostMoveBundleCreation -> {
+                onResult(
+                    moveResult = moveResultBundle.moveResult,
+                    moveBundle = moveResultBundle.moveBundle
+                )
             }
         }
     }

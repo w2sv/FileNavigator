@@ -6,6 +6,9 @@ import android.os.Handler
 import android.os.HandlerThread
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.UnboundService
+import com.w2sv.common.di.AppDispatcher
+import com.w2sv.common.di.GlobalScope
+import com.w2sv.common.utils.collectOn
 import com.w2sv.common.utils.log
 import com.w2sv.navigator.moving.MoveResultListener
 import com.w2sv.navigator.notifications.AppNotificationId
@@ -13,8 +16,11 @@ import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificat
 import com.w2sv.navigator.observing.FileObserver
 import com.w2sv.navigator.observing.FileObserverFactory
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import slimber.log.e
 import slimber.log.i
 import javax.inject.Inject
 
@@ -34,6 +40,13 @@ class FileNavigator : UnboundService() {
 
     @Inject
     internal lateinit var moveResultListener: MoveResultListener
+
+    @Inject
+    internal lateinit var moveResultChannel: MoveResultChannel
+
+    @Inject
+    @GlobalScope(AppDispatcher.IO)
+    internal lateinit var scope: CoroutineScope
 
     private var mediaTypeToFileObserver: MediaTypeToFileObserver? = null
 
@@ -73,7 +86,7 @@ class FileNavigator : UnboundService() {
             else -> try {
                 start()
             } catch (e: RuntimeException) {
-                i(e)
+                e(e)
                 stopSelf()
             }
         }
@@ -82,6 +95,8 @@ class FileNavigator : UnboundService() {
     }
 
     private fun start() {
+        i { "Starting FileNavigator" }
+
         startForeground(
             AppNotificationId.FileNavigatorIsRunning.id,
             isRunningNotificationManager.buildNotification(Unit)
@@ -89,11 +104,16 @@ class FileNavigator : UnboundService() {
 
         i { "Registering file observers" }
         mediaTypeToFileObserver = getRegisteredFileObservers()
+        moveResultChannel
+            .consumeAsFlow()
+            .collectOn(scope = scope, collector = moveResultListener::onMoveResult)
+
         isRunning.setState(true)
     }
 
     private fun stop() {
-        i { "FileNavigator.stop" }
+        i { "Stopping FileNavigator" }
+
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
         isRunning.setState(false)

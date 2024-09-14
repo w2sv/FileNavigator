@@ -27,11 +27,11 @@ object FileNavigatorModule {
     fun fileNavigatorIsRunning(@ApplicationContext context: Context): FileNavigator.IsRunning =
         FileNavigator.IsRunning(mutableStateFlow = MutableStateFlow(context.isServiceRunning<FileNavigator>()))
 
-    @Singleton  // TODO: ServiceScoped?
+    @Singleton  // TODO: ServiceScoped
     @Provides
     internal fun moveResultChannel(): MoveResultChannel = Channel(Channel.BUFFERED)
 
-    @Singleton  // TODO: ServiceScoped?
+    @Singleton  // TODO: ServiceScoped
     @Provides
     internal fun mutableBlacklistedMediaUriSharedFlow(): MutableSharedFlow<MediaIdWithMediaType> =
         MutableSharedFlow()
