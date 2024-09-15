@@ -45,7 +45,7 @@ internal sealed class MoveResult(val cancelNotification: Boolean) {
 
     data object MoveDestinationNotFound : Failure(false, null)
 
-    infix fun bundleWith(moveBundle: MoveBundle): Bundle =
+    infix fun bundleWith(moveBundle: MoveBundle<*, *>): Bundle =
         Bundle.PostMoveBundleCreation(this, moveBundle)
 
     sealed interface Bundle {
@@ -57,7 +57,7 @@ internal sealed class MoveResult(val cancelNotification: Boolean) {
 
         data class PostMoveBundleCreation(
             val moveResult: MoveResult,
-            val moveBundle: MoveBundle
+            val moveBundle: MoveBundle<*, *>
         ) : Bundle
     }
 }

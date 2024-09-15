@@ -37,6 +37,9 @@ sealed interface MoveDestination : Parcelable {
     fun documentFile(context: Context): DocumentFile? =
         documentUri.documentFile(context)
 
+    fun fileName(context: Context): String =
+        documentFile(context)!!.fileName(context)
+
     fun shortRepresentation(context: Context): String =
-        "/${documentFile(context)!!.fileName(context)}"
+        "/${fileName(context)}"
 }

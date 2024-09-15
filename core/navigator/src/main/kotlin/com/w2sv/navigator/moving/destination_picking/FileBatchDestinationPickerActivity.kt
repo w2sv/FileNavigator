@@ -8,7 +8,7 @@ import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.BatchMoveBroadcastReceiver
-import com.w2sv.navigator.moving.model.BatchMoveBundle
+import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.moving.model.MoveResult
@@ -59,15 +59,15 @@ internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() 
         BatchMoveBroadcastReceiver.sendBroadcast(
             args = BatchMoveBroadcastReceiver.Args(
                 batchMoveBundles = args.moveFilesWithNotificationResources.map {
-                    BatchMoveBundle(
-                        moveFile = it.moveFile,
-                        moveMode = MoveMode.DestinationPicked(
+                    MoveBundle.DestinationPickedBatchMoveBundle(
+                        file = it.moveFile,
+                        mode = MoveMode.Picked(
                             notificationResources = it.notificationResources,
                             isPartOfBatch = true
-                        )
+                        ),
+                        destination = moveDestination
                     )
                 },
-                destination = moveDestination,
             ),
             context = applicationContext
         )

@@ -10,28 +10,56 @@ import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
 /**
- * Bundle of all the data required for the move operation and all possible downstream actions.
+ * Bundle of all the data required for the move operation and all downstream actions.
  */
-@Parcelize
-internal data class MoveBundle(
-    val file: MoveFile,
-    val destination: MoveDestination,
-    val mode: MoveMode
-) : Parcelable {
+internal sealed interface MoveBundle<Dest : MoveDestination, Mode : MoveMode> : Parcelable {
+    val file: MoveFile
+    val destination: Dest
+    val mode: Mode
+
+    sealed interface Batchable<Mode: MoveMode.Batchable>: MoveBundle<MoveDestination.Directory, Mode>
+
+    @Parcelize
+    data class QuickMoveBundle(
+        override val file: MoveFile,
+        override val destination: MoveDestination.Directory,
+        override val mode: MoveMode.Quick
+    ) : Batchable<MoveMode.Quick>
+
+    @Parcelize
+    data class AutoMoveBundle(
+        override val file: MoveFile,
+        override val destination: MoveDestination.Directory,
+        override val mode: MoveMode.Auto
+    ) : MoveBundle<MoveDestination.Directory, MoveMode.Auto>
+
+    @Parcelize
+    data class DestinationPickedMoveBundle(
+        override val file: MoveFile,
+        override val destination: MoveDestination.File,
+        override val mode: MoveMode.Picked
+    ) : MoveBundle<MoveDestination.File, MoveMode.Picked>
+
+    @Parcelize
+    data class DestinationPickedBatchMoveBundle(
+        override val file: MoveFile,
+        override val destination: MoveDestination.Directory,
+        override val mode: MoveMode.Picked
+    ) : Batchable<MoveMode.Picked>
 
     fun moveEntry(
         context: Context,
         dateTime: LocalDateTime,
     ): MoveEntry =
-        when (destination) {
+        when (val capturedDestination = destination) {
             is MoveDestination.File -> {
                 MoveEntry(
-                    fileName = file.mediaStoreFileData.name,  // TODO
+                    fileName = capturedDestination.fileName(context),
                     fileType = file.fileType,
                     sourceType = file.sourceType,
-                    destination = MoveDestination.Directory(destination.documentUri.parent!!),
-                    movedFileDocumentUri = destination.documentUri,
-                    movedFileMediaUri = destination.mediaUri,
+                    destination = MoveDestination.Directory(capturedDestination.documentUri.parent!!),
+                    movedFileDocumentUri = capturedDestination.documentUri,
+                    movedFileMediaUri = capturedDestination.mediaUri,
                     dateTime = dateTime,
                     autoMoved = mode.isAuto
                 )
@@ -44,21 +72,23 @@ internal data class MoveBundle(
                     fileName = file.mediaStoreFileData.name,
                     fileType = file.fileType,
                     sourceType = file.sourceType,
-                    destination = destination,
+                    destination = capturedDestination,
                     movedFileDocumentUri = movedFileDocumentUri,
                     movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!,  // TODO
                     dateTime = dateTime,
                     autoMoved = mode.isAuto
                 )
             }
+
+            else -> throw IllegalArgumentException()  // I have no clue why this is necessary here
         }
 
 
     companion object {
         const val EXTRA = "com.w2sv.navigator.extra.MoveBundle"
 
-        fun fromIntent(intent: Intent): MoveBundle =
-            // TODO: is it possible to make this a Parcelable extension function?
-            intent.getParcelableCompat<MoveBundle>(EXTRA)!!
+        // TODO: is it possible to make this a Parcelable extension function?
+        fun <Dest : MoveDestination, Mode : MoveMode> fromIntent(intent: Intent): MoveBundle<Dest, Mode> =
+            intent.getParcelableCompat<MoveBundle<Dest, Mode>>(EXTRA)!!
     }
 }

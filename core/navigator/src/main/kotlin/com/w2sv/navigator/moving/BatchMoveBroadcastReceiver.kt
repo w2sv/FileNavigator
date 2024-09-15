@@ -9,7 +9,8 @@ import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
-import com.w2sv.navigator.moving.model.BatchMoveBundle
+import com.w2sv.navigator.moving.model.MoveBundle
+import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,9 +61,9 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
                     )
                     val moveResults = mutableListOf<MoveResult>()
                     try {
-                        args.batchMoveBundles.forEachIndexed { index, batchMoveBundle ->
+                        args.batchMoveBundles.forEachIndexed { index, moveBundle ->
                             if (isActive) {
-                                batchMoveBundle.moveFile.moveTo(
+                                moveBundle.file.moveTo(
                                     destination = preCheckResult.documentFile,
                                     context = context
                                 ) { result ->
@@ -72,11 +73,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
                                             max = args.batchMoveBundles.size
                                         )
                                     )
-                                    moveResultChannel.trySend(
-                                        result bundleWith batchMoveBundle.moveBundle(
-                                            args.destination
-                                        )
-                                    )
+                                    moveResultChannel.trySend(result bundleWith moveBundle)
                                     moveResults.add(result)
                                 }
                             }
@@ -96,9 +93,12 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
 
     @Parcelize
     data class Args(
-        val batchMoveBundles: List<BatchMoveBundle>,
-        val destination: MoveDestination,
+        val batchMoveBundles: List<MoveBundle.Batchable<*>>,
     ) : Parcelable {
+
+        val destination: MoveDestination.Directory
+            get() = batchMoveBundles.first().destination
+
         companion object {
             const val EXTRA = "com.w2sv.navigator.extra.BatchMoveBroadcastReceiver.Args"
         }

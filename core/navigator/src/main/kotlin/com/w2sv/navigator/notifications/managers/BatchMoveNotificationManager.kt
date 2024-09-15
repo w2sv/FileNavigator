@@ -12,7 +12,7 @@ import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.destination_picking.DestinationPickerActivity
 import com.w2sv.navigator.moving.destination_picking.FileBatchDestinationPickerActivity
-import com.w2sv.navigator.moving.model.BatchMoveBundle
+import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
 import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.notifications.AppNotificationChannel
@@ -108,7 +108,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
             }
 
             private fun getQuickMoveAction(
-                destination: MoveDestination,
+                destination: MoveDestination.Directory,
                 destinationDirectoryName: String,
                 requestCode: Int
             ): NotificationCompat.Action =
@@ -121,15 +121,15 @@ internal class BatchMoveNotificationManager @Inject constructor(
                         BatchMoveBroadcastReceiver.getIntent(
                             args = BatchMoveBroadcastReceiver.Args(
                                 batchMoveBundles = args.map {  // TODO: optimizable?
-                                    BatchMoveBundle(
-                                        moveFile = it.moveFile,
-                                        moveMode = MoveMode.Quick(
+                                    MoveBundle(
+                                        file = it.moveFile,
+                                        mode = MoveMode.Quick(
                                             notificationResources = it.resources,
                                             isPartOfBatch = true
-                                        )
+                                        ),
+                                        destination = destination
                                     )
                                 },
-                                destination = destination
                             ),
                             context = context
                         ),

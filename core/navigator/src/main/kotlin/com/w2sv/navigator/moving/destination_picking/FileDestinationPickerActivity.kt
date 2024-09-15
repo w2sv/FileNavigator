@@ -88,7 +88,7 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
             moveBundle = MoveBundle(
                 file = args.moveFile,
                 destination = MoveDestination.File(documentUri, mediaUri),
-                mode = MoveMode.DestinationPicked(args.notificationResources)
+                mode = MoveMode.Picked(args.notificationResources)
             ),
             context = this
         )

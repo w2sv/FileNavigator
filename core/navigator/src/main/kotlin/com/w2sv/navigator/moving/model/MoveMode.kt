@@ -16,23 +16,22 @@ internal sealed interface MoveMode : Parcelable {
     }
 
     @Parcelize
-    data class DestinationPicked(
+    data class Picked(
         override val notificationResources: NotificationResources,
         override val isPartOfBatch: Boolean = false
-    ) :
-        NotificationBased, Batchable
+    ) : Batchable
 
     @Parcelize
     data class Quick(
         override val notificationResources: NotificationResources,
         override val isPartOfBatch: Boolean = false
-    ) : NotificationBased, Batchable
+    ) : Batchable
 
     @Parcelize
     data object Auto : MoveMode
 
     val updateLastMoveDestinations: Boolean
-        get() = this is DestinationPicked
+        get() = this is Picked
 
     val isAuto: Boolean
         get() = this == Auto

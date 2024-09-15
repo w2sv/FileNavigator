@@ -24,9 +24,9 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
+import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.destination_picking.DestinationPickerActivity
 import com.w2sv.navigator.moving.destination_picking.FileDestinationPickerActivity
-import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveMode
@@ -60,7 +60,7 @@ internal class MoveFileNotificationManager @Inject constructor(
 ) {
     data class Args(
         val moveFile: MoveFile,
-        val quickMoveDestinations: List<MoveDestination>,
+        val quickMoveDestinations: List<MoveDestination.Directory>,
         override val resources: NotificationResources
     ) : MultiInstanceNotificationManager.Args
 
@@ -296,10 +296,10 @@ internal class MoveFileNotificationManager @Inject constructor(
 private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val scope: CoroutineScope,
-    private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<MoveDestination>>> = mutableMapOf()
-) : Map<FileAndSourceType, StateFlow<List<MoveDestination>>> by mutableMap {
+    private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<MoveDestination.Directory>>> = mutableMapOf()
+) : Map<FileAndSourceType, StateFlow<List<MoveDestination.Directory>>> by mutableMap {
 
-    fun quickMoveDestinations(fileAndSourceType: FileAndSourceType): List<MoveDestination> =
+    fun quickMoveDestinations(fileAndSourceType: FileAndSourceType): List<MoveDestination.Directory> =
         mutableMap.getOrPut(
             key = fileAndSourceType,
             defaultValue = {

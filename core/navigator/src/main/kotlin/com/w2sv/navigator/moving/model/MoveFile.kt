@@ -53,7 +53,7 @@ internal data class MoveFile(
                         when (fileType) {
                             FileType.Image -> R.string.photo
                             FileType.Video -> R.string.video
-                            else -> throw Error()
+                            else -> throw IllegalArgumentException()
                         }
                     )
 

@@ -18,7 +18,7 @@ internal class MoveBundleTest {
         MoveBundle(
             file = TestInstance.moveFile(),
             destination = MoveDestination.parse("lkasjdflkajhlk"),
-            mode = MoveMode.DestinationPicked(
+            mode = MoveMode.Picked(
                 notificationResources = NotificationResources(
                     7,
                     "MoveFileNotificationManager"

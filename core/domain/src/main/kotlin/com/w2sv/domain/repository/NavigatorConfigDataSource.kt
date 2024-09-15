@@ -15,7 +15,7 @@ interface NavigatorConfigDataSource {
     suspend fun saveQuickMoveDestination(
         fileType: FileType,
         sourceType: SourceType,
-        destination: MoveDestination
+        destination: MoveDestination.Directory
     )
 
     suspend fun unsetQuickMoveDestination(
@@ -26,5 +26,5 @@ interface NavigatorConfigDataSource {
     fun quickMoveDestinations(
         fileType: FileType,
         sourceType: SourceType
-    ): Flow<List<MoveDestination>>
+    ): Flow<List<MoveDestination.Directory>>
 }
