@@ -257,7 +257,7 @@ internal class MoveFileNotificationManager @Inject constructor(
 
             private fun getQuickMoveAction(
                 requestCode: Int,
-                destination: MoveDestination,
+                destination: MoveDestination.Directory,
                 directoryName: String
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
@@ -267,7 +267,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                         context,
                         requestCode,
                         MoveBroadcastReceiver.getIntent(
-                            moveBundle = MoveBundle(
+                            moveBundle = MoveBundle.QuickMove(
                                 file = args.moveFile,
                                 destination = destination,
                                 mode = MoveMode.Quick(args.resources)

@@ -10,7 +10,6 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveMode
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,47 +45,42 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val args = intent.getParcelableCompat<Args>(Args.EXTRA)!!
 
-        when (val preCheckResult = PreCheckResult.get(args.destination, context)) {
-            is PreCheckResult.Failure -> {
-                moveResultChannel.trySend(preCheckResult.failure bundleWith null)
-            }
+        val destinationDocumentFile = args.destination.documentFile(context)!!
 
-            is PreCheckResult.Success -> {
-                jobHolder.job = scope.launch {
-                    batchMoveProgressNotificationManager.buildAndPostNotification(
-                        BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
-                            current = 0,
-                            max = args.batchMoveBundles.size
-                        )
-                    )
-                    val moveResults = mutableListOf<MoveResult>()
-                    try {
-                        args.batchMoveBundles.forEachIndexed { index, moveBundle ->
-                            if (isActive) {
-                                moveBundle.file.moveTo(
-                                    destination = preCheckResult.documentFile,
-                                    context = context
-                                ) { result ->
-                                    batchMoveProgressNotificationManager.buildAndPostNotification(
-                                        BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
-                                            current = index + 1,
-                                            max = args.batchMoveBundles.size
-                                        )
-                                    )
-                                    moveResultChannel.trySend(result bundleWith moveBundle)
-                                    moveResults.add(result)
-                                }
-                            }
-                        }
-                    } finally {
-                        batchMoveProgressNotificationManager.buildAndPostNotification(
-                            BatchMoveProgressNotificationManager.BuilderArgs.MoveResults(
-                                moveResults = moveResults,
-                                destination = args.destination
+        jobHolder.job = scope.launch {
+            batchMoveProgressNotificationManager.buildAndPostNotification(
+                BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
+                    current = 0,
+                    max = args.batchMoveBundles.size
+                )
+            )
+            val moveResults = mutableListOf<MoveResult>()
+            try {
+                args.batchMoveBundles.forEachIndexed { index, moveBundle ->
+                    if (isActive) {
+                        moveBundle.file.moveTo(
+                            destination = args.destination,
+                            destinationDocumentFile = destinationDocumentFile,
+                            context = context
+                        ) { result ->
+                            batchMoveProgressNotificationManager.buildAndPostNotification(
+                                BatchMoveProgressNotificationManager.BuilderArgs.MoveProgress(
+                                    current = index + 1,
+                                    max = args.batchMoveBundles.size
+                                )
                             )
-                        )
+                            moveResultChannel.trySend(result bundleWith moveBundle)
+                            moveResults.add(result)
+                        }
                     }
                 }
+            } finally {
+                batchMoveProgressNotificationManager.buildAndPostNotification(
+                    BatchMoveProgressNotificationManager.BuilderArgs.MoveResults(
+                        moveResults = moveResults,
+                        destination = args.destination
+                    )
+                )
             }
         }
     }

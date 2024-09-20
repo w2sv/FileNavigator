@@ -70,7 +70,7 @@ fun SubDirectoryIcon(
 
 @Composable
 fun rememberAutoMoveDestinationPath(
-    destination: MoveDestination?,
+    destination: MoveDestination.Directory?,
     context: Context = LocalContext.current,
     moveDestinationPathConverter: MoveDestinationPathConverter = LocalMoveDestinationPathConverter.current,
 ): State<String?> =
@@ -114,7 +114,7 @@ fun AutoMoveRow(
 }
 
 @Composable
-fun rememberSelectAutoMoveDestination(onDestinationSelected: (MoveDestination) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
+fun rememberSelectAutoMoveDestination(onDestinationSelected: (MoveDestination.Directory) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
     val context: Context = LocalContext.current
     return rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { optionalTreeUri ->
         optionalTreeUri?.let { treeUri ->

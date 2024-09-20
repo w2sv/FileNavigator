@@ -20,28 +20,28 @@ internal sealed interface MoveBundle<Dest : MoveDestination, Mode : MoveMode> : 
     sealed interface Batchable<Mode: MoveMode.Batchable>: MoveBundle<MoveDestination.Directory, Mode>
 
     @Parcelize
-    data class QuickMoveBundle(
+    data class QuickMove(
         override val file: MoveFile,
         override val destination: MoveDestination.Directory,
         override val mode: MoveMode.Quick
     ) : Batchable<MoveMode.Quick>
 
     @Parcelize
-    data class AutoMoveBundle(
+    data class AutoMove(
         override val file: MoveFile,
         override val destination: MoveDestination.Directory,
         override val mode: MoveMode.Auto
     ) : MoveBundle<MoveDestination.Directory, MoveMode.Auto>
 
     @Parcelize
-    data class DestinationPickedMoveBundle(
+    data class DestinationPicked(
         override val file: MoveFile,
         override val destination: MoveDestination.File,
         override val mode: MoveMode.Picked
     ) : MoveBundle<MoveDestination.File, MoveMode.Picked>
 
     @Parcelize
-    data class DestinationPickedBatchMoveBundle(
+    data class DestinationPickedBatchMove(
         override val file: MoveFile,
         override val destination: MoveDestination.Directory,
         override val mode: MoveMode.Picked

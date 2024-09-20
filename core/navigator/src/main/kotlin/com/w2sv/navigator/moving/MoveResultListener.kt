@@ -10,7 +10,6 @@ import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.core.navigator.R
-import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.FileNavigator
@@ -74,8 +73,10 @@ internal class MoveResultListener @Inject constructor(
         moveResult: MoveResult,
         moveBundle: MoveBundle<*, *>
     ) {
-        if (moveResult.cancelNotification && moveBundle.mode is MoveMode.NotificationBased) {
-            cancelNotification(moveBundle.mode.notificationResources)
+        if (moveResult.cancelNotification) {
+            (moveBundle.mode as? MoveMode.NotificationBased)?.let {
+                cancelNotification(it.notificationResources)
+            }
         }
         when (moveResult) {
             is MoveResult.Success -> {
@@ -87,18 +88,18 @@ internal class MoveResultListener @Inject constructor(
                     context.showMoveFailureToast(moveResult.explanationStringRes)
                 }
                 if (moveResult == MoveResult.MoveDestinationNotFound) {
-                    when (moveBundle.mode) {
-                        is MoveMode.Auto -> {
+                    when (moveBundle) {
+                        is MoveBundle.AutoMove -> {
                             onAutoMoveDestinationNotFound(moveBundle)
                         }
 
-                        is MoveMode.Quick -> {
+                        is MoveBundle.QuickMove -> {
                             onQuickMoveDestinationNotFound(
                                 moveBundle = moveBundle
                             )
                         }
 
-                        is MoveMode.Picked -> {  // Shouldn't normally occur
+                        else -> {  // Shouldn't normally occur
                             onResult(
                                 moveBundle = moveBundle,
                                 moveResult = MoveResult.InternalError
@@ -115,10 +116,10 @@ internal class MoveResultListener @Inject constructor(
     }
 
     private fun onQuickMoveDestinationNotFound(
-        moveBundle: MoveBundle<MoveDestination, MoveMode.Quick>
+        moveBundle: MoveBundle.QuickMove
     ) {
         (moveBundle.mode as? MoveMode.NotificationBased)?.let {
-            cancelNotification(it.notificationResources)  // TODO
+            cancelNotification(it.notificationResources)
         }
 
         scope.launch {
@@ -131,7 +132,7 @@ internal class MoveResultListener @Inject constructor(
         }
     }
 
-    private fun onAutoMoveDestinationNotFound(moveBundle: MoveBundle<MoveDestination.Directory, MoveMode.Auto>) {
+    private fun onAutoMoveDestinationNotFound(moveBundle: MoveBundle.AutoMove) {
         scope.launch {
             navigatorConfigDataSource.unsetAutoMoveConfig(
                 fileType = moveBundle.file.fileType,

@@ -54,7 +54,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(private val nav
     override suspend fun saveQuickMoveDestination(
         fileType: FileType,
         sourceType: SourceType,
-        destination: MoveDestination
+        destination: MoveDestination.Directory
     ) {
         updateData { config ->
             config.copyWithAlteredSourceConfig(
@@ -97,7 +97,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(private val nav
     override fun quickMoveDestinations(
         fileType: FileType,
         sourceType: SourceType
-    ): Flow<List<MoveDestination>> =
+    ): Flow<List<MoveDestination.Directory>> =
         navigatorConfig.map { it.sourceConfig(fileType, sourceType).lastMoveDestinations }
 }
 

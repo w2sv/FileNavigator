@@ -34,7 +34,7 @@ internal sealed interface MoveMode : Parcelable {
         get() = this is Picked
 
     val isAuto: Boolean
-        get() = this == Auto
+        get() = this is Auto
 
     val showMoveResultToast: Boolean
         get() = this !is Batchable || !isPartOfBatch

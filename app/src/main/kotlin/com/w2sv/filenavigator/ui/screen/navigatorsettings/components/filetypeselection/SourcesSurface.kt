@@ -97,7 +97,6 @@ fun SourcesSurface(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SourceRow(
     fileType: FileType,

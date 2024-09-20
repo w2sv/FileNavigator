@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class AutoMoveConfig(
     val enabled: Boolean,
-    val destination: MoveDestination?
+    val destination: MoveDestination.Directory?
 ) : Parcelable {
 
     companion object {

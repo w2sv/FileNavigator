@@ -159,7 +159,7 @@ internal abstract class FileObserver(
 
                             else -> {
                                 MoveBroadcastReceiver.sendBroadcast(
-                                    moveBundle = MoveBundle(
+                                    moveBundle = MoveBundle.AutoMove(
                                         file = moveFile,
                                         destination = enabledAutoMoveDestination,
                                         mode = MoveMode.Auto
@@ -176,5 +176,5 @@ internal abstract class FileObserver(
     protected abstract fun enabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType?
 }
 
-private val AutoMoveConfig.enabledDestinationOrNull: MoveDestination?
+private val AutoMoveConfig.enabledDestinationOrNull: MoveDestination.Directory?
     get() = if (enabled) destination else null

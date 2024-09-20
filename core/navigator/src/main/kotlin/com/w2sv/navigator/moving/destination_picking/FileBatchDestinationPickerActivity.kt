@@ -59,7 +59,7 @@ internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() 
         BatchMoveBroadcastReceiver.sendBroadcast(
             args = BatchMoveBroadcastReceiver.Args(
                 batchMoveBundles = args.moveFilesWithNotificationResources.map {
-                    MoveBundle.DestinationPickedBatchMoveBundle(
+                    MoveBundle.DestinationPickedBatchMove(
                         file = it.moveFile,
                         mode = MoveMode.Picked(
                             notificationResources = it.notificationResources,

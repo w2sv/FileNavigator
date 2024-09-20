@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.Intent
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
+import com.w2sv.navigator.moving.model.MoveMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -23,19 +25,22 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     lateinit var scope: CoroutineScope
 
     override fun onReceive(context: Context, intent: Intent) {
-        val moveBundle = MoveBundle.fromIntent(intent)
+        val moveBundle = MoveBundle.fromIntent<MoveDestination, MoveMode>(intent)
+
         scope.launch {
-            moveBundle.copyToDestinationAndDelete(context) { result ->
-                moveResultChannel.trySend(
-                    result bundleWith moveBundle
-                )
+            with(moveBundle) {
+                file.moveTo(destination = destination, context = context) { result ->
+                    moveResultChannel.trySend(
+                        result bundleWith this
+                    )
+                }
             }
         }
     }
 
     companion object {
         fun sendBroadcast(
-            moveBundle: MoveBundle,
+            moveBundle: MoveBundle<*, *>,
             context: Context,
         ) {
             context.sendBroadcast(
@@ -47,7 +52,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         }
 
         fun getIntent(
-            moveBundle: MoveBundle,
+            moveBundle: MoveBundle<*, *>,
             context: Context
         ): Intent =
             Intent(context, MoveBroadcastReceiver::class.java)

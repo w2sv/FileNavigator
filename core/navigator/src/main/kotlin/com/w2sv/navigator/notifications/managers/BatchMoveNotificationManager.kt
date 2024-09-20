@@ -121,7 +121,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
                         BatchMoveBroadcastReceiver.getIntent(
                             args = BatchMoveBroadcastReceiver.Args(
                                 batchMoveBundles = args.map {  // TODO: optimizable?
-                                    MoveBundle(
+                                    MoveBundle.QuickMove(
                                         file = it.moveFile,
                                         mode = MoveMode.Quick(
                                             notificationResources = it.resources,
