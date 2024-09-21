@@ -54,7 +54,7 @@ internal sealed interface PreCheckResult {
 internal suspend fun MoveFile.moveTo(
     destination: MoveDestination,
     context: Context,
-    destinationDocumentFile: DocumentFile = destination.documentFile(context)!!,  // TODO
+    destinationDocumentFile: DocumentFile = destination.documentFile(context),
     onResult: (MoveResult) -> Unit
 ) {
     when (val preCheckResult = PreCheckResult.get(

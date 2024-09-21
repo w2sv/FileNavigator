@@ -19,7 +19,7 @@ fun ContentResolver.loadBitmapFileNotFoundHandled(uri: Uri): Bitmap? =
 /**
  * Remedies "Failed query: java.lang.SecurityException: Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider from ProcessRecord{6fc17ee 8097:com.w2sv.filenavigator.debug/u0a753} (pid=8097, uid=10753) requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs"
  *
- * Tested with tree uri, dunno if working with others too.
+ * Tested with tree uri, dunno if working with others, too.
  */
 fun ContentResolver.takePersistableReadAndWriteUriPermission(treeUri: Uri) {
     takePersistableUriPermission(

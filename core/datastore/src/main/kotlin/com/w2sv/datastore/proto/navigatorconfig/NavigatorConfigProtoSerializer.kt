@@ -10,7 +10,7 @@ import java.io.OutputStream
 
 internal object NavigatorConfigProtoSerializer : Serializer<NavigatorConfigProto> {
     override val defaultValue: NavigatorConfigProto by lazy {
-        NavigatorConfigMapper.toProto(NavigatorConfig.default)
+        NavigatorConfig.default.toProto(false)
     }
 
     override suspend fun readFrom(input: InputStream): NavigatorConfigProto =

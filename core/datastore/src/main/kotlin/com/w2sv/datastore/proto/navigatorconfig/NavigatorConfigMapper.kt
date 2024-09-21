@@ -18,7 +18,13 @@ import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 
-internal object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, NavigatorConfig> {
+fun NavigatorConfig.toProto(hasBeenMigrated: Boolean): NavigatorConfigProto =
+    NavigatorConfigMapper.toProto(this, hasBeenMigrated)
+
+fun NavigatorConfigProto.toExternal(): NavigatorConfig =
+    NavigatorConfigMapper.toExternal(this)
+
+private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, NavigatorConfig> {
     override fun toExternal(proto: NavigatorConfigProto): NavigatorConfig =
         NavigatorConfig(
             fileTypeConfigMap = proto.fileTypeToConfigMap.map { (fileTypeIndex, configProto) ->
@@ -80,7 +86,7 @@ private object SourceConfigMapper :
             this.enabled = external.enabled
             this.lastMoveDestinations.apply {
                 clear()
-                addAll(external.lastMoveDestinations.map { it.toString() })
+                addAll(external.lastMoveDestinations.map { it.uriString })
             }
             this.autoMoveConfig = AutoMoveConfigMapper.toProto(external.autoMoveConfig)
         }
@@ -98,6 +104,9 @@ private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveC
 
     override fun toProto(external: AutoMoveConfig): AutoMoveConfigProto = autoMoveConfigProto {
         enabled = external.enabled
-        destination = external.destination?.toString() ?: ""
+        destination = external.destination?.uriString ?: ""
     }
 }
+
+private val MoveDestination.Directory.uriString: String
+    get() = documentUri.uri.toString()

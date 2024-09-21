@@ -45,7 +45,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val args = intent.getParcelableCompat<Args>(Args.EXTRA)!!
 
-        val destinationDocumentFile = args.destination.documentFile(context)!!
+        val destinationDocumentFile = args.destination.documentFile(context)
 
         jobHolder.job = scope.launch {
             batchMoveProgressNotificationManager.buildAndPostNotification(

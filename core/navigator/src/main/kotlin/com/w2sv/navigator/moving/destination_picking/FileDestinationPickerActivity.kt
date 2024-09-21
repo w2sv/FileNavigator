@@ -1,6 +1,9 @@
 package com.w2sv.navigator.moving.destination_picking
 
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
+import android.provider.DocumentsContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.os.getParcelableCompat
@@ -13,10 +16,10 @@ import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
+import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,7 +53,19 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
 
     private val documentCreator by lazy {
         registerForActivityResult(
-            contract = ActivityResultContracts.CreateDocument(args.moveFile.fileType.simpleStorageMediaType.mimeType),  // TODO: set mime types for non-simpleStorageMediaTypes
+            object :
+                ActivityResultContracts.CreateDocument(args.moveFile.fileType.simpleStorageMediaType.mimeType) {
+                override fun createIntent(context: Context, input: String): Intent {
+                    return super.createIntent(context, input)
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .apply {
+                            intent.putExtra(
+                                DocumentsContract.EXTRA_INITIAL_URI,
+                                args.pickerStartDestination?.uri
+                            )
+                        }
+                }
+            },
             callback = { contentUri ->
                 if (contentUri != null) {
                     onDocumentCreated(contentUri)
@@ -61,19 +76,18 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
     }
 
     /**
-     * @param contentUri E.g. content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots%2FScreenshot_2024-09-08-01-29-28-913_com.w2sv.filenavigator.debug.jpg
+     * @param contentUri E.g.: __content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots%2FScreenshot_2024-09-08-01-29-28-913_com.w2sv.filenavigator.debug.jpg__
      */
     private fun onDocumentCreated(contentUri: Uri) {
         i { "Document contentUri: $contentUri" }
 
-        // Take persistable read & write permission
-        // Required for quick move
         contentResolver.takePersistableReadAndWriteUriPermission(contentUri)  // TODO: necessary?
+
         val documentUri = contentUri.documentUri
         val mediaUri = MediaUri.fromDocumentUri(
             this@FileDestinationPickerActivity,
             documentUri
-        )!!
+        )!!  // TODO
 
         blacklistedMediaUris.emit(
             value = MediaIdWithMediaType(

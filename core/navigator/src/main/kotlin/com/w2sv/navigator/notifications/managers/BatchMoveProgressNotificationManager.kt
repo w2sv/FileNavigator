@@ -35,7 +35,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
 
         data class MoveResults(
             val moveResults: List<MoveResult>,
-            val destination: MoveDestination
+            val destination: MoveDestination.Directory
         ) :
             BuilderArgs
     }
@@ -101,7 +101,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
 
                     private fun contentText(
                         moveResultToCount: Map<MoveResult, Int>,
-                        destination: MoveDestination
+                        destination: MoveDestination.Directory
                     ): CharSequence {
                         val resultRowPrefix = if (moveResultToCount.size >= 2) "• " else null
                         return buildSpannedString {

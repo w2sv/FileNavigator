@@ -4,7 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.preferencesOf
 import com.w2sv.datastore.navigatorConfigProto
-import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigMapper
+import com.w2sv.datastore.proto.navigatorconfig.toExternal
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -76,9 +76,7 @@ internal class NavigatorPreferencesToProtoMigrationTest {
 
         assertTrue(migratedNavigatorConfigProto.hasBeenMigrated)
         assertEquals(
-            NavigatorConfigMapper.toExternal(
-                migratedNavigatorConfigProto
-            ),
+            migratedNavigatorConfigProto.toExternal(),
             NavigatorConfig
                 .default
                 .copy(disableOnLowBattery = true)

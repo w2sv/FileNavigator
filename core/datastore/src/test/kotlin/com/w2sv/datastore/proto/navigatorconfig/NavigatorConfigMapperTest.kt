@@ -28,19 +28,19 @@ internal class NavigatorConfigMapperTest {
             .copyWithAlteredAutoMoveConfig(FileType.APK, SourceType.Download) {
                 AutoMoveConfig(
                     enabled = true,
-                    destination = MoveDestination.parse("some/move/destination")
+                    destination = MoveDestination.Directory.parse("some/move/destination")
                 )
             }
             .copyWithAlteredAutoMoveConfig(FileType.Image, SourceType.Download) {
                 AutoMoveConfig(
                     enabled = true,
-                    destination = MoveDestination.parse("some/other/move/destination")
+                    destination = MoveDestination.Directory.parse("some/other/move/destination")
                 )
             }
             .copyWithAlteredSourceConfig(FileType.Audio, SourceType.Recording) {
                 it.copy(
                     enabled = false,
-                    lastMoveDestinations = listOf(MoveDestination.parse("last/move/destination"))
+                    lastMoveDestinations = listOf(MoveDestination.Directory.parse("last/move/destination"))
                 )
             }
         assertEquals(nonDefaultConfig, nonDefaultConfig.backAndForthMapped())
@@ -48,4 +48,4 @@ internal class NavigatorConfigMapperTest {
 }
 
 private fun NavigatorConfig.backAndForthMapped(): NavigatorConfig =
-    NavigatorConfigMapper.toExternal(NavigatorConfigMapper.toProto(this))
+    toProto(true).toExternal()

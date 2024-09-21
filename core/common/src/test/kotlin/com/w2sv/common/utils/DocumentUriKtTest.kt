@@ -1,7 +1,6 @@
 package com.w2sv.common.utils
 
 import android.content.Context
-import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -12,21 +11,52 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = "AndroidManifest.xml")
 class DocumentUriKtTest {
-
-    private val treeDocumentUri: Uri =
-        Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AMoved%2FScreenshots/document/primary%3AMoved%2FScreenshots")
     private val context = ApplicationProvider.getApplicationContext<Context>()
 
+    private val contentUri: DocumentUri =
+        DocumentUri.parse("content://com.android.externalstorage.documents/document/primary%3AMoved%2FGIFs")
+    private val treeDocumentUri: DocumentUri =
+        DocumentUri.parse("content://com.android.externalstorage.documents/tree/primary%3AMoved%2FScreenshots/document/primary%3AMoved%2FScreenshots")
+
     @Test
-    fun getDocumentUriPath() {
+    fun testFromTreeUri() {
         assertEquals(
-            "primary:Moved/Screenshots",
-            DocumentUri(treeDocumentUri).documentFilePath(context)
+            treeDocumentUri,
+            DocumentUri.fromTreeUri(context, treeDocumentUri.uri)
         )
     }
 
     @Test
-    fun getDocumentUriFileName() {
-        assertEquals(null, DocumentUri(treeDocumentUri).documentFile(context)?.name)
+    fun testDocumentFilePath() {
+        assertEquals(
+            "primary:Moved/Screenshots",
+            treeDocumentUri.documentFilePath(context)
+        )
+        assertEquals(
+            "primary:Moved/GIFs",
+            contentUri.documentFilePath(context)
+        )
+    }
+
+    @Test
+    fun testDocumentFileName() {
+        assertEquals(null, treeDocumentUri.documentFile(context)?.name)
+    }
+
+    @Test
+    fun testChildDocumentUri() {
+        assertEquals(
+            DocumentUri.parse("content://com.android.externalstorage.documents/document/primary%3AMoved%2FGIFs%2FsomeFile.jpg"),
+            contentUri.childDocumentUri("someFile.jpg")
+        )
+    }
+
+    @Test
+    fun testParent() {
+        assertEquals(
+            DocumentUri.parse("content://com.android.externalstorage.documents/document/primary%3AMoved"),
+            contentUri.parent
+        )
+        assertEquals(null, contentUri.parent?.parent)
     }
 }

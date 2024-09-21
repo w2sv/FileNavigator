@@ -16,15 +16,10 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(private val nav
     NavigatorConfigDataSource {
 
     override val navigatorConfig: Flow<NavigatorConfig> =
-        navigatorConfigProtoDataStore.data.map { NavigatorConfigMapper.toExternal(it) }
+        navigatorConfigProtoDataStore.data.map { it.toExternal() }
 
     override suspend fun saveNavigatorConfig(config: NavigatorConfig) {
-        navigatorConfigProtoDataStore.updateData { protoConfig ->
-            NavigatorConfigMapper.toProto(
-                external = config,
-                hasBeenMigrated = protoConfig.hasBeenMigrated
-            )
-        }
+        updateData { config }
     }
 
     /**
@@ -36,10 +31,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(private val nav
      */
     private suspend fun updateData(transform: suspend (NavigatorConfig) -> NavigatorConfig) {
         navigatorConfigProtoDataStore.updateData { protoConfig ->
-            NavigatorConfigMapper.toProto(
-                external = transform(NavigatorConfigMapper.toExternal(protoConfig)),
-                hasBeenMigrated = protoConfig.hasBeenMigrated
-            )
+            transform(protoConfig.toExternal()).toProto(protoConfig.hasBeenMigrated)
         }
     }
 

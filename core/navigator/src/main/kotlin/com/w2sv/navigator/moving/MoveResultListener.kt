@@ -33,7 +33,7 @@ internal class MoveResultListener @Inject constructor(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val moveFileNotificationManager: MoveFileNotificationManager,
     private val autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager,
-    @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,  // TODO
+    @GlobalScope(AppDispatcher.IO) private val scope: CoroutineScope,  // TODO
     @ApplicationContext private val context: Context
 ) {
     suspend fun onMoveResult(moveResultBundle: MoveResult.Bundle) {
@@ -141,8 +141,9 @@ internal class MoveResultListener @Inject constructor(
             )
         }
         if (destinationSelectionManner.isPicked) {
+            i { "Saving quick move destination ${destination.directoryDestination}" }
+
             scope.launch {
-                i { "Saving last move destination" }
                 navigatorConfigDataSource.saveQuickMoveDestination(
                     fileType = file.fileType,
                     sourceType = file.sourceType,

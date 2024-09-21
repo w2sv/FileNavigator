@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
 import java.io.File
 
 private const val PATH_SLASH_ENCODING = "%2F"
-//private const val PATH_COLON_ENCODING = "%3A"
+private const val PATH_COLON_ENCODING = "%3A"
 
 @Parcelize
 @JvmInline
@@ -18,16 +18,16 @@ value class DocumentUri(val uri: Uri) : Parcelable {
     /**
      * @see DocumentFile.fromSingleUri
      */
-    fun documentFile(context: Context): DocumentFile? =
-        DocumentFile.fromSingleUri(context, uri)
+    fun documentFile(context: Context): DocumentFile =
+        DocumentFile.fromSingleUri(context, uri)!!
 
     /**
      * Returns e.g. "primary:Moved/Screenshots" for [uri]="content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots".
      *
      * Does not depend on the file corresponding to [uri] being present.
      */
-    fun documentFilePath(context: Context): String? =
-        documentFile(context)?.getSimplePath(context)
+    fun documentFilePath(context: Context): String =
+        documentFile(context).getSimplePath(context)
 
     fun mediaUri(context: Context): MediaUri? =
         MediaUri.fromDocumentUri(context, this)
@@ -36,14 +36,23 @@ value class DocumentUri(val uri: Uri) : Parcelable {
         parse(uri.toString() + PATH_SLASH_ENCODING + Uri.encode(fileName))
 
     val parent: DocumentUri?
-        get() = toString()
-            .substringBeforeLast(PATH_SLASH_ENCODING, missingDelimiterValue = "")
-            .run {
-                if (isEmpty()) {
-                    null
-                } else {
-                    parse(this)
-                }
+        get() = uri
+            .toString()
+            .split(PATH_COLON_ENCODING)
+            .let { colonSplitSegments ->
+                colonSplitSegments
+                    .last()
+                    .substringBeforeLast(PATH_SLASH_ENCODING, missingDelimiterValue = "")
+                    .let { parentPath ->
+                        if (parentPath.isEmpty()) {
+                            null
+                        } else {
+                            parse(
+                                colonSplitSegments.replaceLast(parentPath)
+                                    .joinToString(PATH_COLON_ENCODING)
+                            )
+                        }
+                    }
             }
 
     companion object {
@@ -63,6 +72,9 @@ value class DocumentUri(val uri: Uri) : Parcelable {
             fromDocumentFile(DocumentFile.fromFile(file))
     }
 }
+
+val Uri.decoded: String
+    get() = Uri.decode(toString())
 
 val Uri.documentUri: DocumentUri
     get() = DocumentUri(this)

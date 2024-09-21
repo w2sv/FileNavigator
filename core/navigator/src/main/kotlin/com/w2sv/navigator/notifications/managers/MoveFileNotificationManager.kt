@@ -193,10 +193,10 @@ internal class MoveFileNotificationManager @Inject constructor(
 
                 // Add quickMoveAction if quickMoveDestination present.
                 args.quickMoveDestinations.forEach { quickMoveDestination ->
-                    i { "quickMoveDestinations=$quickMoveDestination" }
+                    i { "quickMoveDestination=$quickMoveDestination" }
 
                     // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
-                    quickMoveDestination.documentFile(context)?.name?.let { directoryName ->
+                    quickMoveDestination.documentFile(context).name?.let { directoryName ->
                         addAction(
                             getQuickMoveAction(
                                 requestCode = requestCodeIterator.next(),
