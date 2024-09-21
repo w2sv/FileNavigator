@@ -69,7 +69,7 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
                     fileName = capturedDestination.fileName(context),
                     fileType = file.fileType,
                     sourceType = file.sourceType,
-                    destination = MoveDestination.Directory(capturedDestination.documentUri.parent!!),
+                    destination = capturedDestination.parentDirectory,
                     movedFileDocumentUri = capturedDestination.documentUri,
                     movedFileMediaUri = capturedDestination.mediaUri,
                     dateTime = dateTime,

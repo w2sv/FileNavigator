@@ -11,7 +11,6 @@ import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
-import slimber.log.i
 import javax.inject.Inject
 
 @Parcelize

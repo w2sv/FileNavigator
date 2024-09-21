@@ -12,7 +12,6 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
-import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.moving.model.AnyMoveBundle
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
@@ -42,27 +41,18 @@ internal class MoveResultListener @Inject constructor(
 
         when (moveResultBundle) {
             is MoveResult.Bundle.PreCheckFailure -> {
-                onPreCheckFailure(
-                    moveFailure = moveResultBundle.moveFailure,
-                    notificationResources = moveResultBundle.notificationResources
-                )
+                moveResultBundle.onPreCheckFailure()
             }
 
             is MoveResult.Bundle.PostMoveBundleCreation -> {
-                onResult(
-                    moveResult = moveResultBundle.moveResult,
-                    moveBundle = moveResultBundle.moveBundle
-                )
+                moveResultBundle.onResult()
             }
         }
     }
 
-    private suspend fun onPreCheckFailure(
-        moveFailure: MoveResult.Failure,
-        notificationResources: NotificationResources?
-    ) {
-        if (moveFailure.cancelNotification && notificationResources != null) {
-            cancelNotification(notificationResources)
+    private suspend fun MoveResult.Bundle.PreCheckFailure.onPreCheckFailure() {
+        if (moveFailure.cancelMoveFileNotification && notificationResources != null) {
+            cancelMoveFileNotification(notificationResources)
         }
 
         moveFailure.explanationStringRes?.let {
@@ -70,18 +60,15 @@ internal class MoveResultListener @Inject constructor(
         }
     }
 
-    private suspend fun onResult(
-        moveResult: MoveResult,
-        moveBundle: AnyMoveBundle
-    ) {
-        if (moveResult.cancelNotification) {
+    private suspend fun MoveResult.Bundle.PostMoveBundleCreation.onResult() {
+        if (moveResult.cancelMoveFileNotification) {
             (moveBundle.destinationSelectionManner as? DestinationSelectionManner.NotificationBased)?.let {
-                cancelNotification(it.notificationResources)
+                cancelMoveFileNotification(it.notificationResources)
             }
         }
         when (moveResult) {
             is MoveResult.Success -> {
-                onSuccess(moveBundle)
+                moveBundle.onSuccess()
             }
 
             is MoveResult.Failure -> {
@@ -91,88 +78,78 @@ internal class MoveResultListener @Inject constructor(
                 if (moveResult == MoveResult.MoveDestinationNotFound) {
                     when (moveBundle) {
                         is MoveBundle.AutoMove -> {
-                            onAutoMoveDestinationNotFound(moveBundle)
+                            moveBundle.onDestinationNotFound()
                         }
 
                         is MoveBundle.QuickMove -> {
-                            onQuickMoveDestinationNotFound(
-                                moveBundle = moveBundle
-                            )
+                            moveBundle.onDestinationNotFound()
                         }
 
-                        else -> {  // Shouldn't normally occur
-                            onResult(
-                                moveBundle = moveBundle,
-                                moveResult = MoveResult.InternalError
-                            )
-                        }
+                        else -> Unit
                     }
                 }
             }
         }
     }
 
-    private fun cancelNotification(notificationResources: NotificationResources?) {
+    private fun cancelMoveFileNotification(notificationResources: NotificationResources?) {
         notificationResources?.cancelNotification(context)
     }
 
-    private fun onQuickMoveDestinationNotFound(
-        moveBundle: MoveBundle.QuickMove
-    ) {
-        (moveBundle.destinationSelectionManner as? DestinationSelectionManner.NotificationBased)?.let {
-            cancelNotification(it.notificationResources)
+    private fun MoveBundle.QuickMove.onDestinationNotFound() {
+        (destinationSelectionManner as? DestinationSelectionManner.NotificationBased)?.let {
+            cancelMoveFileNotification(it.notificationResources)
         }
 
         scope.launch {
             navigatorConfigDataSource.unsetQuickMoveDestination(
-                fileType = moveBundle.file.fileType,
-                sourceType = moveBundle.file.sourceType
+                fileType = file.fileType,
+                sourceType = file.sourceType
             )
 
-            moveFileNotificationManager.buildAndPostNotification(moveBundle.file)
+            moveFileNotificationManager.buildAndPostNotification(file)
         }
     }
 
-    private fun onAutoMoveDestinationNotFound(moveBundle: MoveBundle.AutoMove) {
+    private fun MoveBundle.AutoMove.onDestinationNotFound() {
         scope.launch {
             navigatorConfigDataSource.unsetAutoMoveConfig(
-                fileType = moveBundle.file.fileType,
-                sourceType = moveBundle.file.sourceType
+                fileType = file.fileType,
+                sourceType = file.sourceType
             )
-            FileNavigator.reregisterFileObservers(context)
         }
-        moveFileNotificationManager.buildAndPostNotification(moveBundle.file)
+        moveFileNotificationManager.buildAndPostNotification(file)
         autoMoveDestinationInvalidNotificationManager.buildAndPostNotification(
-            fileAndSourceType = moveBundle.file.fileAndSourceType,
-            autoMoveDestination = moveBundle.destination
+            fileAndSourceType = file.fileAndSourceType,
+            autoMoveDestination = destination
         )
     }
 
-    private suspend fun onSuccess(moveBundle: AnyMoveBundle) {
-        if (moveBundle.notifyAboutMoveResult) {
+    private suspend fun AnyMoveBundle.onSuccess() {
+        if (notifyAboutMoveResult) {
             context.showMoveSuccessToast(
-                moveBundle = moveBundle
+                moveBundle = this
             )
         }
 
-        scope.launch {  // TODO
+        scope.launch {
             insertMoveEntryUseCase(
-                moveBundle.moveEntry(
+                moveEntry(
                     context = context,
                     dateTime = LocalDateTime.now(),
                 )
             )
         }
-//        if (moveBundle.mode.updateLastMoveDestinations) {
-//            scope.launch {
-//                i { "Saving last move destination" }
-//                navigatorConfigDataSource.saveQuickMoveDestination(
-//                    fileType = moveBundle.file.fileType,
-//                    sourceType = moveBundle.file.sourceType,
-//                    destination = moveBundle.destination
-//                )
-//            }
-//        }
+        if (destinationSelectionManner.isPicked) {
+            scope.launch {
+                i { "Saving last move destination" }
+                navigatorConfigDataSource.saveQuickMoveDestination(
+                    fileType = file.fileType,
+                    sourceType = file.sourceType,
+                    destination = destination.directoryDestination
+                )
+            }
+        }
     }
 }
 
@@ -185,7 +162,7 @@ private suspend fun Context.showMoveSuccessToast(moveBundle: AnyMoveBundle) {
                     context = this@showMoveSuccessToast,
                     isGif = moveBundle.file.isGif
                 ),
-                moveBundle.destination.shortRepresentation(this@showMoveSuccessToast)
+                moveBundle.destination.directoryDestination.shortRepresentation(this@showMoveSuccessToast)
             )
         )
     }

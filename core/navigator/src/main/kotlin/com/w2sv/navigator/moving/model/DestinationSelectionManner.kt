@@ -24,7 +24,7 @@ internal sealed interface DestinationSelectionManner : Parcelable {
     @Parcelize
     data object Auto : DestinationSelectionManner
 
-    val updateLastMoveDestinations: Boolean
+    val isPicked: Boolean
         get() = this is Picked
 
     val isAuto: Boolean

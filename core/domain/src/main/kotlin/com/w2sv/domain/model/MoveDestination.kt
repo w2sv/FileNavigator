@@ -7,6 +7,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.fileName
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 sealed interface MoveDestination : Parcelable {
@@ -15,6 +16,10 @@ sealed interface MoveDestination : Parcelable {
     @Parcelize
     @JvmInline
     value class Directory(override val documentUri: DocumentUri) : Parcelable, MoveDestination {
+
+        fun shortRepresentation(context: Context): String =
+            "/${fileName(context)}"
+
         companion object {
             fun parse(uriString: String): Directory =
                 Directory(DocumentUri.parse(uriString))
@@ -29,7 +34,19 @@ sealed interface MoveDestination : Parcelable {
 
     @Parcelize
     data class File(override val documentUri: DocumentUri, val mediaUri: MediaUri) : Parcelable,
-        MoveDestination
+        MoveDestination {
+
+        @IgnoredOnParcel
+        val parentDirectory: Directory by lazy {
+            Directory(documentUri.parent!!)
+        }
+    }
+
+    val directoryDestination: Directory
+        get() = when (this) {
+            is File -> parentDirectory
+            is Directory -> this
+        }
 
     /**
      * @see DocumentFile.fromSingleUri
@@ -39,7 +56,4 @@ sealed interface MoveDestination : Parcelable {
 
     fun fileName(context: Context): String =
         documentFile(context)!!.fileName(context)
-
-    fun shortRepresentation(context: Context): String =
-        "/${fileName(context)}"
 }

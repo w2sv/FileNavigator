@@ -4,14 +4,14 @@ import androidx.annotation.StringRes
 import com.w2sv.core.navigator.R
 import com.w2sv.navigator.notifications.NotificationResources
 
-internal sealed class MoveResult(val cancelNotification: Boolean) {
+internal sealed class MoveResult(val cancelMoveFileNotification: Boolean) {
 
     data object Success : MoveResult(true)
 
     sealed class Failure(
-        cancelNotification: Boolean,
+        cancelMoveFileNotification: Boolean,
         @StringRes val explanationStringRes: Int?
-    ) : MoveResult(cancelNotification) {
+    ) : MoveResult(cancelMoveFileNotification) {
 
         infix fun bundleWith(notificationResources: NotificationResources?): Bundle.PreCheckFailure =
             Bundle.PreCheckFailure(this, notificationResources)
@@ -20,27 +20,27 @@ internal sealed class MoveResult(val cancelNotification: Boolean) {
     data object ManageAllFilesPermissionMissing :
         Failure(
             explanationStringRes = R.string.manage_all_files_permission_missing,
-            cancelNotification = false
+            cancelMoveFileNotification = false
         )
 
     data object MoveFileNotFound : Failure(
         explanationStringRes = R.string.file_has_already_been_moved_or_deleted,
-        cancelNotification = true
+        cancelMoveFileNotification = true
     )
 
     data object InternalError : Failure(
         explanationStringRes = R.string.internal_error,
-        cancelNotification = false
+        cancelMoveFileNotification = false
     )
 
     data object FileAlreadyAtDestination : Failure(
         explanationStringRes = R.string.file_already_at_selected_location,
-        cancelNotification = true
+        cancelMoveFileNotification = true
     )
 
     data object NotEnoughSpaceOnDestination : Failure(
         explanationStringRes = R.string.not_enough_space_on_destination,
-        cancelNotification = false
+        cancelMoveFileNotification = false
     )
 
     data object MoveDestinationNotFound : Failure(false, null)

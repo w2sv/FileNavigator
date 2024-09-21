@@ -17,10 +17,10 @@ import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.launchDelayed
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
+import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import com.w2sv.navigator.observing.model.MediaStoreFileData
@@ -82,9 +82,6 @@ internal abstract class FileObserver(
 
     protected abstract val logIdentifier: String
 
-    private val fileTypeConfigMap
-        get() = fileTypeConfigMapStateFlow.value
-
     override fun deliverSelfNotifications(): Boolean = false
 
     private fun cancelAndResetMoveFileProcedureJob() {
@@ -142,7 +139,8 @@ internal abstract class FileObserver(
                     .log { "Calling onMoveFile on $it" }
 
                 val enabledAutoMoveDestination =
-                    fileTypeConfigMap
+                    fileTypeConfigMapStateFlow
+                        .value
                         .getValue(moveFile.fileType)
                         .sourceTypeConfigMap
                         .getValue(moveFile.sourceType)
