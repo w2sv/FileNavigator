@@ -8,7 +8,7 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveMode
+import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     lateinit var scope: CoroutineScope
 
     override fun onReceive(context: Context, intent: Intent) {
-        val moveBundle = MoveBundle.fromIntent<MoveDestination, MoveMode>(intent)
+        val moveBundle = MoveBundle.fromIntent<MoveDestination, DestinationSelectionManner>(intent)
 
         scope.launch {
             with(moveBundle) {

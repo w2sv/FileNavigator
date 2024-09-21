@@ -16,17 +16,6 @@ import java.io.File
 
 internal class ViewFileIfPresentActivity : ComponentActivity() {
 
-    @Parcelize
-    data class Args(val mediaUri: MediaUri, val mimeType: String, val absPath: String) :
-        Parcelable {
-
-        companion object {
-            const val EXTRA = "com.w2sv.filenavigator.extra.ViewFileIfPresentActivity.Args"
-
-            fun fromIntent(intent: Intent): Args = intent.getParcelableCompat<Args>(EXTRA)!!
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,6 +34,17 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
         finishAndRemoveTask()
     }
 
+    @Parcelize
+    data class Args(val mediaUri: MediaUri, val mimeType: String, val absPath: String) :
+        Parcelable {
+
+        companion object {
+            const val EXTRA = "com.w2sv.filenavigator.extra.ViewFileIfPresentActivity.Args"
+
+            fun fromIntent(intent: Intent): Args = intent.getParcelableCompat<Args>(EXTRA)!!
+        }
+    }
+
     companion object {
         fun makeRestartActivityIntent(
             context: Context, args: Args, notificationResources: NotificationResources
@@ -52,6 +52,8 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
             ComponentName(
                 context, ViewFileIfPresentActivity::class.java
             )
-        ).putExtra(Args.EXTRA, args).putOptionalNotificationResourcesExtra(notificationResources)
+        )
+            .putExtra(Args.EXTRA, args)
+            .putOptionalNotificationResourcesExtra(notificationResources)
     }
 }

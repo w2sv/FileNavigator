@@ -16,7 +16,7 @@ import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.moving.model.MoveMode
+import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
 import dagger.hilt.android.AndroidEntryPoint
@@ -88,7 +88,7 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
             moveBundle = MoveBundle.DestinationPicked(
                 file = args.moveFile,
                 destination = MoveDestination.File(documentUri, mediaUri),
-                mode = MoveMode.Picked(args.notificationResources)
+                selection = DestinationSelectionManner.Picked(args.notificationResources)
             ),
             context = this
         )

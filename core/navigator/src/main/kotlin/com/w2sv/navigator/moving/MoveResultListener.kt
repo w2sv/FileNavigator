@@ -14,7 +14,7 @@ import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveMode
+import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
@@ -74,7 +74,7 @@ internal class MoveResultListener @Inject constructor(
         moveBundle: MoveBundle<*, *>
     ) {
         if (moveResult.cancelNotification) {
-            (moveBundle.mode as? MoveMode.NotificationBased)?.let {
+            (moveBundle.selection as? DestinationSelectionManner.NotificationBased)?.let {
                 cancelNotification(it.notificationResources)
             }
         }
@@ -84,7 +84,7 @@ internal class MoveResultListener @Inject constructor(
             }
 
             is MoveResult.Failure -> {
-                if (moveResult.explanationStringRes != null && moveBundle.mode.showMoveResultToast) {
+                if (moveResult.explanationStringRes != null && moveBundle.selection.showMoveResultToast) {
                     context.showMoveFailureToast(moveResult.explanationStringRes)
                 }
                 if (moveResult == MoveResult.MoveDestinationNotFound) {
@@ -118,7 +118,7 @@ internal class MoveResultListener @Inject constructor(
     private fun onQuickMoveDestinationNotFound(
         moveBundle: MoveBundle.QuickMove
     ) {
-        (moveBundle.mode as? MoveMode.NotificationBased)?.let {
+        (moveBundle.selection as? DestinationSelectionManner.NotificationBased)?.let {
             cancelNotification(it.notificationResources)
         }
 
@@ -148,7 +148,7 @@ internal class MoveResultListener @Inject constructor(
     }
 
     private suspend fun onSuccess(moveBundle: MoveBundle<*, *>) {
-        if (moveBundle.mode.showMoveResultToast) {
+        if (moveBundle.selection.showMoveResultToast) {
             context.showMoveSuccessToast(
                 moveBundle = moveBundle
             )
@@ -179,7 +179,7 @@ private suspend fun Context.showMoveSuccessToast(moveBundle: MoveBundle<*, *>) {
     withContext(Dispatchers.Main) {
         showToast(
             resources.getText(
-                id = if (moveBundle.mode.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
+                id = if (moveBundle.selection.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
                 moveBundle.file.fileAndSourceType.label(
                     context = this@showMoveSuccessToast,
                     isGif = moveBundle.file.isGif

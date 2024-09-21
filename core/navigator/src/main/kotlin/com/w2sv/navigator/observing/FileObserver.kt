@@ -20,7 +20,7 @@ import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.moving.model.MoveMode
+import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import com.w2sv.navigator.observing.model.MediaStoreFileData
@@ -162,7 +162,7 @@ internal abstract class FileObserver(
                                     moveBundle = MoveBundle.AutoMove(
                                         file = moveFile,
                                         destination = enabledAutoMoveDestination,
-                                        mode = MoveMode.Auto
+                                        selection = DestinationSelectionManner.Auto
                                     ),
                                     context = context,
                                 )

@@ -5,9 +5,9 @@ import com.w2sv.navigator.notifications.NotificationResources
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-internal sealed interface MoveMode : Parcelable {
+internal sealed interface DestinationSelectionManner : Parcelable {
 
-    sealed interface NotificationBased : MoveMode {
+    sealed interface NotificationBased : DestinationSelectionManner {
         val notificationResources: NotificationResources
     }
 
@@ -28,7 +28,7 @@ internal sealed interface MoveMode : Parcelable {
     ) : Batchable
 
     @Parcelize
-    data object Auto : MoveMode
+    data object Auto : DestinationSelectionManner
 
     val updateLastMoveDestinations: Boolean
         get() = this is Picked

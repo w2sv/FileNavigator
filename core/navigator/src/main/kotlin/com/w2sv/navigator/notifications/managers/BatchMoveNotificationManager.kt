@@ -14,7 +14,7 @@ import com.w2sv.navigator.moving.destination_picking.DestinationPickerActivity
 import com.w2sv.navigator.moving.destination_picking.FileBatchDestinationPickerActivity
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
-import com.w2sv.navigator.moving.model.MoveMode
+import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.managers.abstrct.SingleInstanceNotificationManager
@@ -123,7 +123,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
                                 batchMoveBundles = args.map {  // TODO: optimizable?
                                     MoveBundle.QuickMove(
                                         file = it.moveFile,
-                                        mode = MoveMode.Quick(
+                                        selection = DestinationSelectionManner.Quick(
                                             notificationResources = it.resources,
                                             isPartOfBatch = true
                                         ),
