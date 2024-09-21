@@ -162,7 +162,7 @@ internal abstract class FileObserver(
                                     moveBundle = MoveBundle.AutoMove(
                                         file = moveFile,
                                         destination = enabledAutoMoveDestination,
-                                        selection = DestinationSelectionManner.Auto
+                                        destinationSelectionManner = DestinationSelectionManner.Auto
                                     ),
                                     context = context,
                                 )

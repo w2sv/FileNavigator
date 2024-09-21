@@ -11,21 +11,15 @@ internal sealed interface DestinationSelectionManner : Parcelable {
         val notificationResources: NotificationResources
     }
 
-    sealed interface Batchable : NotificationBased {
-        val isPartOfBatch: Boolean
-    }
-
     @Parcelize
     data class Picked(
         override val notificationResources: NotificationResources,
-        override val isPartOfBatch: Boolean = false
-    ) : Batchable
+    ) : NotificationBased
 
     @Parcelize
     data class Quick(
         override val notificationResources: NotificationResources,
-        override val isPartOfBatch: Boolean = false
-    ) : Batchable
+    ) : NotificationBased
 
     @Parcelize
     data object Auto : DestinationSelectionManner
@@ -35,7 +29,4 @@ internal sealed interface DestinationSelectionManner : Parcelable {
 
     val isAuto: Boolean
         get() = this is Auto
-
-    val showMoveResultToast: Boolean
-        get() = this !is Batchable || !isPartOfBatch
 }

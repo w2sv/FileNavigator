@@ -13,8 +13,9 @@ import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMoveEntryUseCase
 import com.w2sv.navigator.FileNavigator
-import com.w2sv.navigator.moving.model.MoveBundle
+import com.w2sv.navigator.moving.model.AnyMoveBundle
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
+import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
@@ -71,10 +72,10 @@ internal class MoveResultListener @Inject constructor(
 
     private suspend fun onResult(
         moveResult: MoveResult,
-        moveBundle: MoveBundle<*, *>
+        moveBundle: AnyMoveBundle
     ) {
         if (moveResult.cancelNotification) {
-            (moveBundle.selection as? DestinationSelectionManner.NotificationBased)?.let {
+            (moveBundle.destinationSelectionManner as? DestinationSelectionManner.NotificationBased)?.let {
                 cancelNotification(it.notificationResources)
             }
         }
@@ -84,7 +85,7 @@ internal class MoveResultListener @Inject constructor(
             }
 
             is MoveResult.Failure -> {
-                if (moveResult.explanationStringRes != null && moveBundle.selection.showMoveResultToast) {
+                if (moveResult.explanationStringRes != null && moveBundle.notifyAboutMoveResult) {
                     context.showMoveFailureToast(moveResult.explanationStringRes)
                 }
                 if (moveResult == MoveResult.MoveDestinationNotFound) {
@@ -118,7 +119,7 @@ internal class MoveResultListener @Inject constructor(
     private fun onQuickMoveDestinationNotFound(
         moveBundle: MoveBundle.QuickMove
     ) {
-        (moveBundle.selection as? DestinationSelectionManner.NotificationBased)?.let {
+        (moveBundle.destinationSelectionManner as? DestinationSelectionManner.NotificationBased)?.let {
             cancelNotification(it.notificationResources)
         }
 
@@ -147,8 +148,8 @@ internal class MoveResultListener @Inject constructor(
         )
     }
 
-    private suspend fun onSuccess(moveBundle: MoveBundle<*, *>) {
-        if (moveBundle.selection.showMoveResultToast) {
+    private suspend fun onSuccess(moveBundle: AnyMoveBundle) {
+        if (moveBundle.notifyAboutMoveResult) {
             context.showMoveSuccessToast(
                 moveBundle = moveBundle
             )
@@ -175,11 +176,11 @@ internal class MoveResultListener @Inject constructor(
     }
 }
 
-private suspend fun Context.showMoveSuccessToast(moveBundle: MoveBundle<*, *>) {
+private suspend fun Context.showMoveSuccessToast(moveBundle: AnyMoveBundle) {
     withContext(Dispatchers.Main) {
         showToast(
             resources.getText(
-                id = if (moveBundle.selection.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
+                id = if (moveBundle.destinationSelectionManner.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
                 moveBundle.file.fileAndSourceType.label(
                     context = this@showMoveSuccessToast,
                     isGif = moveBundle.file.isGif
@@ -189,6 +190,9 @@ private suspend fun Context.showMoveSuccessToast(moveBundle: MoveBundle<*, *>) {
         )
     }
 }
+
+private val AnyMoveBundle.notifyAboutMoveResult: Boolean
+    get() = (this as? MoveBundle.Batchable)?.batched != true
 
 private suspend fun Context.showMoveFailureToast(@StringRes explanationStringRes: Int) {
     withContext(Dispatchers.Main) {

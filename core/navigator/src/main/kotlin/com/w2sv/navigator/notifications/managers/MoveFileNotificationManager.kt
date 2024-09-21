@@ -27,9 +27,9 @@ import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.destination_picking.DestinationPickerActivity
 import com.w2sv.navigator.moving.destination_picking.FileDestinationPickerActivity
+import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.NotificationResources
@@ -270,7 +270,8 @@ internal class MoveFileNotificationManager @Inject constructor(
                             moveBundle = MoveBundle.QuickMove(
                                 file = args.moveFile,
                                 destination = destination,
-                                selection = DestinationSelectionManner.Quick(args.resources)
+                                destinationSelectionManner = DestinationSelectionManner.Quick(args.resources),
+                                batched = false
                             ),
                             context = context
                         ),

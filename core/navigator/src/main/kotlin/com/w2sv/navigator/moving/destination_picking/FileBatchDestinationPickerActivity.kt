@@ -8,9 +8,9 @@ import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.BatchMoveBroadcastReceiver
+import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
-import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
@@ -59,11 +59,10 @@ internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() 
         BatchMoveBroadcastReceiver.sendBroadcast(
             args = BatchMoveBroadcastReceiver.Args(
                 batchMoveBundles = args.moveFilesWithNotificationResources.map {
-                    MoveBundle.DestinationPickedBatchMove(
+                    MoveBundle.DirectoryDestinationPicked(
                         file = it.moveFile,
-                        selection = DestinationSelectionManner.Picked(
+                        destinationSelectionManner = DestinationSelectionManner.Picked(
                             notificationResources = it.notificationResources,
-                            isPartOfBatch = true
                         ),
                         destination = moveDestination
                     )

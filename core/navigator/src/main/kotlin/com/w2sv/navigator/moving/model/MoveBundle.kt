@@ -9,43 +9,55 @@ import com.w2sv.domain.model.MoveEntry
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
+internal typealias AnyMoveBundle = MoveBundle<*, *>
+
 /**
  * Bundle of all the data required for the move operation and all downstream actions.
  */
-internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSelectionManner> : Parcelable {
+internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSelectionManner> :
+    Parcelable {
     val file: MoveFile
     val destination: MD
-    val selection: DSM
+    val destinationSelectionManner: DSM
 
-    sealed interface Batchable<Mode: DestinationSelectionManner.Batchable>: MoveBundle<MoveDestination.Directory, Mode>
+    sealed interface Batchable<Mode : DestinationSelectionManner.NotificationBased> :
+        MoveBundle<MoveDestination.Directory, Mode> {
+
+        /**
+         * Whether MoveBundle is part of a batch move operation.
+         */
+        val batched: Boolean
+    }
+
+    @Parcelize
+    data class FileDestinationPicked(
+        override val file: MoveFile,
+        override val destination: MoveDestination.File,
+        override val destinationSelectionManner: DestinationSelectionManner.Picked
+    ) : MoveBundle<MoveDestination.File, DestinationSelectionManner.Picked>
+
+    @Parcelize
+    data class DirectoryDestinationPicked(
+        override val file: MoveFile,
+        override val destination: MoveDestination.Directory,
+        override val destinationSelectionManner: DestinationSelectionManner.Picked,
+        override val batched: Boolean = true
+    ) : Batchable<DestinationSelectionManner.Picked>
 
     @Parcelize
     data class QuickMove(
         override val file: MoveFile,
         override val destination: MoveDestination.Directory,
-        override val selection: DestinationSelectionManner.Quick
+        override val destinationSelectionManner: DestinationSelectionManner.Quick,
+        override val batched: Boolean
     ) : Batchable<DestinationSelectionManner.Quick>
 
     @Parcelize
     data class AutoMove(
         override val file: MoveFile,
         override val destination: MoveDestination.Directory,
-        override val selection: DestinationSelectionManner.Auto
+        override val destinationSelectionManner: DestinationSelectionManner.Auto
     ) : MoveBundle<MoveDestination.Directory, DestinationSelectionManner.Auto>
-
-    @Parcelize
-    data class DestinationPicked(
-        override val file: MoveFile,
-        override val destination: MoveDestination.File,
-        override val selection: DestinationSelectionManner.Picked
-    ) : MoveBundle<MoveDestination.File, DestinationSelectionManner.Picked>
-
-    @Parcelize
-    data class DestinationPickedBatchMove(
-        override val file: MoveFile,
-        override val destination: MoveDestination.Directory,
-        override val selection: DestinationSelectionManner.Picked
-    ) : Batchable<DestinationSelectionManner.Picked>
 
     fun moveEntry(
         context: Context,
@@ -61,7 +73,7 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
                     movedFileDocumentUri = capturedDestination.documentUri,
                     movedFileMediaUri = capturedDestination.mediaUri,
                     dateTime = dateTime,
-                    autoMoved = selection.isAuto
+                    autoMoved = destinationSelectionManner.isAuto
                 )
             }
 
@@ -76,7 +88,7 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
                     movedFileDocumentUri = movedFileDocumentUri,
                     movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!,  // TODO
                     dateTime = dateTime,
-                    autoMoved = selection.isAuto
+                    autoMoved = destinationSelectionManner.isAuto
                 )
             }
 
@@ -87,7 +99,6 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
     companion object {
         const val EXTRA = "com.w2sv.navigator.extra.MoveBundle"
 
-        // TODO: is it possible to make this a Parcelable extension function?
         fun <MD : MoveDestination, Mode : DestinationSelectionManner> fromIntent(intent: Intent): MoveBundle<MD, Mode> =
             intent.getParcelableCompat<MoveBundle<MD, Mode>>(EXTRA)!!
     }

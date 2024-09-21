@@ -123,11 +123,11 @@ internal class BatchMoveNotificationManager @Inject constructor(
                                 batchMoveBundles = args.map {  // TODO: optimizable?
                                     MoveBundle.QuickMove(
                                         file = it.moveFile,
-                                        selection = DestinationSelectionManner.Quick(
-                                            notificationResources = it.resources,
-                                            isPartOfBatch = true
+                                        destinationSelectionManner = DestinationSelectionManner.Quick(
+                                            notificationResources = it.resources
                                         ),
-                                        destination = destination
+                                        destination = destination,
+                                        batched = true
                                     )
                                 },
                             ),

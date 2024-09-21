@@ -7,6 +7,7 @@ import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
+import com.w2sv.navigator.moving.model.AnyMoveBundle
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,7 +41,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
     companion object {
         fun sendBroadcast(
-            moveBundle: MoveBundle<*, *>,
+            moveBundle: AnyMoveBundle,
             context: Context,
         ) {
             context.sendBroadcast(
@@ -52,7 +53,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
         }
 
         fun getIntent(
-            moveBundle: MoveBundle<*, *>,
+            moveBundle: AnyMoveBundle,
             context: Context
         ): Intent =
             Intent(context, MoveBroadcastReceiver::class.java)
