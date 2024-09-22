@@ -5,11 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.DocumentUri
-import com.w2sv.common.utils.MediaUri
 import com.w2sv.common.utils.documentUri
 import com.w2sv.common.utils.emit
 import com.w2sv.common.utils.log
@@ -60,6 +58,7 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
                     return super.createIntent(context, input)
                         .addCategory(Intent.CATEGORY_OPENABLE)
                         .apply {
+                            // Set picker start location
                             intent.putExtra(
                                 DocumentsContract.EXTRA_INITIAL_URI,
                                 args.pickerStartDestination?.uri
@@ -86,31 +85,26 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
 
         contentResolver.takePersistableReadAndWriteUriPermission(contentUri)  // TODO: necessary?
 
-        val documentUri = contentUri.documentUri
-        val mediaUri: MediaUri? =
-            try {
-                MediaUri.fromDocumentUri(
-                    this,
-                    documentUri
-                )
-                    .also {
-                        blacklistedMediaUris.emit(
-                            value = MediaIdWithMediaType(
-                                mediaId = it!!.id!!,
-                                mediaType = args.moveFile.fileType.simpleStorageMediaType
-                            )
-                                .log { "Emitting $it" },
-                            scope = lifecycleScope
+        val destination = MoveDestination.File.get(contentUri.documentUri, this)
+            .also {
+                // In case of local file, emit MediaIdWithMediaType on blacklistedMediaUris to
+                // prevent notification emission for created move destination file
+                it.localOrNull?.let { localFileDestination ->
+                    blacklistedMediaUris.emit(
+                        value = MediaIdWithMediaType(
+                            mediaId = localFileDestination.mediaUri.id!!,
+                            mediaType = args.moveFile.fileType.simpleStorageMediaType
                         )
-                    }
-            } catch (e: IllegalArgumentException) {
-                null
+                            .log { "Emitting $it" },
+                        scope = lifecycleScope
+                    )
+                }
             }
 
         MoveBroadcastReceiver.sendBroadcast(
             moveBundle = MoveBundle.FileDestinationPicked(
                 file = args.moveFile,
-                destination = MoveDestination.File(documentUri, mediaUri),
+                destination = destination,
                 destinationSelectionManner = DestinationSelectionManner.Picked(args.notificationResources)
             ),
             context = this

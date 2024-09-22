@@ -8,19 +8,21 @@ fun MoveEntry.movedFileExists(context: Context): Boolean {
     return try {
         movedFileDocumentUri
             .documentFile(context)
-            ?.exists() == true  // prints "java.lang.IllegalArgumentException: Failed to determine if ... is child of ...: java.io.FileNotFoundException: Missing file for ... at ..." to console without actually raising it
+            .exists()  // prints "java.lang.IllegalArgumentException: Failed to determine if ... is child of ...: java.io.FileNotFoundException: Missing file for ... at ..." to console without actually raising it
     } catch (e: IllegalArgumentException) {
         false
     }
 }
 
 fun MoveEntry.launchViewActivity(context: Context) {
-    context.startActivity(
-        Intent()
-            .setAction(Intent.ACTION_VIEW)
-            .setDataAndType(
-                movedFileMediaUri.uri,
-                fileType.simpleStorageMediaType.mimeType
-            )
-    )
+    movedFileMediaUri?.let {  // TODO
+        context.startActivity(
+            Intent()
+                .setAction(Intent.ACTION_VIEW)
+                .setDataAndType(
+                    it.uri,
+                    fileType.simpleStorageMediaType.mimeType
+                )
+        )
+    }
 }

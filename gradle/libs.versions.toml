@@ -36,7 +36,7 @@ composed-permissions = { module = "com.github.w2sv.Composed:permissions", versio
 reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.3-rc1"
 datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:preferences", version.ref = "datastoreutils" }
 datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:datastoreflow", version.ref = "datastoreutils" }
-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.0.2-rc2"
+simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.0.2.1-rc1"
 
 # Androidx
 androidx-appcompat = "androidx.appcompat:appcompat:1.7.0"

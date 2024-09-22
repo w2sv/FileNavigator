@@ -112,7 +112,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                                         R.plurals.moved_files_to,
                                         moveSuccessCount,
                                         moveSuccessCount,
-                                        destination.shortRepresentation(context)
+                                        destination.uiRepresentation(context)
                                     )
                                 )
                             }

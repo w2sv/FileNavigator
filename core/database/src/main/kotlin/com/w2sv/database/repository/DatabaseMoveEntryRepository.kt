@@ -27,5 +27,5 @@ internal class DatabaseMoveEntryRepository @Inject constructor(
     override fun getAllInDescendingOrder(): Flow<List<MoveEntry>> =
         moveEntryDao
             .loadAllInDescendingOrder()
-            .map { it.map { entity -> entity.asExternalModel() } }
+            .map { it.map { entity -> entity.asExternal() } }
 }

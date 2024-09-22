@@ -19,13 +19,12 @@ class MoveDestinationPathConverter @Inject constructor(
         preferencesRepository.showStorageVolumeNames.stateIn(scope, SharingStarted.Eagerly)
 
     // TODO: test
-    operator fun invoke(moveDestination: MoveDestination, context: Context): String? =
-        moveDestination.documentUri.documentFilePath(context)
-            ?.run {
-                if (showStorageVolumeNames.value) {
-                    this
-                } else {
-                    "/${substringAfter(":")}"
-                }
+    operator fun invoke(moveDestination: MoveDestination.Directory, context: Context): String =
+        moveDestination.documentUri.documentFilePath(context).run {
+            if (showStorageVolumeNames.value) {
+                this
+            } else {
+                "/${substringAfter(":")}"
             }
+        }
 }

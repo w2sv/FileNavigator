@@ -13,7 +13,7 @@ fun DocumentFile.hasChild(
     child(context, path, requiresWriteAccess) != null
 
 // TODO: write test
-fun DocumentFile.fileName(context: Context): String =
+fun DocumentFile.directoryName(context: Context): String =
     getSimplePath(context).let { simplePath ->
         val substringAfterLastSlash = simplePath.substringAfterLast("/")
         if (substringAfterLastSlash != simplePath) {

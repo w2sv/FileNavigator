@@ -18,7 +18,7 @@ data class MoveEntryEntity(
     val sourceType: SourceType,
     val destinationDocumentUri: Uri,
     val movedFileDocumentUri: Uri,
-    val movedFileMediaUri: Uri,
+    val movedFileMediaUri: Uri?,
     @PrimaryKey val dateTime: LocalDateTime,
     val autoMoved: Boolean
 ) {
@@ -28,19 +28,22 @@ data class MoveEntryEntity(
         sourceType = moveEntry.sourceType,
         destinationDocumentUri = moveEntry.destination.documentUri.uri,
         movedFileDocumentUri = moveEntry.movedFileDocumentUri.uri,
-        movedFileMediaUri = moveEntry.movedFileMediaUri.uri,
+        movedFileMediaUri = moveEntry.movedFileMediaUri?.uri,
         dateTime = moveEntry.dateTime,
         autoMoved = moveEntry.autoMoved
     )
 
-    fun asExternalModel(): MoveEntry =
+    fun asExternal(): MoveEntry =
         MoveEntry(
             fileName = fileName,
             fileType = fileType,
             sourceType = sourceType,
-            destination = MoveDestination.Directory(destinationDocumentUri.documentUri),
+            destination = if (movedFileMediaUri == null)  // TODO
+                MoveDestination.File.Cloud(destinationDocumentUri.documentUri)
+            else
+                MoveDestination.Directory(destinationDocumentUri.documentUri),
             movedFileDocumentUri = movedFileDocumentUri.documentUri,
-            movedFileMediaUri = movedFileMediaUri.mediaUri,
+            movedFileMediaUri = movedFileMediaUri?.mediaUri,
             dateTime = dateTime,
             autoMoved = autoMoved
         )

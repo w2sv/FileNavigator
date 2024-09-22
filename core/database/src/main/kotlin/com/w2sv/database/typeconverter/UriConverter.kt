@@ -5,12 +5,12 @@ import androidx.room.TypeConverter
 
 object UriConverter {
     @TypeConverter
-    fun fromUri(uri: Uri): String {
-        return uri.toString()
+    fun fromUri(uri: Uri?): String {
+        return uri?.toString() ?: ""
     }
 
     @TypeConverter
-    fun toUri(uriString: String): Uri {
-        return Uri.parse(uriString)
+    fun toUri(uriString: String): Uri? {
+        return if (uriString.isNotEmpty()) Uri.parse(uriString) else null
     }
 }

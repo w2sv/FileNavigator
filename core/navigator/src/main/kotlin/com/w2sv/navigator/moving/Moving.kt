@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.callback.SingleFileConflictCallback
 import com.anggrayudi.storage.media.MediaFile
-import com.anggrayudi.storage.result.SingleFileErrorCode
+import com.anggrayudi.storage.result.SingleFileError
 import com.anggrayudi.storage.result.SingleFileResult
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
@@ -26,10 +26,8 @@ internal sealed interface PreCheckResult {
     value class Failure(val reason: MoveResult.Failure) : PreCheckResult
 
     companion object {
-        /**
-         * TODO: test
-         */
-        fun get(
+
+        fun get(  // TODO
             moveFile: MoveFile,
             context: Context,
             destinationDirectory: DocumentFile?
@@ -68,6 +66,7 @@ internal suspend fun MoveFile.moveTo(
                 is MoveDestination.File -> {
                     preCheckResult.moveMediaFile.copyToFileDestinationAndDelete(
                         fileDestination = destinationDocumentFile,
+                        isCloudDestination = destination is MoveDestination.File.Cloud,
                         onResult = onResult
                     )
                 }
@@ -103,10 +102,10 @@ internal suspend fun MediaFile.moveTo(
                     e { "${moveState.errorCode}: ${moveState.message}" }
 
                     when (moveState.errorCode) {
-                        SingleFileErrorCode.TARGET_FOLDER_NOT_FOUND -> MoveResult.MoveDestinationNotFound
-                        SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.NotEnoughSpaceOnDestination
-                        SingleFileErrorCode.SOURCE_FILE_NOT_FOUND -> MoveResult.MoveFileNotFound
-                        SingleFileErrorCode.STORAGE_PERMISSION_DENIED, SingleFileErrorCode.CANNOT_CREATE_FILE_IN_TARGET -> MoveResult.ManageAllFilesPermissionMissing
+                        SingleFileError.TargetNotFound -> MoveResult.MoveDestinationNotFound
+                        is SingleFileError.NotEnoughSpaceOnTarget -> MoveResult.NotEnoughSpaceOnDestination
+                        SingleFileError.SourceNotFound -> MoveResult.MoveFileNotFound
+                        SingleFileError.StoragePermissionMissing, SingleFileError.TargetNotWritable, SingleFileError.SourceNotReadable -> MoveResult.ManageAllFilesPermissionMissing
                         else -> MoveResult.InternalError
                     }
                 }
@@ -121,12 +120,16 @@ internal suspend fun MediaFile.moveTo(
 
 private suspend fun MediaFile.copyToFileDestinationAndDelete(
     fileDestination: DocumentFile,
+    isCloudDestination: Boolean,
     onResult: (MoveResult) -> Unit
 ) {
+    i { "Destination writable: ${fileDestination.canWrite()}" }
+
     copyToFile(
         targetFile = fileDestination,
         deleteOnSuccess = true,
-        isEnoughSpace = { _, _ -> true } // TODO
+        checkIfEnoughSpaceOnTarget = !isCloudDestination,
+        checkIfTargetWritable = !isCloudDestination,
     )
         .map { moveState ->
             i { moveState.javaClass.name }
@@ -135,13 +138,17 @@ private suspend fun MediaFile.copyToFileDestinationAndDelete(
                 is SingleFileResult.Error -> {
                     e { "${moveState.errorCode}: ${moveState.message}" }
 
-                    // Delete the /now pointless destination file
-                    fileDestination.delete().log { "Deleted destination file: $it" }
+                    // Try to delete the now pointless destination file
+                    try {
+                        fileDestination.delete().log { "Deleted destination file: $it" }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
 
                     when (moveState.errorCode) {
-                        SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.NotEnoughSpaceOnDestination
-                        SingleFileErrorCode.SOURCE_FILE_NOT_FOUND -> MoveResult.MoveFileNotFound
-                        SingleFileErrorCode.STORAGE_PERMISSION_DENIED -> MoveResult.ManageAllFilesPermissionMissing
+                        is SingleFileError.NotEnoughSpaceOnTarget -> MoveResult.NotEnoughSpaceOnDestination
+                        SingleFileError.SourceNotFound -> MoveResult.MoveFileNotFound
+                        SingleFileError.StoragePermissionMissing, SingleFileError.SourceNotReadable, SingleFileError.TargetNotWritable -> MoveResult.ManageAllFilesPermissionMissing
                         else -> MoveResult.InternalError
                     }
                 }

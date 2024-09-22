@@ -31,13 +31,13 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
 ) {
     data class Args(
         val fileAndSourceType: FileAndSourceType,
-        val autoMoveDestination: MoveDestination,
+        val autoMoveDestination: MoveDestination.Directory,
         override val resources: NotificationResources
     ) : MultiInstanceNotificationManager.Args
 
     fun buildAndPostNotification(
         fileAndSourceType: FileAndSourceType,
-        autoMoveDestination: MoveDestination,
+        autoMoveDestination: MoveDestination.Directory,
     ) {
         buildNotification(
             Args(

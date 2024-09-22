@@ -127,7 +127,7 @@ private fun rememberMoveEntryRowOnClick(
         { moveEntry, fileExists ->
             if (fileExists) {
                 snackbarHostState.currentSnackbarData?.dismiss()
-                moveEntry.launchViewActivity(context)
+                moveEntry.launchViewActivity(context)  // TODO: indicate that not possible for cloud files (I think?)
             } else {
                 snackbarHostState.dismissCurrentSnackbarAndShow(
                     AppSnackbarVisuals(

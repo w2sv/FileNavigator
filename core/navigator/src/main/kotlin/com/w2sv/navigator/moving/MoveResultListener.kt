@@ -165,7 +165,7 @@ private suspend fun Context.showMoveSuccessToast(moveBundle: AnyMoveBundle) {
                     context = this@showMoveSuccessToast,
                     isGif = moveBundle.file.isGif
                 ),
-                moveBundle.destination.directoryDestination?.shortRepresentation(this@showMoveSuccessToast) // TODO
+                moveBundle.destination.uiRepresentation(this@showMoveSuccessToast)
             )
         )
     }

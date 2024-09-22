@@ -11,7 +11,7 @@ import com.w2sv.database.typeconverter.UriConverter
 
 @Database(
     entities = [MoveEntryEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = true,
 )
 @TypeConverters(

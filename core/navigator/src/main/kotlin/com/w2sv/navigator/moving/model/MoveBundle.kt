@@ -66,14 +66,27 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
         dateTime: LocalDateTime,
     ): MoveEntry =
         when (val capturedDestination = destination) {
-            is MoveDestination.File -> {
+            is MoveDestination.File.Local -> {
                 MoveEntry(
                     fileName = capturedDestination.fileName(context),
                     fileType = file.fileType,
                     sourceType = file.sourceType,
-                    destination = capturedDestination.parentDirectory!!,  // TODO
+                    destination = capturedDestination.parentDirectory,
                     movedFileDocumentUri = capturedDestination.documentUri,
-                    movedFileMediaUri = capturedDestination.mediaUri ?: MediaUri(Uri.parse("")),  // TODO
+                    movedFileMediaUri = capturedDestination.mediaUri,
+                    dateTime = dateTime,
+                    autoMoved = destinationSelectionManner.isAuto
+                )
+            }
+
+            is MoveDestination.File.Cloud -> {
+                MoveEntry(
+                    fileName = capturedDestination.fileName(context),
+                    fileType = file.fileType,
+                    sourceType = file.sourceType,
+                    destination = capturedDestination,
+                    movedFileDocumentUri = capturedDestination.documentUri,
+                    movedFileMediaUri = null,
                     dateTime = dateTime,
                     autoMoved = destinationSelectionManner.isAuto
                 )

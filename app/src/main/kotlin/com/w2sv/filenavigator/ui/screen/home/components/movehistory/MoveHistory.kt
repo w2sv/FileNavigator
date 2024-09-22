@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import com.w2sv.composed.OnLifecycleEvent
 import com.w2sv.composed.extensions.thenIf
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.R
@@ -98,7 +99,7 @@ private fun MoveEntryView(
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     var movedFileExists by remember(moveEntry) {
-        mutableStateOf(moveEntry.movedFileExists(context))
+        mutableStateOf(moveEntry.movedFileExists(context))  // TODO: cloud files
     }
     OnLifecycleEvent(lifecycleEvent = Lifecycle.Event.ON_START, key1 = moveEntry) {
         if (movedFileExists) {
@@ -144,10 +145,18 @@ private fun MoveEntryView(
         WeightedBox(weight = 0.5f) {
             Text(
                 text = remember(moveEntry.destination) {
-                    moveDestinationPathConverter.invoke(
-                        moveEntry.destination,
-                        context
-                    )!!
+                    when (val capturedDestination = moveEntry.destination) {
+                        is MoveDestination.Directory -> moveDestinationPathConverter.invoke(
+                            capturedDestination,
+                            context
+                        )
+
+                        is MoveDestination.File.Cloud -> capturedDestination.uiRepresentation(
+                            context
+                        )
+
+                        else -> throw IllegalArgumentException()
+                    }
                 },
                 fontSize = MoveHistoryDefaults.FontSize,
             )
