@@ -133,16 +133,14 @@ internal class MoveFileNotificationManager @Inject constructor(
                 args.quickMoveDestinations.forEach { quickMoveDestination ->
                     i { "quickMoveDestination=$quickMoveDestination" }
 
-                    // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
-                    quickMoveDestination.documentFile(context).name?.let { directoryName ->
-                        addAction(
-                            getQuickMoveAction(
-                                requestCode = requestCodeIterator.next(),
-                                destination = quickMoveDestination,
-                                directoryName = directoryName
-                            )
+                    // TODO: checking whether file exists might be possible by querying the abs path through media uri and converting to a java.io.File
+                    addAction(
+                        getQuickMoveAction(
+                            requestCode = requestCodeIterator.next(),
+                            destination = quickMoveDestination,
+                            directoryName = quickMoveDestination.fileName(context)
                         )
-                    }
+                    )
                 }
 
                 setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))

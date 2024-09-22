@@ -95,12 +95,10 @@ internal suspend fun MediaFile.moveTo(
         onConflict = onFileConflict,
     )
         .map { moveState ->
-            i { moveState.javaClass.name }
+            log(moveState)
 
             when (moveState) {
                 is SingleFileResult.Error -> {
-                    e { "${moveState.errorCode}: ${moveState.message}" }
-
                     when (moveState.errorCode) {
                         SingleFileError.TargetNotFound -> MoveResult.MoveDestinationNotFound
                         is SingleFileError.NotEnoughSpaceOnTarget -> MoveResult.NotEnoughSpaceOnDestination
@@ -132,12 +130,10 @@ private suspend fun MediaFile.copyToFileDestinationAndDelete(
         checkIfTargetWritable = !isCloudDestination,
     )
         .map { moveState ->
-            i { moveState.javaClass.name }
+            log(moveState)
 
             when (moveState) {
                 is SingleFileResult.Error -> {
-                    e { "${moveState.errorCode}: ${moveState.message}" }
-
                     // Try to delete the now pointless destination file
                     try {
                         fileDestination.delete().log { "Deleted destination file: $it" }
@@ -163,3 +159,18 @@ private suspend fun MediaFile.copyToFileDestinationAndDelete(
 }
 
 private val onFileConflict = object : SingleFileConflictCallback<DocumentFile>() {}
+
+private fun log(result: SingleFileResult) {
+    when (result) {
+        is SingleFileResult.Error -> e { result.debugString }
+        else -> i { result.javaClass.simpleName }
+    }
+}
+
+private val SingleFileResult.Error.debugString: String
+    get() = buildString {
+        append("${this@debugString.javaClass.simpleName}: $errorCode")
+        message?.let {
+            append("- $it")
+        }
+    }
