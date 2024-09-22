@@ -116,7 +116,7 @@ internal class MoveFileNotificationManager @Inject constructor(
 
                 setStyle(
                     NotificationCompat.BigTextStyle()
-                        .bigText(args.moveFile.notificationTitle(context))
+                        .bigText(args.moveFile.notificationContentText(context))
                 )
                 setActionsAndIntents()
 
