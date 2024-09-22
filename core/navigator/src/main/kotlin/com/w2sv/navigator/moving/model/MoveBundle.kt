@@ -2,8 +2,10 @@ package com.w2sv.navigator.moving.model
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
+import com.w2sv.common.utils.MediaUri
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.MoveEntry
 import kotlinx.parcelize.Parcelize
@@ -69,9 +71,9 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
                     fileName = capturedDestination.fileName(context),
                     fileType = file.fileType,
                     sourceType = file.sourceType,
-                    destination = capturedDestination.parentDirectory,
+                    destination = capturedDestination.parentDirectory!!,  // TODO
                     movedFileDocumentUri = capturedDestination.documentUri,
-                    movedFileMediaUri = capturedDestination.mediaUri,
+                    movedFileMediaUri = capturedDestination.mediaUri ?: MediaUri(Uri.parse("")),  // TODO
                     dateTime = dateTime,
                     autoMoved = destinationSelectionManner.isAuto
                 )

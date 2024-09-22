@@ -141,14 +141,16 @@ internal class MoveResultListener @Inject constructor(
             )
         }
         if (destinationSelectionManner.isPicked) {
-            i { "Saving quick move destination ${destination.directoryDestination}" }
+            destination.directoryDestination?.let {
+                i { "Saving quick move destination $it" }
 
-            scope.launch {
-                navigatorConfigDataSource.saveQuickMoveDestination(
-                    fileType = file.fileType,
-                    sourceType = file.sourceType,
-                    destination = destination.directoryDestination
-                )
+                scope.launch {
+                    navigatorConfigDataSource.saveQuickMoveDestination(
+                        fileType = file.fileType,
+                        sourceType = file.sourceType,
+                        destination = it
+                    )
+                }
             }
         }
     }
@@ -163,7 +165,7 @@ private suspend fun Context.showMoveSuccessToast(moveBundle: AnyMoveBundle) {
                     context = this@showMoveSuccessToast,
                     isGif = moveBundle.file.isGif
                 ),
-                moveBundle.destination.directoryDestination.shortRepresentation(this@showMoveSuccessToast)
+                moveBundle.destination.directoryDestination?.shortRepresentation(this@showMoveSuccessToast) // TODO
             )
         )
     }

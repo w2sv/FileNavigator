@@ -8,6 +8,7 @@ import com.anggrayudi.storage.result.SingleFileErrorCode
 import com.anggrayudi.storage.result.SingleFileResult
 import com.w2sv.common.utils.hasChild
 import com.w2sv.common.utils.isExternalStorageManger
+import com.w2sv.common.utils.log
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
@@ -92,7 +93,7 @@ internal suspend fun MediaFile.moveTo(
 ) {
     moveTo(
         targetFolder = folderDestination,
-        onConflict = onFileConflict
+        onConflict = onFileConflict,
     )
         .map { moveState ->
             i { moveState.javaClass.name }
@@ -124,7 +125,8 @@ private suspend fun MediaFile.copyToFileDestinationAndDelete(
 ) {
     copyToFile(
         targetFile = fileDestination,
-        deleteOnSuccess = true
+        deleteOnSuccess = true,
+        isEnoughSpace = { _, _ -> true } // TODO
     )
         .map { moveState ->
             i { moveState.javaClass.name }
@@ -133,7 +135,8 @@ private suspend fun MediaFile.copyToFileDestinationAndDelete(
                 is SingleFileResult.Error -> {
                     e { "${moveState.errorCode}: ${moveState.message}" }
 
-//                    destination.delete().log { "Deleted destination file: $it" }
+                    // Delete the /now pointless destination file
+                    fileDestination.delete().log { "Deleted destination file: $it" }
 
                     when (moveState.errorCode) {
                         SingleFileErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> MoveResult.NotEnoughSpaceOnDestination

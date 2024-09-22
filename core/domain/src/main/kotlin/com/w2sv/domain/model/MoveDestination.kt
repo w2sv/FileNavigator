@@ -33,16 +33,21 @@ sealed interface MoveDestination : Parcelable {
     }
 
     @Parcelize
-    data class File(override val documentUri: DocumentUri, val mediaUri: MediaUri) : Parcelable,
+    data class File(override val documentUri: DocumentUri, val mediaUri: MediaUri?) : Parcelable,
         MoveDestination {
 
         @IgnoredOnParcel
-        val parentDirectory: Directory by lazy {
-            Directory(documentUri.parent!!)
+        val residesOnCloud by lazy {
+            documentUri.uri.authority != "com.android.externalstorage.documents"  // TODO: test
+        }
+
+        @IgnoredOnParcel
+        val parentDirectory: Directory? by lazy {
+            if (residesOnCloud) null else documentUri.parent?.let { Directory(it) }
         }
     }
 
-    val directoryDestination: Directory
+    val directoryDestination: Directory?
         get() = when (this) {
             is File -> parentDirectory
             is Directory -> this

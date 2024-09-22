@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.utils.DocumentUri
@@ -77,6 +78,8 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
 
     /**
      * @param contentUri E.g.: __content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots%2FScreenshot_2024-09-08-01-29-28-913_com.w2sv.filenavigator.debug.jpg__
+     *
+     * Google Drive: __content://com.google.android.apps.docs.storage/document/acc%3D5%3Bdoc%3Dencoded%3D-y1_RtvvQJ6uU4hFl-Z6Qo5ggFvP7XIezps-y0zmy_C3AUxHjAy8XzxYIuxm7wpaISVd__
      */
     private fun onDocumentCreated(contentUri: Uri) {
         i { "Document contentUri: $contentUri" }
@@ -84,19 +87,25 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
         contentResolver.takePersistableReadAndWriteUriPermission(contentUri)  // TODO: necessary?
 
         val documentUri = contentUri.documentUri
-        val mediaUri = MediaUri.fromDocumentUri(
-            this@FileDestinationPickerActivity,
-            documentUri
-        )!!  // TODO
-
-        blacklistedMediaUris.emit(
-            value = MediaIdWithMediaType(
-                mediaId = mediaUri.id!!,
-                mediaType = args.moveFile.fileType.simpleStorageMediaType
-            )
-                .log { "Emitting $it" },
-            scope = lifecycleScope
-        )
+        val mediaUri: MediaUri? =
+            try {
+                MediaUri.fromDocumentUri(
+                    this,
+                    documentUri
+                )
+                    .also {
+                        blacklistedMediaUris.emit(
+                            value = MediaIdWithMediaType(
+                                mediaId = it!!.id!!,
+                                mediaType = args.moveFile.fileType.simpleStorageMediaType
+                            )
+                                .log { "Emitting $it" },
+                            scope = lifecycleScope
+                        )
+                    }
+            } catch (e: IllegalArgumentException) {
+                null
+            }
 
         MoveBroadcastReceiver.sendBroadcast(
             moveBundle = MoveBundle.FileDestinationPicked(
