@@ -10,6 +10,7 @@ import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.utils.MediaUri
 import com.w2sv.core.navigator.R
+import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import kotlinx.parcelize.Parcelize
 import java.io.File
@@ -37,6 +38,12 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
     @Parcelize
     data class Args(val mediaUri: MediaUri, val mimeType: String, val absPath: String) :
         Parcelable {
+
+        constructor(moveFile: MoveFile) : this(
+            mediaUri = moveFile.mediaUri,
+            mimeType = moveFile.mediaStoreFileData.absPath,
+            absPath = moveFile.fileType.simpleStorageMediaType.mimeType
+        )
 
         companion object {
             const val EXTRA = "com.w2sv.filenavigator.extra.ViewFileIfPresentActivity.Args"

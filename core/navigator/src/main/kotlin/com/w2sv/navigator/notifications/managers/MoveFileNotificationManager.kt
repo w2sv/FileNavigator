@@ -4,7 +4,7 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.os.Build
+import android.graphics.Bitmap
 import android.text.SpannedString
 import android.util.Size
 import androidx.core.app.NotificationCompat
@@ -14,7 +14,7 @@ import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.formattedFileSize
 import com.w2sv.common.utils.lineBreakSuffixed
-import com.w2sv.common.utils.loadBitmapFileNotFoundHandled
+import com.w2sv.common.utils.loadBitmapWithFileNotFoundHandling
 import com.w2sv.common.utils.log
 import com.w2sv.common.utils.removeSlashSuffix
 import com.w2sv.common.utils.slashPrefixed
@@ -22,6 +22,7 @@ import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.MoveDestination
+import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
@@ -110,80 +111,17 @@ internal class MoveFileNotificationManager @Inject constructor(
         object : Builder() {
 
             override fun build(): Notification {
-                setContentTitle(
-                    context.getString(
-                        R.string.new_move_file_notification_title,
-                        args.moveFile.moveNotificationLabel(context = context)
-                    )
+                setContentTitle(args.moveFile.notificationTitle(context))
+                setLargeIcon(args.moveFile.largeNotificationIcon(context))
+
+                setStyle(
+                    NotificationCompat.BigTextStyle()
+                        .bigText(args.moveFile.notificationTitle(context))
                 )
-                // Set file source icon
-                setLargeIcon(args.moveFile.fileAndSourceType.coloredIconBitmap(context))
-                setContent()
                 setActionsAndIntents()
 
                 return super.build()
             }
-
-            private fun setContent() {
-                val bigPictureStyleSet = setBigPictureStyleIfImageOrVideo()
-                if (!bigPictureStyleSet) {
-                    setStyle(
-                        NotificationCompat.BigTextStyle()
-                            .bigText(getContentText())
-                    )
-                }
-            }
-
-            private fun setBigPictureStyleIfImageOrVideo(): Boolean {
-                when (args.moveFile.fileType) {
-                    FileType.Image -> context.contentResolver.loadBitmapFileNotFoundHandled(args.moveFile.mediaUri.uri)
-                    FileType.Video -> {
-                        try {
-                            context.contentResolver.loadThumbnail(
-                                args.moveFile.mediaUri.uri,
-                                Size(512, 512),
-                                null
-                            )
-                        } catch (_: IOException) {
-                            null
-                        }
-                    }
-
-                    else -> null
-                }
-                    ?.let {
-                        setStyle(
-                            NotificationCompat.BigPictureStyle()
-                                .bigPicture(it)
-                                .run {  // .apply {} strangely not working here
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                        setContentDescription(
-                                            getContentText()
-                                        )
-                                        showBigPictureWhenCollapsed(true)
-                                    } else
-                                        this
-                                }
-                        )
-                        return true
-                    }
-                return false
-            }
-
-            private fun getContentText(): SpannedString =
-                buildSpannedString {
-                    append(args.moveFile.mediaStoreFileData.name.lineBreakSuffixed())
-                    bold { append(context.getString(R.string.directory).lineBreakSuffixed()) }
-                    append(
-                        args.moveFile.mediaStoreFileData.volumeRelativeDirPath.removeSlashSuffix()
-                            .slashPrefixed()
-                            .lineBreakSuffixed()
-                    )
-                    bold { append(context.getString(R.string.size).lineBreakSuffixed()) }
-                    append(
-                        formattedFileSize(args.moveFile.mediaStoreFileData.size)
-                    )
-                }
 
             private fun setActionsAndIntents() {
                 // Set actions & intents
@@ -217,18 +155,13 @@ internal class MoveFileNotificationManager @Inject constructor(
                 )
             }
 
-            private fun getViewFilePendingIntent(requestCode: Int)
-                    : PendingIntent =
+            private fun getViewFilePendingIntent(requestCode: Int): PendingIntent =
                 PendingIntent.getActivity(
                     context,
                     requestCode,
                     ViewFileIfPresentActivity.makeRestartActivityIntent(
                         context = context,
-                        args = ViewFileIfPresentActivity.Args(
-                            mediaUri = args.moveFile.mediaUri,
-                            absPath = args.moveFile.mediaStoreFileData.absPath,
-                            mimeType = args.moveFile.fileType.simpleStorageMediaType.mimeType,
-                        ),
+                        args = ViewFileIfPresentActivity.Args(args.moveFile),
                         notificationResources = args.resources
                     ),
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -314,3 +247,78 @@ private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
         )
             .value
 }
+
+private fun MoveFile.largeNotificationIcon(context: Context): Bitmap? =
+    when (fileType) {
+        FileType.Image -> context.contentResolver.loadBitmapWithFileNotFoundHandling(
+            mediaUri.uri
+        )
+
+        FileType.Video -> {
+            try {
+                context.contentResolver.loadThumbnail(
+                    mediaUri.uri,
+                    Size(256, 256),
+                    null
+                )
+            } catch (_: IOException) {
+                null
+            }
+        }
+
+        else -> null
+    } ?: fileAndSourceType.iconBitmap(context)
+
+private fun MoveFile.notificationContentText(context: Context): SpannedString =
+    buildSpannedString {
+        append(mediaStoreFileData.name.lineBreakSuffixed())
+        bold { append(context.getString(R.string.directory).lineBreakSuffixed()) }
+        append(
+            mediaStoreFileData.volumeRelativeDirPath.removeSlashSuffix()
+                .slashPrefixed()
+                .lineBreakSuffixed()
+        )
+        bold { append(context.getString(R.string.size).lineBreakSuffixed()) }
+        append(
+            formattedFileSize(mediaStoreFileData.size)
+        )
+    }
+
+private fun MoveFile.notificationTitle(context: Context): String =
+    context.getString(
+        R.string.new_move_file_notification_title,
+        notificationLabel(context = context),
+    )
+
+private fun MoveFile.notificationLabel(
+    context: Context
+): String =
+    when {
+        isGif -> context.getString(com.w2sv.core.domain.R.string.gif)
+        else -> {
+            when (sourceType) {
+                SourceType.Screenshot, SourceType.Recording -> context.getString(
+                    sourceType.labelRes
+                )
+
+                SourceType.Camera -> context.getString(
+                    when (fileType) {
+                        FileType.Image -> com.w2sv.core.domain.R.string.photo
+                        FileType.Video -> com.w2sv.core.domain.R.string.video
+                        else -> throw IllegalArgumentException()
+                    }
+                )
+
+                SourceType.Download -> context.getString(
+                    com.w2sv.core.domain.R.string.file_type_download,
+                    context.getString(fileType.labelRes),
+                )
+
+                SourceType.OtherApp -> "/${mediaStoreFileData.parentDirName} ${
+                    context.getString(
+                        fileType.labelRes
+                    )
+                }"
+            }
+        }
+    }

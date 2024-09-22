@@ -54,7 +54,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
                 setContentTitle(context.getString(R.string.auto_move_destination_invalid))
 
                 // Set file source icon
-                setLargeIcon(args.fileAndSourceType.coloredIconBitmap(context))
+                setLargeIcon(args.fileAndSourceType.iconBitmap(context))
                 setContentText(
                     buildSpannedString {
                         bold {

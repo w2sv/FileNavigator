@@ -27,7 +27,7 @@ internal sealed interface PreCheckResult {
 
     companion object {
 
-        fun get(  // TODO
+        fun get(  // TODO: test
             moveFile: MoveFile,
             context: Context,
             destinationDirectory: DocumentFile?
@@ -105,7 +105,7 @@ internal suspend fun MediaFile.moveTo(
                         SingleFileError.TargetNotFound -> MoveResult.MoveDestinationNotFound
                         is SingleFileError.NotEnoughSpaceOnTarget -> MoveResult.NotEnoughSpaceOnDestination
                         SingleFileError.SourceNotFound -> MoveResult.MoveFileNotFound
-                        SingleFileError.StoragePermissionMissing, SingleFileError.TargetNotWritable, SingleFileError.SourceNotReadable -> MoveResult.ManageAllFilesPermissionMissing
+                        is SingleFileError.StoragePermissionMissing -> MoveResult.ManageAllFilesPermissionMissing
                         else -> MoveResult.InternalError
                     }
                 }
@@ -148,7 +148,7 @@ private suspend fun MediaFile.copyToFileDestinationAndDelete(
                     when (moveState.errorCode) {
                         is SingleFileError.NotEnoughSpaceOnTarget -> MoveResult.NotEnoughSpaceOnDestination
                         SingleFileError.SourceNotFound -> MoveResult.MoveFileNotFound
-                        SingleFileError.StoragePermissionMissing, SingleFileError.SourceNotReadable, SingleFileError.TargetNotWritable -> MoveResult.ManageAllFilesPermissionMissing
+                        is SingleFileError.StoragePermissionMissing -> MoveResult.ManageAllFilesPermissionMissing
                         else -> MoveResult.InternalError
                     }
                 }

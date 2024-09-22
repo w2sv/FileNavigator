@@ -5,14 +5,15 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import com.w2sv.androidutils.graphics.loadBitmap
+import slimber.log.e
 import slimber.log.i
 import java.io.FileNotFoundException
 
-fun ContentResolver.loadBitmapFileNotFoundHandled(uri: Uri): Bitmap? =
+fun ContentResolver.loadBitmapWithFileNotFoundHandling(uri: Uri): Bitmap? =
     try {
         loadBitmap(uri)
     } catch (e: FileNotFoundException) {
-        i(e)
+        e(e)
         null
     }
 
