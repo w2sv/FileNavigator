@@ -58,15 +58,24 @@
 
         <!-- App Broadcast Receivers -->
 
-        <receiver android:name="com.w2sv.navigator.moving.MoveBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.moving.receiver.QuickMoveBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.notifications.NotificationResources$CleanupBroadcastReceiver" />
-        <receiver android:name="com.w2sv.navigator.moving.BatchMoveBroadcastReceiver" />
-        <receiver android:name="com.w2sv.navigator.moving.CancelBatchMoveBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.moving.receiver.CancelBatchMoveBroadcastReceiver" />
 
         <!-- Activity -->
 
         <activity
-            android:name="com.w2sv.navigator.moving.destination_picking.FileDestinationPickerActivity"
+            android:name="com.w2sv.navigator.moving.activity.destination_picking.FileDestinationPickerActivity"
+            android:taskAffinity="com.w2sv.filenavigator.filemoving"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.w2sv.navigator.moving.activity.destination_picking.FileBatchDestinationPickerActivity"
+            android:taskAffinity="com.w2sv.filenavigator.filemoving"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryActivity"
             android:taskAffinity="com.w2sv.filenavigator.filemoving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity

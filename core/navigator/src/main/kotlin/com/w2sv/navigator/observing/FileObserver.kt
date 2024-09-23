@@ -16,7 +16,7 @@ import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.launchDelayed
-import com.w2sv.navigator.moving.MoveBroadcastReceiver
+import com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle

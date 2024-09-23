@@ -1,20 +1,16 @@
-package com.w2sv.navigator.moving.destination_picking
+package com.w2sv.navigator.moving.activity.destination_picking
 
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.activity.ComponentActivity
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.isExternalStorageManger
-import com.w2sv.navigator.MoveResultChannel
+import com.w2sv.navigator.moving.activity.AbstractMoveActivity
 import com.w2sv.navigator.moving.model.MoveResult
-import com.w2sv.navigator.notifications.NotificationResources
 
-internal abstract class DestinationPickerActivity : ComponentActivity() {
-
-    abstract var moveResultChannel: MoveResultChannel
+internal abstract class DestinationPickerActivity : AbstractMoveActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,16 +31,6 @@ internal abstract class DestinationPickerActivity : ComponentActivity() {
     protected open fun preemptiveMoveFailure(): MoveResult.Failure? = when {
         !isExternalStorageManger -> MoveResult.ManageAllFilesPermissionMissing
         else -> null
-    }
-
-    protected fun finishAndRemoveTask(
-        moveFailure: MoveResult.Failure? = null,
-        notificationResources: NotificationResources? = null
-    ) {
-        moveFailure?.let {
-            moveResultChannel.trySend(it bundleWith notificationResources)
-        }
-        finishAndRemoveTask()
     }
 
     interface Args : Parcelable {

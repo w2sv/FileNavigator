@@ -1,4 +1,4 @@
-package com.w2sv.navigator.moving.destination_picking
+package com.w2sv.navigator.moving.activity.destination_picking
 
 import android.content.Context
 import android.content.Intent
@@ -14,7 +14,7 @@ import com.w2sv.common.utils.log
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
-import com.w2sv.navigator.moving.MoveBroadcastReceiver
+import com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle

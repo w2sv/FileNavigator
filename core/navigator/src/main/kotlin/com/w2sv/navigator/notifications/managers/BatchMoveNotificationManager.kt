@@ -9,9 +9,9 @@ import androidx.core.app.NotificationCompat
 import com.w2sv.androidutils.res.isNightModeActiveCompat
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.MoveDestination
-import com.w2sv.navigator.moving.BatchMoveBroadcastReceiver
-import com.w2sv.navigator.moving.destination_picking.DestinationPickerActivity
-import com.w2sv.navigator.moving.destination_picking.FileBatchDestinationPickerActivity
+import com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver
+import com.w2sv.navigator.moving.activity.destination_picking.DestinationPickerActivity
+import com.w2sv.navigator.moving.activity.destination_picking.FileBatchDestinationPickerActivity
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
 import com.w2sv.navigator.moving.model.DestinationSelectionManner

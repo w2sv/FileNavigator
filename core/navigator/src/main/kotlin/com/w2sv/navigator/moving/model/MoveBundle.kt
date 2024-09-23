@@ -2,10 +2,8 @@ package com.w2sv.navigator.moving.model
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
-import com.w2sv.common.utils.MediaUri
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.MoveEntry
 import kotlinx.parcelize.Parcelize
@@ -114,7 +112,7 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
     companion object {
         const val EXTRA = "com.w2sv.navigator.extra.MoveBundle"
 
-        fun <MD : MoveDestination, Mode : DestinationSelectionManner> fromIntent(intent: Intent): MoveBundle<MD, Mode> =
-            intent.getParcelableCompat<MoveBundle<MD, Mode>>(EXTRA)!!
+        inline fun <reified MB : AnyMoveBundle> fromIntent(intent: Intent): MB =
+            intent.getParcelableCompat<MB>(EXTRA)!!
     }
 }

@@ -1,4 +1,4 @@
-package com.w2sv.navigator.moving
+package com.w2sv.navigator.moving.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context

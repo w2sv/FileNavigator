@@ -1,4 +1,4 @@
-package com.w2sv.navigator.moving
+package com.w2sv.navigator.moving.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -11,6 +11,7 @@ import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
+import com.w2sv.navigator.moving.moveTo
 import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope

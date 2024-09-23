@@ -1,4 +1,4 @@
-package com.w2sv.navigator.moving.destination_picking
+package com.w2sv.navigator.moving.activity.destination_picking
 
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
@@ -7,7 +7,7 @@ import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.navigator.MoveResultChannel
-import com.w2sv.navigator.moving.BatchMoveBroadcastReceiver
+import com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources

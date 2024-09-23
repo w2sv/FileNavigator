@@ -27,6 +27,14 @@ class DocumentUriKtTest {
     }
 
     @Test
+    fun testDocumentTreeUri() {
+        assertEquals(
+            DocumentUri.parse("content://com.android.externalstorage.documents/tree/primary%3AMoved%2FGIFs/document/primary%3AMoved%2FGIFs"),
+            contentUri.documentTreeUri()
+        )
+    }
+
+    @Test
     fun testDocumentFilePath() {
         assertEquals(
             "primary:Moved/Screenshots",
@@ -40,7 +48,7 @@ class DocumentUriKtTest {
 
     @Test
     fun testDocumentFileName() {
-        assertEquals(null, treeDocumentUri.documentFile(context)?.name)
+        assertEquals(null, treeDocumentUri.documentFile(context).name)
     }
 
     @Test

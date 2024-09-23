@@ -25,9 +25,9 @@ import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
-import com.w2sv.navigator.moving.MoveBroadcastReceiver
-import com.w2sv.navigator.moving.destination_picking.DestinationPickerActivity
-import com.w2sv.navigator.moving.destination_picking.FileDestinationPickerActivity
+import com.w2sv.navigator.moving.receiver.QuickMoveBroadcastReceiver
+import com.w2sv.navigator.moving.activity.destination_picking.DestinationPickerActivity
+import com.w2sv.navigator.moving.activity.destination_picking.FileDestinationPickerActivity
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
@@ -197,8 +197,8 @@ internal class MoveFileNotificationManager @Inject constructor(
                     PendingIntent.getBroadcast(
                         context,
                         requestCode,
-                        MoveBroadcastReceiver.getIntent(
-                            moveBundle = MoveBundle.QuickMove(
+                        QuickMoveBroadcastReceiver.getIntent(
+                            MoveBundle.QuickMove(
                                 file = args.moveFile,
                                 destination = destination,
                                 destinationSelectionManner = DestinationSelectionManner.Quick(args.resources),

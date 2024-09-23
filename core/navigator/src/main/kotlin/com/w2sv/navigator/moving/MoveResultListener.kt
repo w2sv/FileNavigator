@@ -141,7 +141,7 @@ internal class MoveResultListener @Inject constructor(
             )
         }
         if (destinationSelectionManner.isPicked) {
-            destination.directoryDestination?.let {
+            destination.quickMoveDestination?.let {
                 i { "Saving quick move destination $it" }
 
                 scope.launch {

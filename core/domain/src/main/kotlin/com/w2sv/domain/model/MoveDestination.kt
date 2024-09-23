@@ -91,9 +91,9 @@ sealed interface MoveDestination : Parcelable {
         }
     }
 
-    val directoryDestination: Directory?
+    val quickMoveDestination: Directory?
         get() = when (this) {
-            is File.Local -> parentDirectory
+            is File.Local -> Directory(parentDirectory.documentUri.documentTreeUri())
             is File.Cloud -> null
             is Directory -> this
         }

@@ -21,6 +21,12 @@ value class DocumentUri(val uri: Uri) : Parcelable {
     fun documentFile(context: Context): DocumentFile =
         DocumentFile.fromSingleUri(context, uri)!!
 
+    fun documentTreeUri(): DocumentUri =
+        uri.run {
+            val encodedLastPathSegment = Uri.encode(lastPathSegment)
+            parse("content://$authority/tree/$encodedLastPathSegment/document/$encodedLastPathSegment")
+        }
+
     /**
      * Returns e.g. "primary:Moved/Screenshots" for [uri]="content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots".
      *

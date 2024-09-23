@@ -9,7 +9,7 @@ import androidx.core.text.buildSpannedString
 import com.w2sv.androidutils.res.getQuantityText
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.MoveDestination
-import com.w2sv.navigator.moving.CancelBatchMoveBroadcastReceiver
+import com.w2sv.navigator.moving.receiver.CancelBatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.AppNotificationId
