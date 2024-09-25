@@ -21,7 +21,7 @@ internal object FileObserverModule {
     @ServiceScoped
     @FileObserverHandlerThread
     fun fileObserverHandlerThread(): HandlerThread =
-        HandlerThread("com.w2sv.filenavigator.ContentObserverThread")
+        HandlerThread("com.w2sv.filenavigator.FileObserverHandlerThread")
             .apply { start() }
-            .log { "Initialized HandlerThread" }
+            .log { "Initialized ${it.name}" }
 }

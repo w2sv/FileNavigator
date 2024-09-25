@@ -1,7 +1,9 @@
 package com.w2sv.filenavigator.ui.modelext
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.MoveEntry
 
 fun MoveEntry.movedFileExists(context: Context): Boolean {
@@ -14,15 +16,33 @@ fun MoveEntry.movedFileExists(context: Context): Boolean {
     }
 }
 
-fun MoveEntry.launchViewActivity(context: Context) {
-    movedFileMediaUri?.let {  // TODO
+fun MoveEntry.launchViewMovedFileActivity(context: Context) {
+    try {
         context.startActivity(
             Intent()
                 .setAction(Intent.ACTION_VIEW)
-                .setDataAndType(
-                    it.uri,
-                    fileType.simpleStorageMediaType.mimeType
-                )
+                .apply {
+                    when (val capturedDestination = destination) {
+                        is MoveDestination.Directory -> {
+                            setDataAndType(
+                                movedFileMediaUri!!.uri,
+                                fileType.simpleStorageMediaType.mimeType
+                            )
+                        }
+
+                        is MoveDestination.File.Cloud -> {
+                            setDataAndType(
+                                movedFileDocumentUri.uri,
+                                fileType.simpleStorageMediaType.mimeType
+                            )
+                            setPackage(capturedDestination.providerPackageName(context))
+                        }
+
+                        else -> throw IllegalArgumentException()
+                    }
+                }
         )
+    } catch (e: ActivityNotFoundException) {
+
     }
 }

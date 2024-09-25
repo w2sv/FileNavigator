@@ -8,13 +8,16 @@
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- System Permissions -->
+    <!-- System Permissions -> granted automatically -->
+
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application>
+
         <!-- Services -->
+
         <service
             android:name="com.w2sv.navigator.FileNavigator"
             android:foregroundServiceType="specialUse">
@@ -38,7 +41,7 @@
             </intent-filter>
         </service>
 
-        <!-- System Broadcast Receivers -->
+        <!-- Exported System Broadcast Receivers -->
 
         <receiver
             android:name="com.w2sv.navigator.system_broadcastreceiver.PowerSaveModeChangedReceiver"
@@ -56,7 +59,7 @@
             </intent-filter>
         </receiver>
 
-        <!-- App Broadcast Receivers -->
+        <!-- Non-exported Broadcast Receivers -->
 
         <receiver android:name="com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.moving.receiver.QuickMoveBroadcastReceiver" />
@@ -64,24 +67,30 @@
         <receiver android:name="com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.moving.receiver.CancelBatchMoveBroadcastReceiver" />
 
-        <!-- Activity -->
+        <!-- Activities -->
 
         <activity
             android:name="com.w2sv.navigator.moving.activity.destination_picking.FileDestinationPickerActivity"
-            android:taskAffinity="com.w2sv.filenavigator.filemoving"
+            android:taskAffinity="@string/task_affinity_file_moving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name="com.w2sv.navigator.moving.activity.destination_picking.FileBatchDestinationPickerActivity"
-            android:taskAffinity="com.w2sv.filenavigator.filemoving"
+            android:taskAffinity="@string/task_affinity_file_moving"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.w2sv.navigator.moving.activity.OverlayDialogActivity"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity="@string/task_affinity_file_moving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name="com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryActivity"
-            android:taskAffinity="com.w2sv.filenavigator.filemoving"
+            android:taskAffinity="@string/task_affinity_file_moving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name="com.w2sv.navigator.notifications.ViewFileIfPresentActivity"
             android:noHistory="true"
-            android:taskAffinity="com.w2sv.filenavigator.fileviewing"
+            android:taskAffinity="@string/task_affinity_file_viewing"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 

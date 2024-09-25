@@ -6,6 +6,10 @@ import android.content.Intent
 import com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryActivity
 import com.w2sv.navigator.moving.model.MoveBundle
 
+/**
+ * Invokes [QuickMoveDestinationPermissionQueryActivity] if received destination is not writable, otherwise directly
+ * forwards [MoveBundle] to [MoveBroadcastReceiver].
+ */
 internal class QuickMoveBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {

@@ -42,7 +42,7 @@ import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.modelext.launchViewActivity
+import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
 import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.util.activityViewModel
@@ -127,7 +127,7 @@ private fun rememberMoveEntryRowOnClick(
         { moveEntry, fileExists ->
             if (fileExists) {
                 snackbarHostState.currentSnackbarData?.dismiss()
-                moveEntry.launchViewActivity(context)  // TODO: indicate that not possible for cloud files (I think?)
+                moveEntry.launchViewMovedFileActivity(context)  // TODO: indicate that not possible for cloud files (I think?)
             } else {
                 snackbarHostState.dismissCurrentSnackbarAndShow(
                     AppSnackbarVisuals(

@@ -41,6 +41,7 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
         super.onCreate(savedInstanceState)
 
         destinationPicker.launch(moveBundle.destination.documentUri.uri)
+        startActivity(Intent(this, OverlayDialogActivity::class.java))
     }
 
     private val destinationPicker =

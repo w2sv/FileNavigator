@@ -2,6 +2,7 @@ package com.w2sv.domain.model
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.pm.ProviderInfo
 import android.net.Uri
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
@@ -64,16 +65,28 @@ sealed interface MoveDestination : Parcelable {
         value class Cloud(override val documentUri: DocumentUri) : File {
 
             override fun uiRepresentation(context: Context): String {
-                return documentUri.uri.authority?.let { authority ->
-                    val packageManager = context.packageManager
-                    packageManager.resolveContentProvider(authority, PackageManager.GET_META_DATA)
-                        ?.let { providerInfo ->
-                            packageManager.getApplicationLabel(providerInfo.applicationInfo)
-                                .toString()
-                        }
-                        ?: authority
-                } ?: context.getString(R.string.unrecognized_destination)
+                return providerApplicationLabel(context)
+                    ?: documentUri.uri.authority
+                    ?: context.getString(R.string.unrecognized_destination)
             }
+
+            /**
+             * @return E.g. "Drive" for Google Drive, "Dropbox" for Dropbox.
+             */
+            fun providerApplicationLabel(context: Context): String? {
+                return providerInfo(context)?.let { providerInfo ->
+                    context.packageManager.getApplicationLabel(providerInfo.applicationInfo)
+                        .toString()
+                }
+            }
+
+            fun providerPackageName(context: Context): String? =
+                providerInfo(context)?.packageName
+
+            private fun providerInfo(context: Context): ProviderInfo? =
+                documentUri.uri.authority?.let {
+                    context.packageManager.resolveContentProvider(it, PackageManager.GET_META_DATA)
+                }
         }
 
         companion object {
