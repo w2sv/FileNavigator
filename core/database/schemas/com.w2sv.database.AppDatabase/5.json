@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "5da8cfce7bef149aedf761865aab369c",
+    "identityHash": "33d9a6d7d46277a7365c3b019944ff45",
     "entities": [
       {
         "tableName": "MoveEntryEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fileName` TEXT NOT NULL, `fileType` TEXT NOT NULL, `sourceType` TEXT NOT NULL, `dateTime` TEXT NOT NULL, `autoMoved` INTEGER NOT NULL, `local_destination` TEXT, `local_movedFileDocumentUri` TEXT, `local_movedFileMediaUri` TEXT, `cloud_destination` TEXT, PRIMARY KEY(`dateTime`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fileName` TEXT NOT NULL, `fileType` TEXT NOT NULL, `sourceType` TEXT NOT NULL, `dateTime` TEXT NOT NULL, `autoMoved` INTEGER NOT NULL, `local_destination` TEXT, `local_movedFileDocumentUri` TEXT, `local_movedFileMediaUri` TEXT, `external_destination` TEXT, `external_providerPackageName` TEXT, `external_providerAppLabel` TEXT, PRIMARY KEY(`dateTime`))",
         "fields": [
           {
             "fieldPath": "fileName",
@@ -57,8 +57,20 @@
             "notNull": false
           },
           {
-            "fieldPath": "cloudDestinationEntryEntity.destination",
-            "columnName": "cloud_destination",
+            "fieldPath": "externalDestinationEntryEntity.destination",
+            "columnName": "external_destination",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "externalDestinationEntryEntity.providerPackageName",
+            "columnName": "external_providerPackageName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "externalDestinationEntryEntity.providerAppLabel",
+            "columnName": "external_providerAppLabel",
             "affinity": "TEXT",
             "notNull": false
           }
@@ -76,7 +88,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5da8cfce7bef149aedf761865aab369c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '33d9a6d7d46277a7365c3b019944ff45')"
     ]
   }
 }

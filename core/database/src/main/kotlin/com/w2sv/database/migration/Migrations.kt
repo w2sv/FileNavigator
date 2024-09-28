@@ -105,7 +105,9 @@ internal object Migrations {
                 renameColumn("destinationDocumentUri", "local_destination")
                 renameColumn("movedFileDocumentUri", "local_movedFileDocumentUri")
                 renameColumn("movedFileMediaUri", "local_movedFileMediaUri")
-                addNonNullStringColumn("cloud_destination")
+                addNonNullStringColumn("external_destination")
+                addNullableStringColumn("external_providerPackageName")
+                addNullableStringColumn("external_providerAppLabel")
             }
         }
     }
@@ -117,6 +119,10 @@ private fun SupportSQLiteDatabase.renameColumn(from: String, to: String) {
 
 private fun SupportSQLiteDatabase.addNonNullStringColumn(name: String) {
     execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $name TEXT NOT NULL DEFAULT ''")
+}
+
+private fun SupportSQLiteDatabase.addNullableStringColumn(name: String) {
+    execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $name TEXT DEFAULT NULL")
 }
 
 private fun SupportSQLiteDatabase.addNonNullIntColumn(name: String, default: Int = 0) {

@@ -18,7 +18,7 @@ internal data class MoveEntryEntity(
     val fileType: FileType,
     val sourceType: SourceType,
     @Embedded(prefix = "local_") val localDestinationEntryEntity: MoveDestinationEntryEntity.Local?,
-    @Embedded(prefix = "cloud_") val cloudDestinationEntryEntity: MoveDestinationEntryEntity.Cloud?,
+    @Embedded(prefix = "external_") val externalDestinationEntryEntity: MoveDestinationEntryEntity.External?,
     @PrimaryKey val dateTime: LocalDateTime,
     val autoMoved: Boolean
 ) {
@@ -33,9 +33,11 @@ internal data class MoveEntryEntity(
                 movedFileMediaUri = it.movedFileMediaUri.uri
             )
         },
-        cloudDestinationEntryEntity = moveEntry.destinationEntry.externalOrNull?.let {
-            MoveDestinationEntryEntity.Cloud(
-                destination = it.destination.documentUri.uri
+        externalDestinationEntryEntity = moveEntry.destinationEntry.externalOrNull?.let {
+            MoveDestinationEntryEntity.External(
+                destination = it.destination.documentUri.uri,
+                providerPackageName = it.destination.providerPackageName,
+                providerAppLabel = it.destination.providerAppLabel
             )
         },
         dateTime = moveEntry.dateTime,
@@ -55,9 +57,15 @@ internal data class MoveEntryEntity(
                             movedFileDocumentUri = it.movedFileDocumentUri.documentUri,
                             movedFileMediaUri = it.movedFileMediaUri.mediaUri
                         )
-                    } ?: cloudDestinationEntryEntity
+                    } ?: externalDestinationEntryEntity
                     ?.let {
-                        MoveDestinationEntry.External(MoveDestination.File.External(it.destination.documentUri))
+                        MoveDestinationEntry.External(
+                            MoveDestination.File.External(
+                                documentUri = it.destination.documentUri,
+                                providerPackageName = it.providerPackageName,
+                                providerAppLabel = it.providerAppLabel
+                            )
+                        )
                     }
             ),
             dateTime = dateTime,

@@ -27,7 +27,7 @@ sealed interface MoveDestination : Parcelable {
 
         override fun fileName(context: Context): String =
             documentFile(context).directoryName(context)
-        
+
         fun pathRepresentation(context: Context, includeStorageVolumeName: Boolean): String =
             documentUri.documentFilePath(context).run {
                 if (includeStorageVolumeName) {
@@ -70,32 +70,44 @@ sealed interface MoveDestination : Parcelable {
         }
 
         @Parcelize
-        @JvmInline
-        value class External(override val documentUri: DocumentUri) : File {
+        data class External(
+            override val documentUri: DocumentUri,
+            val providerPackageName: String?,
+            val providerAppLabel: String?
+        ) : File {
+
+            companion object {
+                fun get(documentUri: DocumentUri, context: Context): External {
+                    return documentUri.uri.authority
+                        ?.let {
+                            context.packageManager.resolveContentProvider(
+                                it,
+                                PackageManager.GET_META_DATA
+                            )
+                        }
+                        ?.let { providerInfo: ProviderInfo ->
+                            External(
+                                documentUri = documentUri,
+                                providerPackageName = providerInfo.packageName,
+                                providerAppLabel = context.packageManager.getApplicationLabel(
+                                    providerInfo.applicationInfo
+                                )
+                                    .toString()
+                            )
+                        }
+                        ?: External(
+                            documentUri = documentUri,
+                            providerPackageName = null,
+                            providerAppLabel = null
+                        )
+                }
+            }
 
             override fun uiRepresentation(context: Context): String {
-                return providerApplicationLabel(context)
+                return providerAppLabel
                     ?: documentUri.uri.authority
                     ?: context.getString(R.string.unrecognized_destination)
             }
-
-            /**
-             * @return E.g. "Drive" for Google Drive, "Dropbox" for Dropbox.
-             */
-            fun providerApplicationLabel(context: Context): String? {
-                return providerInfo(context)?.let { providerInfo ->
-                    context.packageManager.getApplicationLabel(providerInfo.applicationInfo)
-                        .toString()
-                }
-            }
-
-            fun providerPackageName(context: Context): String? =
-                providerInfo(context)?.packageName
-
-            private fun providerInfo(context: Context): ProviderInfo? =
-                documentUri.uri.authority?.let {
-                    context.packageManager.resolveContentProvider(it, PackageManager.GET_META_DATA)
-                }
         }
 
         companion object {
@@ -106,8 +118,9 @@ sealed interface MoveDestination : Parcelable {
                         mediaUri = documentUri.mediaUri(context)!!
                     )
 
-                    else -> External(
-                        documentUri = documentUri
+                    else -> External.get(
+                        documentUri = documentUri,
+                        context = context
                     )
                 }
         }

@@ -11,5 +11,9 @@ internal sealed interface MoveDestinationEntryEntity {
         val movedFileMediaUri: Uri
     ) : MoveDestinationEntryEntity
 
-    data class Cloud(override val destination: Uri) : MoveDestinationEntryEntity
+    data class External(
+        override val destination: Uri,
+        val providerPackageName: String?,
+        val providerAppLabel: String?
+    ) : MoveDestinationEntryEntity
 }

@@ -38,7 +38,7 @@ fun MoveEntry.launchViewMovedFileActivity(context: Context): SnackbarVisuals? {
                             it.movedFileDocumentUri.uri,
                             fileType.simpleStorageMediaType.mimeType
                         )
-                        setPackage(it.destination.providerPackageName(context))
+                        setPackage(it.destination.providerPackageName)
                     }
                 }
         )
