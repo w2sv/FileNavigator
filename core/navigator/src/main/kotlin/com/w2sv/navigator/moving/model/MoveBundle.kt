@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.domain.model.MoveDestination
+import com.w2sv.domain.model.MoveDestinationEntry
 import com.w2sv.domain.model.MoveEntry
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
@@ -69,22 +70,22 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
                     fileName = capturedDestination.fileName(context),
                     fileType = file.fileType,
                     sourceType = file.sourceType,
-                    destination = capturedDestination.parentDirectory,
-                    movedFileDocumentUri = capturedDestination.documentUri,
-                    movedFileMediaUri = capturedDestination.mediaUri,
+                    destinationEntry = MoveDestinationEntry.Local(
+                        destination = capturedDestination.parentDirectory,
+                        movedFileDocumentUri = capturedDestination.documentUri,
+                        movedFileMediaUri = capturedDestination.mediaUri
+                    ),
                     dateTime = dateTime,
                     autoMoved = destinationSelectionManner.isAuto
                 )
             }
 
-            is MoveDestination.File.Cloud -> {
+            is MoveDestination.File.External -> {
                 MoveEntry(
                     fileName = capturedDestination.fileName(context),
                     fileType = file.fileType,
                     sourceType = file.sourceType,
-                    destination = capturedDestination,
-                    movedFileDocumentUri = capturedDestination.documentUri,
-                    movedFileMediaUri = null,
+                    destinationEntry = MoveDestinationEntry.External(capturedDestination),
                     dateTime = dateTime,
                     autoMoved = destinationSelectionManner.isAuto
                 )
@@ -97,9 +98,11 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
                     fileName = file.mediaStoreFileData.name,
                     fileType = file.fileType,
                     sourceType = file.sourceType,
-                    destination = capturedDestination,
-                    movedFileDocumentUri = movedFileDocumentUri,
-                    movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!,  // TODO
+                    destinationEntry = MoveDestinationEntry.Local(
+                        destination = capturedDestination,
+                        movedFileDocumentUri = movedFileDocumentUri,
+                        movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!
+                    ),
                     dateTime = dateTime,
                     autoMoved = destinationSelectionManner.isAuto
                 )

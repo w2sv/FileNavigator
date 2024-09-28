@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-object DatabaseModule {
+internal object DatabaseModule {
 
     @Singleton
     @Provides
@@ -27,7 +27,8 @@ object DatabaseModule {
             )
             .addMigrations(
                 Migrations.Migration2to3(context = context),
-                Migrations.Migration3to4
+                Migrations.Migration3to4,
+                Migrations.Migration4to5
             )
             .fallbackToDestructiveMigration()
             .build()

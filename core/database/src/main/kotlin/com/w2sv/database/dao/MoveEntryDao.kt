@@ -8,7 +8,7 @@ import com.w2sv.database.entity.MoveEntryEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface MoveEntryDao {
+internal interface MoveEntryDao {
     @Query("SELECT * FROM MoveEntryEntity ORDER BY dateTime DESC")
     fun loadAllInDescendingOrder(): Flow<List<MoveEntryEntity>>
 

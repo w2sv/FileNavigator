@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-internal class DatabaseMoveEntryRepository @Inject constructor(
+internal class RoomMoveEntryRepository @Inject constructor(
     private val moveEntryDao: MoveEntryDao
 ) : MoveEntryRepository {
 

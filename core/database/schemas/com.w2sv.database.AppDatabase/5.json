@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "81bf553101a9ad32d7d74c27ff7962fb",
+    "identityHash": "5da8cfce7bef149aedf761865aab369c",
     "entities": [
       {
         "tableName": "MoveEntryEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fileName` TEXT NOT NULL, `fileType` TEXT NOT NULL, `sourceType` TEXT NOT NULL, `destinationDocumentUri` TEXT NOT NULL, `movedFileDocumentUri` TEXT NOT NULL, `movedFileMediaUri` TEXT, `dateTime` TEXT NOT NULL, `autoMoved` INTEGER NOT NULL, PRIMARY KEY(`dateTime`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fileName` TEXT NOT NULL, `fileType` TEXT NOT NULL, `sourceType` TEXT NOT NULL, `dateTime` TEXT NOT NULL, `autoMoved` INTEGER NOT NULL, `local_destination` TEXT, `local_movedFileDocumentUri` TEXT, `local_movedFileMediaUri` TEXT, `cloud_destination` TEXT, PRIMARY KEY(`dateTime`))",
         "fields": [
           {
             "fieldPath": "fileName",
@@ -27,24 +27,6 @@
             "notNull": true
           },
           {
-            "fieldPath": "destinationDocumentUri",
-            "columnName": "destinationDocumentUri",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "movedFileDocumentUri",
-            "columnName": "movedFileDocumentUri",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "movedFileMediaUri",
-            "columnName": "movedFileMediaUri",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
             "fieldPath": "dateTime",
             "columnName": "dateTime",
             "affinity": "TEXT",
@@ -55,6 +37,30 @@
             "columnName": "autoMoved",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "localDestinationEntryEntity.destination",
+            "columnName": "local_destination",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "localDestinationEntryEntity.movedFileDocumentUri",
+            "columnName": "local_movedFileDocumentUri",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "localDestinationEntryEntity.movedFileMediaUri",
+            "columnName": "local_movedFileMediaUri",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cloudDestinationEntryEntity.destination",
+            "columnName": "cloud_destination",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -70,7 +76,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '81bf553101a9ad32d7d74c27ff7962fb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5da8cfce7bef149aedf761865aab369c')"
     ]
   }
 }

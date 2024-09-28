@@ -19,6 +19,6 @@ import com.w2sv.database.typeconverter.UriConverter
     UriConverter::class,
     FileTypeConverter::class
 )
-abstract class AppDatabase : RoomDatabase() {
+internal abstract class AppDatabase : RoomDatabase() {
     abstract fun getMoveEntryDao(): MoveEntryDao
 }

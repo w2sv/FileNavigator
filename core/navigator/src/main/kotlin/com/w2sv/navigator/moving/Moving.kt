@@ -66,7 +66,7 @@ internal suspend fun MoveFile.moveTo(
                 is MoveDestination.File -> {
                     preCheckResult.moveMediaFile.copyToFileDestinationAndDelete(
                         fileDestination = destinationDocumentFile,
-                        isCloudDestination = destination is MoveDestination.File.Cloud,
+                        isCloudDestination = destination is MoveDestination.File.External,
                         onResult = onResult
                     )
                 }

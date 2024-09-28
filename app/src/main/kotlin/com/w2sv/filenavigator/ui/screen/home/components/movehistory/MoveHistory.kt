@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import com.w2sv.composed.OnLifecycleEvent
 import com.w2sv.composed.extensions.thenIf
-import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.MoveEntry
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.R
@@ -99,11 +98,11 @@ private fun MoveEntryView(
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     var movedFileExists by remember(moveEntry) {
-        mutableStateOf(moveEntry.movedFileExists(context))  // TODO: cloud files
+        mutableStateOf(moveEntry.destinationEntry.movedFileExists(context))
     }
     OnLifecycleEvent(lifecycleEvent = Lifecycle.Event.ON_START, key1 = moveEntry) {
         if (movedFileExists) {
-            movedFileExists = moveEntry.movedFileExists(context)
+            movedFileExists = moveEntry.destinationEntry.movedFileExists(context)
         }
     }
 
@@ -144,19 +143,8 @@ private fun MoveEntryView(
         }
         WeightedBox(weight = 0.5f) {
             Text(
-                text = remember(moveEntry.destination) {
-                    when (val capturedDestination = moveEntry.destination) {
-                        is MoveDestination.Directory -> moveDestinationPathConverter.invoke(
-                            capturedDestination,
-                            context
-                        )
-
-                        is MoveDestination.File.Cloud -> capturedDestination.uiRepresentation(
-                            context
-                        )
-
-                        else -> throw IllegalArgumentException()
-                    }
+                text = remember(moveEntry.destinationEntry) {
+                    moveDestinationPathConverter.invoke(moveEntry.destinationEntry.destination, context)
                 },
                 fontSize = MoveHistoryDefaults.FontSize,
             )

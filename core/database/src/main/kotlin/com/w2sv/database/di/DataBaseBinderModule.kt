@@ -1,6 +1,6 @@
 package com.w2sv.database.di
 
-import com.w2sv.database.repository.DatabaseMoveEntryRepository
+import com.w2sv.database.repository.RoomMoveEntryRepository
 import com.w2sv.domain.repository.MoveEntryRepository
 import dagger.Binds
 import dagger.Module
@@ -12,5 +12,5 @@ import dagger.hilt.components.SingletonComponent
 internal interface DataBaseBinderModule {
 
     @Binds
-    fun bindsMoveEntryRepository(impl: DatabaseMoveEntryRepository): MoveEntryRepository
+    fun bindsMoveEntryRepository(impl: RoomMoveEntryRepository): MoveEntryRepository
 }

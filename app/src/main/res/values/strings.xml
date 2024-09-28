@@ -77,6 +77,7 @@
     <string name="notify">Notify</string>
     <string name="batch_move_notification">Batch-move notification</string>
     <string name="batch_move_explanation">Upon at least 2 active navigation notifications, show a notification through which all navigatable files may be collectively moved to a destination</string>
+    <string name="provider_does_not_support_file_viewing">Provider doesn\'t support file viewing.</string>
     <plurals name="add_file_types_button">
         <item quantity="one">Add File Type</item>
         <item quantity="other">Add File Types</item>

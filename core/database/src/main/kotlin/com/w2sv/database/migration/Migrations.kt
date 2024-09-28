@@ -14,20 +14,22 @@ import com.w2sv.androidutils.database.getStringOrThrow
 import com.w2sv.common.utils.log
 import slimber.log.i
 
+private const val TABLE_NAME = "MoveEntryEntity"
+
 internal object Migrations {
     class Migration2to3(private val context: Context) : Migration(2, 3) {
 
         override fun migrate(db: SupportSQLiteDatabase) {
-            i { "Running migration" }
+            i { "Running migration 2 to 3" }
 
-            // Add columns beset with default values to table
-            db.execSQL("ALTER TABLE MoveEntryEntity ADD COLUMN movedFileDocumentUri TEXT NOT NULL DEFAULT ''")
-            db.execSQL("ALTER TABLE MoveEntryEntity ADD COLUMN movedFileMediaUri TEXT NOT NULL DEFAULT ''")
+            // Add columns to table
+            db.addNonNullStringColumn("movedFileDocumentUri")
+            db.addNonNullStringColumn("movedFileMediaUri")
 
             // Attempt to dynamically migrate each row
             db.beginTransaction()
             try {
-                val cursor = db.query("SELECT * FROM MoveEntryEntity")
+                val cursor = db.query("SELECT * FROM $TABLE_NAME")
 
                 cursor.use {
                     while (it.moveToNext()) {
@@ -62,7 +64,7 @@ internal object Migrations {
                 i { "Couldn't find moved file - aborting row update" }
             } else {
                 db.update(
-                    table = "MoveEntryEntity",
+                    table = TABLE_NAME,
                     conflictAlgorithm = SQLiteDatabase.CONFLICT_ABORT,
                     values = ContentValues().apply {
                         put(
@@ -90,8 +92,33 @@ internal object Migrations {
 
     val Migration3to4 = object : Migration(3, 4) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            db.execSQL("ALTER TABLE MoveEntryEntity ADD COLUMN autoMoved INTEGER NOT NULL DEFAULT 0")
-            db.execSQL("ALTER TABLE MoveEntryEntity RENAME COLUMN fileSourceKind TO sourceType")
+            with(db) {
+                addNonNullIntColumn("autoMoved")
+                renameColumn("fileSourceKind", "sourceType")
+            }
         }
     }
+
+    val Migration4to5 = object : Migration(4, 5) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            with(db) {
+                renameColumn("destinationDocumentUri", "local_destination")
+                renameColumn("movedFileDocumentUri", "local_movedFileDocumentUri")
+                renameColumn("movedFileMediaUri", "local_movedFileMediaUri")
+                addNonNullStringColumn("cloud_destination")
+            }
+        }
+    }
+}
+
+private fun SupportSQLiteDatabase.renameColumn(from: String, to: String) {
+    execSQL("ALTER TABLE $TABLE_NAME RENAME COLUMN $from TO $to")
+}
+
+private fun SupportSQLiteDatabase.addNonNullStringColumn(name: String) {
+    execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $name TEXT NOT NULL DEFAULT ''")
+}
+
+private fun SupportSQLiteDatabase.addNonNullIntColumn(name: String, default: Int = 0) {
+    execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $name INTEGER NOT NULL DEFAULT $default")
 }

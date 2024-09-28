@@ -27,6 +27,15 @@ sealed interface MoveDestination : Parcelable {
 
         override fun fileName(context: Context): String =
             documentFile(context).directoryName(context)
+        
+        fun pathRepresentation(context: Context, includeStorageVolumeName: Boolean): String =
+            documentUri.documentFilePath(context).run {
+                if (includeStorageVolumeName) {
+                    this
+                } else {
+                    "/${substringAfter(":")}"
+                }
+            }
 
         companion object {
             fun parse(uriString: String): Directory =
@@ -62,7 +71,7 @@ sealed interface MoveDestination : Parcelable {
 
         @Parcelize
         @JvmInline
-        value class Cloud(override val documentUri: DocumentUri) : File {
+        value class External(override val documentUri: DocumentUri) : File {
 
             override fun uiRepresentation(context: Context): String {
                 return providerApplicationLabel(context)
@@ -97,7 +106,7 @@ sealed interface MoveDestination : Parcelable {
                         mediaUri = documentUri.mediaUri(context)!!
                     )
 
-                    else -> Cloud(
+                    else -> External(
                         documentUri = documentUri
                     )
                 }
@@ -107,7 +116,7 @@ sealed interface MoveDestination : Parcelable {
     val quickMoveDestination: Directory?
         get() = when (this) {
             is File.Local -> Directory(parentDirectory.documentUri.documentTreeUri())
-            is File.Cloud -> null
+            is File.External -> null
             is Directory -> this
         }
 
