@@ -22,19 +22,40 @@ sealed interface MoveDestination : Parcelable {
     @JvmInline
     value class Directory(override val documentUri: DocumentUri) : MoveDestination {
 
+        val isVolumeRoot: Boolean
+            get() = documentUri.isVolumeRoot
+
         override fun uiRepresentation(context: Context): String =
-            "/${fileName(context)}"
+            buildString {
+                if (!isVolumeRoot) {
+                    append("/")
+                }
+                append(fileName(context))
+            }
 
         override fun fileName(context: Context): String =
-            documentFile(context).directoryName(context)
+            if (isVolumeRoot) {
+                context.getString(R.string.volume_root)
+            } else {
+                documentFile(context).directoryName(context)
+            }
 
-        fun pathRepresentation(context: Context, includeStorageVolumeName: Boolean): String =
-            documentUri.documentFilePath(context).run {
-                if (includeStorageVolumeName) {
-                    this
+        fun pathRepresentation(context: Context, includeVolumeName: Boolean): String =
+            if (isVolumeRoot) {
+                if (includeVolumeName) {
+                    documentUri.volumeName
                 } else {
-                    "/${substringAfter(":")}"
+                    context.getString(R.string.volume_root)
                 }
+            } else {
+                documentUri.documentFilePath(context)
+                    .let { path ->
+                        if (includeVolumeName) {
+                            path
+                        } else {
+                            "/${path.substringAfter(":")}"
+                        }
+                    }
             }
 
         companion object {
@@ -61,12 +82,12 @@ sealed interface MoveDestination : Parcelable {
         data class Local(override val documentUri: DocumentUri, val mediaUri: MediaUri) : File {
 
             @IgnoredOnParcel
-            val parentDirectory: Directory by lazy {
-                Directory(documentUri.parent!!)
+            val parent: Directory by lazy {
+                Directory(requireNotNull(documentUri.parent))
             }
 
             override fun uiRepresentation(context: Context): String =
-                parentDirectory.uiRepresentation(context)
+                parent.uiRepresentation(context)
         }
 
         @Parcelize
@@ -128,7 +149,7 @@ sealed interface MoveDestination : Parcelable {
 
     val quickMoveDestination: Directory?
         get() = when (this) {
-            is File.Local -> Directory(parentDirectory.documentUri.documentTreeUri())
+            is File.Local -> parent.let { if (it.isVolumeRoot) null else Directory(it.documentUri.documentTreeUri()) }
             is File.External -> null
             is Directory -> this
         }

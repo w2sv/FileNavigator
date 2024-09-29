@@ -18,4 +18,5 @@
     <string name="file_type_download">%1$s Download</string>
     <string name="gif">GIF</string>
     <string name="unrecognized_destination">Unrecognized Destination</string>
+    <string name="volume_root">VOLUME ROOT</string>
 </resources>

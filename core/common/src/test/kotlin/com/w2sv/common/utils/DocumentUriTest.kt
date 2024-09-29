@@ -10,7 +10,7 @@ import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = "AndroidManifest.xml")
-class DocumentUriKtTest {
+class DocumentUriTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
 
     private val contentUri: DocumentUri =
@@ -65,6 +65,21 @@ class DocumentUriKtTest {
             DocumentUri.parse("content://com.android.externalstorage.documents/document/primary%3AMoved"),
             contentUri.parent
         )
-        assertEquals(null, contentUri.parent?.parent)
+        assertEquals(
+            DocumentUri.parse("content://com.android.externalstorage.documents/document/primary%3A%2F"),
+            contentUri.parent?.parent
+        )
+        assertEquals(
+            null,
+            contentUri.parent?.parent?.parent
+        )
+    }
+
+    @Test
+    fun testVolumeName() {
+        assertEquals(
+            "primary",
+            contentUri.volumeName
+        )
     }
 }

@@ -39,6 +39,9 @@
         <item quantity="other"><![CDATA[Moved %1$d files to <b>%2$s</b>]]></item>
     </plurals>
     <string name="cancel">Cancel</string>
+    <string name="directory_access">Directory Access</string>
+    <string name="ok">Ok</string>
+    <string name="quick_move_permission_query_dialog_content">You need to grant File Navigator access to the selected destination to quick-move files there. This is only necessary once per destination.</string>
     <plurals name="couldn_t_move_files_due_to">
         <item quantity="one"><![CDATA[Couldn\'t move %1$s file due to <b>%2$s</b> exception]]></item>
         <item quantity="other"><![CDATA[Couldn\'t move %1$s files due to <b>%2$s</b> exception]]></item>

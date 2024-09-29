@@ -44,4 +44,10 @@ internal class PreferencesRepositoryImpl @Inject constructor(dataStore: DataStor
         booleanPreferencesKey("showAutoMoveIntroduction"),
         true
     )
+
+    override val showQuickMovePermissionQueryExplanation: DataStoreFlow<Boolean> =
+        dataStoreFlow(
+            booleanPreferencesKey("showQuickMovePermissionQueryExplanation"),
+            true
+        )
 }

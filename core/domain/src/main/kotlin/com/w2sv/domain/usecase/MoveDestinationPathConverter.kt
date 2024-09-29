@@ -24,7 +24,7 @@ class MoveDestinationPathConverter @Inject constructor(
             is MoveDestination.Directory -> {
                 moveDestination.pathRepresentation(
                     context = context,
-                    includeStorageVolumeName = showStorageVolumeNames.value
+                    includeVolumeName = showStorageVolumeNames.value
                 )
             }
 

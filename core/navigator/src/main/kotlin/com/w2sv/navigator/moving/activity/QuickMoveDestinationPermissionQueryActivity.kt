@@ -11,6 +11,8 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.repository.NavigatorConfigDataSource
+import com.w2sv.domain.repository.PreferencesRepository
+import com.w2sv.kotlinutils.coroutines.firstBlocking
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
@@ -18,6 +20,7 @@ import com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import slimber.log.i
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -25,6 +28,9 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
 
     @Inject
     override lateinit var moveResultChannel: MoveResultChannel
+
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
 
     @Inject
     lateinit var navigatorConfigDataSource: NavigatorConfigDataSource
@@ -39,9 +45,12 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        i { "onCreate" }
 
         destinationPicker.launch(moveBundle.destination.documentUri.uri)
-        startActivity(Intent(this, OverlayDialogActivity::class.java))
+        if (preferencesRepository.showQuickMovePermissionQueryExplanation.firstBlocking()) {
+            startActivity(Intent(this, OverlayDialogActivity::class.java))
+        }
     }
 
     private val destinationPicker =
@@ -88,7 +97,7 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
             context.startActivity(makeRestartActivityIntent(moveBundle, context))
         }
 
-        private fun makeRestartActivityIntent(
+        fun makeRestartActivityIntent(
             moveBundle: MoveBundle.QuickMove,
             context: Context
         ): Intent =

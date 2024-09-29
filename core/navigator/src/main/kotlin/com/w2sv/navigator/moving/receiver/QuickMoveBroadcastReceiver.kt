@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryActivity
 import com.w2sv.navigator.moving.model.MoveBundle
+import slimber.log.i
 
 /**
  * Invokes [QuickMoveDestinationPermissionQueryActivity] if received destination is not writable, otherwise directly
@@ -16,7 +17,11 @@ internal class QuickMoveBroadcastReceiver : BroadcastReceiver() {
         val moveBundle = MoveBundle.fromIntent<MoveBundle.QuickMove>(intent)
 
         if (moveBundle.destination.documentFile(context).name == null) {
-            QuickMoveDestinationPermissionQueryActivity.start(moveBundle, context)
+            i { "Launching QuickMoveDestinationPermissionQueryActivity" }
+            QuickMoveDestinationPermissionQueryActivity.start(
+                moveBundle,
+                context.applicationContext
+            )
         } else {
             MoveBroadcastReceiver.sendBroadcast(
                 moveBundle = moveBundle,

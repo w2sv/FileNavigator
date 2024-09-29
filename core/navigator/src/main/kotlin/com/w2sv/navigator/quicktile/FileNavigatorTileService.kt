@@ -82,10 +82,10 @@ internal class FileNavigatorTileService : TileService() {
         showDialog(
             Dialog(this)
                 .apply {
-                    setTheme(com.afollestad.materialdialogs.R.style.MD_Dark)
+                    setTheme(R.style.RoundedCornersAlertDialog)
                     setContentView(R.layout.tile_dialog)
                     setOnShowListener {
-                        scope.launchDelayed(250) {  // Add small delay to make the dialog visible for a bit longer than merely a couple of milliseconds for UX
+                        scope.launchDelayed(250) {  // Add small delay to make the dialog visible for a bit longer than merely a couple of milliseconds for better UX
                             FileNavigator.start(this@FileNavigatorTileService)
                             dismiss()
                         }

@@ -10,4 +10,5 @@ interface PreferencesRepository {
     val postNotificationsPermissionRequested: DataStoreFlow<Boolean>
     val showStorageVolumeNames: DataStoreFlow<Boolean>
     val showAutoMoveIntroduction: DataStoreFlow<Boolean>
+    val showQuickMovePermissionQueryExplanation: DataStoreFlow<Boolean>
 }

@@ -1,8 +1,8 @@
 package com.w2sv.navigator.moving
 
 import com.w2sv.domain.model.MoveDestination
-import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
+import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.test.testParceling
 import org.junit.Test
@@ -15,15 +15,16 @@ internal class MoveBundleTest {
 
     @Test
     fun testParceling() {
-        MoveBundle(
+        MoveBundle.DirectoryDestinationPicked(
             file = TestInstance.moveFile(),
-            destination = MoveDestination.parse("lkasjdflkajhlk"),
-            mode = DestinationSelectionManner.Picked(
-                notificationResources = NotificationResources(
+            destination = MoveDestination.Directory.parse("lkasjdflkajhlk"),
+            destinationSelectionManner = DestinationSelectionManner.Picked(
+                NotificationResources(
                     7,
                     "MoveFileNotificationManager"
-                ), isPartOfBatch = true
-            )
+                )
+            ),
+            batched = true
         )
             .testParceling()
     }

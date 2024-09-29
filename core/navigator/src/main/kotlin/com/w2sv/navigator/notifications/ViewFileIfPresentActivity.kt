@@ -20,18 +20,21 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val (mediaUri, mimeType, absPath) = Args.fromIntent(intent)
-
-        if (File(absPath).exists()) {
-            startActivity(
-                Intent()
-                    .setAction(Intent.ACTION_VIEW).setDataAndType(mediaUri.uri, mimeType)
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            )
-        } else {
-            showToast(R.string.file_has_already_been_moved_or_deleted)
-            NotificationResources.fromIntent(intent)?.cancelNotification(this)
+        with(Args.fromIntent(intent)) {
+            if (File(absPath).exists()) {
+                startActivity(
+                    Intent()
+                        .setAction(Intent.ACTION_VIEW).setDataAndType(mediaUri.uri, mimeType)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                )
+            } else {
+                showToast(R.string.file_has_already_been_moved_or_deleted)
+                NotificationResources
+                    .fromIntent(intent)
+                    ?.cancelNotification(this@ViewFileIfPresentActivity)
+            }
         }
+
         finishAndRemoveTask()
     }
 
@@ -41,8 +44,8 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
 
         constructor(moveFile: MoveFile) : this(
             mediaUri = moveFile.mediaUri,
-            mimeType = moveFile.mediaStoreFileData.absPath,
-            absPath = moveFile.fileType.simpleStorageMediaType.mimeType
+            mimeType = moveFile.fileType.simpleStorageMediaType.mimeType,
+            absPath = moveFile.mediaStoreFileData.absPath
         )
 
         companion object {
@@ -54,7 +57,9 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
 
     companion object {
         fun makeRestartActivityIntent(
-            context: Context, args: Args, notificationResources: NotificationResources
+            context: Context,
+            args: Args,
+            notificationResources: NotificationResources
         ): Intent = Intent.makeRestartActivityTask(
             ComponentName(
                 context, ViewFileIfPresentActivity::class.java

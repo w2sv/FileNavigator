@@ -144,7 +144,10 @@ private fun MoveEntryView(
         WeightedBox(weight = 0.5f) {
             Text(
                 text = remember(moveEntry.destinationEntry) {
-                    moveDestinationPathConverter.invoke(moveEntry.destinationEntry.destination, context)
+                    moveDestinationPathConverter.invoke(
+                        moveEntry.destinationEntry.destination,
+                        context
+                    )
                 },
                 fontSize = MoveHistoryDefaults.FontSize,
             )

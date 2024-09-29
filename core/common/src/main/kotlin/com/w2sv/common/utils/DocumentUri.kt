@@ -28,9 +28,9 @@ value class DocumentUri(val uri: Uri) : Parcelable {
         }
 
     /**
-     * Returns e.g. "primary:Moved/Screenshots" for [uri]="content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots".
-     *
      * Does not depend on the file corresponding to [uri] being present.
+     *
+     * @return e.g. __primary:Moved/Screenshots__ for [uri]=__content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots__.
      */
     fun documentFilePath(context: Context): String =
         documentFile(context).getSimplePath(context)
@@ -41,6 +41,12 @@ value class DocumentUri(val uri: Uri) : Parcelable {
     fun childDocumentUri(fileName: String): DocumentUri =
         parse(uri.toString() + PATH_SLASH_ENCODING + Uri.encode(fileName))
 
+    val isVolumeRoot: Boolean
+        get() = uri.toString().endsWith("$PATH_COLON_ENCODING$PATH_SLASH_ENCODING")
+
+    val volumeName: String
+        get() = uri.toString().substringBefore(PATH_COLON_ENCODING).substringAfterLast("/")
+
     val parent: DocumentUri?
         get() = uri
             .toString()
@@ -48,15 +54,22 @@ value class DocumentUri(val uri: Uri) : Parcelable {
             .let { colonSplitSegments ->
                 colonSplitSegments
                     .last()
-                    .substringBeforeLast(PATH_SLASH_ENCODING, missingDelimiterValue = "")
-                    .let { parentPath ->
-                        if (parentPath.isEmpty()) {
+                    .let { postColonSegment ->
+                        if (postColonSegment == PATH_SLASH_ENCODING) {
                             null
                         } else {
-                            parse(
-                                colonSplitSegments.replaceLast(parentPath)
-                                    .joinToString(PATH_COLON_ENCODING)
-                            )
+                            postColonSegment
+                                .substringBeforeLast(
+                                    PATH_SLASH_ENCODING,
+                                    missingDelimiterValue = ""
+                                )
+                                .let { parentPath ->
+                                    parse(
+                                        colonSplitSegments
+                                            .replaceLast(parentPath.ifEmpty { PATH_SLASH_ENCODING })
+                                            .joinToString(PATH_COLON_ENCODING)
+                                    )
+                                }
                         }
                     }
             }

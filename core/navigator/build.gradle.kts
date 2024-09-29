@@ -22,12 +22,11 @@ dependencies {
 
     implementation(libs.androidx.core)
     implementation(libs.androidx.activity)
+    implementation(libs.androidx.appcompat)
 
     implementation(libs.androidutils)
     implementation(libs.kotlinutils)
     implementation(libs.slimber)
-
-    implementation(libs.materialDialogs.core)
 
     implementation(libs.google.guava)
 
