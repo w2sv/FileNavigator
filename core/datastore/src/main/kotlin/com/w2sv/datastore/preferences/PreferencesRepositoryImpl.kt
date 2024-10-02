@@ -5,15 +5,22 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.w2sv.androidutils.os.dynamicColorsSupported
+import com.w2sv.common.di.AppDispatcher
+import com.w2sv.common.di.GlobalScope
 import com.w2sv.datastoreutils.datastoreflow.DataStoreFlow
+import com.w2sv.datastoreutils.datastoreflow.DataStoreStateFlow
 import com.w2sv.datastoreutils.preferences.PreferencesDataStoreRepository
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class PreferencesRepositoryImpl @Inject constructor(dataStore: DataStore<Preferences>) :
+internal class PreferencesRepositoryImpl @Inject constructor(
+    dataStore: DataStore<Preferences>,
+    @GlobalScope(AppDispatcher.Default) private val defaultScope: CoroutineScope
+) :
     PreferencesDataStoreRepository(dataStore),
     PreferencesRepository {
 
@@ -45,9 +52,11 @@ internal class PreferencesRepositoryImpl @Inject constructor(dataStore: DataStor
         true
     )
 
-    override val showQuickMovePermissionQueryExplanation: DataStoreFlow<Boolean> =
+    override val showQuickMovePermissionQueryExplanation: DataStoreStateFlow<Boolean> by lazy {
         dataStoreFlow(
             booleanPreferencesKey("showQuickMovePermissionQueryExplanation"),
             true
         )
+            .stateInWithSynchronousInitial(defaultScope)
+    }
 }

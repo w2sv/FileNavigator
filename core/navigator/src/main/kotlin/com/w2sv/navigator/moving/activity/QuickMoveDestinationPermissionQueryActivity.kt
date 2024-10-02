@@ -12,7 +12,6 @@ import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.PreferencesRepository
-import com.w2sv.kotlinutils.coroutines.firstBlocking
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
@@ -47,9 +46,20 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
         super.onCreate(savedInstanceState)
         i { "onCreate" }
 
-        destinationPicker.launch(moveBundle.destination.documentUri.uri)
-        if (preferencesRepository.showQuickMovePermissionQueryExplanation.firstBlocking()) {
-            startActivity(Intent(this, OverlayDialogActivity::class.java))
+        if (moveBundle.destination.hasReadAndWritePermission(this)) {
+            i { "Destination has read & write permission; Starting MoveBroadcastReceiver" }
+            MoveBroadcastReceiver.sendBroadcast(
+                moveBundle = moveBundle,
+                context = this
+            )
+            finishAndRemoveTask()
+        } else {
+            i { "Destination missing read & write permission; Launching destinationPicker" }
+            destinationPicker.launch(moveBundle.destination.documentUri.uri)
+            QuickMoveDestinationPermissionQueryOverlayDialogActivity.startIfNotYetShown(
+                this,
+                preferencesRepository
+            )
         }
     }
 
@@ -90,14 +100,7 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
     }
 
     companion object {
-        fun start(
-            moveBundle: MoveBundle.QuickMove,
-            context: Context
-        ) {
-            context.startActivity(makeRestartActivityIntent(moveBundle, context))
-        }
-
-        fun makeRestartActivityIntent(
+        fun makeRestartActivityTaskIntent(
             moveBundle: MoveBundle.QuickMove,
             context: Context
         ): Intent =

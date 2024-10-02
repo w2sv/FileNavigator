@@ -26,7 +26,6 @@ import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
 import com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryActivity
-import com.w2sv.navigator.moving.receiver.QuickMoveBroadcastReceiver
 import com.w2sv.navigator.moving.activity.destination_picking.DestinationPickerActivity
 import com.w2sv.navigator.moving.activity.destination_picking.FileDestinationPickerActivity
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
@@ -198,7 +197,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                     PendingIntent.getActivity(
                         context,
                         requestCode,
-                        QuickMoveDestinationPermissionQueryActivity.makeRestartActivityIntent(
+                        QuickMoveDestinationPermissionQueryActivity.makeRestartActivityTaskIntent(
                             MoveBundle.QuickMove(
                                 file = args.moveFile,
                                 destination = destination,

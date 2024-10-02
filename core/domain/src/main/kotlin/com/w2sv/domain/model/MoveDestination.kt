@@ -22,6 +22,9 @@ sealed interface MoveDestination : Parcelable {
     @JvmInline
     value class Directory(override val documentUri: DocumentUri) : MoveDestination {
 
+        fun hasReadAndWritePermission(context: Context): Boolean =
+            documentUri.documentFile(context).name != null
+
         val isVolumeRoot: Boolean
             get() = documentUri.isVolumeRoot
 
