@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
@@ -36,7 +37,7 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
 
     @Inject
     @GlobalScope(AppDispatcher.IO)
-    lateinit var globalScope: CoroutineScope
+    lateinit var globalIoScope: CoroutineScope
 
     private val moveBundle by lazy {
         MoveBundle.fromIntent<MoveBundle.QuickMove>(intent)
@@ -56,10 +57,31 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
         } else {
             i { "Destination missing read & write permission; Launching destinationPicker" }
             destinationPicker.launch(moveBundle.destination.documentUri.uri)
-            QuickMoveDestinationPermissionQueryOverlayDialogActivity.startIfNotYetShown(
-                this,
-                preferencesRepository
+            showExplanationDialogIfNotYetShown()
+        }
+    }
+
+    private fun showExplanationDialogIfNotYetShown() {
+        if (preferencesRepository.showQuickMovePermissionQueryExplanation.value) {
+            i { "Starting QuickMoveDestinationPermissionQueryOverlayDialogActivity" }
+            overlayDialogActivityLauncher.launch(
+                Intent(
+                    this,
+                    QuickMoveDestinationPermissionQueryOverlayDialogActivity::class.java
+                )
             )
+        }
+    }
+
+    private val overlayDialogActivityLauncher: ActivityResultLauncher<Intent> by lazy {
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                globalIoScope.launch {
+                    preferencesRepository.showQuickMovePermissionQueryExplanation.save(
+                        false
+                    )
+                }
+            }
         }
     }
 
@@ -84,7 +106,7 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
 
         // If user selected different destination, save as quick move destination
         if (moveDestination != moveBundle.destination) {
-            globalScope.launch {
+            globalIoScope.launch {
                 navigatorConfigDataSource.saveQuickMoveDestination(
                     fileType = moveBundle.file.fileType,
                     sourceType = moveBundle.file.sourceType,

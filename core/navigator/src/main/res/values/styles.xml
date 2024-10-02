@@ -6,5 +6,7 @@
         <item name="android:windowMinWidthMinor">@dimen/abc_dialog_min_width_minor</item>
         <item name="dialogCornerRadius">16dp</item>
         <item name="colorAccent">@color/ic_launcher_foreground</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
     </style>
 </resources>

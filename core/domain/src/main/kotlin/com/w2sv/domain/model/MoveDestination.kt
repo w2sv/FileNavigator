@@ -6,9 +6,9 @@ import android.content.pm.ProviderInfo
 import android.net.Uri
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
+import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.common.utils.DocumentUri
 import com.w2sv.common.utils.MediaUri
-import com.w2sv.common.utils.directoryName
 import com.w2sv.core.domain.R
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -23,7 +23,7 @@ sealed interface MoveDestination : Parcelable {
     value class Directory(override val documentUri: DocumentUri) : MoveDestination {
 
         fun hasReadAndWritePermission(context: Context): Boolean =
-            documentUri.documentFile(context).name != null
+            documentFile(context).name != null
 
         val isVolumeRoot: Boolean
             get() = documentUri.isVolumeRoot
@@ -67,9 +67,6 @@ sealed interface MoveDestination : Parcelable {
 
             fun fromTreeUri(context: Context, treeUri: Uri): Directory? =
                 DocumentUri.fromTreeUri(context, treeUri)?.let { Directory(it) }
-
-            fun fromDocumentFile(documentFile: DocumentFile): Directory =
-                Directory(DocumentUri(documentFile.uri))
         }
     }
 
@@ -163,3 +160,13 @@ sealed interface MoveDestination : Parcelable {
     fun documentFile(context: Context): DocumentFile =
         documentUri.documentFile(context)
 }
+
+private fun DocumentFile.directoryName(context: Context): String =
+    getSimplePath(context).let { simplePath ->
+        val substringAfterLastSlash = simplePath.substringAfterLast("/")
+        if (substringAfterLastSlash != simplePath) {
+            substringAfterLastSlash
+        } else {
+            simplePath.substringAfterLast(":")
+        }
+    }

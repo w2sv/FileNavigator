@@ -2,31 +2,14 @@ package com.w2sv.navigator.moving.activity
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AlertDialog
-import com.w2sv.common.di.AppDispatcher
-import com.w2sv.common.di.GlobalScope
 import com.w2sv.core.navigator.R
-import com.w2sv.domain.repository.PreferencesRepository
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import slimber.log.i
-import javax.inject.Inject
 
-@AndroidEntryPoint
 internal class QuickMoveDestinationPermissionQueryOverlayDialogActivity : ComponentActivity() {
-
-    @Inject
-    @GlobalScope(AppDispatcher.IO)
-    lateinit var ioScope: CoroutineScope
-
-    @Inject
-    lateinit var preferencesRepository: PreferencesRepository
 
     private var dialog: Dialog? = null
 
@@ -45,18 +28,11 @@ internal class QuickMoveDestinationPermissionQueryOverlayDialogActivity : Compon
                 )
             }
             .setMessage(getString(R.string.quick_move_permission_query_dialog_content))
-            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .setCancelable(false)
-            .setOnDismissListener {
-                ioScope.launch {
-                    preferencesRepository.showQuickMovePermissionQueryExplanation.save(
-                        false
-                    )
-                }
+            .setPositiveButton(getString(R.string.understood)) { _, _ ->
+                setResult(RESULT_OK)
                 finishAndRemoveTask()
             }
+            .setCancelable(false)
             .create()
             .also { dialog = it }
             .show()
@@ -64,21 +40,6 @@ internal class QuickMoveDestinationPermissionQueryOverlayDialogActivity : Compon
 
     override fun onDestroy() {
         super.onDestroy()
-
-        dialog?.dismiss()
-    }
-
-    companion object {
-        fun startIfNotYetShown(context: Context, preferencesRepository: PreferencesRepository) {
-            if (preferencesRepository.showQuickMovePermissionQueryExplanation.value) {
-                i { "Starting QuickMoveDestinationPermissionQueryOverlayDialogActivity" }
-                context.startActivity(
-                    Intent(
-                        context,
-                        QuickMoveDestinationPermissionQueryOverlayDialogActivity::class.java
-                    )
-                )
-            }
-        }
+        dialog?.dismiss()  // Prevents 'android.view.WindowLeaked: Activity com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryOverlayDialogActivity has leaked window DecorView@f70b286[QuickMoveDestinationPermissionQueryOverlayDialogActivity] that was originally added here'
     }
 }
