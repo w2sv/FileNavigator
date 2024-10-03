@@ -35,7 +35,7 @@ internal sealed class MoveResult(val cancelMoveFileNotification: Boolean) {
 
     data object FileAlreadyAtDestination : Failure(
         explanationStringRes = R.string.file_already_at_selected_location,
-        cancelMoveFileNotification = true
+        cancelMoveFileNotification = false
     )
 
     data object NotEnoughSpaceOnDestination : Failure(

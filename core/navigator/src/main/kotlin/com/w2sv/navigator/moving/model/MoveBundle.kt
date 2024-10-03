@@ -4,9 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
-import com.w2sv.domain.model.MoveDestination
-import com.w2sv.domain.model.MoveDestinationEntry
-import com.w2sv.domain.model.MoveEntry
+import com.w2sv.domain.model.MovedFile
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
@@ -15,14 +13,15 @@ internal typealias AnyMoveBundle = MoveBundle<*, *>
 /**
  * Bundle of all the data required for the move operation and all downstream actions.
  */
-internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSelectionManner> :
+internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : DestinationSelectionManner> :
     Parcelable {
+
     val file: MoveFile
     val destination: MD
     val destinationSelectionManner: DSM
 
     sealed interface Batchable<Mode : DestinationSelectionManner.NotificationBased> :
-        MoveBundle<MoveDestination.Directory, Mode> {
+        MoveBundle<NavigatorMoveDestination.Directory, Mode> {
 
         /**
          * Whether MoveBundle is part of a batch move operation.
@@ -33,14 +32,14 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
     @Parcelize
     data class FileDestinationPicked(
         override val file: MoveFile,
-        override val destination: MoveDestination.File,
+        override val destination: NavigatorMoveDestination.File,
         override val destinationSelectionManner: DestinationSelectionManner.Picked
-    ) : MoveBundle<MoveDestination.File, DestinationSelectionManner.Picked>
+    ) : MoveBundle<NavigatorMoveDestination.File, DestinationSelectionManner.Picked>
 
     @Parcelize
     data class DirectoryDestinationPicked(
         override val file: MoveFile,
-        override val destination: MoveDestination.Directory,
+        override val destination: NavigatorMoveDestination.Directory,
         override val destinationSelectionManner: DestinationSelectionManner.Picked,
         override val batched: Boolean = true
     ) : Batchable<DestinationSelectionManner.Picked>
@@ -48,7 +47,7 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
     @Parcelize
     data class QuickMove(
         override val file: MoveFile,
-        override val destination: MoveDestination.Directory,
+        override val destination: NavigatorMoveDestination.Directory,
         override val destinationSelectionManner: DestinationSelectionManner.Quick,
         override val batched: Boolean
     ) : Batchable<DestinationSelectionManner.Quick>
@@ -56,54 +55,49 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
     @Parcelize
     data class AutoMove(
         override val file: MoveFile,
-        override val destination: MoveDestination.Directory,
+        override val destination: NavigatorMoveDestination.Directory,
         override val destinationSelectionManner: DestinationSelectionManner.Auto
-    ) : MoveBundle<MoveDestination.Directory, DestinationSelectionManner.Auto>
+    ) : MoveBundle<NavigatorMoveDestination.Directory, DestinationSelectionManner.Auto>
 
-    fun moveEntry(
+    fun movedFileEntry(
         context: Context,
         dateTime: LocalDateTime,
-    ): MoveEntry =
+    ): MovedFile =
         when (val capturedDestination = destination) {
-            is MoveDestination.File.Local -> {
-                MoveEntry(
-                    fileName = capturedDestination.fileName(context),
-                    fileType = file.fileType,
+            is NavigatorMoveDestination.File.Local -> {
+                MovedFile.Local(
+                    documentUri = capturedDestination.documentUri,
+                    mediaUri = capturedDestination.mediaUri,
+                    name = capturedDestination.fileName(context),
+                    type = file.fileType,
                     sourceType = file.sourceType,
-                    destinationEntry = MoveDestinationEntry.Local(
-                        destination = capturedDestination.parent,
-                        movedFileDocumentUri = capturedDestination.documentUri,
-                        movedFileMediaUri = capturedDestination.mediaUri
-                    ),
-                    dateTime = dateTime,
+                    moveDestination = capturedDestination.parent,
+                    moveDateTime = dateTime,
                     autoMoved = destinationSelectionManner.isAuto
                 )
             }
 
-            is MoveDestination.File.External -> {
-                MoveEntry(
-                    fileName = capturedDestination.fileName(context),
-                    fileType = file.fileType,
+            is NavigatorMoveDestination.File.External -> {
+                MovedFile.External(
+                    moveDestination = capturedDestination,
+                    name = capturedDestination.fileName(context),
+                    type = file.fileType,
                     sourceType = file.sourceType,
-                    destinationEntry = MoveDestinationEntry.External(capturedDestination),
-                    dateTime = dateTime,
-                    autoMoved = destinationSelectionManner.isAuto
+                    moveDateTime = dateTime
                 )
             }
 
-            is MoveDestination.Directory -> {
+            is NavigatorMoveDestination.Directory -> {
                 val movedFileDocumentUri =
                     destination.documentUri.childDocumentUri(fileName = file.mediaStoreFileData.name)
-                MoveEntry(
-                    fileName = file.mediaStoreFileData.name,
-                    fileType = file.fileType,
+                MovedFile.Local(
+                    documentUri = movedFileDocumentUri,
+                    mediaUri = movedFileDocumentUri.mediaUri(context)!!,
+                    name = file.mediaStoreFileData.name,
+                    type = file.fileType,
                     sourceType = file.sourceType,
-                    destinationEntry = MoveDestinationEntry.Local(
-                        destination = capturedDestination,
-                        movedFileDocumentUri = movedFileDocumentUri,
-                        movedFileMediaUri = movedFileDocumentUri.mediaUri(context)!!
-                    ),
-                    dateTime = dateTime,
+                    moveDestination = capturedDestination,
+                    moveDateTime = dateTime,
                     autoMoved = destinationSelectionManner.isAuto
                 )
             }

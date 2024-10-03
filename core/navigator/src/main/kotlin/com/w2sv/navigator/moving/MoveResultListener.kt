@@ -11,7 +11,7 @@ import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.domain.usecase.InsertMoveEntryUseCase
+import com.w2sv.domain.usecase.InsertMovedFileUseCase
 import com.w2sv.navigator.moving.model.AnyMoveBundle
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
@@ -29,7 +29,7 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 internal class MoveResultListener @Inject constructor(
-    private val insertMoveEntryUseCase: InsertMoveEntryUseCase,
+    private val insertMovedFileUseCase: InsertMovedFileUseCase,
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val moveFileNotificationManager: MoveFileNotificationManager,
     private val autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager,
@@ -133,8 +133,8 @@ internal class MoveResultListener @Inject constructor(
         }
 
         scope.launch {
-            insertMoveEntryUseCase(
-                moveEntry(
+            insertMovedFileUseCase(
+                movedFileEntry(
                     context = context,
                     dateTime = LocalDateTime.now(),
                 )

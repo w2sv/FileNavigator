@@ -8,7 +8,7 @@ import android.graphics.Color
 import androidx.core.app.NotificationCompat
 import com.w2sv.androidutils.res.isNightModeActiveCompat
 import com.w2sv.core.navigator.R
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.activity.destination_picking.DestinationPickerActivity
 import com.w2sv.navigator.moving.activity.destination_picking.FileBatchDestinationPickerActivity
@@ -108,7 +108,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
             }
 
             private fun getQuickMoveAction(
-                destination: MoveDestination.Directory,
+                destination: NavigatorMoveDestination.Directory,
                 destinationDirectoryName: String,
                 requestCode: Int
             ): NotificationCompat.Action =

@@ -3,7 +3,7 @@ package com.w2sv.database.di
 import android.content.Context
 import androidx.room.Room
 import com.w2sv.database.AppDatabase
-import com.w2sv.database.dao.MoveEntryDao
+import com.w2sv.database.dao.MovedFileDao
 import com.w2sv.database.migration.Migrations
 import dagger.Module
 import dagger.Provides
@@ -34,6 +34,6 @@ internal object DatabaseModule {
             .build()
 
     @Provides
-    fun moveEntryDao(appDatabase: AppDatabase): MoveEntryDao =
-        appDatabase.getMoveEntryDao()
+    fun moveEntryDao(appDatabase: AppDatabase): MovedFileDao =
+        appDatabase.getMovedFileDao()
 }

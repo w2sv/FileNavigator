@@ -1,7 +1,7 @@
 package com.w2sv.navigator.observing
 
 import android.os.HandlerThread
-import com.w2sv.common.utils.log
+import com.w2sv.common.util.log
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

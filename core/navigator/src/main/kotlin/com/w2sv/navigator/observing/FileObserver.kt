@@ -7,20 +7,20 @@ import android.net.Uri
 import android.os.Handler
 import com.anggrayudi.storage.media.MediaType
 import com.google.common.collect.EvictingQueue
-import com.w2sv.common.utils.MediaId
-import com.w2sv.common.utils.cancelIfActive
-import com.w2sv.common.utils.collectOn
-import com.w2sv.common.utils.log
-import com.w2sv.common.utils.mediaUri
+import com.w2sv.common.util.MediaId
+import com.w2sv.common.util.cancelIfActive
+import com.w2sv.common.util.collectOn
+import com.w2sv.common.util.log
+import com.w2sv.common.util.mediaUri
 import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.launchDelayed
-import com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
+import com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import com.w2sv.navigator.observing.model.MediaStoreFileData
@@ -174,5 +174,5 @@ internal abstract class FileObserver(
     protected abstract fun enabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType?
 }
 
-private val AutoMoveConfig.enabledDestinationOrNull: MoveDestination.Directory?
-    get() = if (enabled) destination else null
+private val AutoMoveConfig.enabledDestinationOrNull: NavigatorMoveDestination.Directory?
+    get() = if (enabled && destination != null) NavigatorMoveDestination.Directory(destination!!) else null

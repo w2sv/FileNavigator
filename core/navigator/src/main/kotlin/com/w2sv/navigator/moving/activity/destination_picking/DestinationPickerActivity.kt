@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import com.w2sv.common.utils.DocumentUri
-import com.w2sv.common.utils.isExternalStorageManger
+import com.w2sv.common.util.DocumentUri
+import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.navigator.moving.activity.AbstractMoveActivity
 import com.w2sv.navigator.moving.model.MoveResult
 

@@ -7,7 +7,7 @@ import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
@@ -91,7 +91,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
         val batchMoveBundles: List<MoveBundle.Batchable<*>>,
     ) : Parcelable {
 
-        val destination: MoveDestination.Directory
+        val destination: NavigatorMoveDestination.Directory
             get() = batchMoveBundles.first().destination
 
         companion object {

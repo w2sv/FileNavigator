@@ -3,7 +3,8 @@ package com.w2sv.database.typeconverter
 import androidx.room.TypeConverter
 import java.time.LocalDateTime
 
-object LocalDateTimeConverter {
+internal object LocalDateTimeConverter {
+
     @TypeConverter
     fun toDate(dateString: String): LocalDateTime =
         LocalDateTime.parse(dateString)

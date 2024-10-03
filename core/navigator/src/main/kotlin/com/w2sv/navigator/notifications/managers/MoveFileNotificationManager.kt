@@ -12,16 +12,16 @@ import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.common.utils.formattedFileSize
-import com.w2sv.common.utils.lineBreakSuffixed
-import com.w2sv.common.utils.loadBitmapWithFileNotFoundHandling
-import com.w2sv.common.utils.log
-import com.w2sv.common.utils.removeSlashSuffix
-import com.w2sv.common.utils.slashPrefixed
+import com.w2sv.common.util.formattedFileSize
+import com.w2sv.common.util.lineBreakSuffixed
+import com.w2sv.common.util.loadBitmapWithFileNotFoundHandling
+import com.w2sv.common.util.log
+import com.w2sv.common.util.removeSlashSuffix
+import com.w2sv.common.util.slashPrefixed
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
@@ -61,7 +61,7 @@ internal class MoveFileNotificationManager @Inject constructor(
 ) {
     data class Args(
         val moveFile: MoveFile,
-        val quickMoveDestinations: List<MoveDestination.Directory>,
+        val quickMoveDestinations: List<NavigatorMoveDestination.Directory>,
         override val resources: NotificationResources
     ) : MultiInstanceNotificationManager.Args
 
@@ -188,7 +188,7 @@ internal class MoveFileNotificationManager @Inject constructor(
 
             private fun getQuickMoveAction(
                 requestCode: Int,
-                destination: MoveDestination.Directory,
+                destination: NavigatorMoveDestination.Directory,
                 directoryName: String
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
@@ -228,10 +228,10 @@ internal class MoveFileNotificationManager @Inject constructor(
 private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val scope: CoroutineScope,
-    private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<MoveDestination.Directory>>> = mutableMapOf()
-) : Map<FileAndSourceType, StateFlow<List<MoveDestination.Directory>>> by mutableMap {
+    private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<NavigatorMoveDestination.Directory>>> = mutableMapOf()
+) : Map<FileAndSourceType, StateFlow<List<NavigatorMoveDestination.Directory>>> by mutableMap {
 
-    fun quickMoveDestinations(fileAndSourceType: FileAndSourceType): List<MoveDestination.Directory> =
+    fun quickMoveDestinations(fileAndSourceType: FileAndSourceType): List<NavigatorMoveDestination.Directory> =
         mutableMap.getOrPut(
             key = fileAndSourceType,
             defaultValue = {
@@ -240,6 +240,13 @@ private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
                         fileType = fileAndSourceType.fileType,
                         sourceType = fileAndSourceType.sourceType
                     )
+                    .map {
+                        it.map { localDestinationApi ->
+                            NavigatorMoveDestination.Directory(
+                                localDestinationApi
+                            )
+                        }
+                    }
                     .stateInWithSynchronousInitial(scope)
             }
         )

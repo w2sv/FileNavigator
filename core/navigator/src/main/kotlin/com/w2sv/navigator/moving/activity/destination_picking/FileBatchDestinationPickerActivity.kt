@@ -3,9 +3,9 @@ package com.w2sv.navigator.moving.activity.destination_picking
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
 import com.w2sv.androidutils.os.getParcelableCompat
-import com.w2sv.common.utils.DocumentUri
-import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.common.util.DocumentUri
+import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
@@ -51,7 +51,7 @@ internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() 
 
         // Build moveDestination, exit if unsuccessful
         val moveDestination =
-            MoveDestination.Directory.fromTreeUri(this, treeUri)
+            NavigatorMoveDestination.Directory.fromTreeUri(this, treeUri)
                 ?: return finishAndRemoveTask(MoveResult.InternalError)
 
         i { args.toString() }

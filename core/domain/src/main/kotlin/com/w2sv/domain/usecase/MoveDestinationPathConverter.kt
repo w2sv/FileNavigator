@@ -3,7 +3,9 @@ package com.w2sv.domain.usecase
 import android.content.Context
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.domain.model.movedestination.ExternalDestinationApi
+import com.w2sv.domain.model.movedestination.LocalDestinationApi
+import com.w2sv.domain.model.movedestination.MoveDestinationApi
 import com.w2sv.domain.repository.PreferencesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,17 +20,16 @@ class MoveDestinationPathConverter @Inject constructor(
     private val showStorageVolumeNames =
         preferencesRepository.showStorageVolumeNames.stateIn(scope, SharingStarted.Eagerly)
 
-    // TODO: test
-    operator fun invoke(moveDestination: MoveDestination, context: Context): String =
+    operator fun invoke(moveDestination: MoveDestinationApi, context: Context): String =
         when (moveDestination) {
-            is MoveDestination.Directory -> {
+            is LocalDestinationApi -> {
                 moveDestination.pathRepresentation(
                     context = context,
                     includeVolumeName = showStorageVolumeNames.value
                 )
             }
 
-            is MoveDestination.File.External -> {
+            is ExternalDestinationApi -> {
                 moveDestination.uiRepresentation(
                     context
                 )

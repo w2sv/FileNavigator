@@ -5,7 +5,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import com.w2sv.domain.model.MoveEntry
+import com.w2sv.domain.model.MovedFile
 import com.w2sv.filenavigator.R
 import kotlinx.collections.immutable.ImmutableList
 import java.time.LocalDate
@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter
  */
 @Composable
 fun rememberFirstDateRepresentations(
-    history: ImmutableList<MoveEntry>,
+    history: ImmutableList<MovedFile>,
     key1: Any? = null,
     key2: Any? = null,
     context: Context = LocalContext.current
@@ -30,7 +30,7 @@ fun rememberFirstDateRepresentations(
     }
 
 private fun firstDateRepresentations(
-    history: List<MoveEntry>,
+    history: List<MovedFile>,
     getString: (Int) -> String,
     today: LocalDate = LocalDate.now()
 ): List<String?> {
@@ -39,7 +39,7 @@ private fun firstDateRepresentations(
         .apply {
             history.forEach { moveEntry ->
                 val representation = getDateRepresentation(
-                    date = moveEntry.dateTime.toLocalDate(),
+                    date = moveEntry.moveDateTime.toLocalDate(),
                     now = today,
                     getString = getString
                 )

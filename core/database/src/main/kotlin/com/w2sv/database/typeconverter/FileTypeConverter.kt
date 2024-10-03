@@ -3,7 +3,8 @@ package com.w2sv.database.typeconverter
 import androidx.room.TypeConverter
 import com.w2sv.domain.model.FileType
 
-object FileTypeConverter {
+internal object FileTypeConverter {
+
     @TypeConverter
     fun fromFileType(fileType: FileType): String =
         when (fileType) {

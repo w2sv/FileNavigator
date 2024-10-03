@@ -25,6 +25,7 @@ protobuf = "4.27.3"
 androidxActivity = "1.9.2"
 kotlinutils = "0.1.3-rc1"
 datastoreutils = "0.0.4-rc1"
+kotlinxCoroutines = "1.9.0"
 
 [libraries]
 
@@ -61,6 +62,7 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 
 # Google
 google-guava = "com.google.guava:guava:33.2.1-jre"
@@ -85,12 +87,13 @@ textflow = { module = "io.github.oleksandrbalan:textflow", version = "1.1.2" }
 
 # Testing
 junit = { module = "junit:junit", version.ref = "junit" }
-androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
 androidx-test-rules = "androidx.test:rules:1.6.1"
 androidx-test-runner = "androidx.test:runner:1.6.2"
-androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
+androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
+#androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 roboelectric = "org.robolectric:robolectric:4.12.2"
 mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:5.4.0"
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 
 # Plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -98,7 +101,8 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 
 [bundles]
-unitTest = ["junit", "androidx-test-ext-junit", "roboelectric", "mockito-kotlin"]
+unitTest = ["junit", "androidx-test-ext-junit", "roboelectric", "mockito-kotlin", "kotlinx-coroutines-test"]
+instrumentationTest = ["androidx-test-rules", "androidx-test-runner", "androidx-test-ext-junit"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

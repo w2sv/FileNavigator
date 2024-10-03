@@ -31,7 +31,7 @@ import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestina
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
 import com.w2sv.androidutils.openAppSettings
-import com.w2sv.common.utils.goToManageExternalStorageSettings
+import com.w2sv.common.util.goToManageExternalStorageSettings
 import com.w2sv.composed.OnChange
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest

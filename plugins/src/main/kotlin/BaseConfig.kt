@@ -28,13 +28,13 @@ internal fun Project.baseConfig() {
         defaultConfig {
             minSdk = libs.findVersionInt("minSdk")
             targetSdk = libs.findVersionInt("compileSdk")
-//            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
         compileSdkVersion(libs.findVersionInt("compileSdk"))
         testOptions {
             unitTests.isReturnDefaultValues = true
-            animationsDisabled = true
             unitTests.isIncludeAndroidResources = true
+            animationsDisabled = true
         }
     }
 }

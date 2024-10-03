@@ -2,7 +2,7 @@ package com.w2sv.navigator.observing.model
 
 import android.content.ContentResolver
 import com.google.common.collect.EvictingQueue
-import com.w2sv.common.utils.MediaUri
+import com.w2sv.common.util.MediaUri
 import com.w2sv.navigator.shared.emitDiscardedLog
 import javax.inject.Inject
 import javax.inject.Singleton

@@ -37,8 +37,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
+import com.w2sv.domain.model.movedestination.LocalDestination
+import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
@@ -70,7 +71,7 @@ fun SubDirectoryIcon(
 
 @Composable
 fun rememberAutoMoveDestinationPath(
-    destination: MoveDestination.Directory?,
+    destination: LocalDestinationApi?,
     context: Context = LocalContext.current,
     moveDestinationPathConverter: MoveDestinationPathConverter = LocalMoveDestinationPathConverter.current,
 ): State<String?> =
@@ -114,13 +115,13 @@ fun AutoMoveRow(
 }
 
 @Composable
-fun rememberSelectAutoMoveDestination(onDestinationSelected: (MoveDestination.Directory) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
+fun rememberSelectAutoMoveDestination(onDestinationSelected: (LocalDestinationApi) -> Unit): ManagedActivityResultLauncher<Uri?, Uri?> {
     val context: Context = LocalContext.current
     return rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { optionalTreeUri ->
         optionalTreeUri?.let { treeUri ->
             context.contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
             onDestinationSelected(
-                MoveDestination.Directory.fromTreeUri(
+                LocalDestination.fromTreeUri(
                     context = context,
                     treeUri = treeUri
                 )!!  // TODO: null case possible?

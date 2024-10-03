@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
-import com.w2sv.common.utils.log
+import com.w2sv.common.util.log
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra

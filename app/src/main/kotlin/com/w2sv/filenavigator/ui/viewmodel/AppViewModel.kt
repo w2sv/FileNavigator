@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.androidutils.hasPermission
 import com.w2sv.androidutils.os.postNotificationsPermissionRequired
-import com.w2sv.common.utils.isExternalStorageManger
+import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.domain.usecase.MoveDestinationPathConverter

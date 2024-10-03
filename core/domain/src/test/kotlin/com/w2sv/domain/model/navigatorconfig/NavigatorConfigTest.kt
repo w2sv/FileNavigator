@@ -1,7 +1,7 @@
 package com.w2sv.domain.model.navigatorconfig
 
-import com.w2sv.common.utils.copy
-import com.w2sv.common.utils.update
+import com.w2sv.common.util.copy
+import com.w2sv.common.util.update
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import org.junit.Assert.assertEquals

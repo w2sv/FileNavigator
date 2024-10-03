@@ -1,6 +1,6 @@
 package com.w2sv.datastore.proto.navigatorconfig
 
-import com.w2sv.common.utils.map
+import com.w2sv.common.util.map
 import com.w2sv.datastore.AutoMoveConfigProto
 import com.w2sv.datastore.FileTypeConfigProto
 import com.w2sv.datastore.NavigatorConfigProto
@@ -11,7 +11,8 @@ import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.datastore.proto.ProtoMapper
 import com.w2sv.datastore.sourceConfigProto
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.domain.model.movedestination.LocalDestination
+import com.w2sv.domain.model.movedestination.MoveDestinationApi
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
@@ -77,7 +78,7 @@ private object SourceConfigMapper :
     override fun toExternal(proto: SourceConfigProto): SourceConfig =
         SourceConfig(
             enabled = proto.enabled,
-            lastMoveDestinations = proto.lastMoveDestinationsList.map { MoveDestination.Directory.parse(it) },
+            lastMoveDestinations = proto.lastMoveDestinationsList.map { LocalDestination.parse(it) },
             autoMoveConfig = AutoMoveConfigMapper.toExternal(proto.autoMoveConfig)
         )
 
@@ -96,7 +97,7 @@ private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveC
     override fun toExternal(proto: AutoMoveConfigProto): AutoMoveConfig = AutoMoveConfig(
         enabled = proto.enabled,
         destination = if (proto.destination.isNotEmpty()) {
-            MoveDestination.Directory.parse(proto.destination)
+            LocalDestination.parse(proto.destination)
         } else {
             null
         }
@@ -108,5 +109,5 @@ private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveC
     }
 }
 
-private val MoveDestination.Directory.uriString: String
+private val MoveDestinationApi.uriString: String
     get() = documentUri.uri.toString()

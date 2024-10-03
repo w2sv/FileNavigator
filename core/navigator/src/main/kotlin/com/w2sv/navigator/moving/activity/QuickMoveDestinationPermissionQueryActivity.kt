@@ -9,8 +9,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.navigator.MoveResultChannel
@@ -101,7 +101,7 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
 
         // Build moveDestination, exit if unsuccessful
         val moveDestination =
-            MoveDestination.Directory.fromTreeUri(this, treeUri)
+            NavigatorMoveDestination.Directory.fromTreeUri(this, treeUri)
                 ?: return finishAndRemoveTask(MoveResult.InternalError)
 
         // If user selected different destination, save as quick move destination

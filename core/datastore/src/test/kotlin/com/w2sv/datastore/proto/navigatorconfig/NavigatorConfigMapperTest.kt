@@ -1,8 +1,8 @@
 package com.w2sv.datastore.proto.navigatorconfig
 
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.MoveDestination
 import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import org.junit.Assert.assertEquals
@@ -28,19 +28,22 @@ internal class NavigatorConfigMapperTest {
             .copyWithAlteredAutoMoveConfig(FileType.APK, SourceType.Download) {
                 AutoMoveConfig(
                     enabled = true,
-                    destination = MoveDestination.Directory.parse("some/move/destination")
+                    destination = LocalDestination.parse("some/move/destination")
                 )
             }
             .copyWithAlteredAutoMoveConfig(FileType.Image, SourceType.Download) {
                 AutoMoveConfig(
                     enabled = true,
-                    destination = MoveDestination.Directory.parse("some/other/move/destination")
+                    destination = LocalDestination.parse("some/other/move/destination")
                 )
             }
             .copyWithAlteredSourceConfig(FileType.Audio, SourceType.Recording) {
                 it.copy(
                     enabled = false,
-                    lastMoveDestinations = listOf(MoveDestination.Directory.parse("last/move/destination"))
+                    lastMoveDestinations = listOf(
+                        LocalDestination.parse("last/move/destination"),
+                        LocalDestination.parse("before/last/move/destination")
+                    )
                 )
             }
         assertEquals(nonDefaultConfig, nonDefaultConfig.backAndForthMapped())

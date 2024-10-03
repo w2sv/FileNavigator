@@ -10,7 +10,6 @@ class FileTypeTest {
 
     @Test
     fun testParceling() {
-        FileType.Image.testParceling()
-        FileType.PDF.testParceling()
+        FileType.values.forEach { it.testParceling() }
     }
 }

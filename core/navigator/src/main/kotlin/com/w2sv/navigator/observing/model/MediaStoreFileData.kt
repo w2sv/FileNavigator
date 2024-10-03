@@ -9,15 +9,14 @@ import com.w2sv.androidutils.database.getBooleanOrThrow
 import com.w2sv.androidutils.database.getLongOrThrow
 import com.w2sv.androidutils.database.getStringOrThrow
 import com.w2sv.androidutils.database.query
-import com.w2sv.common.utils.MediaUri
+import com.w2sv.common.util.MediaUri
+import com.w2sv.common.util.log
 import com.w2sv.domain.model.SourceType
-import com.w2sv.kotlinutils.time.localDateTimeFromSecondsUnixTimestamp
 import com.w2sv.navigator.shared.emitDiscardedLog
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
 import java.io.File
-import java.time.LocalDateTime
 
 /**
  * @param volumeRelativeDirPath Relative to the storage volume, e.g. "Documents/", "DCIM/Camera/".
@@ -27,8 +26,6 @@ internal data class MediaStoreFileData(
     val rowId: String,
     val absPath: String,
     val volumeRelativeDirPath: String,
-    val dateTimeAdded: LocalDateTime,
-    val dateTimeModified: LocalDateTime,
     val size: Long,
     val isPending: Boolean,
     val isTrashed: Boolean
@@ -81,8 +78,6 @@ internal data class MediaStoreFileData(
             MediaStore.MediaColumns._ID,
             MediaStore.MediaColumns.DATA,
             MediaStore.MediaColumns.RELATIVE_PATH,
-            MediaStore.MediaColumns.DATE_ADDED,
-            MediaStore.MediaColumns.DATE_MODIFIED,
             MediaStore.MediaColumns.SIZE,
             MediaStore.MediaColumns.IS_PENDING,
             MediaStore.MediaColumns.IS_TRASHED,
@@ -101,19 +96,11 @@ internal data class MediaStoreFileData(
                         rowId = it.getStringOrThrow(MediaStore.MediaColumns._ID),
                         absPath = it.getStringOrThrow(MediaStore.MediaColumns.DATA),
                         volumeRelativeDirPath = it.getStringOrThrow(MediaStore.MediaColumns.RELATIVE_PATH),
-                        dateTimeAdded = localDateTimeFromSecondsUnixTimestamp(
-                            it.getLongOrThrow(MediaStore.MediaColumns.DATE_ADDED)
-                        ),
-                        dateTimeModified = localDateTimeFromSecondsUnixTimestamp(
-                            it.getLongOrThrow(MediaStore.MediaColumns.DATE_MODIFIED)
-                        ),
                         size = it.getLongOrThrow(MediaStore.MediaColumns.SIZE),
                         isPending = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_PENDING),
                         isTrashed = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_TRASHED),
                     )
-                        .also {
-                            i { it.toString() }
-                        }
+                        .log()
                 }
             } catch (e: Exception) {
                 emitDiscardedLog(e::toString)

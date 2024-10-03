@@ -1,7 +1,7 @@
 package com.w2sv.domain.repository
 
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +15,7 @@ interface NavigatorConfigDataSource {
     suspend fun saveQuickMoveDestination(
         fileType: FileType,
         sourceType: SourceType,
-        destination: MoveDestination.Directory
+        destination: LocalDestinationApi
     )
 
     suspend fun unsetQuickMoveDestination(
@@ -26,5 +26,5 @@ interface NavigatorConfigDataSource {
     fun quickMoveDestinations(
         fileType: FileType,
         sourceType: SourceType
-    ): Flow<List<MoveDestination.Directory>>
+    ): Flow<List<LocalDestinationApi>>
 }

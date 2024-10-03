@@ -12,5 +12,5 @@ dependencies {
     implementation(libs.androidx.core)
 
     // Unit tests
-    testImplementation(libs.bundles.unitTest)
+    testImplementation(projects.core.test)
 }

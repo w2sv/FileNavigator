@@ -35,7 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
-import com.w2sv.domain.model.MoveEntry
+import com.w2sv.domain.model.MovedFile
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
@@ -122,12 +122,12 @@ private fun rememberMoveEntryRowOnClick(
     moveHistoryVM: MoveHistoryViewModel = activityViewModel(),
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
-): suspend (MoveEntry, Boolean) -> Unit {
+): suspend (MovedFile, Boolean) -> Unit {
     return remember {
-        { moveEntry, fileExists ->
+        { movedFile, fileExists ->
             if (fileExists) {
                 snackbarHostState.currentSnackbarData?.dismiss()
-                moveEntry.launchViewMovedFileActivity(context)?.let { snackbarVisuals ->
+                movedFile.launchViewMovedFileActivity(context)?.let { snackbarVisuals ->
                     snackbarHostState.showSnackbar(snackbarVisuals)
                 }
             } else {
@@ -138,7 +138,7 @@ private fun rememberMoveEntryRowOnClick(
                         action = SnackbarAction(
                             label = context.getString(R.string.delete_entry),
                             callback = {
-                                moveHistoryVM.launchEntryDeletion(moveEntry)
+                                moveHistoryVM.launchEntryDeletion(movedFile)
                                 snackbarHostState.currentSnackbarData?.dismiss()
                             }
                         )

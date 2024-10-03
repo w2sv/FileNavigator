@@ -3,7 +3,7 @@ package com.w2sv.datastore.proto.navigatorconfig
 import androidx.datastore.core.DataStore
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -46,7 +46,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(private val nav
     override suspend fun saveQuickMoveDestination(
         fileType: FileType,
         sourceType: SourceType,
-        destination: MoveDestination.Directory
+        destination: LocalDestinationApi
     ) {
         updateData { config ->
             config.copyWithAlteredSourceConfig(
@@ -89,7 +89,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(private val nav
     override fun quickMoveDestinations(
         fileType: FileType,
         sourceType: SourceType
-    ): Flow<List<MoveDestination.Directory>> =
+    ): Flow<List<LocalDestinationApi>> =
         navigatorConfig.map { it.sourceConfig(fileType, sourceType).lastMoveDestinations }
 }
 

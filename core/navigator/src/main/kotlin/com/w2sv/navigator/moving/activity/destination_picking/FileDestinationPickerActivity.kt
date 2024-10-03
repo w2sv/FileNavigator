@@ -7,12 +7,12 @@ import android.provider.DocumentsContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.os.getParcelableCompat
-import com.w2sv.common.utils.DocumentUri
-import com.w2sv.common.utils.documentUri
-import com.w2sv.common.utils.emit
-import com.w2sv.common.utils.log
-import com.w2sv.common.utils.takePersistableReadAndWriteUriPermission
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.common.util.DocumentUri
+import com.w2sv.common.util.documentUri
+import com.w2sv.common.util.emit
+import com.w2sv.common.util.log
+import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
@@ -85,7 +85,7 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
 
         contentResolver.takePersistableReadAndWriteUriPermission(contentUri)  // TODO: necessary?
 
-        val destination = MoveDestination.File.get(contentUri.documentUri, this)
+        val destination = NavigatorMoveDestination.File.get(contentUri.documentUri, this)
             .also {
                 // In case of local file, emit MediaIdWithMediaType on blacklistedMediaUris to
                 // prevent notification emission for created move destination file

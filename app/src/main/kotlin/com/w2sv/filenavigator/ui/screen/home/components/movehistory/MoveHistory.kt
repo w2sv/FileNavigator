@@ -40,13 +40,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import com.w2sv.composed.OnLifecycleEvent
 import com.w2sv.composed.extensions.thenIf
-import com.w2sv.domain.model.MoveEntry
+import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.modelext.color
-import com.w2sv.filenavigator.ui.modelext.movedFileExists
+import com.w2sv.filenavigator.ui.modelext.exists
 import eu.wewox.textflow.TextFlow
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -58,8 +58,8 @@ private object MoveHistoryDefaults {
 
 @Composable
 fun MoveHistory(
-    history: ImmutableList<MoveEntry>,
-    onRowClick: suspend (MoveEntry, Boolean) -> Unit,
+    history: ImmutableList<MovedFile>,
+    onRowClick: suspend (MovedFile, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dateRepresentationList = rememberFirstDateRepresentations(history)
@@ -67,7 +67,7 @@ fun MoveHistory(
     LazyColumn(
         modifier = modifier
     ) {
-        itemsIndexed(history, key = { _, moveEntry -> moveEntry.dateTime }) { i, moveEntry ->
+        itemsIndexed(history, key = { _, moveEntry -> moveEntry.moveDateTime }) { i, moveEntry ->
             dateRepresentationList[i]?.let { dateRepresentation ->
                 Text(
                     text = dateRepresentation,
@@ -77,7 +77,7 @@ fun MoveHistory(
                 )
             }
             MoveEntryView(
-                moveEntry = moveEntry,
+                movedFile = moveEntry,
                 onClick = onRowClick,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -90,19 +90,19 @@ fun MoveHistory(
 
 @Composable
 private fun MoveEntryView(
-    moveEntry: MoveEntry,
-    onClick: suspend (MoveEntry, Boolean) -> Unit,
+    movedFile: MovedFile,
+    onClick: suspend (MovedFile, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     moveDestinationPathConverter: MoveDestinationPathConverter = LocalMoveDestinationPathConverter.current,
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    var movedFileExists by remember(moveEntry) {
-        mutableStateOf(moveEntry.destinationEntry.movedFileExists(context))
+    var movedFileExists by remember(movedFile) {
+        mutableStateOf(movedFile.exists(context))
     }
-    OnLifecycleEvent(lifecycleEvent = Lifecycle.Event.ON_START, key1 = moveEntry) {
+    OnLifecycleEvent(lifecycleEvent = Lifecycle.Event.ON_START, key1 = movedFile) {
         if (movedFileExists) {
-            movedFileExists = moveEntry.destinationEntry.movedFileExists(context)
+            movedFileExists = movedFile.exists(context)
         }
     }
 
@@ -110,7 +110,7 @@ private fun MoveEntryView(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clip(MaterialTheme.shapes.medium)
-            .clickable { scope.launch { onClick(moveEntry, movedFileExists) } }
+            .clickable { scope.launch { onClick(movedFile, movedFileExists) } }
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
             )
@@ -119,7 +119,7 @@ private fun MoveEntryView(
             }
             .padding(8.dp)
     ) {
-        FileNameWithTypeAndSourceIcon(moveEntry = moveEntry, modifier = Modifier.weight(0.7f))
+        FileNameWithTypeAndSourceIcon(moveEntry = movedFile, modifier = Modifier.weight(0.7f))
         CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.primary) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -132,7 +132,7 @@ private fun MoveEntryView(
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                 )
-                if (moveEntry.autoMoved) {
+                if (movedFile.autoMoved) {
                     Text(
                         text = stringResource(id = R.string.auto),
                         fontSize = 13.sp,
@@ -143,9 +143,9 @@ private fun MoveEntryView(
         }
         WeightedBox(weight = 0.5f) {
             Text(
-                text = remember(moveEntry.destinationEntry) {
+                text = remember(movedFile.moveDestination) {
                     moveDestinationPathConverter.invoke(
-                        moveEntry.destinationEntry.destination,
+                        movedFile.moveDestination,
                         context
                     )
                 },
@@ -156,11 +156,11 @@ private fun MoveEntryView(
 }
 
 @Composable
-private fun FileNameWithTypeAndSourceIcon(moveEntry: MoveEntry, modifier: Modifier = Modifier) {
+private fun FileNameWithTypeAndSourceIcon(moveEntry: MovedFile, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
         TextFlow(
-            text = remember(moveEntry.fileName) {
-                AnnotatedString(moveEntry.fileName)
+            text = remember(moveEntry.name) {
+                AnnotatedString(moveEntry.name)
             },
             style = LocalTextStyle.current.copy(color = LocalContentColor.current),
             fontSize = MoveHistoryDefaults.FontSize,
@@ -175,7 +175,7 @@ private fun FileNameWithTypeAndSourceIcon(moveEntry: MoveEntry, modifier: Modifi
         Icon(
             painter = painterResource(id = moveEntry.fileAndSourceType.iconRes),
             contentDescription = null,
-            tint = moveEntry.fileType.color
+            tint = moveEntry.type.color
         )
     }
 }

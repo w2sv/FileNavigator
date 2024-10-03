@@ -6,10 +6,10 @@ import com.anggrayudi.storage.callback.SingleFileConflictCallback
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.result.SingleFileError
 import com.anggrayudi.storage.result.SingleFileResult
-import com.w2sv.common.utils.hasChild
-import com.w2sv.common.utils.isExternalStorageManger
-import com.w2sv.common.utils.log
-import com.w2sv.domain.model.MoveDestination
+import com.w2sv.common.util.hasChild
+import com.w2sv.common.util.isExternalStorageManger
+import com.w2sv.common.util.log
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
 import kotlinx.coroutines.flow.filterNotNull
@@ -51,7 +51,7 @@ internal sealed interface PreCheckResult {
 }
 
 internal suspend fun MoveFile.moveTo(
-    destination: MoveDestination,
+    destination: NavigatorMoveDestination,
     context: Context,
     destinationDocumentFile: DocumentFile = destination.documentFile(context),
     onResult: (MoveResult) -> Unit
@@ -59,19 +59,19 @@ internal suspend fun MoveFile.moveTo(
     when (val preCheckResult = PreCheckResult.get(
         moveFile = this,
         context = context,
-        destinationDirectory = if (destination is MoveDestination.File) null else destinationDocumentFile
+        destinationDirectory = if (destination is NavigatorMoveDestination.File) null else destinationDocumentFile
     )) {
         is PreCheckResult.Success -> {
             when (destination) {
-                is MoveDestination.File -> {
+                is NavigatorMoveDestination.File -> {
                     preCheckResult.moveMediaFile.copyToFileDestinationAndDelete(
                         fileDestination = destinationDocumentFile,
-                        isCloudDestination = destination is MoveDestination.File.External,
+                        isCloudDestination = destination is NavigatorMoveDestination.File.External,
                         onResult = onResult
                     )
                 }
 
-                is MoveDestination.Directory -> {
+                is NavigatorMoveDestination.Directory -> {
                     preCheckResult.moveMediaFile.moveTo(
                         folderDestination = destinationDocumentFile,
                         onResult = onResult
