@@ -28,6 +28,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.androidutils.os.dynamicColorsSupported
+import com.w2sv.composed.rememberStyledTextResource
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
@@ -82,7 +83,7 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
                 labelRes = R.string.show_storage_volume_names,
                 checked = appPreferences.showStorageVolumeNames(),
                 onCheckedChange = appPreferences.setShowStorageVolumeNames,
-                explanation = stringResource(R.string.show_storage_volume_names_explanation)
+                explanation = rememberStyledTextResource(R.string.show_storage_volume_names_explanation)
             )
         }
         SettingsCard(title = stringResource(id = R.string.appearance)) {

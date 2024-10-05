@@ -78,7 +78,7 @@ fun MoveHistoryCard(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = stringResource(R.string.history),
+                text = stringResource(R.string.move_history),
                 style = MaterialTheme.typography.headlineMedium,
             )
 
@@ -197,7 +197,7 @@ private fun NoHistoryPlaceHolder(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = stringResource(R.string.navigated_files_will_appear_here),
+                text = stringResource(R.string.move_history_placeholder),
                 modifier = Modifier.padding(horizontal = 12.dp)
             )
         }

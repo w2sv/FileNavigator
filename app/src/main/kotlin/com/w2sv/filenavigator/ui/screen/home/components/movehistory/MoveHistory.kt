@@ -76,7 +76,7 @@ fun MoveHistory(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
-            MoveEntryView(
+            MoveRecordView(
                 movedFile = moveEntry,
                 onClick = onRowClick,
                 modifier = Modifier
@@ -89,7 +89,7 @@ fun MoveHistory(
 }
 
 @Composable
-private fun MoveEntryView(
+private fun MoveRecordView(
     movedFile: MovedFile,
     onClick: suspend (MovedFile, Boolean) -> Unit,
     modifier: Modifier = Modifier,

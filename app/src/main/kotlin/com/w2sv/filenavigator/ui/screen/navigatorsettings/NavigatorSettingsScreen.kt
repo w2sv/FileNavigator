@@ -232,17 +232,17 @@ private fun AutoMoveIntroductionDialog(
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Text(
-                    text = stringResource(R.string.you_can_now_enable_file_source_specific_auto_moving_by),
+                    text = stringResource(R.string.auto_move_introduction_paragraph_1),
                     modifier = Modifier.padding(bottom = TextSectionBottomPadding)
                 )
                 Text(
-                    text = rememberStyledTextResource(R.string._1_clicking_on_the_auto_button_of_an_enabled_file_source_2_selecting_a_destination_3_saving_the_changes),
+                    text = rememberStyledTextResource(R.string.auto_move_introduction_paragraph_2),
                     modifier = Modifier
                         .padding(horizontal = 12.dp)
                         .padding(bottom = TextSectionBottomPadding)
                 )
                 Text(
-                    text = stringResource(R.string.now_whenever_a_new_file_corresponding_to_the_file_source_is_discovered_it_will_be_automatically_moved_to_the_selected_destination_without_you_needing_to_do_anything_else)
+                    text = stringResource(R.string.auto_move_introduction_paragraph_3)
                 )
             }
         },

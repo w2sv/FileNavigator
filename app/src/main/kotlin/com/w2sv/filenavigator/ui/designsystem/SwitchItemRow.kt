@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
+import com.w2sv.filenavigator.ui.util.CharSequenceText
 
 object ItemRowDefaults {
     val IconTextSpacing = 16.dp
@@ -33,7 +34,7 @@ fun ItemRow(
     icon: @Composable RowScope.() -> Unit,
     @StringRes labelRes: Int,
     modifier: Modifier = Modifier,
-    explanation: String? = null,
+    explanation: CharSequence? = null,
     verticalAlignment: Alignment.Vertical = Alignment.Top,
     content: @Composable RowScope.() -> Unit
 ) {
@@ -57,8 +58,8 @@ fun ItemRow(
 }
 
 @Composable
-private fun Explanation(text: String, modifier: Modifier = Modifier) {
-    Text(
+private fun Explanation(text: CharSequence, modifier: Modifier = Modifier) {
+    CharSequenceText(
         text = text,
         color = MaterialTheme.colorScheme.onSurfaceVariantDecreasedAlpha,
         modifier = modifier,
@@ -87,7 +88,7 @@ fun SwitchItemRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    explanation: String? = null
+    explanation: CharSequence? = null
 ) {
     ItemRow(
         icon = icon,
