@@ -72,6 +72,7 @@ internal class MigrationTest {
         // Validate that the data exists and matches the original
         assertTrue(migratedData.moveToFirst())
         assertEquals(fileName, migratedData.getString("name"))
+        assertEquals("null", migratedData.getString("originalName"))
         assertEquals(fileType, migratedData.getString("type"))
         assertEquals(sourceType, migratedData.getString("sourceType"))
         assertEquals(destinationDocumentUri, migratedData.getString("local_moveDestination"))

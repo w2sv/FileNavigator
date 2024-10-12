@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "beddb7fbaf7eb898c488863ea61100c3",
+    "identityHash": "baf06b9c9598808e35a51d2ea98f893f",
     "entities": [
       {
         "tableName": "MovedFileEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`documentUri` TEXT NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `sourceType` TEXT NOT NULL, `moveDateTime` TEXT NOT NULL, `autoMoved` INTEGER NOT NULL, `local_mediaUri` TEXT, `local_moveDestination` TEXT, `external_providerPackageName` TEXT, `external_providerAppLabel` TEXT, PRIMARY KEY(`moveDateTime`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`documentUri` TEXT NOT NULL, `name` TEXT NOT NULL, `originalName` TEXT, `type` TEXT NOT NULL, `sourceType` TEXT NOT NULL, `moveDateTime` TEXT NOT NULL, `autoMoved` INTEGER NOT NULL, `local_mediaUri` TEXT, `local_moveDestination` TEXT, `external_providerPackageName` TEXT, `external_providerAppLabel` TEXT, PRIMARY KEY(`moveDateTime`))",
         "fields": [
           {
             "fieldPath": "documentUri",
@@ -19,6 +19,12 @@
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "originalName",
+            "columnName": "originalName",
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "type",
@@ -82,7 +88,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'beddb7fbaf7eb898c488863ea61100c3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'baf06b9c9598808e35a51d2ea98f893f')"
     ]
   }
 }

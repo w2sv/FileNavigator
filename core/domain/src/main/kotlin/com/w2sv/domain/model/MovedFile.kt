@@ -10,6 +10,7 @@ import java.time.LocalDateTime
 sealed interface MovedFile {
     val documentUri: DocumentUri
     val name: String
+    val originalName: String?
     val type: FileType
     val sourceType: SourceType
     val moveDestination: MoveDestinationApi
@@ -33,6 +34,7 @@ sealed interface MovedFile {
         override val documentUri: DocumentUri,
         val mediaUri: MediaUri,
         override val name: String,
+        override val originalName: String?,
         override val type: FileType,
         override val sourceType: SourceType,
         override val moveDestination: LocalDestinationApi,
@@ -46,6 +48,7 @@ sealed interface MovedFile {
      */
     data class External(
         override val name: String,
+        override val originalName: String?,
         override val type: FileType,
         override val sourceType: SourceType,
         override val moveDestination: ExternalDestinationApi,

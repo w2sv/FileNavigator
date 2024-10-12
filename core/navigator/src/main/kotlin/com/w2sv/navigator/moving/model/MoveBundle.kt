@@ -62,13 +62,16 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
     fun movedFileEntry(
         context: Context,
         dateTime: LocalDateTime,
-    ): MovedFile =
-        when (val capturedDestination = destination) {
+    ): MovedFile {
+        val name = destination.fileName(context)
+        val originalName = if (name != file.mediaStoreFileData.name) file.mediaStoreFileData.name else null
+        return when (val capturedDestination = destination) {
             is NavigatorMoveDestination.File.Local -> {
                 MovedFile.Local(
                     documentUri = capturedDestination.documentUri,
                     mediaUri = capturedDestination.mediaUri,
-                    name = capturedDestination.fileName(context),
+                    name = name,
+                    originalName = originalName,
                     type = file.fileType,
                     sourceType = file.sourceType,
                     moveDestination = capturedDestination.parent,
@@ -80,7 +83,8 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
             is NavigatorMoveDestination.File.External -> {
                 MovedFile.External(
                     moveDestination = capturedDestination,
-                    name = capturedDestination.fileName(context),
+                    name = name,
+                    originalName = originalName,
                     type = file.fileType,
                     sourceType = file.sourceType,
                     moveDateTime = dateTime
@@ -94,6 +98,7 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
                     documentUri = movedFileDocumentUri,
                     mediaUri = movedFileDocumentUri.mediaUri(context)!!,
                     name = file.mediaStoreFileData.name,
+                    originalName = null,
                     type = file.fileType,
                     sourceType = file.sourceType,
                     moveDestination = capturedDestination,
@@ -104,7 +109,7 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
 
             else -> throw IllegalArgumentException()  // I have no clue why this is necessary here
         }
-
+    }
 
     companion object {
         const val EXTRA = "com.w2sv.navigator.extra.MoveBundle"

@@ -108,6 +108,7 @@ internal object Migrations {
                     """CREATE TABLE IF NOT EXISTS $VERSION_5_TABLE_NAME (
                     documentUri TEXT NOT NULL,
                     name TEXT NOT NULL,
+                    originalName TEXT DEFAULT NULL,
                     type TEXT NOT NULL,
                     sourceType TEXT NOT NULL,
                     moveDateTime TEXT NOT NULL,

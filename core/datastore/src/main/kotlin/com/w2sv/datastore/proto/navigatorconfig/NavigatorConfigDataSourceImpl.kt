@@ -1,10 +1,12 @@
 package com.w2sv.datastore.proto.navigatorconfig
 
+import androidx.annotation.VisibleForTesting
 import androidx.datastore.core.DataStore
+import com.w2sv.common.util.log
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
@@ -54,19 +56,10 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(private val nav
                 sourceType
             ) { sourceConfig ->
                 sourceConfig.copy(
-                    lastMoveDestinations = sourceConfig.lastMoveDestinations.let { currentDestinations ->
-                        when (destination) {
-                            currentDestinations.firstOrNull() -> currentDestinations
-                            currentDestinations.getOrNull(1) -> currentDestinations.reversed()
-                            else -> buildList {
-                                add(destination)
-                                currentDestinations.firstOrNull()
-                                    ?.let { firstCurrentElement ->
-                                        add(firstCurrentElement)
-                                    }
-                            }
-                        }
-                    }
+                    quickMoveDestinations = updatedQuickMoveDestinations(
+                        currentDestinations = sourceConfig.quickMoveDestinations,
+                        destination = destination
+                    )
                 )
             }
         }
@@ -81,7 +74,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(private val nav
                 fileType,
                 sourceType
             ) {
-                it.copy(lastMoveDestinations = listOf())
+                it.copy(quickMoveDestinations = listOf())
             }
         }
     }
@@ -90,8 +83,22 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(private val nav
         fileType: FileType,
         sourceType: SourceType
     ): Flow<List<LocalDestinationApi>> =
-        navigatorConfig.map { it.sourceConfig(fileType, sourceType).lastMoveDestinations }
+        navigatorConfig.map { it.sourceConfig(fileType, sourceType).quickMoveDestinations }
 }
 
-
-
+@VisibleForTesting
+internal fun updatedQuickMoveDestinations(
+    currentDestinations: List<LocalDestinationApi>,
+    destination: LocalDestinationApi
+): List<LocalDestinationApi> =
+    when (destination.documentUri) {
+        currentDestinations.firstOrNull()?.documentUri -> currentDestinations
+        currentDestinations.getOrNull(1)?.documentUri -> currentDestinations.reversed()
+        else -> buildList {
+            add(destination)
+            currentDestinations.firstOrNull()
+                ?.let { firstCurrentElement ->
+                    add(firstCurrentElement)
+                }
+        }
+    }

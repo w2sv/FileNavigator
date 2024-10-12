@@ -17,6 +17,7 @@ import java.time.LocalDateTime
 internal data class MovedFileEntity(
     val documentUri: Uri,
     val name: String,
+    val originalName: String?,
     val type: FileType,
     val sourceType: SourceType,
     @PrimaryKey val moveDateTime: LocalDateTime,
@@ -34,6 +35,7 @@ internal data class MovedFileEntity(
     constructor(movedFile: MovedFile) : this(
         documentUri = movedFile.documentUri.uri,
         name = movedFile.name,
+        originalName = movedFile.originalName,
         type = movedFile.type,
         sourceType = movedFile.sourceType,
         moveDateTime = movedFile.moveDateTime,
@@ -56,6 +58,7 @@ internal data class MovedFileEntity(
                     documentUri = documentUri.documentUri,
                     mediaUri = local.mediaUri.mediaUri,
                     name = name,
+                    originalName = originalName,
                     type = type,
                     sourceType = sourceType,
                     moveDestination = LocalDestination(local.moveDestination.documentUri),
@@ -72,6 +75,7 @@ internal data class MovedFileEntity(
                         providerAppLabel = external?.providerAppLabel
                     ),
                     name = name,
+                    originalName = originalName,
                     type = type,
                     sourceType = sourceType,
                     moveDateTime = moveDateTime,

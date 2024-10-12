@@ -59,6 +59,7 @@ internal class RoomMovedFileRepositoryTest {
                 documentUri = DocumentUri.parse("kjhasdfkjh"),
                 mediaUri = MediaUri.parse("kjasdf"),
                 name = "someFile.jpg",
+                originalName = null,
                 type = FileType.Image,
                 sourceType = SourceType.Screenshot,
                 moveDestination = LocalDestination.parse("kjhasdfkjh"),
@@ -72,6 +73,7 @@ internal class RoomMovedFileRepositoryTest {
                     providerAppLabel = "Drive"
                 ),
                 name = "someFile.jpg",
+                originalName = "previousName.jpg",
                 type = FileType.Image,
                 sourceType = SourceType.Screenshot,
                 moveDateTime = LocalDateTime.now()
@@ -83,6 +85,7 @@ internal class RoomMovedFileRepositoryTest {
                     providerAppLabel = null
                 ),
                 name = "someFile.jpg",
+                originalName = null,
                 type = FileType.Image,
                 sourceType = SourceType.Screenshot,
                 moveDateTime = LocalDateTime.now()

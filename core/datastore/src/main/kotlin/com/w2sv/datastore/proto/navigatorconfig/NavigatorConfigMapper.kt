@@ -78,7 +78,7 @@ private object SourceConfigMapper :
     override fun toExternal(proto: SourceConfigProto): SourceConfig =
         SourceConfig(
             enabled = proto.enabled,
-            lastMoveDestinations = proto.lastMoveDestinationsList.map { LocalDestination.parse(it) },
+            quickMoveDestinations = proto.lastMoveDestinationsList.map { LocalDestination.parse(it) },
             autoMoveConfig = AutoMoveConfigMapper.toExternal(proto.autoMoveConfig)
         )
 
@@ -87,7 +87,7 @@ private object SourceConfigMapper :
             this.enabled = external.enabled
             this.lastMoveDestinations.apply {
                 clear()
-                addAll(external.lastMoveDestinations.map { it.uriString })
+                addAll(external.quickMoveDestinations.map { it.uriString })
             }
             this.autoMoveConfig = AutoMoveConfigMapper.toProto(external.autoMoveConfig)
         }

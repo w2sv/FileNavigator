@@ -40,7 +40,7 @@ internal class NavigatorConfigMapperTest {
             .copyWithAlteredSourceConfig(FileType.Audio, SourceType.Recording) {
                 it.copy(
                     enabled = false,
-                    lastMoveDestinations = listOf(
+                    quickMoveDestinations = listOf(
                         LocalDestination.parse("last/move/destination"),
                         LocalDestination.parse("before/last/move/destination")
                     )

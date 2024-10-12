@@ -148,7 +148,7 @@ private fun useDarkTheme(theme: Theme): Boolean {
     }
 }
 
-private class SwipeRightSplashScreenExitAnimation(private val onAnimationEnd: () -> Unit) :
+private class SwipeRightSplashScreenExitAnimation(private val onAnimationEnd: () -> Unit = {}) :
     SplashScreen.OnExitAnimationListener {
     override fun onSplashScreenExit(splashScreenViewProvider: SplashScreenViewProvider) {
         ObjectAnimator.ofFloat(
