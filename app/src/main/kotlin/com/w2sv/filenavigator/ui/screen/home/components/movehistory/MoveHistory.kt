@@ -34,7 +34,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -47,7 +46,7 @@ import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.modelext.exists
-import eu.wewox.textflow.TextFlow
+import eu.wewox.textflow.material3.TextFlow
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -159,10 +158,7 @@ private fun MoveRecordView(
 private fun FileNameWithTypeAndSourceIcon(moveEntry: MovedFile, modifier: Modifier = Modifier) {
     Box(modifier = modifier) {
         TextFlow(
-            text = remember(moveEntry.name) {
-                AnnotatedString(moveEntry.name)
-            },
-            style = LocalTextStyle.current.copy(color = LocalContentColor.current),
+            text = moveEntry.name,
             fontSize = MoveHistoryDefaults.FontSize,
         ) {
             // Placeholder that determines the obstacle size
