@@ -10,6 +10,12 @@ class FileTypeTest {
 
     @Test
     fun testParceling() {
-        FileType.values.forEach { it.testParceling() }
+        FileType.Image.testParceling()
+        FileType.Video.testParceling()
+        FileType.Audio.testParceling()
+
+        FileType.EBook.testParceling()
+        FileType.PDF.testParceling()
+        FileType.APK.testParceling()
     }
 }

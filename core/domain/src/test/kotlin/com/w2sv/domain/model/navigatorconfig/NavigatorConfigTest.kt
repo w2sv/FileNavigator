@@ -4,24 +4,24 @@ import com.w2sv.common.util.copy
 import com.w2sv.common.util.update
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.movedestination.LocalDestination
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 internal class NavigatorConfigTest {
 
     @Test
-    fun testEnabledDisabledFileTypes() {
+    fun `enabledFileTypes and disabledFileTypes`() {
         val config = NavigatorConfig.default.run {
             copy(
                 fileTypeConfigMap = fileTypeConfigMap.copy {
-                    update(FileType.Image) {
-                        it.copy(enabled = false)
-                    }
-                    update(FileType.Video) {
-                        it.copy(enabled = false)
-                    }
-                    update(FileType.Audio) {
-                        it.copy(enabled = false)
+                    FileType.Media.values.forEach { mediaFileType ->
+                        update(mediaFileType) { fileTypeConfig ->
+                            fileTypeConfig.copy(enabled = false)
+                        }
                     }
                 }
             )
@@ -32,23 +32,105 @@ internal class NavigatorConfigTest {
 
     @Test
     fun testCopyWithAlteredFileTypeConfig() {
-        val config = NavigatorConfig.default.copyWithAlteredFileTypeConfig(FileType.Image) {
-            it.copy(
-                enabled = false,
-                sourceTypeConfigMap = it.sourceTypeConfigMap.copy {
-                    update(SourceType.Screenshot) {
-                        it.copy(enabled = false)
+        val config =
+            NavigatorConfig.default.copyWithAlteredFileTypeConfig(FileType.Image) { fileTypeConfig ->
+                fileTypeConfig.copy(
+                    enabled = false,
+                    sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.copy {
+                        update(SourceType.Screenshot) {
+                            it.copy(
+                                enabled = false,
+                                quickMoveDestinations = listOf(LocalDestination.parse("path/to/destination")),
+                                autoMoveConfig = AutoMoveConfig(
+                                    enabled = true,
+                                    destination = LocalDestination.parse("path/to/auto/move/dest")
+                                )
+                            )
+                        }
+                        update(SourceType.Camera) {
+                            it.copy(enabled = false)
+                        }
                     }
-                    update(SourceType.Camera) {
-                        it.copy(enabled = false)
-                    }
-                }
-            )
-        }
+                )
+            }
+
+        val expected = NavigatorConfig(
+            fileTypeConfigMap = mapOf(
+                FileType.Image to FileTypeConfig(
+                    enabled = false,
+                    sourceTypeConfigMap = mapOf(
+                        SourceType.Camera to SourceConfig(
+                            enabled = false,
+                            quickMoveDestinations = emptyList(),
+                            autoMoveConfig = AutoMoveConfig.Empty
+                        ),
+                        SourceType.Screenshot to SourceConfig(
+                            enabled = false,
+                            quickMoveDestinations = listOf(LocalDestination.parse("path/to/destination")),
+                            autoMoveConfig = AutoMoveConfig(
+                                enabled = true,
+                                destination = LocalDestination.parse("path/to/auto/move/dest")
+                            )
+                        ),
+                        SourceType.OtherApp to SourceConfig(),
+                        SourceType.Download to SourceConfig()
+                    )
+                ),
+                FileType.Video to FileTypeConfig(
+                    enabled = true,
+                    sourceTypeConfigMap = mapOf(
+                        SourceType.Camera to SourceConfig(),
+                        SourceType.OtherApp to SourceConfig(),
+                        SourceType.Download to SourceConfig()
+                    )
+                ),
+                FileType.Audio to FileTypeConfig(
+                    enabled = true,
+                    sourceTypeConfigMap = mapOf(
+                        SourceType.Recording to SourceConfig(),
+                        SourceType.OtherApp to SourceConfig(),
+                        SourceType.Download to SourceConfig()
+                    )
+                ),
+                FileType.PDF to FileTypeConfig(
+                    enabled = true,
+                    sourceTypeConfigMap = mapOf(
+                        SourceType.Download to SourceConfig()
+                    )
+                ),
+                FileType.Text to FileTypeConfig(
+                    enabled = true,
+                    sourceTypeConfigMap = mapOf(
+                        SourceType.Download to SourceConfig()
+                    )
+                ),
+                FileType.Archive to FileTypeConfig(
+                    enabled = true,
+                    sourceTypeConfigMap = mapOf(
+                        SourceType.Download to SourceConfig()
+                    )
+                ),
+                FileType.APK to FileTypeConfig(
+                    enabled = true,
+                    sourceTypeConfigMap = mapOf(
+                        SourceType.Download to SourceConfig()
+                    )
+                ),
+                FileType.EBook to FileTypeConfig(
+                    enabled = true,
+                    sourceTypeConfigMap = mapOf(
+                        SourceType.Download to SourceConfig()
+                    )
+                )
+            ),
+            showBatchMoveNotification = true,
+            disableOnLowBattery = false,
+            startOnBoot = false
+        )
 
         assertEquals(
-            "NavigatorConfig(fileTypeConfigMap={Image=FileTypeConfig(enabled=false, sourceTypeConfigMap={Camera=SourceConfig(enabled=false, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null)), Screenshot=SourceConfig(enabled=false, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null)), OtherApp=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null)), Download=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null))}), Video=FileTypeConfig(enabled=true, sourceTypeConfigMap={Camera=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null)), OtherApp=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null)), Download=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null))}), Audio=FileTypeConfig(enabled=true, sourceTypeConfigMap={Recording=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null)), OtherApp=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null)), Download=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null))}), PDF=FileTypeConfig(enabled=true, sourceTypeConfigMap={Download=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null))}), Text=FileTypeConfig(enabled=true, sourceTypeConfigMap={Download=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null))}), Archive=FileTypeConfig(enabled=true, sourceTypeConfigMap={Download=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null))}), APK=FileTypeConfig(enabled=true, sourceTypeConfigMap={Download=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null))}), EBook=FileTypeConfig(enabled=true, sourceTypeConfigMap={Download=SourceConfig(enabled=true, lastMoveDestinations=[], autoMoveConfig=AutoMoveConfig(enabled=false, destination=null))})}, showBatchMoveNotification=true, disableOnLowBattery=false, startOnBoot=false)",
-            config.toString()
+            expected,
+            config
         )
     }
 }

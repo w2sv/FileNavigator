@@ -10,9 +10,15 @@ import org.junit.Assert.assertEquals
  */
 inline fun <reified T : Parcelable> T.testParceling(flags: Int = 0) {
     val parcel = Parcel.obtain()
-    writeToParcel(parcel, flags)
+    this.writeToParcel(parcel, flags)
 
+    // Reset the parcel's position for reading
     parcel.setDataPosition(0)
 
-    assertEquals(this, parcelableCreator<T>().createFromParcel(parcel))
+    // Assert that the original and recreated objects are equal
+    val recreated = parcelableCreator<T>().createFromParcel(parcel)
+    assertEquals(this, recreated)
+
+    // Recycle the parcel to avoid memory leaks
+    parcel.recycle()
 }
