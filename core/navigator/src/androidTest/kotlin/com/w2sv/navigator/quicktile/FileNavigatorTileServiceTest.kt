@@ -10,9 +10,11 @@
 //import androidx.test.uiautomator.UiObject
 //import androidx.test.uiautomator.UiSelector
 //import androidx.test.uiautomator.Until
+//import app.cash.turbine.test
 //import com.w2sv.navigator.FileNavigator
 //import dagger.hilt.android.testing.HiltAndroidRule
 //import dagger.hilt.android.testing.HiltAndroidTest
+//import kotlinx.coroutines.test.runTest
 //import org.junit.Assert.assertFalse
 //import org.junit.Assert.assertTrue
 //import org.junit.Before
@@ -21,70 +23,66 @@
 //import java.io.FileInputStream
 //import java.io.IOException
 //import javax.inject.Inject
+//import kotlin.time.Duration.Companion.seconds
 //
 //@HiltAndroidTest
-//internal class FileNavigatorTileServiceTest {
+//class FileNavigatorTileServiceTest {
 //
 //    @get:Rule
-//    var hiltRule = HiltAndroidRule(this)
+//    val hiltRule = HiltAndroidRule(this)
 //
 //    @Inject
 //    lateinit var fileNavigatorIsRunning: FileNavigator.IsRunning
 //
 //    private lateinit var device: UiDevice
-//    private val context: Context = ApplicationProvider.getApplicationContext()
-//
-//    private val tileLabel = context.getString(com.w2sv.core.common.R.string.app_name)
-////    private val tileService = FileNavigatorTileService()
 //
 //    @Before
 //    fun setUp() {
-//        hiltRule.inject()
 //        device = UiDevice.getInstance(getInstrumentation())
+//        hiltRule.inject()
 //        FileNavigator.stop(context)
 //    }
 //
+//    private val context: Context = ApplicationProvider.getApplicationContext()
+//    private val tileLabel = context.getString(com.w2sv.core.common.R.string.app_name)
+//
 //    @Test
-//    fun testTileService() {
-//        val tileService = FileNavigatorTileService()
-//        println(tileService.scope.coroutineContext)
-//        assertFalse(tileService.fileNavigatorIsRunning.value)
-//        device.openQuickSettings()
-//        device.waitForIdle()
+//    fun testTileService() = runTest {
+//        fileNavigatorIsRunning.test(timeout = 5.seconds) {
+//            assertFalse(awaitItem())
 //
-//        device.wait(Until.hasObject(By.textContains(tileLabel)), 10_000)
-//        val tile = device.findObject(By.textContains(tileLabel).clickable(true))
-//        assert(tile != null)
+//            device.openQuickSettings()
+//            device.wait(Until.hasObject(By.textContains(tileLabel)), 2_000)
 //
-//        tile.click()
-//        device.wait({ false }, 5_000)
-//        assertTrue(fileNavigatorIsRunning.value)
-////        assertNotNull(tileService.qsTile)
-////        assertEquals(Tile.STATE_ACTIVE, tileService.qsTile.state)
+//            val tile = device.findObject(By.textContains(tileLabel))
+//            requireNotNull(tile)
 //
-//        // Click the tile again to toggle its state
-//        tile.click()
-//        device.waitForIdle()
-//        assertFalse(fileNavigatorIsRunning.value)
+//            tile.click()
+//            assertTrue(awaitItem())
 //
-//        // Verify the tile state changed to inactive
-////        assertEquals(Tile.STATE_INACTIVE, tileService.qsTile.state)
-//    }
+//            // Click the tile again to toggle its state
+//            device.openQuickSettings()
+//            device.wait(Until.hasObject(By.textContains(tileLabel)), 2_000)
 //
-//    private fun UiDevice.findObjects(selector: UiSelector): List<UiObject> {
-//        val objects = mutableListOf<UiObject>()
-//        var index = 0
-//        while (true) {
-//            val obj = findObject(selector.instance(index))
-//            if (obj.exists()) {
-//                objects.add(obj)
-//                index++
-//            } else {
-//                break
-//            }
+//            tile.click()
+//            assertFalse(awaitItem())
 //        }
-//        return objects
 //    }
+//}
+//
+//private fun UiDevice.findObjects(selector: UiSelector): List<UiObject> {
+//    val objects = mutableListOf<UiObject>()
+//    var index = 0
+//    while (true) {
+//        val obj = findObject(selector.instance(index))
+//        if (obj.exists()) {
+//            objects.add(obj)
+//            index++
+//        } else {
+//            break
+//        }
+//    }
+//    return objects
 //}
 //
 ///**
@@ -98,7 +96,7 @@
 // * @throws Exception
 // */
 //@Throws(IOException::class)
-//fun runShellCommand(instrumentation: Instrumentation, cmd: String?): String {
+//private fun runShellCommand(instrumentation: Instrumentation, cmd: String?): String {
 //    val pfd = instrumentation.uiAutomation.executeShellCommand(cmd)
 //    val buf = ByteArray(512)
 //    var bytesRead: Int

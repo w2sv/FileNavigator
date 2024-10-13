@@ -68,8 +68,6 @@ class FileNavigator : UnboundService() {
     }
 
     private fun start() {
-        i { "Starting FileNavigator" }
-
         startForeground(
             AppNotificationId.FileNavigatorIsRunning.id,
             isRunningNotificationManager.buildNotification(Unit)

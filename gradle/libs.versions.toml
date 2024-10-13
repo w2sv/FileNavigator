@@ -89,11 +89,12 @@ textflow = { module = "io.github.oleksandrbalan:textflow-material3", version = "
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-test-rules = "androidx.test:rules:1.6.1"
 androidx-test-runner = "androidx.test:runner:1.6.2"
-androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
-#androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
+androidx-test-ext-junit-ktx = "androidx.test.ext:junit-ktx:1.2.1"
+androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
 roboelectric = "org.robolectric:robolectric:4.13"
 mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:5.4.0"
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+turbine = "app.cash.turbine:turbine:1.1.0"
 
 # Plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -101,8 +102,8 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 
 [bundles]
-unitTest = ["junit", "androidx-test-ext-junit", "roboelectric", "mockito-kotlin", "kotlinx-coroutines-test"]
-instrumentationTest = ["androidx-test-rules", "androidx-test-runner", "androidx-test-ext-junit"]
+unitTest = ["junit", "androidx-test-ext-junit-ktx", "roboelectric", "mockito-kotlin", "kotlinx-coroutines-test"]
+instrumentationTest = ["androidx-test-rules", "androidx-test-runner", "androidx-test-ext-junit-ktx"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
