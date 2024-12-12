@@ -9,7 +9,7 @@ ksp = "2.0.20-1.0.25"
 triplet-play = "3.11.0"
 protobuf-plugin = "0.9.4"
 
-compose-tooling = "1.7.3"
+compose-tooling = "1.7.6"
 compose-material3 = "1.3.0"
 hilt = "2.52"
 junit = "4.13.2"
