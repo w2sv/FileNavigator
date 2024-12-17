@@ -65,7 +65,7 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 
 # Google
-google-guava = "com.google.guava:guava:33.2.1-jre"
+google-guava = "com.google.guava:guava:33.4.0-jre"
 
 #. Protobuf
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
