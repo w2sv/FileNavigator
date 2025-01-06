@@ -9,10 +9,7 @@ internal abstract class AbstractMoveActivity : ComponentActivity() {
 
     abstract var moveResultChannel: MoveResultChannel
 
-    protected fun finishAndRemoveTask(
-        moveFailure: MoveResult.Failure? = null,
-        notificationResources: NotificationResources? = null
-    ) {
+    protected fun finishAndRemoveTask(moveFailure: MoveResult.Failure? = null, notificationResources: NotificationResources? = null) {
         moveFailure?.let {
             moveResultChannel.trySend(it bundleWith notificationResources)
         }

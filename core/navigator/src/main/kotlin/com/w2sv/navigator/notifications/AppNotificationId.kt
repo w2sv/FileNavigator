@@ -11,7 +11,7 @@ internal enum class AppNotificationId {
     MoveProgress;
 
     val id: Int by lazy {
-        ordinal + 1  // 0 is an invalid notification ID
+        ordinal + 1 // 0 is an invalid notification ID
     }
     val multiInstanceIdBase: Int by lazy {
         id * 1000

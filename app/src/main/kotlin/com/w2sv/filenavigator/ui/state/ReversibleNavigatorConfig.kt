@@ -12,7 +12,6 @@ import com.w2sv.filenavigator.ui.viewmodel.MakeSnackbarVisuals
 import com.w2sv.reversiblestate.ReversibleState
 import com.w2sv.reversiblestate.ReversibleStateFlow
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -21,7 +20,7 @@ import kotlinx.coroutines.flow.update
 @Stable
 class ReversibleNavigatorConfig(
     reversibleStateFlow: ReversibleStateFlow<NavigatorConfig>,
-    private val makeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
+    private val makeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit
 ) : ReversibleState by reversibleStateFlow,
     MutableStateFlow<NavigatorConfig> by reversibleStateFlow {
 
@@ -43,13 +42,10 @@ class ReversibleNavigatorConfig(
                 onStateSynced()
             }
         ),
-        makeSnackbarVisuals = makeSnackbarVisuals,
+        makeSnackbarVisuals = makeSnackbarVisuals
     )
 
-    fun onFileTypeCheckedChange(
-        fileType: FileType,
-        checkedNew: Boolean
-    ) {
+    fun onFileTypeCheckedChange(fileType: FileType, checkedNew: Boolean) {
         updateOrEmitSnackbar(
             checkedNew = checkedNew,
             checkedCount = value.enabledFileTypes.size,
@@ -63,7 +59,7 @@ class ReversibleNavigatorConfig(
                     message = it.getString(
                         R.string.leave_at_least_one_file_type_enabled
                     ),
-                    kind = SnackbarKind.Error,
+                    kind = SnackbarKind.Error
                 )
             }
         )

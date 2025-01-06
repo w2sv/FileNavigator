@@ -28,7 +28,7 @@ abstract class SystemBroadcastReceiver(private val action: String) : BroadcastRe
             } else {
                 unregister(context)
             }
-        } catch (_: IllegalArgumentException) {  // Thrown upon attempting to unregister unregistered receiver
+        } catch (_: IllegalArgumentException) { // Thrown upon attempting to unregister unregistered receiver
         }
     }
 

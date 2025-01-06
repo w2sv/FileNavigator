@@ -6,11 +6,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.w2sv.common.util.documentUri
 import com.w2sv.common.util.mediaUri
-import com.w2sv.domain.model.movedestination.ExternalDestination
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.movedestination.ExternalDestination
+import com.w2sv.domain.model.movedestination.LocalDestination
 import java.time.LocalDateTime
 
 @Entity
@@ -78,7 +78,7 @@ internal data class MovedFileEntity(
                     originalName = originalName,
                     type = type,
                     sourceType = sourceType,
-                    moveDateTime = moveDateTime,
+                    moveDateTime = moveDateTime
                 )
             }
         }

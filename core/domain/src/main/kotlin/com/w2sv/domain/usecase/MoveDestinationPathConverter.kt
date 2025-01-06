@@ -7,10 +7,10 @@ import com.w2sv.domain.model.movedestination.ExternalDestinationApi
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
 import com.w2sv.domain.repository.PreferencesRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 
 @Singleton
 class MoveDestinationPathConverter @Inject constructor(

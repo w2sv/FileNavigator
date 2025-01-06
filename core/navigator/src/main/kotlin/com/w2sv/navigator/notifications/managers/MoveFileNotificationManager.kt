@@ -38,13 +38,13 @@ import com.w2sv.navigator.notifications.ViewFileIfPresentActivity
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceNotificationManager
 import com.w2sv.navigator.notifications.managers.abstrct.SummarizedMultiInstanceNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import slimber.log.i
-import java.io.IOException
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 internal class MoveFileNotificationManager @Inject constructor(
@@ -52,7 +52,7 @@ internal class MoveFileNotificationManager @Inject constructor(
     notificationManager: NotificationManager,
     navigatorConfigDataSource: NavigatorConfigDataSource,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
-    private val batchMoveNotificationManager: BatchMoveNotificationManager,
+    private val batchMoveNotificationManager: BatchMoveNotificationManager
 ) : SummarizedMultiInstanceNotificationManager<MoveFileNotificationManager.Args>(
     appNotificationChannel = AppNotificationChannel.NewNavigatableFile,
     notificationManager = notificationManager,
@@ -165,9 +165,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
 
-            private fun getMoveFileAction(
-                requestCode: Int,
-            ): NotificationCompat.Action =
+            private fun getMoveFileAction(requestCode: Int): NotificationCompat.Action =
                 NotificationCompat.Action(
                     com.w2sv.core.common.R.drawable.ic_app_logo_24,
                     context.getString(R.string.move),
@@ -178,7 +176,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                             args = FileDestinationPickerActivity.Args(
                                 moveFile = args.moveFile,
                                 pickerStartDestination = args.quickMoveDestinations.firstOrNull()?.documentUri,
-                                notificationResources = args.resources,
+                                notificationResources = args.resources
                             ),
                             context = context
                         ),
@@ -292,12 +290,10 @@ private fun MoveFile.notificationContentText(context: Context): SpannedString =
 private fun MoveFile.notificationTitle(context: Context): String =
     context.getString(
         R.string.new_move_file_notification_title,
-        notificationLabel(context = context),
+        notificationLabel(context = context)
     )
 
-private fun MoveFile.notificationLabel(
-    context: Context
-): String =
+private fun MoveFile.notificationLabel(context: Context): String =
     when {
         isGif -> context.getString(com.w2sv.core.domain.R.string.gif)
         else -> {
@@ -316,14 +312,15 @@ private fun MoveFile.notificationLabel(
 
                 SourceType.Download -> context.getString(
                     com.w2sv.core.domain.R.string.file_type_download,
-                    context.getString(fileType.labelRes),
+                    context.getString(fileType.labelRes)
                 )
 
-                SourceType.OtherApp -> "/${mediaStoreFileData.parentDirName} ${
-                    context.getString(
-                        fileType.labelRes
-                    )
-                }"
+                SourceType.OtherApp ->
+                    "/${mediaStoreFileData.parentDirName} ${
+                        context.getString(
+                            fileType.labelRes
+                        )
+                    }"
             }
         }
     }

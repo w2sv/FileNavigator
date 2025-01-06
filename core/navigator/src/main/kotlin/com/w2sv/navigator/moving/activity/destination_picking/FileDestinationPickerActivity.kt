@@ -22,10 +22,10 @@ import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver
 import com.w2sv.navigator.notifications.NotificationResources
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
-import javax.inject.Inject
 
 @AndroidEntryPoint
 internal class FileDestinationPickerActivity : DestinationPickerActivity() {
@@ -83,7 +83,7 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
     private fun onDocumentCreated(contentUri: Uri) {
         i { "Document contentUri: $contentUri" }
 
-        contentResolver.takePersistableReadAndWriteUriPermission(contentUri)  // TODO: necessary?
+        contentResolver.takePersistableReadAndWriteUriPermission(contentUri) // TODO: necessary?
 
         val destination = NavigatorMoveDestination.File.get(contentUri.documentUri, this)
             .also {
@@ -115,6 +115,6 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
     data class Args(
         val moveFile: MoveFile,
         val notificationResources: NotificationResources,
-        override val pickerStartDestination: DocumentUri?,
+        override val pickerStartDestination: DocumentUri?
     ) : DestinationPickerActivity.Args
 }

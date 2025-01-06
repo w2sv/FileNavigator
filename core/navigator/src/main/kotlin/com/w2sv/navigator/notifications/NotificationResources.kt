@@ -10,8 +10,8 @@ import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotif
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 internal data class NotificationResources(
@@ -42,7 +42,8 @@ internal data class NotificationResources(
             fromIntent(intent)
                 ?.let { resources ->
                     listOf(
-                        moveFileNotificationManager, autoMoveDestinationInvalidNotificationManager
+                        moveFileNotificationManager,
+                        autoMoveDestinationInvalidNotificationManager
                     )
                         .first { notificationManager ->
                             resources.managerClassName == notificationManager.resourcesIdentifier
@@ -53,10 +54,7 @@ internal data class NotificationResources(
         }
 
         companion object {
-            fun getIntent(
-                context: Context,
-                notificationResources: NotificationResources
-            ): Intent =
+            fun getIntent(context: Context, notificationResources: NotificationResources): Intent =
                 Intent(
                     context,
                     CleanupBroadcastReceiver::class.java

@@ -89,7 +89,10 @@ fun NavigatorSettingsScreen(
     scope: CoroutineScope = rememberCoroutineScope(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
-    if (rememberShowAutoMoveIntroductionWithDelay(showAutoMoveIntroduction = appVM.showAutoMoveIntroduction.collectAsStateWithLifecycle().value)) {
+    if (rememberShowAutoMoveIntroductionWithDelay(
+            showAutoMoveIntroduction = appVM.showAutoMoveIntroduction.collectAsStateWithLifecycle().value
+        )
+    ) {
         AutoMoveIntroductionDialog(
             onDismissRequest = remember {
                 {
@@ -163,7 +166,7 @@ fun NavigatorSettingsScreen(
                 },
                 modifier = Modifier
                     .padding(
-                        top = 8.dp,  // Snackbar padding
+                        top = 8.dp, // Snackbar padding
                         end = if (isLandscapeModeActive) 38.dp else 0.dp
                     )
                     .height(70.dp)
@@ -213,10 +216,7 @@ private fun rememberShowAutoMoveIntroductionWithDelay(showAutoMoveIntroduction: 
 }
 
 @Composable
-private fun AutoMoveIntroductionDialog(
-    onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun AutoMoveIntroductionDialog(onDismissRequest: () -> Unit, modifier: Modifier = Modifier) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = { Text(text = stringResource(R.string.introducing_auto_move)) },
@@ -326,7 +326,7 @@ private fun ConfigurationFABButton(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
                 imageVector = imageVector,
-                contentDescription = text,
+                contentDescription = text
             )
             Text(text = text)
         }

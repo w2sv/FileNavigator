@@ -10,11 +10,11 @@ import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.system_broadcastreceiver.manager.NavigatorConfigControlledSystemBroadcastReceiverManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 typealias MakeSnackbarVisuals = (Context) -> SnackbarVisuals
 
@@ -50,6 +50,6 @@ class NavigatorViewModel @Inject constructor(
                     context
                 )
             }
-        },
+        }
     )
 }

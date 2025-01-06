@@ -6,7 +6,11 @@ import androidx.navigation.NavHostController
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 
 val LocalNavHostController =
-    staticCompositionLocalOf<NavHostController> { throw UninitializedPropertyAccessException("LocalRootNavHostController not yet provided") }
+    staticCompositionLocalOf<NavHostController> {
+        throw UninitializedPropertyAccessException(
+            "LocalRootNavHostController not yet provided"
+        )
+    }
 
 val LocalMoveDestinationPathConverter =
     staticCompositionLocalOf<MoveDestinationPathConverter> {

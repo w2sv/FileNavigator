@@ -20,20 +20,20 @@ import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
 import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.time.LocalDateTime
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import slimber.log.i
-import java.time.LocalDateTime
-import javax.inject.Inject
 
 internal class MoveResultListener @Inject constructor(
     private val insertMovedFileUseCase: InsertMovedFileUseCase,
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val moveFileNotificationManager: MoveFileNotificationManager,
     private val autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager,
-    @GlobalScope(AppDispatcher.IO) private val scope: CoroutineScope,  // TODO
+    @GlobalScope(AppDispatcher.IO) private val scope: CoroutineScope, // TODO
     @ApplicationContext private val context: Context
 ) {
     suspend fun onMoveResult(moveResultBundle: MoveResult.Bundle) {
@@ -136,7 +136,7 @@ internal class MoveResultListener @Inject constructor(
             insertMovedFileUseCase(
                 movedFileEntry(
                     context = context,
-                    dateTime = LocalDateTime.now(),
+                    dateTime = LocalDateTime.now()
                 )
             )
         }
@@ -160,7 +160,11 @@ private suspend fun Context.showMoveSuccessToast(moveBundle: AnyMoveBundle) {
     withContext(Dispatchers.Main) {
         showToast(
             resources.getHtmlFormattedText(
-                id = if (moveBundle.destinationSelectionManner.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
+                id = if (moveBundle.destinationSelectionManner.isAuto) {
+                    R.string.auto_move_success_toast_text
+                } else {
+                    R.string.move_success_toast_text
+                },
                 moveBundle.file.fileAndSourceType.label(
                     context = this@showMoveSuccessToast,
                     isGif = moveBundle.file.isGif

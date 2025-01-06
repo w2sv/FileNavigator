@@ -13,7 +13,7 @@ fun MovedFile.exists(context: Context): Boolean {
     return try {
         documentUri
             .documentFile(context)
-            .exists()  // prints "java.lang.IllegalArgumentException: Failed to determine if ... is child of ...: java.io.FileNotFoundException: Missing file for ... at ..." to console without actually raising it
+            .exists() // prints "java.lang.IllegalArgumentException: Failed to determine if ... is child of ...: java.io.FileNotFoundException: Missing file for ... at ..." to console without actually raising it
     } catch (e: IllegalArgumentException) {
         false
     }

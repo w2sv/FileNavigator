@@ -33,65 +33,68 @@ internal class NavigatorPreferencesToProtoMigrationTest {
     }
 
     @Test
-    fun `shouldMigrate returns true if hasBeenMigrated is false`() = runBlocking {
-        val currentData = navigatorConfigProto {
-            hasBeenMigrated = false
-        }
+    fun `shouldMigrate returns true if hasBeenMigrated is false`() =
+        runBlocking {
+            val currentData = navigatorConfigProto {
+                hasBeenMigrated = false
+            }
 
-        assertTrue(migration.shouldMigrate(currentData))
-    }
+            assertTrue(migration.shouldMigrate(currentData))
+        }
 
     @Test
-    fun `shouldMigrate returns false if hasBeenMigrated is true`() = runBlocking {
-        val currentData = navigatorConfigProto {
-            hasBeenMigrated = true
-        }
+    fun `shouldMigrate returns false if hasBeenMigrated is true`() =
+        runBlocking {
+            val currentData = navigatorConfigProto {
+                hasBeenMigrated = true
+            }
 
-        assertFalse(migration.shouldMigrate(currentData))
-    }
+            assertFalse(migration.shouldMigrate(currentData))
+        }
 
     @Test
-    fun `migrate performs migration`() = runBlocking {
-        val currentData = navigatorConfigProto {
-            hasBeenMigrated = false
-        }
+    fun `migrate performs migration`() =
+        runBlocking {
+            val currentData = navigatorConfigProto {
+                hasBeenMigrated = false
+            }
 
-        val preferences =
-            preferencesOf(
-                PreMigrationNavigatorPreferencesKey.disableOnLowBattery to true,
+            val preferences =
+                preferencesOf(
+                    PreMigrationNavigatorPreferencesKey.disableOnLowBattery to true,
 
-                PreMigrationNavigatorPreferencesKey.fileTypeEnabled(FileType.Image) to false,
-                PreMigrationNavigatorPreferencesKey.fileTypeEnabled(FileType.Video) to false,
-                PreMigrationNavigatorPreferencesKey.fileTypeEnabled(FileType.PDF) to false,
+                    PreMigrationNavigatorPreferencesKey.fileTypeEnabled(FileType.Image) to false,
+                    PreMigrationNavigatorPreferencesKey.fileTypeEnabled(FileType.Video) to false,
+                    PreMigrationNavigatorPreferencesKey.fileTypeEnabled(FileType.PDF) to false,
 
-                PreMigrationNavigatorPreferencesKey.sourceTypeEnabled(
-                    FileType.Audio,
-                    SourceType.Recording
-                ) to false,
+                    PreMigrationNavigatorPreferencesKey.sourceTypeEnabled(
+                        FileType.Audio,
+                        SourceType.Recording
+                    ) to false
+                )
+
+            Mockito.`when`(mockDataStore.data).thenReturn(flowOf(preferences))
+
+            val migratedNavigatorConfigProto = migration.migrate(currentData)
+
+            assertTrue(migratedNavigatorConfigProto.hasBeenMigrated)
+            assertEquals(
+                migratedNavigatorConfigProto.toExternal(),
+                NavigatorConfig
+                    .default
+                    .copy(disableOnLowBattery = true)
+                    .copyWithAlteredFileTypeConfig(FileType.Image) {
+                        it.copy(enabled = false)
+                    }
+                    .copyWithAlteredFileTypeConfig(FileType.Video) {
+                        it.copy(enabled = false)
+                    }
+                    .copyWithAlteredFileTypeConfig(FileType.PDF) {
+                        it.copy(enabled = false)
+                    }
+                    .copyWithAlteredSourceConfig(FileType.Audio, SourceType.Recording) {
+                        it.copy(enabled = false)
+                    }
             )
-
-        Mockito.`when`(mockDataStore.data).thenReturn(flowOf(preferences))
-
-        val migratedNavigatorConfigProto = migration.migrate(currentData)
-
-        assertTrue(migratedNavigatorConfigProto.hasBeenMigrated)
-        assertEquals(
-            migratedNavigatorConfigProto.toExternal(),
-            NavigatorConfig
-                .default
-                .copy(disableOnLowBattery = true)
-                .copyWithAlteredFileTypeConfig(FileType.Image) {
-                    it.copy(enabled = false)
-                }
-                .copyWithAlteredFileTypeConfig(FileType.Video) {
-                    it.copy(enabled = false)
-                }
-                .copyWithAlteredFileTypeConfig(FileType.PDF) {
-                    it.copy(enabled = false)
-                }
-                .copyWithAlteredSourceConfig(FileType.Audio, SourceType.Recording) {
-                    it.copy(enabled = false)
-                }
-        )
-    }
+        }
 }

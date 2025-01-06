@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
 
                         enableEdgeToEdge(
                             systemBarStyle,
-                            systemBarStyle,
+                            systemBarStyle
                         )
                     }
                     val navController = rememberNavController()

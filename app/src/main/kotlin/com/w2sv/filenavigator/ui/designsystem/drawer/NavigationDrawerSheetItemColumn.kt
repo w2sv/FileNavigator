@@ -70,7 +70,7 @@ internal fun NavigationDrawerSheetItemColumn(
                             closeDrawer()
                             navHostController.navigate(AppSettingsScreenDestination)
                         }
-                    },
+                    }
                 ),
                 NavigationDrawerSheetElement.Item(
                     iconRes = com.w2sv.core.common.R.drawable.ic_app_logo_24,
@@ -80,7 +80,7 @@ internal fun NavigationDrawerSheetItemColumn(
                             closeDrawer()
                             navHostController.navigate(NavigatorSettingsScreenDestination)
                         }
-                    },
+                    }
                 ),
                 NavigationDrawerSheetElement.Header(
                     titleRes = R.string.legal
@@ -170,7 +170,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     is NavigationDrawerSheetElement.Item -> {
                         Item(
                             item = element,
-                            modifier = element.modifier,
+                            modifier = element.modifier
                         )
                     }
 
@@ -229,23 +229,17 @@ private sealed interface NavigationDrawerSheetElement {
 }
 
 @Composable
-private fun SubHeader(
-    @StringRes titleRes: Int,
-    modifier: Modifier = Modifier,
-) {
+private fun SubHeader(@StringRes titleRes: Int, modifier: Modifier = Modifier) {
     Text(
         text = stringResource(id = titleRes),
         modifier = modifier,
         fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Bold
     )
 }
 
 @Composable
-private fun Item(
-    item: NavigationDrawerSheetElement.Item,
-    modifier: Modifier = Modifier,
-) {
+private fun Item(item: NavigationDrawerSheetElement.Item, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .thenIfNotNull(item.type as? NavigationDrawerSheetElement.Item.Type.Clickable) {
@@ -267,27 +261,24 @@ private fun Item(
 }
 
 @Composable
-private fun MainItemRow(
-    item: NavigationDrawerSheetElement.Item,
-    modifier: Modifier = Modifier
-) {
+private fun MainItemRow(item: NavigationDrawerSheetElement.Item, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             modifier = Modifier
                 .size(size = IconSize.Big),
             painter = painterResource(id = item.iconRes),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
+            tint = MaterialTheme.colorScheme.primary
         )
 
         Text(
             text = stringResource(id = item.labelRes),
             modifier = Modifier.padding(start = ItemRowDefaults.IconTextSpacing),
             fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.Medium
         )
 
         when (val type = item.type) {

@@ -52,7 +52,7 @@ sealed class FileType(
         @StringRes labelRes: Int,
         @DrawableRes iconRes: Int,
         @ColorInt colorInt: Int,
-        val fileExtensions: Set<String>,
+        val fileExtensions: Set<String>
     ) : FileType(
         labelRes = labelRes,
         iconRes = iconRes,
@@ -201,7 +201,7 @@ sealed class FileType(
             "pef",
             "vbk",
             "fkb",
-            "bkk",
+            "bkk"
         )
     )
 

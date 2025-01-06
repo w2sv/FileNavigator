@@ -49,10 +49,7 @@ fun NavigationDrawer(
 }
 
 @Composable
-private fun NavigationDrawerSheet(
-    closeDrawer: suspend () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun NavigationDrawerSheet(closeDrawer: suspend () -> Unit, modifier: Modifier = Modifier) {
     ModalDrawerSheet(
         modifier = modifier,
         windowInsets = emptyWindowInsets

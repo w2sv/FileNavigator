@@ -2,7 +2,6 @@ package com.w2sv.navigator.moving.model
 
 import com.w2sv.common.util.DocumentUri
 import com.w2sv.common.util.MediaUri
-import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.test.testParceling
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

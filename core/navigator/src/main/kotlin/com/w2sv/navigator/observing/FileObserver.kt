@@ -62,7 +62,7 @@ internal abstract class FileObserver(
 ) :
     ContentObserver(handler) {
 
-    private val scope = CoroutineScope(Dispatchers.IO)  // TODO
+    private val scope = CoroutineScope(Dispatchers.IO) // TODO
 
     private val mediaUriBlacklist = EvictingQueue.create<MediaId>(3)
     private var moveFileWithProcedureJob: MoveFileWithProcedureJob? = null
@@ -82,14 +82,19 @@ internal abstract class FileObserver(
 
     protected abstract val logIdentifier: String
 
-    override fun deliverSelfNotifications(): Boolean = false
+    override fun deliverSelfNotifications(): Boolean =
+        false
 
     private fun cancelAndResetMoveFileProcedureJob() {
         moveFileWithProcedureJob?.procedureJob?.cancelIfActive()
         moveFileWithProcedureJob = null
     }
 
-    override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
+    override fun onChange(
+        selfChange: Boolean,
+        uri: Uri?,
+        flags: Int
+    ) {
         when (FileChangeOperation.determine(flags).also { emitOnChangeLog(uri, it) }) {
             FileChangeOperation.Insert -> Unit
             FileChangeOperation.Update, FileChangeOperation.Unclassified -> onChangeCore(uri)
@@ -162,7 +167,7 @@ internal abstract class FileObserver(
                                         destination = enabledAutoMoveDestination,
                                         destinationSelectionManner = DestinationSelectionManner.Auto
                                     ),
-                                    context = context,
+                                    context = context
                                 )
                             }
                         }

@@ -42,7 +42,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.LocalNavHostController
 import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.theme.DefaultAnimationDuration
+import com.w2sv.filenavigator.ui.theme.DEFAULT_ANIMATION_DURATION
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
@@ -145,13 +145,10 @@ data class ToggleNavigatorButtonProperties(
 )
 
 @Composable
-internal fun ToggleNavigatorButton(
-    properties: ToggleNavigatorButtonProperties,
-    modifier: Modifier = Modifier
-) {
+internal fun ToggleNavigatorButton(properties: ToggleNavigatorButtonProperties, modifier: Modifier = Modifier) {
     Button(
         onClick = properties.onClick,
-        modifier = modifier,
+        modifier = modifier
     ) {
         UpSlidingAnimatedContent(targetState = properties) {
             Row(
@@ -167,7 +164,7 @@ internal fun ToggleNavigatorButton(
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(id = it.labelRes),
-                    fontSize = 18.sp,
+                    fontSize = 18.sp
                 )
             }
         }
@@ -193,17 +190,18 @@ private fun <S> UpSlidingAnimatedContent(
             {
                 slideInVertically(
                     animationSpec = tween(
-                        durationMillis = DefaultAnimationDuration,
+                        durationMillis = DEFAULT_ANIMATION_DURATION,
                         easing = Easing.AnticipateOvershoot
                     ),
-                    initialOffsetY = { it }) togetherWith
-                        slideOutVertically(
-                            targetOffsetY = { -it },
-                            animationSpec = tween(
-                                durationMillis = DefaultAnimationDuration,
-                                easing = Easing.AnticipateOvershoot
-                            )
+                    initialOffsetY = { it }
+                ) togetherWith
+                    slideOutVertically(
+                        targetOffsetY = { -it },
+                        animationSpec = tween(
+                            durationMillis = DEFAULT_ANIMATION_DURATION,
+                            easing = Easing.AnticipateOvershoot
                         )
+                    )
             }
         },
         content = content

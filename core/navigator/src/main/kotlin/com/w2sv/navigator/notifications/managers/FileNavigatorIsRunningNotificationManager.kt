@@ -49,7 +49,7 @@ internal class FileNavigatorIsRunningNotificationManager @Inject constructor(
                             0,
                             FileNavigator.getStopIntent(context),
                             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-                        ),
+                        )
                     )
                 )
 

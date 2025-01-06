@@ -9,9 +9,9 @@ import com.anggrayudi.storage.result.SingleFileResult
 import com.w2sv.common.util.hasChild
 import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.common.util.log
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import slimber.log.e
@@ -27,7 +27,7 @@ internal sealed interface PreCheckResult {
 
     companion object {
 
-        fun get(  // TODO: test
+        fun get( // TODO: test
             moveFile: MoveFile,
             context: Context,
             destinationDirectory: DocumentFile?
@@ -56,11 +56,13 @@ internal suspend fun MoveFile.moveTo(
     destinationDocumentFile: DocumentFile = destination.documentFile(context),
     onResult: (MoveResult) -> Unit
 ) {
-    when (val preCheckResult = PreCheckResult.get(
-        moveFile = this,
-        context = context,
-        destinationDirectory = if (destination is NavigatorMoveDestination.File) null else destinationDocumentFile
-    )) {
+    when (
+        val preCheckResult = PreCheckResult.get(
+            moveFile = this,
+            context = context,
+            destinationDirectory = if (destination is NavigatorMoveDestination.File) null else destinationDocumentFile
+        )
+    ) {
         is PreCheckResult.Success -> {
             when (destination) {
                 is NavigatorMoveDestination.File -> {
@@ -86,13 +88,10 @@ internal suspend fun MoveFile.moveTo(
     }
 }
 
-internal suspend fun MediaFile.moveTo(
-    folderDestination: DocumentFile,
-    onResult: (MoveResult) -> Unit
-) {
+internal suspend fun MediaFile.moveTo(folderDestination: DocumentFile, onResult: (MoveResult) -> Unit) {
     moveTo(
         targetFolder = folderDestination,
-        onConflict = onFileConflict,
+        onConflict = onFileConflict
     )
         .map { moveState ->
             log(moveState)
@@ -127,7 +126,7 @@ private suspend fun MediaFile.copyToFileDestinationAndDelete(
         targetFile = fileDestination,
         deleteOnSuccess = true,
         checkIfEnoughSpaceOnTarget = !isCloudDestination,
-        checkIfTargetWritable = !isCloudDestination,
+        checkIfTargetWritable = !isCloudDestination
     )
         .map { moveState ->
             log(moveState)

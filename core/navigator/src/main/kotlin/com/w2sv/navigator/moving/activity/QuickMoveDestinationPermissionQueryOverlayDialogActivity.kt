@@ -40,6 +40,6 @@ internal class QuickMoveDestinationPermissionQueryOverlayDialogActivity : Compon
 
     override fun onDestroy() {
         super.onDestroy()
-        dialog?.dismiss()  // Prevents 'android.view.WindowLeaked: Activity com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryOverlayDialogActivity has leaked window DecorView@f70b286[QuickMoveDestinationPermissionQueryOverlayDialogActivity] that was originally added here'
+        dialog?.dismiss() // Prevents 'android.view.WindowLeaked: Activity com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryOverlayDialogActivity has leaked window DecorView@f70b286[QuickMoveDestinationPermissionQueryOverlayDialogActivity] that was originally added here'
     }
 }

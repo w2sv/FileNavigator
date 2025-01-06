@@ -10,9 +10,9 @@ import com.w2sv.navigator.moving.model.AnyMoveBundle
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.moveTo
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 internal class MoveBroadcastReceiver : BroadcastReceiver() {
@@ -39,10 +39,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        fun sendBroadcast(
-            moveBundle: AnyMoveBundle,
-            context: Context,
-        ) {
+        fun sendBroadcast(moveBundle: AnyMoveBundle, context: Context) {
             context.sendBroadcast(
                 getIntent(
                     moveBundle = moveBundle,
@@ -51,10 +48,7 @@ internal class MoveBroadcastReceiver : BroadcastReceiver() {
             )
         }
 
-        fun getIntent(
-            moveBundle: AnyMoveBundle,
-            context: Context
-        ): Intent =
+        fun getIntent(moveBundle: AnyMoveBundle, context: Context): Intent =
             Intent(context, MoveBroadcastReceiver::class.java)
                 .putExtra(MoveBundle.EXTRA, moveBundle)
     }

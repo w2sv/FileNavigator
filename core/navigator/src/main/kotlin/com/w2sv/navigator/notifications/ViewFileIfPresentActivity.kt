@@ -12,8 +12,8 @@ import com.w2sv.common.util.MediaUri
 import com.w2sv.core.navigator.R
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
-import kotlinx.parcelize.Parcelize
 import java.io.File
+import kotlinx.parcelize.Parcelize
 
 internal class ViewFileIfPresentActivity : ComponentActivity() {
 
@@ -51,7 +51,8 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
         companion object {
             const val EXTRA = "com.w2sv.filenavigator.extra.ViewFileIfPresentActivity.Args"
 
-            fun fromIntent(intent: Intent): Args = intent.getParcelableCompat<Args>(EXTRA)!!
+            fun fromIntent(intent: Intent): Args =
+                intent.getParcelableCompat<Args>(EXTRA)!!
         }
     }
 
@@ -60,12 +61,14 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
             context: Context,
             args: Args,
             notificationResources: NotificationResources
-        ): Intent = Intent.makeRestartActivityTask(
-            ComponentName(
-                context, ViewFileIfPresentActivity::class.java
+        ): Intent =
+            Intent.makeRestartActivityTask(
+                ComponentName(
+                    context,
+                    ViewFileIfPresentActivity::class.java
+                )
             )
-        )
-            .putExtra(Args.EXTRA, args)
-            .putOptionalNotificationResourcesExtra(notificationResources)
+                .putExtra(Args.EXTRA, args)
+                .putOptionalNotificationResourcesExtra(notificationResources)
     }
 }

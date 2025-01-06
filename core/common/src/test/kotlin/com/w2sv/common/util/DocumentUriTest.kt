@@ -18,7 +18,9 @@ internal class DocumentUriTest {
     private val contentUri: DocumentUri =
         DocumentUri.parse("content://com.android.externalstorage.documents/document/primary%3AMoved%2FGIFs")
     private val treeDocumentUri: DocumentUri =
-        DocumentUri.parse("content://com.android.externalstorage.documents/tree/primary%3AMoved%2FScreenshots/document/primary%3AMoved%2FScreenshots")
+        DocumentUri.parse(
+            "content://com.android.externalstorage.documents/tree/primary%3AMoved%2FScreenshots/document/primary%3AMoved%2FScreenshots"
+        )
 
     @Test
     fun testParceling() {
@@ -36,7 +38,9 @@ internal class DocumentUriTest {
     @Test
     fun testDocumentTreeUri() {
         assertEquals(
-            DocumentUri.parse("content://com.android.externalstorage.documents/tree/primary%3AMoved%2FGIFs/document/primary%3AMoved%2FGIFs"),
+            DocumentUri.parse(
+                "content://com.android.externalstorage.documents/tree/primary%3AMoved%2FGIFs/document/primary%3AMoved%2FGIFs"
+            ),
             contentUri.documentTreeUri()
         )
     }

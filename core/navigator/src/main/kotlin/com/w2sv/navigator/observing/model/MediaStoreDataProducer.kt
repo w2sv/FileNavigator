@@ -34,10 +34,7 @@ internal class MediaStoreDataProducer @Inject constructor() {
     private val seenParametersBuffer =
         EvictingQueue.create<SeenParameters>(SEEN_FILES_BUFFER_SIZE)
 
-    operator fun invoke(
-        mediaUri: MediaUri,
-        contentResolver: ContentResolver
-    ): Result {
+    operator fun invoke(mediaUri: MediaUri, contentResolver: ContentResolver): Result {
         // Fetch MediaStoreColumnData; exit if impossible
         val columnData =
             MediaStoreFileData.queryFor(mediaUri, contentResolver)

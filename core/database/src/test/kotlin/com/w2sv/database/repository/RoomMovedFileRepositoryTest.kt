@@ -12,6 +12,8 @@ import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.ExternalDestination
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.repository.MovedFileRepository
+import java.io.IOException
+import java.time.LocalDateTime
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -22,8 +24,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.IOException
-import java.time.LocalDateTime
 
 @RunWith(AndroidJUnit4::class)
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -53,54 +53,55 @@ internal class RoomMovedFileRepositoryTest {
     }
 
     @Test
-    fun testInsertionAndRetrieval() = testScope.runTest {
-        val movedFiles = listOf(
-            MovedFile.Local(
-                documentUri = DocumentUri.parse("kjhasdfkjh"),
-                mediaUri = MediaUri.parse("kjasdf"),
-                name = "someFile.jpg",
-                originalName = null,
-                type = FileType.Image,
-                sourceType = SourceType.Screenshot,
-                moveDestination = LocalDestination.parse("kjhasdfkjh"),
-                moveDateTime = LocalDateTime.now(),
-                autoMoved = false
-            ),
-            MovedFile.External(
-                moveDestination = ExternalDestination(
+    fun testInsertionAndRetrieval() =
+        testScope.runTest {
+            val movedFiles = listOf(
+                MovedFile.Local(
                     documentUri = DocumentUri.parse("kjhasdfkjh"),
-                    providerPackageName = "provider.package.name",
-                    providerAppLabel = "Drive"
+                    mediaUri = MediaUri.parse("kjasdf"),
+                    name = "someFile.jpg",
+                    originalName = null,
+                    type = FileType.Image,
+                    sourceType = SourceType.Screenshot,
+                    moveDestination = LocalDestination.parse("kjhasdfkjh"),
+                    moveDateTime = LocalDateTime.now(),
+                    autoMoved = false
                 ),
-                name = "someFile.jpg",
-                originalName = "previousName.jpg",
-                type = FileType.Image,
-                sourceType = SourceType.Screenshot,
-                moveDateTime = LocalDateTime.now()
-            ),
-            MovedFile.External(
-                moveDestination = ExternalDestination(
-                    documentUri = DocumentUri.parse("kjhasdfkjh"),
-                    providerPackageName = null,
-                    providerAppLabel = null
+                MovedFile.External(
+                    moveDestination = ExternalDestination(
+                        documentUri = DocumentUri.parse("kjhasdfkjh"),
+                        providerPackageName = "provider.package.name",
+                        providerAppLabel = "Drive"
+                    ),
+                    name = "someFile.jpg",
+                    originalName = "previousName.jpg",
+                    type = FileType.Image,
+                    sourceType = SourceType.Screenshot,
+                    moveDateTime = LocalDateTime.now()
                 ),
-                name = "someFile.jpg",
-                originalName = null,
-                type = FileType.Image,
-                sourceType = SourceType.Screenshot,
-                moveDateTime = LocalDateTime.now()
+                MovedFile.External(
+                    moveDestination = ExternalDestination(
+                        documentUri = DocumentUri.parse("kjhasdfkjh"),
+                        providerPackageName = null,
+                        providerAppLabel = null
+                    ),
+                    name = "someFile.jpg",
+                    originalName = null,
+                    type = FileType.Image,
+                    sourceType = SourceType.Screenshot,
+                    moveDateTime = LocalDateTime.now()
+                )
             )
-        )
 
-        with(repository) {
-            movedFiles.forEach {
-                insert(it)
+            with(repository) {
+                movedFiles.forEach {
+                    insert(it)
+                }
+
+                assertEquals(
+                    movedFiles.reversed(),
+                    getAllInDescendingOrder().first()
+                )
             }
-
-            assertEquals(
-                movedFiles.reversed(),
-                getAllInDescendingOrder().first()
-            )
         }
-    }
 }

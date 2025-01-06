@@ -26,7 +26,7 @@ abstract class PopNonPopIdenticalAnimatedDestinationStyle : DestinationStyle.Ani
 object NavigationTransitions : PopNonPopIdenticalAnimatedDestinationStyle() {
     override val enterTransition: NavigationEnterTransition = {
         fadeIn(animationSpec = animationSpec) +
-                scaleIn(initialScale = 0.92f, animationSpec = animationSpec)
+            scaleIn(initialScale = 0.92f, animationSpec = animationSpec)
     }
     override val exitTransition: NavigationExitTransition = {
         fadeOut(animationSpec = animationSpec) + scaleOut(

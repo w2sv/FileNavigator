@@ -18,9 +18,9 @@ import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.shared.mainActivityIntent
 import com.w2sv.navigator.shared.mainActivityPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import slimber.log.i
-import javax.inject.Inject
 
 @AndroidEntryPoint
 internal class FileNavigatorTileService : TileService() {
@@ -85,7 +85,9 @@ internal class FileNavigatorTileService : TileService() {
                     setTheme(R.style.RoundedCornersAlertDialog)
                     setContentView(R.layout.tile_dialog)
                     setOnShowListener {
-                        scope.launchDelayed(250) {  // Add small delay to make the dialog visible for a bit longer than merely a couple of milliseconds for better UX
+                        scope.launchDelayed(
+                            250
+                        ) { // Add small delay to make the dialog visible for a bit longer than merely a couple of milliseconds for better UX
                             FileNavigator.start(this@FileNavigatorTileService)
                             dismiss()
                         }

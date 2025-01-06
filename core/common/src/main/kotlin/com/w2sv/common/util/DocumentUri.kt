@@ -5,8 +5,8 @@ import android.net.Uri
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.getSimplePath
-import kotlinx.parcelize.Parcelize
 import java.io.File
+import kotlinx.parcelize.Parcelize
 
 private const val PATH_SLASH_ENCODING = "%2F"
 private const val PATH_COLON_ENCODING = "%3A"

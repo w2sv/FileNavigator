@@ -7,10 +7,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.filenavigator.R
-import kotlinx.collections.immutable.ImmutableList
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlinx.collections.immutable.ImmutableList
 
 /**
  * @param history Chronologically ordered.
@@ -58,10 +58,11 @@ internal fun getDateRepresentation(
     date: LocalDate,
     now: LocalDate,
     getString: (Int) -> String
-): String = when (date) {
-    now -> getString(R.string.today)
-    now.minusDays(1) -> getString(R.string.yesterday)
-    else -> date.format(formatter.withZone(ZoneId.systemDefault()))
-}
+): String =
+    when (date) {
+        now -> getString(R.string.today)
+        now.minusDays(1) -> getString(R.string.yesterday)
+        else -> date.format(formatter.withZone(ZoneId.systemDefault()))
+    }
 
 private val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")

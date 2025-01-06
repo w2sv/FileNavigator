@@ -42,7 +42,7 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
 
             sourceType == SourceType.Download -> context.getString(
                 R.string.file_type_download,
-                context.getString(fileType.labelRes),
+                context.getString(fileType.labelRes)
             )
 
             else -> context.getString(fileType.labelRes)

@@ -62,10 +62,12 @@ internal class NavigatorPreferencesToProtoMigration(
                                     ),
                                     sourceConfig.enabled
                                 ),
-                                quickMoveDestinations = preferences[PreMigrationNavigatorPreferencesKey.lastMoveDestination(
-                                    fileType = fileType,
-                                    sourceType = sourceType
-                                )]?.let { lastMoveDestination ->
+                                quickMoveDestinations = preferences[
+                                    PreMigrationNavigatorPreferencesKey.lastMoveDestination(
+                                        fileType = fileType,
+                                        sourceType = sourceType
+                                    )
+                                ]?.let { lastMoveDestination ->
                                     listOf(
                                         LocalDestination.parse(
                                             lastMoveDestination

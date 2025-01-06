@@ -15,10 +15,7 @@ internal enum class AppNotificationChannel(@StringRes val nameRes: Int) {
     AutoMoveDestinationInvalid(R.string.auto_move_destination_invalid),
     MoveProgress(R.string.move_progress);
 
-    fun getNotificationChannel(
-        context: Context,
-        importance: Int = NotificationManager.IMPORTANCE_DEFAULT
-    ): NotificationChannel =
+    fun getNotificationChannel(context: Context, importance: Int = NotificationManager.IMPORTANCE_DEFAULT): NotificationChannel =
         NotificationChannel(
             name,
             context.getString(nameRes),

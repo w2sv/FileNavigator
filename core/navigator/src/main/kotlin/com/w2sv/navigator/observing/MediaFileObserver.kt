@@ -64,14 +64,13 @@ internal class MediaFileObserver @AssistedInject constructor(
         i { "Initialized ${fileType.logIdentifier} MediaFileObserver with sources ${enabledSourceTypes.map { it.name }}" }
     }
 
-    override fun enabledFileAndSourceTypeOrNull(
-        mediaStoreFileData: MediaStoreFileData
-    ): FileAndSourceType? {
+    override fun enabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType? {
         val sourceType = mediaStoreFileData.sourceType()
 
         return if (enabledSourceTypes.contains(sourceType)) {
             FileAndSourceType(fileType, sourceType)
-        } else
+        } else {
             null
+        }
     }
 }

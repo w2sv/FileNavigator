@@ -19,38 +19,33 @@ internal object PreMigrationNavigatorPreferencesKey {
             )
         }
 
-    private fun FileType.associatedPreMigrationKeys(): Sequence<Preferences.Key<*>> = sequence {
-        yield(fileTypeEnabled(this@associatedPreMigrationKeys))
+    private fun FileType.associatedPreMigrationKeys(): Sequence<Preferences.Key<*>> =
+        sequence {
+            yield(fileTypeEnabled(this@associatedPreMigrationKeys))
 
-        this@associatedPreMigrationKeys.sourceTypes.forEach { sourceType ->
-            yield(
-                sourceTypeEnabled(
-                    this@associatedPreMigrationKeys,
-                    sourceType
+            this@associatedPreMigrationKeys.sourceTypes.forEach { sourceType ->
+                yield(
+                    sourceTypeEnabled(
+                        this@associatedPreMigrationKeys,
+                        sourceType
+                    )
                 )
-            )
-            yield(
-                lastMoveDestination(
-                    this@associatedPreMigrationKeys,
-                    sourceType
+                yield(
+                    lastMoveDestination(
+                        this@associatedPreMigrationKeys,
+                        sourceType
+                    )
                 )
-            )
+            }
         }
-    }
 
     fun fileTypeEnabled(fileType: FileType): Preferences.Key<Boolean> =
         booleanPreferencesKey(fileType.preferencesKeyNameIdentifier)
 
-    fun sourceTypeEnabled(
-        fileType: FileType,
-        sourceType: SourceType
-    ): Preferences.Key<Boolean> =
+    fun sourceTypeEnabled(fileType: FileType, sourceType: SourceType): Preferences.Key<Boolean> =
         booleanPreferencesKey("${fileType.preferencesKeyNameIdentifier}.${sourceType.name}.IS_ENABLED")
 
-    fun lastMoveDestination(
-        fileType: FileType,
-        sourceType: SourceType
-    ): Preferences.Key<String> =
+    fun lastMoveDestination(fileType: FileType, sourceType: SourceType): Preferences.Key<String> =
         stringPreferencesKey("${fileType.preferencesKeyNameIdentifier}.${sourceType.name}.LAST_MOVE_DESTINATION")
 
     private val FileType.preferencesKeyNameIdentifier: String

@@ -7,8 +7,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import com.w2sv.androidutils.graphics.loadBitmap
 import com.w2sv.androidutils.hasPermission
-import slimber.log.e
 import java.io.FileNotFoundException
+import slimber.log.e
 
 fun ContentResolver.loadBitmapWithFileNotFoundHandling(uri: Uri): Bitmap? =
     try {

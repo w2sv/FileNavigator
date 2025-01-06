@@ -49,10 +49,7 @@ private object RequiredPermissionsScreenDefaults {
 
 @Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
-fun RequiredPermissionsScreen(
-    postNotificationsPermissionState: PostNotificationsPermissionState,
-    navigator: DestinationsNavigator
-) {
+fun RequiredPermissionsScreen(postNotificationsPermissionState: PostNotificationsPermissionState, navigator: DestinationsNavigator) {
     val permissionCards =
         rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState.state)
 
@@ -87,10 +84,7 @@ fun RequiredPermissionsScreen(
 }
 
 @Composable
-private fun PortraitMode(
-    permissionCards: ImmutableList<ModifierReceivingComposable>,
-    modifier: Modifier = Modifier
-) {
+private fun PortraitMode(permissionCards: ImmutableList<ModifierReceivingComposable>, modifier: Modifier = Modifier) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(
             RequiredPermissionsScreenDefaults.CardSpacing,
@@ -107,10 +101,7 @@ private fun PortraitMode(
 }
 
 @Composable
-private fun LandscapeMode(
-    permissionCards: ImmutableList<ModifierReceivingComposable>,
-    modifier: Modifier = Modifier
-) {
+private fun LandscapeMode(permissionCards: ImmutableList<ModifierReceivingComposable>, modifier: Modifier = Modifier) {
     LazyRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,

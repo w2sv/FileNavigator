@@ -7,20 +7,20 @@ import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.moving.moveTo
 import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @AndroidEntryPoint
 internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
@@ -88,7 +88,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
 
     @Parcelize
     data class Args(
-        val batchMoveBundles: List<MoveBundle.Batchable<*>>,
+        val batchMoveBundles: List<MoveBundle.Batchable<*>>
     ) : Parcelable {
 
         val destination: NavigatorMoveDestination.Directory
@@ -100,10 +100,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        fun sendBroadcast(
-            args: Args,
-            context: Context,
-        ) {
+        fun sendBroadcast(args: Args, context: Context) {
             context.sendBroadcast(
                 getIntent(
                     args = args,
@@ -112,10 +109,7 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
             )
         }
 
-        fun getIntent(
-            args: Args,
-            context: Context
-        ): Intent =
+        fun getIntent(args: Args, context: Context): Intent =
             Intent(context, BatchMoveBroadcastReceiver::class.java)
                 .putExtra(Args.EXTRA, args)
     }

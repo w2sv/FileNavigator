@@ -50,10 +50,7 @@ data class PermissionCardProperties(
 )
 
 @Composable
-fun PermissionCard(
-    properties: PermissionCardProperties,
-    modifier: Modifier = Modifier
-) {
+fun PermissionCard(properties: PermissionCardProperties, modifier: Modifier = Modifier) {
     ElevatedCard(
         modifier = modifier,
         elevation = AppCardDefaults.elevation
@@ -79,7 +76,7 @@ fun PermissionCard(
             Spacer(modifier = Modifier.height(16.dp))
             DialogButton(
                 text = stringResource(id = R.string.grant),
-                onClick = properties.onGrantButtonClick,
+                onClick = properties.onGrantButtonClick
             )
         }
     }

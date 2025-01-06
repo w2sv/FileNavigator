@@ -35,7 +35,7 @@ data class AppSnackbarVisuals(
     override val duration: SnackbarDuration = SnackbarDuration.Short,
     val action: SnackbarAction? = null,
     val kind: SnackbarKind? = null,
-    override val withDismissAction: Boolean = false,
+    override val withDismissAction: Boolean = false
 ) : SnackbarVisuals {
 
     override val actionLabel: String?
@@ -52,10 +52,7 @@ sealed class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
 }
 
 @Composable
-fun AppSnackbarHost(
-    modifier: Modifier = Modifier,
-    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
-) {
+fun AppSnackbarHost(modifier: Modifier = Modifier, snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current) {
     SnackbarHost(hostState = snackbarHostState, modifier = modifier) { snackbarData ->
         AppSnackbar(visuals = snackbarData.visuals as AppSnackbarVisuals)
     }
@@ -67,7 +64,7 @@ fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
         action = {
             visuals.action?.let { action ->
                 TextButton(
-                    onClick = action.callback,
+                    onClick = action.callback
                 ) {
                     Text(text = action.label, color = SnackbarDefaults.actionColor)
                 }

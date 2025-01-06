@@ -13,11 +13,11 @@ import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.kotlinutils.coroutines.flow.combineStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class AppViewModel @Inject constructor(
@@ -38,22 +38,23 @@ class AppViewModel @Inject constructor(
         _manageAllFilesPermissionGranted.value = isExternalStorageManger
     }
 
-    private val _postNotificationsPermissionGranted =
+    private val postNotificationsPermissionGranted =
         MutableStateFlow(
-            if (postNotificationsPermissionRequired)
+            if (postNotificationsPermissionRequired) {
                 context.hasPermission(Manifest.permission.POST_NOTIFICATIONS)
-            else
+            } else {
                 true
+            }
         )
 
     fun setPostNotificationsPermissionGranted(value: Boolean) {
-        _postNotificationsPermissionGranted.value = value
+        postNotificationsPermissionGranted.value = value
     }
 
     val postNotificationsPermissionRequested =
         preferencesRepository.postNotificationsPermissionRequested.stateIn(
             viewModelScope,
-            SharingStarted.Eagerly,
+            SharingStarted.Eagerly
         )
 
     fun savePostNotificationsPermissionRequestedIfRequired() {
@@ -66,8 +67,8 @@ class AppViewModel @Inject constructor(
 
     val allPermissionsGranted =
         combineStates(
-            _postNotificationsPermissionGranted,
-            manageAllFilesPermissionGranted,
+            postNotificationsPermissionGranted,
+            manageAllFilesPermissionGranted
         ) { f1, f2 ->
             f1 && f2
         }
@@ -78,7 +79,7 @@ class AppViewModel @Inject constructor(
 
     val theme = preferencesRepository.theme.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed(),
+        SharingStarted.WhileSubscribed()
     )
 
     fun saveTheme(theme: Theme) {
@@ -89,7 +90,7 @@ class AppViewModel @Inject constructor(
 
     val useAmoledBlackTheme = preferencesRepository.useAmoledBlackTheme.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed(),
+        SharingStarted.WhileSubscribed()
     )
 
     fun saveUseAmoledBlackTheme(value: Boolean) {
@@ -100,7 +101,7 @@ class AppViewModel @Inject constructor(
 
     val useDynamicColors = preferencesRepository.useDynamicColors.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed(),
+        SharingStarted.WhileSubscribed()
     )
 
     fun saveUseDynamicColors(value: Boolean) {

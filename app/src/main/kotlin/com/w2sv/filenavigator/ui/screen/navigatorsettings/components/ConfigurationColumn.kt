@@ -57,10 +57,7 @@ import slimber.log.i
 private val verticalPadding = 16.dp
 
 @Composable
-fun SubDirectoryIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurfaceVariant
-) {
+fun SubDirectoryIcon(modifier: Modifier = Modifier, tint: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
     Icon(
         painter = painterResource(id = R.drawable.ic_subdirectory_arrow_right_24),
         contentDescription = null,
@@ -73,7 +70,7 @@ fun SubDirectoryIcon(
 fun rememberAutoMoveDestinationPath(
     destination: LocalDestinationApi?,
     context: Context = LocalContext.current,
-    moveDestinationPathConverter: MoveDestinationPathConverter = LocalMoveDestinationPathConverter.current,
+    moveDestinationPathConverter: MoveDestinationPathConverter = LocalMoveDestinationPathConverter.current
 ): State<String?> =
     remember(destination) {
         mutableStateOf(
@@ -124,7 +121,7 @@ fun rememberSelectAutoMoveDestination(onDestinationSelected: (LocalDestinationAp
                 LocalDestination.fromTreeUri(
                     context = context,
                     treeUri = treeUri
-                )!!  // TODO: null case possible?
+                )!! // TODO: null case possible?
             )
         }
     }
@@ -148,7 +145,7 @@ fun NavigatorConfigurationColumn(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 SectionHeader(
-                    text = stringResource(id = R.string.file_types),
+                    text = stringResource(id = R.string.file_types)
                 )
                 AnimatedVisibility(visible = config.disabledFileTypes.isNotEmpty()) {
                     FilledTonalIconButton(onClick = showAddFileTypesBottomSheet) {
@@ -205,7 +202,7 @@ fun NavigatorConfigurationColumn(
         }
         item {
             SectionHeader(
-                text = stringResource(id = R.string.more),
+                text = stringResource(id = R.string.more)
             )
             MoreColumnItems(
                 showBatchMoveNotification = config.showBatchMoveNotification,

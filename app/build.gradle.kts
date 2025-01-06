@@ -66,7 +66,7 @@ android {
         outputs
             .forEach { output ->
                 (output as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
-                    "${versionName}.apk"
+                    "$versionName.apk"
             }
     }
     dependenciesInfo {

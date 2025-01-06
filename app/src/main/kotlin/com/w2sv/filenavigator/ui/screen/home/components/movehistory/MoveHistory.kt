@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -111,7 +110,7 @@ private fun MoveRecordView(
             .clip(MaterialTheme.shapes.medium)
             .clickable { scope.launch { onClick(movedFile, movedFileExists) } }
             .background(
-                color = MaterialTheme.colorScheme.secondaryContainer,
+                color = MaterialTheme.colorScheme.secondaryContainer
             )
             .thenIf(!movedFileExists) {
                 alpha(0.32f)
@@ -129,13 +128,13 @@ private fun MoveRecordView(
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowForward,
                     contentDescription = null,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(20.dp)
                 )
                 if (movedFile.autoMoved) {
                     Text(
                         text = stringResource(id = R.string.auto),
                         fontSize = 13.sp,
-                        lineHeight = 1.sp,
+                        lineHeight = 1.sp
                     )
                 }
             }
@@ -148,7 +147,7 @@ private fun MoveRecordView(
                         context
                     )
                 },
-                fontSize = MoveHistoryDefaults.FontSize,
+                fontSize = MoveHistoryDefaults.FontSize
             )
         }
     }
@@ -159,7 +158,7 @@ private fun FileNameWithTypeAndSourceIcon(moveEntry: MovedFile, modifier: Modifi
     Box(modifier = modifier) {
         TextFlow(
             text = moveEntry.name,
-            fontSize = MoveHistoryDefaults.FontSize,
+            fontSize = MoveHistoryDefaults.FontSize
         ) {
             // Placeholder that determines the obstacle size
             Box(

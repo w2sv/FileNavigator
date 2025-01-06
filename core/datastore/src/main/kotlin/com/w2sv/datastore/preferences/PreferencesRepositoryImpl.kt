@@ -12,9 +12,9 @@ import com.w2sv.datastoreutils.datastoreflow.DataStoreStateFlow
 import com.w2sv.datastoreutils.preferences.PreferencesDataStoreRepository
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
-import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
 
 @Singleton
 internal class PreferencesRepositoryImpl @Inject constructor(

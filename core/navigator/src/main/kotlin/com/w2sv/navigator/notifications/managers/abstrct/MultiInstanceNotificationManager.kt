@@ -18,7 +18,7 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
     appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,
     context: Context,
-    appNotificationId: AppNotificationId,
+    appNotificationId: AppNotificationId
 ) : AppNotificationManager<A>(
     appNotificationChannel = appNotificationChannel,
     notificationManager = notificationManager,

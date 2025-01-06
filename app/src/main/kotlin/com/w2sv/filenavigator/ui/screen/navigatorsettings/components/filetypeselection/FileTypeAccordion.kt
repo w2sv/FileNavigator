@@ -49,7 +49,7 @@ fun FileTypeAccordion(
     sourceTypeConfigMap: ImmutableMap<SourceType, SourceConfig>,
     onSourceCheckedChange: (SourceType, Boolean) -> Unit,
     setSourceAutoMoveConfig: (SourceType, AutoMoveConfig) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
@@ -63,7 +63,7 @@ fun FileTypeAccordion(
             fileType = fileType,
             sourceTypeConfigMap = sourceTypeConfigMap,
             onSourceCheckedChange = onSourceCheckedChange,
-            setSourceAutoMoveConfig = setSourceAutoMoveConfig,
+            setSourceAutoMoveConfig = setSourceAutoMoveConfig
         )
     }
 }
@@ -73,7 +73,7 @@ private fun Header(
     fileType: FileType,
     excludeFileType: () -> Unit,
     setSourceAutoMoveConfigs: (AutoMoveConfig) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val selectAutoMoveDestination = rememberSelectAutoMoveDestination(
         onDestinationSelected = {
@@ -116,7 +116,7 @@ private fun FileTypeRow(
         )
         Text(
             text = stringResource(id = fileType.labelRes),
-            fontSize = 18.sp,
+            fontSize = 18.sp
         )
         Spacer(modifier = Modifier.weight(1f))
         MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = setSourceAutoMoveConfigs)
@@ -128,16 +128,13 @@ private fun FileTypeRow(
                 .clickable { excludeFileType() }
                 .padding(horizontal = 6.dp, vertical = 2.dp),
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
 
 @Composable
-private fun MoreIconButtonWithDropdownMenu(
-    setSourceAutoMoveConfigs: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs: () -> Unit, modifier: Modifier = Modifier) {
     var expanded by rememberSaveable {
         mutableStateOf(false)
     }
@@ -146,7 +143,7 @@ private fun MoreIconButtonWithDropdownMenu(
             Icon(
                 painter = painterResource(id = R.drawable.ic_more_vert_24),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colorScheme.primary
             )
         }
         DropdownMenu(
@@ -156,7 +153,7 @@ private fun MoreIconButtonWithDropdownMenu(
                 width = Dp.Hairline,
                 color = MaterialTheme.colorScheme.secondary,
                 shape = MaterialTheme.shapes.extraSmall
-            ),
+            )
         ) {
             DropdownMenuItem(
                 text = { Text(text = stringResource(R.string.set_auto_move_destination_for_all_sources)) },
@@ -172,9 +169,9 @@ private fun MoreIconButtonWithDropdownMenu(
     }
 }
 
-//@Preview
-//@Composable
-//private fun AutoMoveRowPrev() {
+// @Preview
+// @Composable
+// private fun AutoMoveRowPrev() {
 //    AppTheme {
 //        Surface(
 //            tonalElevation = 2.dp,
@@ -185,4 +182,4 @@ private fun MoreIconButtonWithDropdownMenu(
 //            AutoMoveRow(destinationPath = "/path/component/somefolder")
 //        }
 //    }
-//}
+// }

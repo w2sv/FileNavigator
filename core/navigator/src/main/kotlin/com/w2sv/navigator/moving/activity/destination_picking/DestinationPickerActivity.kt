@@ -28,10 +28,11 @@ internal abstract class DestinationPickerActivity : AbstractMoveActivity() {
 
     abstract fun launchPicker()
 
-    protected open fun preemptiveMoveFailure(): MoveResult.Failure? = when {
-        !isExternalStorageManger -> MoveResult.ManageAllFilesPermissionMissing
-        else -> null
-    }
+    protected open fun preemptiveMoveFailure(): MoveResult.Failure? =
+        when {
+            !isExternalStorageManger -> MoveResult.ManageAllFilesPermissionMissing
+            else -> null
+        }
 
     interface Args : Parcelable {
         val pickerStartDestination: DocumentUri?
@@ -42,10 +43,7 @@ internal abstract class DestinationPickerActivity : AbstractMoveActivity() {
     }
 
     companion object {
-        inline fun <reified T : DestinationPickerActivity> makeRestartActivityIntent(
-            args: Args,
-            context: Context
-        ): Intent =
+        inline fun <reified T : DestinationPickerActivity> makeRestartActivityIntent(args: Args, context: Context): Intent =
             Intent.makeRestartActivityTask(
                 ComponentName(
                     context,

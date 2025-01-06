@@ -13,12 +13,12 @@ internal sealed interface DestinationSelectionManner : Parcelable {
 
     @Parcelize
     data class Picked(
-        override val notificationResources: NotificationResources,
+        override val notificationResources: NotificationResources
     ) : NotificationBased
 
     @Parcelize
     data class Quick(
-        override val notificationResources: NotificationResources,
+        override val notificationResources: NotificationResources
     ) : NotificationBased
 
     @Parcelize

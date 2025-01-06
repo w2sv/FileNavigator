@@ -62,8 +62,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
 @Preview
 @Composable
@@ -83,7 +83,7 @@ fun UnpaddedSwitch(
     thumbContent: (@Composable () -> Unit)? = null,
     enabled: Boolean = true,
     colors: SwitchColors = SwitchDefaults.colors(),
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     val uncheckedThumbDiameter = if (thumbContent == null) {
         UncheckedThumbDiameter
@@ -154,7 +154,7 @@ fun UnpaddedSwitch(
             uncheckedThumbDiameter = uncheckedThumbDiameter,
             minBound = thumbPaddingStart,
             maxBound = ThumbPathLength,
-            thumbContent = thumbContent,
+            thumbContent = thumbContent
         )
     }
 }
@@ -171,7 +171,7 @@ private fun BoxScope.SwitchImpl(
     thumbShape: Shape,
     uncheckedThumbDiameter: Dp,
     minBound: Dp,
-    maxBound: Dp,
+    maxBound: Dp
 ) {
     val trackColor = colors.trackColor(enabled, checked)
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -181,7 +181,7 @@ private fun BoxScope.SwitchImpl(
         PressedHandleWidth
     } else {
         uncheckedThumbDiameter + (ThumbDiameter - uncheckedThumbDiameter) *
-                ((thumbValueDp - minBound) / (maxBound - minBound))
+            ((thumbValueDp - minBound) / (maxBound - minBound))
     }
 
     val thumbOffset = if (isPressed) {
@@ -252,11 +252,11 @@ internal fun rippleOrFallbackImplementation(
 
 private val ThumbShape = RoundedCornerShape(32.dp)
 private val TrackOutlineWidth = 2.0.dp
-private val TrackWidth = 52.0.dp  // 52.0.dp
-private val TrackHeight = 32.0.dp  // 32.0.dp
+private val TrackWidth = 52.0.dp // 52.0.dp
+private val TrackHeight = 32.0.dp // 32.0.dp
 private val StateLayerSize = 40.0.dp
-private val SelectedHandleWidth = 24.0.dp  // 24.0.dp
-private val UnselectedHandleWidth = 16.0.dp  // 16.0.dp
+private val SelectedHandleWidth = 24.0.dp // 24.0.dp
+private val UnselectedHandleWidth = 16.0.dp // 16.0.dp
 internal val ThumbDiameter = SelectedHandleWidth
 internal val UncheckedThumbDiameter = UnselectedHandleWidth
 private val SwitchWidth = TrackWidth

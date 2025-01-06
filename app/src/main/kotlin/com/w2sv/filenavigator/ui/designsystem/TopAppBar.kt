@@ -39,7 +39,7 @@ fun NavigationDrawerScreenTopAppBar(
     TopAppBar(
         title = {
             Text(
-                title,
+                title
             )
         },
         modifier = modifier,
@@ -53,11 +53,11 @@ fun NavigationDrawerScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Menu,
                     contentDescription = stringResource(R.string.open_navigation_drawer),
-                    modifier = Modifier.size(28.dp),
+                    modifier = Modifier.size(28.dp)
                 )
             }
         },
-        windowInsets = WindowInsets.statusBarsIgnoringVisibility  // Apply status bar insets also if status bar hidden during immersive mode
+        windowInsets = WindowInsets.statusBarsIgnoringVisibility // Apply status bar insets also if status bar hidden during immersive mode
             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
     )
 }
@@ -89,7 +89,11 @@ fun TopAppBarAboveHorizontalDivider(
 }
 
 @Composable
-fun BackArrowTopAppBar(title: String, onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun BackArrowTopAppBar(
+    title: String,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     TopAppBarAboveHorizontalDivider(
         title = title,
         modifier = modifier,

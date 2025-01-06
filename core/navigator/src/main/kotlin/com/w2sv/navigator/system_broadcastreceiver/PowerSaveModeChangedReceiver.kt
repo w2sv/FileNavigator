@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.PowerManager
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
-import slimber.log.i
 import javax.inject.Inject
+import slimber.log.i
 
 @AndroidEntryPoint
 internal class PowerSaveModeChangedReceiver :

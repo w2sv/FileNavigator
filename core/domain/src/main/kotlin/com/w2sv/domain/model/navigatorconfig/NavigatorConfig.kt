@@ -10,7 +10,7 @@ data class NavigatorConfig(
     val fileTypeConfigMap: Map<FileType, FileTypeConfig>,
     val showBatchMoveNotification: Boolean,
     val disableOnLowBattery: Boolean,
-    val startOnBoot: Boolean,
+    val startOnBoot: Boolean
 ) {
     val enabledFileTypes: List<FileType> by lazy {
         fileTypeConfigMap.run { keys.filter { getValue(it).enabled } }
@@ -40,10 +40,7 @@ data class NavigatorConfig(
     // Copying
     // ================
 
-    fun copyWithAlteredFileTypeConfig(
-        fileType: FileType,
-        alterFileTypeConfig: (FileTypeConfig) -> FileTypeConfig
-    ): NavigatorConfig =
+    fun copyWithAlteredFileTypeConfig(fileType: FileType, alterFileTypeConfig: (FileTypeConfig) -> FileTypeConfig): NavigatorConfig =
         copy(
             fileTypeConfigMap = fileTypeConfigMap.copy {
                 update(fileType, alterFileTypeConfig)
@@ -56,7 +53,7 @@ data class NavigatorConfig(
         alterSourceConfig: (SourceConfig) -> SourceConfig
     ): NavigatorConfig =
         copyWithAlteredFileTypeConfig(
-            fileType = fileType,
+            fileType = fileType
         ) {
             it.copy(
                 sourceTypeConfigMap = it.sourceTypeConfigMap.copy {
@@ -65,12 +62,9 @@ data class NavigatorConfig(
             )
         }
 
-    fun copyWithAlteredAutoMoveConfigs(
-        fileType: FileType,
-        autoMoveConfig: AutoMoveConfig
-    ): NavigatorConfig =
+    fun copyWithAlteredAutoMoveConfigs(fileType: FileType, autoMoveConfig: AutoMoveConfig): NavigatorConfig =
         copyWithAlteredFileTypeConfig(
-            fileType = fileType,
+            fileType = fileType
         ) {
             it.copy(
                 sourceTypeConfigMap = it.sourceTypeConfigMap.map { (sourceType, sourceConfig) ->
@@ -83,10 +77,9 @@ data class NavigatorConfig(
         fileType: FileType,
         sourceType: SourceType,
         alterSourceAutoMoveConfig: (AutoMoveConfig) -> AutoMoveConfig
-    ) =
-        copyWithAlteredSourceConfig(fileType, sourceType) {
-            it.copy(autoMoveConfig = alterSourceAutoMoveConfig(it.autoMoveConfig))
-        }
+    ) = copyWithAlteredSourceConfig(fileType, sourceType) {
+        it.copy(autoMoveConfig = alterSourceAutoMoveConfig(it.autoMoveConfig))
+    }
 
     companion object {
         val default by lazy {
@@ -94,7 +87,7 @@ data class NavigatorConfig(
                 fileTypeConfigMap = FileType.values.associateWith { defaultFileTypeConfig(it) },
                 showBatchMoveNotification = true,
                 disableOnLowBattery = false,
-                startOnBoot = false,
+                startOnBoot = false
             )
         }
     }
@@ -103,5 +96,5 @@ data class NavigatorConfig(
 private fun defaultFileTypeConfig(fileType: FileType): FileTypeConfig =
     FileTypeConfig(
         enabled = true,
-        sourceTypeConfigMap = fileType.sourceTypes.associateWith { SourceConfig() },
+        sourceTypeConfigMap = fileType.sourceTypes.associateWith { SourceConfig() }
     )

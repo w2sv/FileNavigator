@@ -4,18 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
 }
 
-android {
-    @Suppress("UnstableApiUsage")
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-    }
-//    defaultConfig {
-//        testInstrumentationRunner = "com.w2sv.navigator.HiltTestRunner"
-//    }
-}
-
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.common)
@@ -37,18 +25,4 @@ dependencies {
     // ==============
 
     testImplementation(projects.core.test)
-
-    // ==============
-    // Android Test
-    // ==============
-
-//    androidTestImplementation(libs.androidx.test.runner)
-//    androidTestImplementation(libs.androidx.test.rules)
-//    androidTestImplementation(libs.androidx.test.uiautomator)
-//    androidTestImplementation(libs.androidx.test.ext.junit)
-//
-//    androidTestImplementation(libs.google.hilt.android.testing)
-//    androidTestImplementation(projects.core.database)
-//    androidTestImplementation(projects.core.datastore)
-//    kspAndroidTest(libs.google.hilt.compiler)
 }

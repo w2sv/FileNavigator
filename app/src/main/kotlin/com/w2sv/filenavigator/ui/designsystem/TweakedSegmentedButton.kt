@@ -62,7 +62,7 @@ fun SingleChoiceSegmentedButtonRowScope.TweakedSegmentedButton(
     ),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     icon: @Composable () -> Unit = { SegmentedButtonDefaults.Icon(selected) },
-    label: @Composable () -> Unit,
+    label: @Composable () -> Unit
 ) {
     val containerColor = colors.containerColor(enabled, selected)
     val contentColor = colors.contentColor(enabled, selected)
@@ -99,6 +99,7 @@ private fun Modifier.interactionZIndex(checked: Boolean, interactionCount: State
         }
     }
 
+@Suppress("ktlint:standard:property-naming")
 private const val CheckedZIndexFactor = 5f
 private val IconSpacing = 8.dp
 
@@ -152,12 +153,9 @@ internal fun SegmentedButtonColors.containerColor(enabled: Boolean, active: Bool
 }
 
 @Composable
-private fun SegmentedButtonContent(
-    icon: @Composable () -> Unit,
-    content: @Composable () -> Unit,
-) {
+private fun SegmentedButtonContent(icon: @Composable () -> Unit, content: @Composable () -> Unit) {
     Box(
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.Center
 //        modifier = Modifier.padding(ButtonDefaults.TextButtonContentPadding)
     ) {
         val typography = MaterialTheme.typography.labelLarge
@@ -180,10 +178,7 @@ internal class SegmentedButtonContentMeasurePolicy(
     var animatable: Animatable<Int, AnimationVector1D>? = null
     private var initialOffset: Int? = null
 
-    override fun MeasureScope.measure(
-        measurables: List<List<Measurable>>,
-        constraints: Constraints
-    ): MeasureResult {
+    override fun MeasureScope.measure(measurables: List<List<Measurable>>, constraints: Constraints): MeasureResult {
         val (iconMeasurables, contentMeasurables) = measurables
         val iconPlaceables = iconMeasurables.fastMap { it.measure(constraints) }
         val iconWidth = iconPlaceables.fastMaxBy { it.width }?.width ?: 0
@@ -230,6 +225,7 @@ internal class SegmentedButtonContentMeasurePolicy(
 }
 
 private object MotionTokens {
+    @Suppress("ktlint:standard:property-naming")
     const val DurationMedium3 = 350.0
 }
 

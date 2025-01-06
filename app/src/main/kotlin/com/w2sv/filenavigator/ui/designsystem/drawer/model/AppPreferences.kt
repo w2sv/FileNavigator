@@ -18,7 +18,7 @@ data class AppPreferences(
     val useAmoledBlackTheme: () -> Boolean,
     val setUseAmoledBlackTheme: (Boolean) -> Unit,
     val useDynamicColors: () -> Boolean,
-    val setUseDynamicColors: (Boolean) -> Unit,
+    val setUseDynamicColors: (Boolean) -> Unit
 )
 
 @Composable

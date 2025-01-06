@@ -56,9 +56,7 @@ internal class NonMediaFileObserver @AssistedInject constructor(
         i { "Initialized NonMediaFileObserver with fileTypes: ${enabledFileTypes.map { it.logIdentifier }}" }
     }
 
-    override fun enabledFileAndSourceTypeOrNull(
-        mediaStoreFileData: MediaStoreFileData
-    ): FileAndSourceType? =
+    override fun enabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType? =
         enabledFileTypes
             .firstOrNull { it.fileExtensions.contains(mediaStoreFileData.extension) }
             ?.let { fileType ->

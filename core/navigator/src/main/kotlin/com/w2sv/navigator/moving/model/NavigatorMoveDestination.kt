@@ -101,12 +101,11 @@ internal sealed interface NavigatorMoveDestination : Parcelable, MoveDestination
                         )
                 }
             }
-
-
         }
 
         companion object {
-            fun get(documentUri: DocumentUri, context: Context): File =  // TODO: test
+            fun get(documentUri: DocumentUri, context: Context): File =
+                // TODO: test
                 when (documentUri.uri.authority!!) {
                     "com.android.externalstorage.documents" -> Local(
                         documentUri = documentUri,

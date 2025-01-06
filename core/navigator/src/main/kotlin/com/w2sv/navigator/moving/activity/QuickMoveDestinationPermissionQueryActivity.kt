@@ -10,18 +10,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import slimber.log.i
-import javax.inject.Inject
 
 @AndroidEntryPoint
 internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivity() {
@@ -122,10 +122,7 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
     }
 
     companion object {
-        fun makeRestartActivityTaskIntent(
-            moveBundle: MoveBundle.QuickMove,
-            context: Context
-        ): Intent =
+        fun makeRestartActivityTaskIntent(moveBundle: MoveBundle.QuickMove, context: Context): Intent =
             Intent.makeRestartActivityTask(
                 ComponentName(
                     context,

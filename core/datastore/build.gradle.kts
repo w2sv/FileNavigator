@@ -25,7 +25,7 @@ protobuf {
                 register("java") {
                     option("lite")
                 }
-                id("kotlin")  // Enables kotlin DSL
+                id("kotlin") // Enables kotlin DSL
             }
         }
     }

@@ -36,8 +36,8 @@ fun AppTheme(
             else -> rememberDynamicColorScheme(
                 seedColor = seedColor,
                 isDark = useDarkTheme,
-                isAmoled = false,  // TODO
-                style = PaletteStyle.Rainbow,  // Vibrant, TonalSpot, Fidelity, Rainbow
+                isAmoled = false, // TODO
+                style = PaletteStyle.Rainbow // Vibrant, TonalSpot, Fidelity, Rainbow
             )
         }
             .run {
@@ -92,7 +92,7 @@ private fun ColorScheme.animate(animationSpec: AnimationSpec<Color>): ColorSchem
         inverseOnSurface = inverseOnSurface.animate(animationSpec),
         outline = outline.animate(animationSpec),
         outlineVariant = outlineVariant.animate(animationSpec),
-        scrim = scrim.animate(animationSpec),
+        scrim = scrim.animate(animationSpec)
     )
 }
 

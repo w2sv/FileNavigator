@@ -2,7 +2,6 @@ package com.w2sv.datastore.proto.navigatorconfig
 
 import androidx.annotation.VisibleForTesting
 import androidx.datastore.core.DataStore
-import com.w2sv.common.util.log
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
@@ -10,11 +9,13 @@ import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-internal class NavigatorConfigDataSourceImpl @Inject constructor(private val navigatorConfigProtoDataStore: DataStore<NavigatorConfigProto>) :
+internal class NavigatorConfigDataSourceImpl @Inject constructor(
+    private val navigatorConfigProtoDataStore: DataStore<NavigatorConfigProto>
+) :
     NavigatorConfigDataSource {
 
     override val navigatorConfig: Flow<NavigatorConfig> =
@@ -65,10 +66,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(private val nav
         }
     }
 
-    override suspend fun unsetQuickMoveDestination(
-        fileType: FileType,
-        sourceType: SourceType,
-    ) {
+    override suspend fun unsetQuickMoveDestination(fileType: FileType, sourceType: SourceType) {
         updateData { config ->
             config.copyWithAlteredSourceConfig(
                 fileType,
@@ -79,10 +77,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(private val nav
         }
     }
 
-    override fun quickMoveDestinations(
-        fileType: FileType,
-        sourceType: SourceType
-    ): Flow<List<LocalDestinationApi>> =
+    override fun quickMoveDestinations(fileType: FileType, sourceType: SourceType): Flow<List<LocalDestinationApi>> =
         navigatorConfig.map { it.sourceConfig(fileType, sourceType).quickMoveDestinations }
 }
 

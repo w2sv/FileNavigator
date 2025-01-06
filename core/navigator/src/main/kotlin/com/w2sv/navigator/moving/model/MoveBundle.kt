@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.domain.model.MovedFile
-import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
+import kotlinx.parcelize.Parcelize
 
 internal typealias AnyMoveBundle = MoveBundle<*, *>
 
@@ -59,10 +59,7 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
         override val destinationSelectionManner: DestinationSelectionManner.Auto
     ) : MoveBundle<NavigatorMoveDestination.Directory, DestinationSelectionManner.Auto>
 
-    fun movedFileEntry(
-        context: Context,
-        dateTime: LocalDateTime,
-    ): MovedFile {
+    fun movedFileEntry(context: Context, dateTime: LocalDateTime): MovedFile {
         val name = destination.fileName(context)
         val originalName = if (name != file.mediaStoreFileData.name) file.mediaStoreFileData.name else null
         return when (val capturedDestination = destination) {
@@ -107,7 +104,7 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
                 )
             }
 
-            else -> throw IllegalArgumentException()  // I have no clue why this is necessary here
+            else -> throw IllegalArgumentException() // I have no clue why this is necessary here
         }
     }
 

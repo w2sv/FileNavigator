@@ -11,9 +11,9 @@ import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.datastore.proto.ProtoMapper
 import com.w2sv.datastore.sourceConfigProto
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
-import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -33,7 +33,7 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
             },
             showBatchMoveNotification = proto.showBatchMoveNotification,
             disableOnLowBattery = proto.disableOnLowBattery,
-            startOnBoot = proto.startOnBoot,
+            startOnBoot = proto.startOnBoot
         )
 
     override fun toProto(external: NavigatorConfig): NavigatorConfigProto =
@@ -59,7 +59,7 @@ private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeC
             enabled = proto.enabled,
             sourceTypeConfigMap = proto.sourceTypeToConfigMap.map { (sourceTypeIndex, config) ->
                 SourceType.entries[sourceTypeIndex] to SourceConfigMapper.toExternal(config)
-            },
+            }
         )
 
     override fun toProto(external: FileTypeConfig): FileTypeConfigProto =
@@ -94,19 +94,21 @@ private object SourceConfigMapper :
 }
 
 private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveConfig> {
-    override fun toExternal(proto: AutoMoveConfigProto): AutoMoveConfig = AutoMoveConfig(
-        enabled = proto.enabled,
-        destination = if (proto.destination.isNotEmpty()) {
-            LocalDestination.parse(proto.destination)
-        } else {
-            null
-        }
-    )
+    override fun toExternal(proto: AutoMoveConfigProto): AutoMoveConfig =
+        AutoMoveConfig(
+            enabled = proto.enabled,
+            destination = if (proto.destination.isNotEmpty()) {
+                LocalDestination.parse(proto.destination)
+            } else {
+                null
+            }
+        )
 
-    override fun toProto(external: AutoMoveConfig): AutoMoveConfigProto = autoMoveConfigProto {
-        enabled = external.enabled
-        destination = external.destination?.uriString ?: ""
-    }
+    override fun toProto(external: AutoMoveConfig): AutoMoveConfigProto =
+        autoMoveConfigProto {
+            enabled = external.enabled
+            destination = external.destination?.uriString ?: ""
+        }
 }
 
 private val MoveDestinationApi.uriString: String

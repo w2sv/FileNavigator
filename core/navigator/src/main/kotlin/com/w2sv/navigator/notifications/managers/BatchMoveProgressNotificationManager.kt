@@ -8,9 +8,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.text.buildSpannedString
 import com.w2sv.androidutils.res.getQuantityText
 import com.w2sv.core.navigator.R
+import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.moving.receiver.CancelBatchMoveBroadcastReceiver
-import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
@@ -20,12 +20,12 @@ import javax.inject.Inject
 
 internal class BatchMoveProgressNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
-    notificationManager: NotificationManager,
+    notificationManager: NotificationManager
 ) : SingleInstanceNotificationManager<BatchMoveProgressNotificationManager.BuilderArgs>(
     appNotificationChannel = AppNotificationChannel.MoveProgress,
     notificationManager = notificationManager,
     context = context,
-    appNotificationId = AppNotificationId.MoveProgress,
+    appNotificationId = AppNotificationId.MoveProgress
 ) {
     sealed interface BuilderArgs {
         data class MoveProgress(
@@ -74,7 +74,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
             is BuilderArgs.MoveResults -> {
                 object : Builder() {
                     override fun build(): Notification {
-                        setProgress(0, 0, false)  // Hides progress bar
+                        setProgress(0, 0, false) // Hides progress bar
 
                         val moveResultToCount = args.moveResults.groupingBy { it }.eachCount()
                         val contentText = contentText(

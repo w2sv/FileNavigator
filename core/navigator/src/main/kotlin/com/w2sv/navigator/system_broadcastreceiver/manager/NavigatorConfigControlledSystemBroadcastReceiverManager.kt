@@ -6,4 +6,3 @@ import kotlinx.coroutines.CoroutineScope
 interface NavigatorConfigControlledSystemBroadcastReceiverManager {
     fun toggleReceiversOnStatusChange(collectionScope: CoroutineScope, context: Context)
 }
-

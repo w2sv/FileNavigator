@@ -47,10 +47,7 @@ import com.w2sv.filenavigator.ui.designsystem.drawer.model.rememberAppPreference
 @OptIn(ExperimentalLayoutApi::class)
 @Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
-fun AppSettingsScreen(
-    navigator: DestinationsNavigator,
-    appPreferences: AppPreferences = rememberAppPreferences()
-) {
+fun AppSettingsScreen(navigator: DestinationsNavigator, appPreferences: AppPreferences = rememberAppPreferences()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -96,7 +93,7 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
                     ThemeSelectionRow(
                         selected = appPreferences.theme(),
                         onSelected = appPreferences.setTheme,
-                        horizontalArrangement = Arrangement.spacedBy(24.dp),
+                        horizontalArrangement = Arrangement.spacedBy(24.dp)
                     )
                 }
                 AnimatedVisibility(visible = LocalUseDarkTheme.current) {

@@ -12,7 +12,7 @@ import com.w2sv.database.typeconverter.UriConverter
 @Database(
     entities = [MovedFileEntity::class],
     version = 5,
-    exportSchema = true,
+    exportSchema = true
 )
 @TypeConverters(
     LocalDateTimeConverter::class,

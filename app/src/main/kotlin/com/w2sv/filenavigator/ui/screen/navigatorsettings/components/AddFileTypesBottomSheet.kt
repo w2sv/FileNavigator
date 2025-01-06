@@ -83,7 +83,7 @@ fun AddFileTypesBottomSheet(
         )
         LazyVerticalGrid(
             columns = GridCells.FixedSize(92.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
         ) {
             items(disabledFileTypes) { fileType ->
                 FileTypeCard(
@@ -115,7 +115,7 @@ fun AddFileTypesBottomSheet(
                 .animateContentSize()
                 .padding(horizontal = 8.dp)
                 .align(Alignment.End)
-                .padding(bottom = 12.dp)  // To prevent elevation shadow cutoff
+                .padding(bottom = 12.dp) // To prevent elevation shadow cutoff
         )
         Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility))
     }

@@ -50,10 +50,7 @@ import com.w2sv.filenavigator.ui.viewmodel.MoveHistoryViewModel
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun MoveHistoryCard(
-    modifier: Modifier = Modifier,
-    moveHistoryVM: MoveHistoryViewModel = activityViewModel()
-) {
+fun MoveHistoryCard(modifier: Modifier = Modifier, moveHistoryVM: MoveHistoryViewModel = activityViewModel()) {
     val moveHistory by moveHistoryVM.moveHistory.collectAsStateWithLifecycle()
 
     val moveHistoryIsEmpty by remember {
@@ -79,13 +76,13 @@ fun MoveHistoryCard(
         ) {
             Text(
                 text = stringResource(R.string.move_history),
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineMedium
             )
 
             AnimatedVisibility(visible = !moveHistoryIsEmpty) {
                 IconButton(
                     onClick = { showHistoryDeletionDialog = true },
-                    modifier = Modifier.size(38.dp),
+                    modifier = Modifier.size(38.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_delete_history_24),
@@ -121,7 +118,7 @@ fun MoveHistoryCard(
 private fun rememberMoveEntryRowOnClick(
     moveHistoryVM: MoveHistoryViewModel = activityViewModel(),
     context: Context = LocalContext.current,
-    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ): suspend (MovedFile, Boolean) -> Unit {
     return remember {
         { movedFile, fileExists ->
@@ -193,7 +190,7 @@ private fun NoHistoryPlaceHolder(modifier: Modifier = Modifier) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_history_24),
                 contentDescription = null,
-                modifier = Modifier.size(92.dp),
+                modifier = Modifier.size(92.dp)
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(

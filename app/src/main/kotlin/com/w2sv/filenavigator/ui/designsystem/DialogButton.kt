@@ -15,16 +15,20 @@ fun DialogButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
+    enabled: Boolean = true
 ) {
     ElevatedButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        border = if (enabled) BorderStroke(
-            Dp.Hairline,
-            MaterialTheme.colorScheme.primary
-        ) else null,
+        border = if (enabled) {
+            BorderStroke(
+                Dp.Hairline,
+                MaterialTheme.colorScheme.primary
+            )
+        } else {
+            null
+        },
         elevation = ButtonDefaults.elevatedButtonElevation(8.dp),
         colors = ButtonDefaults.elevatedButtonColors(
             contentColor = MaterialTheme.colorScheme.secondary

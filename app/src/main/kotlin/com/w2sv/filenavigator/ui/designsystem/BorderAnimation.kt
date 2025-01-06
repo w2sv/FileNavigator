@@ -28,7 +28,7 @@ fun rememberBorderAnimationState(
     endColor: Color,
     duration: Int = 500,
     key1: Any? = null,
-    key2: Any? = null,
+    key2: Any? = null
 ): BorderAnimationState {
     val transition = updateTransition(targetState = enabled, label = "")
 
@@ -38,14 +38,14 @@ fun rememberBorderAnimationState(
                 if (targetState) {
                     tween(
                         durationMillis = duration,
-                        easing = Easing.Overshoot,
+                        easing = Easing.Overshoot
                     )
                 } else {
                     tween(durationMillis = duration)
                 }
             }
         },
-        label = "",
+        label = ""
     ) { state ->
         if (state) endWidth else startWidth
     }
@@ -56,14 +56,14 @@ fun rememberBorderAnimationState(
                 if (targetState) {
                     tween(
                         durationMillis = duration,
-                        easing = Easing.Overshoot,
+                        easing = Easing.Overshoot
                     )
                 } else {
                     tween(durationMillis = duration)
                 }
             }
         },
-        label = "",
+        label = ""
     ) { state ->
         if (state) endColor else startColor
     }

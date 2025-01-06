@@ -8,5 +8,5 @@ annotation class GlobalScope(val appDispatcher: AppDispatcher)
 
 enum class AppDispatcher {
     Default,
-    IO,
+    IO
 }

@@ -13,10 +13,10 @@ import com.w2sv.common.util.MediaUri
 import com.w2sv.common.util.log
 import com.w2sv.domain.model.SourceType
 import com.w2sv.navigator.shared.emitDiscardedLog
+import java.io.File
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
-import java.io.File
 
 /**
  * @param volumeRelativeDirPath Relative to the storage volume, e.g. "Documents/", "DCIM/Camera/".
@@ -80,13 +80,10 @@ internal data class MediaStoreFileData(
             MediaStore.MediaColumns.RELATIVE_PATH,
             MediaStore.MediaColumns.SIZE,
             MediaStore.MediaColumns.IS_PENDING,
-            MediaStore.MediaColumns.IS_TRASHED,
+            MediaStore.MediaColumns.IS_TRASHED
         )
 
-        fun queryFor(
-            mediaUri: MediaUri,
-            contentResolver: ContentResolver
-        ): MediaStoreFileData? =
+        fun queryFor(mediaUri: MediaUri, contentResolver: ContentResolver): MediaStoreFileData? =
             try {
                 contentResolver.query(
                     uri = mediaUri.uri,
@@ -98,7 +95,7 @@ internal data class MediaStoreFileData(
                         volumeRelativeDirPath = it.getStringOrThrow(MediaStore.MediaColumns.RELATIVE_PATH),
                         size = it.getLongOrThrow(MediaStore.MediaColumns.SIZE),
                         isPending = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_PENDING),
-                        isTrashed = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_TRASHED),
+                        isTrashed = it.getBooleanOrThrow(MediaStore.MediaColumns.IS_TRASHED)
                     )
                         .log()
                 }

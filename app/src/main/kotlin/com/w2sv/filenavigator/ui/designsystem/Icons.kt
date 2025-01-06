@@ -15,7 +15,11 @@ object IconSize {
 }
 
 @Composable
-fun FileTypeIcon(fileType: FileType, modifier: Modifier = Modifier, tint: Color = fileType.color) {
+fun FileTypeIcon(
+    fileType: FileType,
+    modifier: Modifier = Modifier,
+    tint: Color = fileType.color
+) {
     Icon(
         painter = painterResource(id = fileType.iconRes),
         contentDescription = null,
@@ -24,8 +28,8 @@ fun FileTypeIcon(fileType: FileType, modifier: Modifier = Modifier, tint: Color 
     )
 }
 
-//@Composable
-//fun AutoMoveIcon(modifier: Modifier = Modifier, tint: Color = LocalContentColor.current) {
+// @Composable
+// fun AutoMoveIcon(modifier: Modifier = Modifier, tint: Color = LocalContentColor.current) {
 //    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
 //        CompositionLocalProvider(LocalContentColor provides tint) {
 //            Icon(
@@ -40,4 +44,4 @@ fun FileTypeIcon(fileType: FileType, modifier: Modifier = Modifier, tint: Color 
 //            )
 //        }
 //    }
-//}
+// }

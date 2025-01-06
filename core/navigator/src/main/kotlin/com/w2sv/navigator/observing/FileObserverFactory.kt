@@ -9,10 +9,10 @@ import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.flow.mapState
 import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
 import slimber.log.i
-import javax.inject.Inject
 
 typealias FileTypeConfigMap = Map<FileType, FileTypeConfig>
 

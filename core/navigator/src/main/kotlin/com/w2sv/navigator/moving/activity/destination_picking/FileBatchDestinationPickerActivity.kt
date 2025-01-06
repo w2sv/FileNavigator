@@ -5,17 +5,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.util.DocumentUri
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.MoveResultChannel
-import com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
 import com.w2sv.navigator.moving.model.MoveResult
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
+import com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
-import javax.inject.Inject
 
 @AndroidEntryPoint
 internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() {
@@ -62,11 +62,11 @@ internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() 
                     MoveBundle.DirectoryDestinationPicked(
                         file = it.moveFile,
                         destinationSelectionManner = DestinationSelectionManner.Picked(
-                            notificationResources = it.notificationResources,
+                            notificationResources = it.notificationResources
                         ),
                         destination = moveDestination
                     )
-                },
+                }
             ),
             context = applicationContext
         )
@@ -75,6 +75,6 @@ internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() 
     @Parcelize
     data class Args(
         val moveFilesWithNotificationResources: List<MoveFileWithNotificationResources>,
-        override val pickerStartDestination: DocumentUri?,
+        override val pickerStartDestination: DocumentUri?
     ) : DestinationPickerActivity.Args
 }

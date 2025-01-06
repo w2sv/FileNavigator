@@ -12,5 +12,7 @@ import dagger.hilt.components.SingletonComponent
 internal interface SystemBroadcastReceiverBinderModule {
 
     @Binds
-    fun navigatorConfigControlledSystemBroadcastReceiverManager(impl: NavigatorConfigControlledSystemBroadcastReceiverManagerImpl): NavigatorConfigControlledSystemBroadcastReceiverManager
+    fun navigatorConfigControlledSystemBroadcastReceiverManager(
+        impl: NavigatorConfigControlledSystemBroadcastReceiverManagerImpl
+    ): NavigatorConfigControlledSystemBroadcastReceiverManager
 }
