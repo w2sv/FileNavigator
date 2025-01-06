@@ -14,7 +14,7 @@
   <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/w2sv/FileNavigator/total?label=Downloads&logo=github&color=purple">
   <br>
 
-  <img src="https://img.shields.io/github/license/w2sv/WiFi-Widget">
+  <img src="https://img.shields.io/github/license/w2sv/FileNavigator">
   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/w2sv/FileNavigator">
   <a href="https://github.com/w2sv/FileNavigator/actions/workflows/workflow.yaml"><img alt="Check & Assemble Debug" src="https://github.com/w2sv/FileNavigator/actions/workflows/workflow.yaml/badge.svg"></a>
 

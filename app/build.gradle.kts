@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.filenavigator.hilt)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.compose.compiler)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -103,6 +104,7 @@ dependencies {
     implementation(projects.core.navigator)
     implementation(projects.core.datastore)
     implementation(projects.core.database)
+    baselineProfile(projects.benchmarking)
 
     implementation(libs.w2sv.androidutils)
     implementation(libs.w2sv.kotlinutils)
