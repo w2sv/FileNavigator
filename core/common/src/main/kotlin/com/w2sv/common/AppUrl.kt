@@ -8,4 +8,5 @@ object AppUrl {
     const val GOOGLE_PLAY_DEVELOPER_PAGE =
         "https://play.google.com/store/apps/dev?id=6884111703871536890"
     const val DONATE = "https://buymeacoffee.com/w2sv"
+    const val PLAYSTORE_LISTING = "https://play.google.com/store/apps/details?id=com.w2sv.filenavigator"
 }

@@ -21,7 +21,7 @@
     <string name="share">Share</string>
     <string name="rate">Rate</string>
     <string name="privacy_policy">Privacy Policy</string>
-    <string name="share_action_text">Check out File Navigator! https://play.google.com/store/apps/details?id=com.w2sv.filenavigator</string>
+    <string name="share_action_text">Check out File Navigator!\n%s</string>
     <string name="you_re_not_signed_into_the_play_store">You\'re not signed into the Play Store</string>
     <string name="version">Version: %s</string>
     <string name="appearance">Appearance</string>
@@ -78,6 +78,8 @@
     <string name="batch_move_notification">Batch-move notification</string>
     <string name="batch_move_explanation">Upon at least 2 active navigation notifications, show a notification through which all navigatable files may be collectively moved to a destination</string>
     <string name="provider_does_not_support_file_viewing">Provider doesn\'t support file viewing.</string>
+    <string name="share_action_explanation">Share the app with someone who might appreciate it</string>
+    <string name="report_a_bug_request_a_feature_explanation">Help make the app better!</string>
     <plurals name="add_file_types_button">
         <item quantity="one">Add File Type</item>
         <item quantity="other">Add File Types</item>

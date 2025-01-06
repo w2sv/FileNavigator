@@ -122,15 +122,17 @@ internal fun NavigationDrawerSheetItemColumn(
                 NavigationDrawerSheetElement.Item(
                     iconRes = R.drawable.ic_share_24,
                     labelRes = R.string.share,
+                    explanationRes = R.string.share_action_explanation,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
                         ShareCompat.IntentBuilder(context)
                             .setType("text/plain")
-                            .setText(context.getString(R.string.share_action_text))
+                            .setText(context.getString(R.string.share_action_text, AppUrl.PLAYSTORE_LISTING))
                             .startChooser()
                     }
                 ),
                 NavigationDrawerSheetElement.Item(
                     iconRes = R.drawable.ic_bug_report_24,
+                    explanationRes = R.string.report_a_bug_request_a_feature_explanation,
                     labelRes = R.string.report_a_bug_request_a_feature,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
                         context.openUrl(AppUrl.CREATE_ISSUE)
@@ -214,7 +216,8 @@ private sealed interface NavigationDrawerSheetElement {
         @Immutable
         sealed interface Type {
             @Immutable
-            data class Clickable(val onClick: () -> Unit) : Type
+            @JvmInline
+            value class Clickable(val onClick: () -> Unit) : Type
 
             @Immutable
             data class Switch(
