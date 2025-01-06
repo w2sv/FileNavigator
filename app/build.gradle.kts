@@ -100,11 +100,11 @@ dependencies {
     implementation(projects.core.datastore)
     implementation(projects.core.database)
 
-    implementation(libs.androidutils)
-    implementation(libs.kotlinutils)
-    implementation(libs.reversiblestate)
-    implementation(libs.composed)
-    implementation(libs.composed.permissions)
+    implementation(libs.w2sv.androidutils)
+    implementation(libs.w2sv.kotlinutils)
+    implementation(libs.w2sv.reversiblestate)
+    implementation(libs.w2sv.composed)
+    implementation(libs.w2sv.composed.permissions)
 
     // Androidx
     implementation(libs.androidx.core)
@@ -130,7 +130,7 @@ dependencies {
     // Other
     implementation(libs.slimber)
     implementation(libs.google.guava)
-    implementation(libs.simplestorage)
+    implementation(libs.w2sv.simplestorage)
     implementation(libs.kotlinx.collections.immutable)
     lintChecks(libs.compose.lint.checks)
     implementation(libs.materialKolor)

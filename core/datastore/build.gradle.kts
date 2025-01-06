@@ -56,10 +56,10 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.protobuf.kotlin.lite)
 
-    implementation(libs.kotlinutils)
-    implementation(libs.datastoreutils.preferences)
-    implementation(libs.datastoreutils.datastoreflow)
-    implementation(libs.androidutils)
+    implementation(libs.w2sv.kotlinutils)
+    implementation(libs.w2sv.datastoreutils.preferences)
+    implementation(libs.w2sv.datastoreutils.datastoreflow)
+    implementation(libs.w2sv.androidutils)
     implementation(libs.slimber)
 
     testImplementation(libs.bundles.unitTest)

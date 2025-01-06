@@ -23,9 +23,9 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.domain)
     implementation(libs.androidx.core)
-    implementation(libs.androidutils)
+    implementation(libs.w2sv.androidutils)
     implementation(libs.slimber)
-    implementation(libs.simplestorage)
+    implementation(libs.w2sv.simplestorage)
 }
 
 dependencies {

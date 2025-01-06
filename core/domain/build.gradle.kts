@@ -7,10 +7,10 @@ plugins {
 dependencies {
     implementation(projects.core.common)
 
-    api(libs.datastoreutils.datastoreflow)
-    implementation(libs.androidutils)
+    api(libs.w2sv.datastoreutils.datastoreflow)
+    implementation(libs.w2sv.androidutils)
     implementation(libs.slimber)
-    implementation(libs.simplestorage)
+    implementation(libs.w2sv.simplestorage)
     implementation(libs.androidx.core)
 
     testImplementation(projects.core.test)

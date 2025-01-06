@@ -28,12 +28,10 @@ room = "2.6.1"
 triplet-play = "3.12.1"
 versionCatalogUpdate = "0.8.5"
 versions = "0.51.0"
-java = "17"
 
 [libraries]
 # @keep
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-androidutils = "com.github.w2sv.AndroidUtils:core:0.4.4-rc1"
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidxActivity" }
 androidx-appcompat = "androidx.appcompat:appcompat:1.7.0"
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -61,17 +59,12 @@ androidx-test-runner = "androidx.test:runner:1.6.2"
 compose-destinations = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "compose-destinations" }
 compose-destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "compose-destinations" }
 compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "compose-lint-checks" }
-composed = { module = "com.github.w2sv.Composed:composed", version.ref = "composed" }
-composed-permissions = { module = "com.github.w2sv.Composed:permissions", version.ref = "composed" }
-datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:datastoreflow", version.ref = "datastoreutils" }
-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:preferences", version.ref = "datastoreutils" }
 google-guava = "com.google.guava:guava:33.4.0-jre"
 google-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 google-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 junit = { module = "junit:junit", version.ref = "junit" }
 # @keep
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "kotlinutils" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 # @keep
@@ -80,11 +73,17 @@ materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "ma
 mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:5.4.0"
 protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
-reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.6-rc2"
 roboelectric = "org.robolectric:robolectric:4.14.1"
-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.0.2.1-rc2"
 slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
 textflow = "io.github.oleksandrbalan:textflow-material3:1.2.1"
+w2sv-androidutils = "com.github.w2sv.AndroidUtils:core:0.4.4-rc1"
+w2sv-composed = { module = "com.github.w2sv.Composed:composed", version.ref = "composed" }
+w2sv-composed-permissions = { module = "com.github.w2sv.Composed:permissions", version.ref = "composed" }
+w2sv-datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:datastoreflow", version.ref = "datastoreutils" }
+w2sv-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:preferences", version.ref = "datastoreutils" }
+w2sv-kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "kotlinutils" }
+w2sv-reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.6-rc2"
+w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.0.2.1-rc2"
 
 [bundles]
 instrumentationTest = [

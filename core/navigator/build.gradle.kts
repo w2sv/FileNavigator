@@ -24,13 +24,13 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.appcompat)
 
-    implementation(libs.androidutils)
-    implementation(libs.kotlinutils)
+    implementation(libs.w2sv.androidutils)
+    implementation(libs.w2sv.kotlinutils)
     implementation(libs.slimber)
 
     implementation(libs.google.guava)
 
-    implementation(libs.simplestorage)
+    implementation(libs.w2sv.simplestorage)
 
     // ==============
     // Test
