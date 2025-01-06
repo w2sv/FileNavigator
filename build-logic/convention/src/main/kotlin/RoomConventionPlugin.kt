@@ -1,4 +1,7 @@
 import com.google.devtools.ksp.gradle.KspExtension
+import helpers.applyPlugins
+import helpers.catalog
+import helpers.library
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.InputDirectory
@@ -9,10 +12,10 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.process.CommandLineArgumentProvider
 import java.io.File
 
-class RoomPlugin : Plugin<Project> {
+class RoomConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            pluginManager.apply(libs.findPluginId("ksp"))
+            pluginManager.applyPlugins("ksp", catalog = catalog)
 
             extensions.configure<KspExtension> {
                 // The schemas directory contains a schema file for each version of the Room database.
@@ -22,9 +25,9 @@ class RoomPlugin : Plugin<Project> {
             }
 
             dependencies {
-                add("implementation", libs.findLibrary("androidx.room.runtime").get())
-                add("implementation", libs.findLibrary("androidx.room.ktx").get())
-                add("ksp", libs.findLibrary("androidx.room.compiler").get())
+                "implementation"(library("androidx.room.runtime"))
+                "implementation"(library("androidx.room.ktx"))
+                "ksp"(library("androidx.room.compiler"))
             }
         }
     }

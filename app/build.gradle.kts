@@ -2,29 +2,22 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.android.application)
     alias(libs.plugins.play)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.filenavigator.application)
     alias(libs.plugins.filenavigator.hilt)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.compose.compiler)
 }
 
 android {
-    val packageName = "com.w2sv.filenavigator"
-
-    namespace = packageName
-    compileSdk = libs.versions.compileSdk.get().toInt()
-
     defaultConfig {
-        applicationId = packageName
-        minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.compileSdk.get().toInt()
+        applicationId = namespace
 
-        versionCode = project.findProperty("versionCode")!!.toString().toInt()
+        versionCode = project.property("versionCode").toString().toInt()
         versionName = version.toString()
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Name built bundles "{versionName}-{buildFlavor}.aab"
+        setProperty("archivesBaseName", versionName)
     }
 
     signingConfigs {
@@ -42,7 +35,6 @@ android {
             }
         }
     }
-
     buildTypes {
         getByName("debug") {
             applicationIdSuffix = ".debug"
@@ -58,31 +50,17 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
     }
-
     buildFeatures {
         compose = true
         buildConfig = true
     }
-
-    packaging {
-        resources {
-            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
-        }
+    lint {
+        checkDependencies = true
+        xmlReport = false
+        htmlReport = true
+        textReport = false
+        htmlOutput = project.layout.buildDirectory.file("reports/lint-results-debug.html").get().asFile
     }
-
-    kotlinOptions {
-        jvmTarget = libs.versions.java.get()
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    hilt {
-        enableAggregatingTask = true
-    }
-
     // Name built apks "{versionName}.apk"
     applicationVariants.all {
         outputs
@@ -91,12 +69,19 @@ android {
                     "${versionName}.apk"
             }
     }
+    dependenciesInfo {
+        // Disable dependency metadata when building APKs for fdroid reproducibility
+        includeInApk = false
+    }
+    kotlinOptions {
+        freeCompilerArgs += "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi"
+    }
 }
 
 // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-compiler.html#compose-compiler-options-dsl
 composeCompiler {
     includeSourceInformation = true
-    stabilityConfigurationFile.set(rootProject.file("compose_compiler_config.conf"))
+    stabilityConfigurationFiles.add(project.layout.projectDirectory.file("compose_compiler_config.conf"))
     metricsDestination.set(project.layout.buildDirectory.dir("compose_compiler"))
     reportsDestination.set(project.layout.buildDirectory.dir("compose_compiler"))
 }

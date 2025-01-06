@@ -104,6 +104,8 @@ unitTest = [
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 # @keep
+filenavigator-application = { id = "filenavigator.application" }
+# @keep
 filenavigator-hilt = { id = "filenavigator.hilt" }
 # @keep
 filenavigator-library = { id = "filenavigator.library" }
