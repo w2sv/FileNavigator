@@ -1,4 +1,4 @@
-package com.w2sv.navigator
+package com.w2sv.hilt
 
 import android.app.Application
 import android.content.Context

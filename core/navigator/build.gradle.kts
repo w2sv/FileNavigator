@@ -12,7 +12,7 @@ android {
         }
     }
     defaultConfig {
-        testInstrumentationRunner = "com.w2sv.navigator.HiltTestRunner"
+        testInstrumentationRunner = "com.w2sv.hilt.HiltTestRunner"
     }
 }
 

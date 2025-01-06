@@ -6,7 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import slimber.log.i
 
-abstract class SystemBroadcastReceiver(private val action: String) : BroadcastReceiver() {
+internal abstract class SystemBroadcastReceiver(private val action: String) : BroadcastReceiver() {
 
     private val logIdentifier: String
         get() = this::class.java.simpleName
@@ -32,7 +32,7 @@ abstract class SystemBroadcastReceiver(private val action: String) : BroadcastRe
         }
     }
 
-    fun register(context: Context) {
+    private fun register(context: Context) {
         context.registerReceiver(
             this,
             IntentFilter()
@@ -43,7 +43,7 @@ abstract class SystemBroadcastReceiver(private val action: String) : BroadcastRe
         i { "Registered $logIdentifier" }
     }
 
-    fun unregister(context: Context) {
+    private fun unregister(context: Context) {
         context.unregisterReceiver(this)
         i { "Unregistered $logIdentifier" }
     }
