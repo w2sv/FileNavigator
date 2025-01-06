@@ -1,5 +1,2 @@
-- New features:
-    - Moving to cloud storage providers
-    - Renaming file before moving
-- Improved 'new file' notification for image & video files
-- Performance & UI improvements
+- Add drawer sheet item explanations
+- Improve app performance
