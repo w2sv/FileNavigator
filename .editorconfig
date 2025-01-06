@@ -1,0 +1,30 @@
+# https://editorconfig.org
+# https://pinterest.github.io/ktlint/latest/rules/standard/
+[*]
+indent_style = space
+indent_size = 4
+
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{kt,kts}]
+ktlint_code_style = android_studio
+
+max_line_length = 140
+ij_kotlin_allow_trailing_comma = false
+ij_kotlin_allow_trailing_comma_on_call_site = false
+
+# Prevent wildcard imports
+ij_kotlin_packages_to_use_import_on_demand = unset
+ktlint_standard_no-wildcard-imports = enabled
+
+ktlint_function_naming_ignore_when_annotated_with = Composable, Test
+ktlint_standard_filename = disabled
+ktlint_function_signature_body_expression_wrapping = always
+ktlint_function_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than = 3
+ktlint_standard_discouraged-comment-location = disabled
+
+[*.md]
+max_line_length = unset
