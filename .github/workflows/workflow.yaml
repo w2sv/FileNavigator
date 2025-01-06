@@ -14,5 +14,4 @@ jobs:
           distribution: temurin
 
       - name: Build
-        run: |
-          ./gradlew build
+        run: ./gradlew build

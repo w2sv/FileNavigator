@@ -1,5 +1,5 @@
 name: "Feature Request"
-description: Create a new ticket for a new feature request
+description: Request a new feature the app is missing
 title: "[Feature Request] "
 labels: [ "enhancement" ]
 body:
