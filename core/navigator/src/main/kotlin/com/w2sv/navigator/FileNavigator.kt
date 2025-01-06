@@ -15,6 +15,7 @@ import com.w2sv.navigator.observing.FileObserverFactory
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -125,6 +126,7 @@ class FileNavigator : UnboundService() {
         fileObserverFactory.onDestroy()
     }
 
+    @OptIn(ExperimentalForInheritanceCoroutinesApi::class)
     class IsRunning internal constructor(private val mutableStateFlow: MutableStateFlow<Boolean>) :
         StateFlow<Boolean> by mutableStateFlow {
 

@@ -20,7 +20,6 @@ android {
         // Name built bundles "{versionName}-{buildFlavor}.aab"
         setProperty("archivesBaseName", versionName)
     }
-
     signingConfigs {
         create("release") {
             rootProject.file("keystore.properties").let { file ->
