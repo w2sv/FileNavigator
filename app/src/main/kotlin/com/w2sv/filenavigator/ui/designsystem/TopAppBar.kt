@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -30,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NavigationDrawerScreenTopAppBar(
     title: String,
@@ -63,7 +62,6 @@ fun NavigationDrawerScreenTopAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarAboveHorizontalDivider(
     title: String,
@@ -90,7 +88,6 @@ fun TopAppBarAboveHorizontalDivider(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BackArrowTopAppBar(title: String, onBack: () -> Unit, modifier: Modifier = Modifier) {
     TopAppBarAboveHorizontalDivider(

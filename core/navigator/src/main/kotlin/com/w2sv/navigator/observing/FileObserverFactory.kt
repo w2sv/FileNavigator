@@ -7,8 +7,8 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.kotlinutils.coroutines.mapState
-import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
+import com.w2sv.kotlinutils.coroutines.flow.mapState
+import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
 import slimber.log.i
@@ -26,7 +26,7 @@ internal class FileObserverFactory @Inject constructor(
     private val fileTypeConfigMapStateFlow by lazy {
         navigatorConfigDataSource.navigatorConfig
             .map { it.fileTypeConfigMap }
-            .stateInWithSynchronousInitial(scope)
+            .stateInWithBlockingInitial(scope)
     }
 
     operator fun invoke(): List<FileObserver> {

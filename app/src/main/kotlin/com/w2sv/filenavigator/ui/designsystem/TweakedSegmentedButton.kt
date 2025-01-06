@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SegmentedButton
@@ -51,7 +50,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-@ExperimentalMaterial3Api
 fun SingleChoiceSegmentedButtonRowScope.TweakedSegmentedButton(
     selected: Boolean,
     onClick: () -> Unit,
@@ -111,7 +109,6 @@ private val IconSpacing = 8.dp
  * @param enabled whether the [SegmentedButton] is enabled or not
  * @param active whether the [SegmentedButton] item is checked or not
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Stable
 internal fun SegmentedButtonColors.borderColor(enabled: Boolean, active: Boolean): Color {
     return when {
@@ -128,7 +125,6 @@ internal fun SegmentedButtonColors.borderColor(enabled: Boolean, active: Boolean
  * @param enabled whether the [SegmentedButton] is enabled or not
  * @param checked whether the [SegmentedButton] item is checked or not
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Stable
 internal fun SegmentedButtonColors.contentColor(enabled: Boolean, checked: Boolean): Color {
     return when {
@@ -145,7 +141,6 @@ internal fun SegmentedButtonColors.contentColor(enabled: Boolean, checked: Boole
  * @param enabled whether the [SegmentedButton] is enabled or not
  * @param active whether the [SegmentedButton] item is active or not
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Stable
 internal fun SegmentedButtonColors.containerColor(enabled: Boolean, active: Boolean): Color {
     return when {
@@ -156,7 +151,6 @@ internal fun SegmentedButtonColors.containerColor(enabled: Boolean, active: Bool
     }
 }
 
-@ExperimentalMaterial3Api
 @Composable
 private fun SegmentedButtonContent(
     icon: @Composable () -> Unit,
@@ -186,7 +180,6 @@ internal class SegmentedButtonContentMeasurePolicy(
     var animatable: Animatable<Int, AnimationVector1D>? = null
     private var initialOffset: Int? = null
 
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun MeasureScope.measure(
         measurables: List<List<Measurable>>,
         constraints: Constraints
@@ -198,8 +191,8 @@ internal class SegmentedButtonContentMeasurePolicy(
         val contentWidth = contentPlaceables.fastMaxBy { it.width }?.width
         val height = contentPlaceables.fastMaxBy { it.height }?.height ?: 0
         val width = maxOf(SegmentedButtonDefaults.IconSize.roundToPx(), iconWidth) +
-                IconSpacing.roundToPx() +
-                (contentWidth ?: 0)
+            IconSpacing.roundToPx() +
+            (contentWidth ?: 0)
         val offsetX = if (iconWidth == 0) {
             -(SegmentedButtonDefaults.IconSize.roundToPx() + IconSpacing.roundToPx()) / 2
         } else {
@@ -224,7 +217,7 @@ internal class SegmentedButtonContentMeasurePolicy(
             }
 
             val contentOffsetX = SegmentedButtonDefaults.IconSize.roundToPx() +
-                    IconSpacing.roundToPx() + (animatable?.value ?: offsetX)
+                IconSpacing.roundToPx() + (animatable?.value ?: offsetX)
 
             contentPlaceables.fastForEach {
                 it.place(

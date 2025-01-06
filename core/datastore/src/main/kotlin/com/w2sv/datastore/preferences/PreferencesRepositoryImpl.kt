@@ -24,39 +24,31 @@ internal class PreferencesRepositoryImpl @Inject constructor(
     PreferencesDataStoreRepository(dataStore),
     PreferencesRepository {
 
-    override val theme = dataStoreFlow(
-        intPreferencesKey("theme"),
-        Theme.Default
-    )
+    override val theme = enumDataStoreFlow(
+        intPreferencesKey("theme")
+    ) { Theme.Default }
 
     override val useAmoledBlackTheme =
-        dataStoreFlow(booleanPreferencesKey("useAmoledBlackTheme"), false)
+        dataStoreFlow(booleanPreferencesKey("useAmoledBlackTheme")) { false }
 
     override val useDynamicColors = dataStoreFlow(
-        booleanPreferencesKey("useDynamicColors"),
-        dynamicColorsSupported
-    )
+        booleanPreferencesKey("useDynamicColors")
+    ) { dynamicColorsSupported }
 
     override val postNotificationsPermissionRequested = dataStoreFlow(
-        booleanPreferencesKey("postNotificationsPermissionRequested"),
-        false
-    )
+        booleanPreferencesKey("postNotificationsPermissionRequested")
+    ) { false }
 
     override val showStorageVolumeNames: DataStoreFlow<Boolean> = dataStoreFlow(
-        booleanPreferencesKey("showStorageVolumeNames"),
-        false
-    )
+        booleanPreferencesKey("showStorageVolumeNames")
+    ) { false }
 
     override val showAutoMoveIntroduction: DataStoreFlow<Boolean> = dataStoreFlow(
-        booleanPreferencesKey("showAutoMoveIntroduction"),
-        true
-    )
+        booleanPreferencesKey("showAutoMoveIntroduction")
+    ) { true }
 
     override val showQuickMovePermissionQueryExplanation: DataStoreStateFlow<Boolean> by lazy {
-        dataStoreFlow(
-            booleanPreferencesKey("showQuickMovePermissionQueryExplanation"),
-            true
-        )
+        dataStoreFlow(booleanPreferencesKey("showQuickMovePermissionQueryExplanation")) { true }
             .stateInWithSynchronousInitial(defaultScope)
     }
 }

@@ -36,6 +36,7 @@ fun AppTheme(
             else -> rememberDynamicColorScheme(
                 seedColor = seedColor,
                 isDark = useDarkTheme,
+                isAmoled = false,  // TODO
                 style = PaletteStyle.Rainbow,  // Vibrant, TonalSpot, Fidelity, Rainbow
             )
         }

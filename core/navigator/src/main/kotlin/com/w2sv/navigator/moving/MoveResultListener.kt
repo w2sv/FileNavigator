@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
-import com.w2sv.androidutils.res.getText
+import com.w2sv.androidutils.res.getHtmlFormattedText
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
@@ -159,7 +159,7 @@ internal class MoveResultListener @Inject constructor(
 private suspend fun Context.showMoveSuccessToast(moveBundle: AnyMoveBundle) {
     withContext(Dispatchers.Main) {
         showToast(
-            resources.getText(
+            resources.getHtmlFormattedText(
                 id = if (moveBundle.destinationSelectionManner.isAuto) R.string.auto_move_success_toast_text else R.string.move_success_toast_text,
                 moveBundle.file.fileAndSourceType.label(
                     context = this@showMoveSuccessToast,

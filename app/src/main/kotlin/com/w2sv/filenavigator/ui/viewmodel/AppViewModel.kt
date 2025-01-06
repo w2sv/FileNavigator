@@ -10,7 +10,7 @@ import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
-import com.w2sv.kotlinutils.coroutines.combineStates
+import com.w2sv.kotlinutils.coroutines.flow.combineStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow

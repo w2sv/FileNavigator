@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.ramcosta.composedestinations.annotation.Destination
@@ -49,7 +47,6 @@ private object RequiredPermissionsScreenDefaults {
     val CardSpacing = 32.dp
 }
 
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
 fun RequiredPermissionsScreen(
@@ -130,7 +127,6 @@ private fun LandscapeMode(
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun rememberMovablePermissionCards(
     postNotificationsPermissionState: PermissionState?,

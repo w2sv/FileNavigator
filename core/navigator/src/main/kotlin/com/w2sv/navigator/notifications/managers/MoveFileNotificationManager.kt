@@ -21,16 +21,16 @@ import com.w2sv.common.util.slashPrefixed
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.kotlinutils.coroutines.stateInWithSynchronousInitial
+import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
 import com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryActivity
 import com.w2sv.navigator.moving.activity.destination_picking.DestinationPickerActivity
 import com.w2sv.navigator.moving.activity.destination_picking.FileDestinationPickerActivity
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
+import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.NotificationResources
@@ -84,7 +84,7 @@ internal class MoveFileNotificationManager @Inject constructor(
     private val showBatchMoveNotification =
         navigatorConfigDataSource.navigatorConfig
             .map { it.showBatchMoveNotification }
-            .stateInWithSynchronousInitial(scope)
+            .stateInWithBlockingInitial(scope)
 
     private val notificationIdToArgs = mutableMapOf<Int, Args>()
 
@@ -247,7 +247,7 @@ private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
                             )
                         }
                     }
-                    .stateInWithSynchronousInitial(scope)
+                    .stateInWithBlockingInitial(scope)
             }
         )
             .value
