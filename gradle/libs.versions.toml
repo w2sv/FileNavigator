@@ -25,7 +25,7 @@ lifecycle = "2.8.7"
 materialKolor = "2.0.0"
 # @keep
 minSdk = "30"
-protobuf = "4.29.2"
+protobuf = "4.29.3"
 protobuf-plugin = "0.9.4"
 room = "2.6.1"
 triplet-play = "3.12.1"
