@@ -9,6 +9,9 @@ clean:
 format:
 	@./gradlew ktlintFormat
 
+update-dependencies:
+	@./gradlew versionCatalogUpdate
+
 # ==============
 # Building
 # ==============
