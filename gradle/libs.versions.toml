@@ -30,7 +30,7 @@ protobuf-plugin = "0.9.4"
 room = "2.6.1"
 triplet-play = "3.12.1"
 versionCatalogUpdate = "0.8.5"
-versions = "0.51.0"
+versions = "0.52.0"
 
 [libraries]
 # @keep
