@@ -22,7 +22,7 @@ kotlinxCoroutines = "1.10.1"
 ksp = "2.1.0-1.0.29"
 ktlint = "12.1.2"
 lifecycle = "2.8.7"
-materialKolor = "2.0.0"
+materialKolor = "2.0.2"
 # @keep
 minSdk = "30"
 protobuf = "4.29.3"
