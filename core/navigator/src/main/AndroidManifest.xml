@@ -65,6 +65,7 @@
         <receiver android:name="com.w2sv.navigator.notifications.NotificationResources$CleanupBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.moving.receiver.CancelBatchMoveBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.notifications.DeleteFileBroadcastReceiver" />
 
         <!-- Activities -->
 

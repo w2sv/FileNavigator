@@ -67,10 +67,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
                         DestinationPickerActivity.makeRestartActivityIntent<FileBatchDestinationPickerActivity>(
                             FileBatchDestinationPickerActivity.Args(
                                 moveFilesWithNotificationResources = args.map { // TODO: optimizable?
-                                    MoveFileWithNotificationResources(
-                                        it.moveFile,
-                                        it.resources
-                                    )
+                                    it.moveFileWithNotificationResources
                                 },
                                 pickerStartDestination = null
                             ),

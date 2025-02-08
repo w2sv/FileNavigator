@@ -30,9 +30,11 @@ import com.w2sv.navigator.moving.activity.destination_picking.FileDestinationPic
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
+import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.AppNotificationId
+import com.w2sv.navigator.notifications.DeleteFileBroadcastReceiver
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.ViewFileIfPresentActivity
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceNotificationManager
@@ -63,7 +65,11 @@ internal class MoveFileNotificationManager @Inject constructor(
         val moveFile: MoveFile,
         val quickMoveDestinations: List<NavigatorMoveDestination.Directory>,
         override val resources: NotificationResources
-    ) : MultiInstanceNotificationManager.Args
+    ) : MultiInstanceNotificationManager.Args {
+
+        val moveFileWithNotificationResources: MoveFileWithNotificationResources
+            get() = MoveFileWithNotificationResources(moveFile, resources)
+    }
 
     fun buildAndPostNotification(moveFile: MoveFile) {
         buildAndPostNotification(
@@ -130,18 +136,20 @@ internal class MoveFileNotificationManager @Inject constructor(
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 
                 // Add quickMoveAction if quickMoveDestination present.
-                args.quickMoveDestinations.forEach { quickMoveDestination ->
-                    i { "quickMoveDestination=$quickMoveDestination" }
+//                args.quickMoveDestinations.forEach { quickMoveDestination ->
+//                    i { "quickMoveDestination=$quickMoveDestination" }
+//
+//                    // TODO: checking whether file exists might be possible by querying the abs path through media uri and converting to a java.io.File
+//                    addAction(
+//                        getQuickMoveAction(
+//                            requestCode = requestCodeIterator.next(),
+//                            destination = quickMoveDestination,
+//                            directoryName = quickMoveDestination.fileName(context)
+//                        )
+//                    )
+//                }
 
-                    // TODO: checking whether file exists might be possible by querying the abs path through media uri and converting to a java.io.File
-                    addAction(
-                        getQuickMoveAction(
-                            requestCode = requestCodeIterator.next(),
-                            destination = quickMoveDestination,
-                            directoryName = quickMoveDestination.fileName(context)
-                        )
-                    )
-                }
+                addAction(getDeleteFileAction(requestCodeIterator.next()))
 
                 setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
 
@@ -207,6 +215,19 @@ internal class MoveFileNotificationManager @Inject constructor(
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )
+
+            private fun getDeleteFileAction(requestCode: Int): NotificationCompat.Action {
+                return NotificationCompat.Action(
+                    R.drawable.ic_delete_24,
+                    context.getString(R.string.delete),
+                    PendingIntent.getBroadcast(
+                        context,
+                        requestCode,
+                        DeleteFileBroadcastReceiver.getIntent(args.moveFileWithNotificationResources, context),
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                )
+            }
         }
 
     override fun buildSummaryNotification(): Notification =
