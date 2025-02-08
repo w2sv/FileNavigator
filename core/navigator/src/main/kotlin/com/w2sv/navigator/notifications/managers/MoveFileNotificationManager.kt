@@ -30,9 +30,11 @@ import com.w2sv.navigator.moving.activity.destination_picking.FileDestinationPic
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
+import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.AppNotificationId
+import com.w2sv.navigator.notifications.FileDeletionActivity
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.ViewFileIfPresentActivity
 import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceNotificationManager
@@ -42,8 +44,10 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import slimber.log.i
 
 @Singleton
@@ -63,7 +67,11 @@ internal class MoveFileNotificationManager @Inject constructor(
         val moveFile: MoveFile,
         val quickMoveDestinations: List<NavigatorMoveDestination.Directory>,
         override val resources: NotificationResources
-    ) : MultiInstanceNotificationManager.Args
+    ) : MultiInstanceNotificationManager.Args {
+
+        val moveFileWithNotificationResources: MoveFileWithNotificationResources
+            get() = MoveFileWithNotificationResources(moveFile, resources)
+    }
 
     fun buildAndPostNotification(moveFile: MoveFile) {
         buildAndPostNotification(
@@ -82,9 +90,10 @@ internal class MoveFileNotificationManager @Inject constructor(
         FileAndSourceTypeToQuickMoveDestinationStateFlow(navigatorConfigDataSource, scope)
 
     private val showBatchMoveNotification =
-        navigatorConfigDataSource.navigatorConfig
+        navigatorConfigDataSource
+            .navigatorConfig
             .map { it.showBatchMoveNotification }
-            .stateInWithBlockingInitial(scope)
+            .stateIn(scope, SharingStarted.Eagerly, false)
 
     private val notificationIdToArgs = mutableMapOf<Int, Args>()
 
@@ -130,10 +139,10 @@ internal class MoveFileNotificationManager @Inject constructor(
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 
                 // Add quickMoveAction if quickMoveDestination present.
-                args.quickMoveDestinations.forEach { quickMoveDestination ->
+                args.quickMoveDestinations.firstOrNull()?.let { quickMoveDestination ->
                     i { "quickMoveDestination=$quickMoveDestination" }
 
-                    // TODO: checking whether file exists might be possible by querying the abs path through media uri and converting to a java.io.File
+                    // TODO: checking whether destination exists might be possible by querying the abs path through media uri and converting to a java.io.File
                     addAction(
                         getQuickMoveAction(
                             requestCode = requestCodeIterator.next(),
@@ -142,6 +151,8 @@ internal class MoveFileNotificationManager @Inject constructor(
                         )
                     )
                 }
+
+                addAction(getDeleteFileAction(requestCodeIterator.next()))
 
                 setContentIntent(getViewFilePendingIntent(requestCodeIterator.next()))
 
@@ -207,6 +218,19 @@ internal class MoveFileNotificationManager @Inject constructor(
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )
+
+            private fun getDeleteFileAction(requestCode: Int): NotificationCompat.Action {
+                return NotificationCompat.Action(
+                    R.drawable.ic_delete_24,
+                    context.getString(R.string.delete),
+                    PendingIntent.getActivity(
+                        context,
+                        requestCode,
+                        FileDeletionActivity.getIntent(args.moveFileWithNotificationResources, context),
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                )
+            }
         }
 
     override fun buildSummaryNotification(): Notification =

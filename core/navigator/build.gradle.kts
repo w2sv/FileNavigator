@@ -4,6 +4,12 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
 }
 
+android {
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.common)

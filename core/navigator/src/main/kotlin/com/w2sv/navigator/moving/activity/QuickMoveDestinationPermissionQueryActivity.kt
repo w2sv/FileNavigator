@@ -7,8 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import com.w2sv.common.di.AppDispatcher
-import com.w2sv.common.di.GlobalScope
+import androidx.lifecycle.coroutineScope
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.PreferencesRepository
@@ -18,10 +17,10 @@ import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import slimber.log.i
+import javax.inject.Inject
 
 @AndroidEntryPoint
 internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivity() {
@@ -34,10 +33,6 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
 
     @Inject
     lateinit var navigatorConfigDataSource: NavigatorConfigDataSource
-
-    @Inject
-    @GlobalScope(AppDispatcher.IO)
-    lateinit var globalIoScope: CoroutineScope
 
     private val moveBundle by lazy {
         MoveBundle.fromIntent<MoveBundle.QuickMove>(intent)
@@ -76,7 +71,7 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
     private val overlayDialogActivityLauncher: ActivityResultLauncher<Intent> by lazy {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                globalIoScope.launch {
+                lifecycle.coroutineScope.launch(Dispatchers.IO) {
                     preferencesRepository.showQuickMovePermissionQueryExplanation.save(
                         false
                     )
@@ -106,7 +101,7 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
 
         // If user selected different destination, save as quick move destination
         if (moveDestination != moveBundle.destination) {
-            globalIoScope.launch {
+            lifecycle.coroutineScope.launch(Dispatchers.IO) {
                 navigatorConfigDataSource.saveQuickMoveDestination(
                     fileType = moveBundle.file.fileType,
                     sourceType = moveBundle.file.sourceType,

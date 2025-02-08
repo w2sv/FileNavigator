@@ -33,7 +33,6 @@ internal data class MoveFile(
         get() = fileAndSourceType.sourceType
 
     @IgnoredOnParcel
-    val isGif: Boolean by lazy {
-        fileType is FileType.Image && mediaStoreFileData.extension.lowercase() == "gif"
-    }
+    val isGif: Boolean
+        get() = fileType is FileType.Image && mediaStoreFileData.extension.lowercase() == "gif"
 }

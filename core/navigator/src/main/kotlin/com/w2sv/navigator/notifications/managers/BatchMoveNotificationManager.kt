@@ -12,7 +12,6 @@ import com.w2sv.navigator.moving.activity.destination_picking.DestinationPickerA
 import com.w2sv.navigator.moving.activity.destination_picking.FileBatchDestinationPickerActivity
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.notifications.AppNotificationChannel
@@ -67,10 +66,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
                         DestinationPickerActivity.makeRestartActivityIntent<FileBatchDestinationPickerActivity>(
                             FileBatchDestinationPickerActivity.Args(
                                 moveFilesWithNotificationResources = args.map { // TODO: optimizable?
-                                    MoveFileWithNotificationResources(
-                                        it.moveFile,
-                                        it.resources
-                                    )
+                                    it.moveFileWithNotificationResources
                                 },
                                 pickerStartDestination = null
                             ),
@@ -83,15 +79,14 @@ internal class BatchMoveNotificationManager @Inject constructor(
             private fun addQuickMoveActions() {
                 val occurrenceOrderedQuickMoveDestinations =
                     args
-                        .map { it.quickMoveDestinations }
-                        .flatten()
+                        .flatMap { it.quickMoveDestinations }
                         .groupingBy { it }
                         .eachCount().entries.sortedByDescending { it.value }
                         .map { it.key }
                 var addedQuickMoveActions = 0
                 for (moveDestination in occurrenceOrderedQuickMoveDestinations) {
                     // Don't add action if folder doesn't exist anymore, which results in getDocumentUriFileName returning null.
-                    moveDestination.documentFile(context)?.name?.let { directoryName ->
+                    moveDestination.documentFile(context).name?.let { directoryName ->
                         addAction(
                             getQuickMoveAction(
                                 destination = moveDestination,

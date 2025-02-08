@@ -90,6 +90,13 @@
             android:noHistory="true"
             android:taskAffinity="@string/task_affinity_file_viewing"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.w2sv.navigator.notifications.FileDeletionActivity"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:taskAffinity="@string/task_affinity_file_deletion" />
+
     </application>
 
 </manifest>

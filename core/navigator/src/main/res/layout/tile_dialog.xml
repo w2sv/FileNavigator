@@ -6,7 +6,8 @@
     android:background="@color/ic_launcher_background"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    tools:viewBindingIgnore="true">
 
     <ImageView
         android:layout_width="48dp"
