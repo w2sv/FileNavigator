@@ -1,22 +1,22 @@
-package com.w2sv.navigator.notifications.managers.abstrct
+package com.w2sv.navigator.notifications.api
 
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
 import androidx.annotation.CallSuper
-import com.w2sv.navigator.notifications.AppNotificationChannel
-import com.w2sv.navigator.notifications.AppNotificationId
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
 import slimber.log.i
 
 /**
  * Manager for multi-instance notifications that post a summary.
  */
-internal abstract class SummarizedMultiInstanceNotificationManager<A : MultiInstanceNotificationManager.Args>(
+internal abstract class SummarizedMultiInstanceNotificationManager<Args : MultiInstanceNotificationManager.Args>(
     appNotificationChannel: AppNotificationChannel,
     notificationManager: NotificationManager,
     context: Context,
     appNotificationId: AppNotificationId
-) : MultiInstanceNotificationManager<A>(
+) : MultiInstanceNotificationManager<Args>(
     appNotificationChannel = appNotificationChannel,
     notificationManager = notificationManager,
     context = context,
@@ -46,7 +46,7 @@ internal abstract class SummarizedMultiInstanceNotificationManager<A : MultiInst
      * posting the one specified by [args].
      */
     @CallSuper
-    override fun buildAndPost(args: A) {
+    override fun buildAndPost(args: Args) {
         super.buildAndPost(args)
 
         if (activeNotificationCount >= 2) {

@@ -1,4 +1,4 @@
-package com.w2sv.navigator.moving.receiver
+package com.w2sv.navigator.moving.batch
 
 import android.content.BroadcastReceiver
 import android.content.Context

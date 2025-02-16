@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications.managers.abstrct
+package com.w2sv.navigator.notifications.api
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -6,9 +6,10 @@ import android.app.PendingIntent
 import android.content.Context
 import androidx.annotation.CallSuper
 import com.w2sv.androidutils.UniqueIds
-import com.w2sv.navigator.notifications.AppNotificationChannel
-import com.w2sv.navigator.notifications.AppNotificationId
+import com.w2sv.navigator.notifications.CleanupNotificationResourcesBroadcastReceiver
 import com.w2sv.navigator.notifications.NotificationResources
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
 import slimber.log.i
 
 /**
@@ -52,7 +53,7 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
             PendingIntent.getBroadcast(
                 context,
                 requestCode,
-                NotificationResources.CleanupBroadcastReceiver.getIntent(
+                CleanupNotificationResourcesBroadcastReceiver.getIntent(
                     context,
                     notificationResources
                 ),
@@ -61,7 +62,7 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
     }
 
     interface Args {
-        val resources: NotificationResources
+        val notificationResources: NotificationResources
     }
 
     protected fun getNotificationResources(): NotificationResources =
@@ -72,7 +73,7 @@ internal abstract class MultiInstanceNotificationManager<A : MultiInstanceNotifi
 
     @CallSuper
     open fun buildAndPost(args: A) {
-        buildAndPostNotification(args.resources.id, args)
+        buildAndPostNotification(args.notificationResources.id, args)
     }
 
     // ================

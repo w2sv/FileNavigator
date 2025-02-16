@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications.managers
+package com.w2sv.navigator.notifications.appnotifications.batchmove
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -8,13 +8,13 @@ import androidx.core.app.NotificationCompat
 import androidx.core.text.buildSpannedString
 import com.w2sv.androidutils.res.getQuantityText
 import com.w2sv.core.navigator.R
+import com.w2sv.navigator.moving.batch.CancelBatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
-import com.w2sv.navigator.moving.receiver.CancelBatchMoveBroadcastReceiver
-import com.w2sv.navigator.notifications.AppNotificationChannel
-import com.w2sv.navigator.notifications.AppNotificationId
-import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
-import com.w2sv.navigator.notifications.managers.abstrct.SingleInstanceNotificationManager
+import com.w2sv.navigator.notifications.api.AppNotificationManager
+import com.w2sv.navigator.notifications.api.SingleInstanceNotificationManager
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

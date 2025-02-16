@@ -1,21 +1,22 @@
-package com.w2sv.navigator.notifications
+package com.w2sv.navigator.notifications.appnotifications.movefile
 
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.activity.ComponentActivity
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.androidutils.widget.showToast
+import com.w2sv.common.util.LoggingComponentActivity
 import com.w2sv.common.util.MediaUri
 import com.w2sv.core.navigator.R
 import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.shared.putOptionalNotificationResourcesExtra
+import com.w2sv.navigator.notifications.NotificationResources
+import com.w2sv.navigator.shared.plus
 import java.io.File
 import kotlinx.parcelize.Parcelize
 
-internal class ViewFileIfPresentActivity : ComponentActivity() {
+internal class ViewFileIfPresentActivity : LoggingComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,8 +30,8 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
                 )
             } else {
                 showToast(R.string.file_has_already_been_moved_or_deleted)
-                NotificationResources
-                    .fromIntent(intent)
+                NotificationResources.Companion
+                    .optionalFromIntent(intent)
                     ?.cancelNotification(this@ViewFileIfPresentActivity)
             }
         }
@@ -68,7 +69,6 @@ internal class ViewFileIfPresentActivity : ComponentActivity() {
                     ViewFileIfPresentActivity::class.java
                 )
             )
-                .putExtra(Args.EXTRA, args)
-                .putOptionalNotificationResourcesExtra(notificationResources)
+                .putExtra(Args.EXTRA, args) + notificationResources
     }
 }

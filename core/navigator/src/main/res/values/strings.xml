@@ -51,4 +51,6 @@
     </plurals>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="successfully_deleted"><![CDATA[Successfully deleted <b>%1$s</b>]]></string>
+    <string name="couldn_t_delete"><![CDATA[Couldn\'t delete <b>%1$s</b>]]></string>
 </resources>

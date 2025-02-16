@@ -1,32 +1,32 @@
-package com.w2sv.navigator.moving.activity
+package com.w2sv.navigator.moving.quick
 
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.lifecycle.coroutineScope
+import com.w2sv.common.di.AppDispatcher
+import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
+import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.PreferencesRepository
-import com.w2sv.navigator.MoveResultChannel
+import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
-import com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver
+import com.w2sv.navigator.shared.DialogHostingActivity
+import com.w2sv.navigator.shared.roundedCornersAlertDialogBuilder
+import com.w2sv.navigator.shared.setIconHeader
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
+import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import slimber.log.i
-import javax.inject.Inject
 
 @AndroidEntryPoint
-internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivity() {
-
-    @Inject
-    override lateinit var moveResultChannel: MoveResultChannel
+internal class QuickMoveDestinationAccessPermissionQueryActivity : DialogHostingActivity() {
 
     @Inject
     lateinit var preferencesRepository: PreferencesRepository
@@ -34,13 +34,16 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
     @Inject
     lateinit var navigatorConfigDataSource: NavigatorConfigDataSource
 
+    @Inject
+    @GlobalScope(AppDispatcher.IO)
+    lateinit var globalIoScope: CoroutineScope
+
     private val moveBundle by lazy {
         MoveBundle.fromIntent<MoveBundle.QuickMove>(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        i { "onCreate" }
 
         if (moveBundle.destination.hasReadAndWritePermission(this)) {
             i { "Destination has read & write permission; Starting MoveBroadcastReceiver" }
@@ -50,58 +53,55 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
             )
             finishAndRemoveTask()
         } else {
-            i { "Destination missing read & write permission; Launching destinationPicker" }
-            destinationPicker.launch(moveBundle.destination.documentUri.uri)
-            showExplanationDialogIfNotYetShown()
-        }
-    }
+            i { "Destination missing read & write permission" }
 
-    private fun showExplanationDialogIfNotYetShown() {
-        if (preferencesRepository.showQuickMovePermissionQueryExplanation.value) {
-            i { "Starting QuickMoveDestinationPermissionQueryOverlayDialogActivity" }
-            overlayDialogActivityLauncher.launch(
-                Intent(
-                    this,
-                    QuickMoveDestinationPermissionQueryOverlayDialogActivity::class.java
-                )
-            )
-        }
-    }
-
-    private val overlayDialogActivityLauncher: ActivityResultLauncher<Intent> by lazy {
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                lifecycle.coroutineScope.launch(Dispatchers.IO) {
-                    preferencesRepository.showQuickMovePermissionQueryExplanation.save(
-                        false
-                    )
+            if (preferencesRepository.showQuickMovePermissionQueryExplanation.value) {
+                i { "Showing rational" }
+                showDestinationPickerRational {
+                    globalIoScope.launch { preferencesRepository.showQuickMovePermissionQueryExplanation.save(true) }
+                    launchQuickMoveDestinationPicker()
                 }
+            } else {
+                launchQuickMoveDestinationPicker()
             }
         }
     }
 
-    private val destinationPicker =
-        registerForActivityResult(
-            contract = ActivityResultContracts.OpenDocumentTree(),
-            callback = { treeUri ->
-                if (treeUri != null) {
-                    onAccessGranted(treeUri)
-                }
-                finishAndRemoveTask()
-            }
+    private fun showDestinationPickerRational(onPositiveButtonClick: () -> Unit) {
+        showDialog(
+            roundedCornersAlertDialogBuilder(this)
+                .setIconHeader(R.drawable.ic_info_outline_24)
+                .setMessage(getString(R.string.quick_move_permission_query_dialog_content))
+                .setPositiveButton(getString(R.string.understood)) { _, _ -> onPositiveButtonClick() }
+                .setCancelable(false)
         )
+    }
 
-    private fun onAccessGranted(treeUri: Uri) {
+    private fun launchQuickMoveDestinationPicker() {
+        destinationPicker.launch(moveBundle.destination.documentUri.uri)
+    }
+
+    private val destinationPicker = registerForActivityResult(
+        contract = ActivityResultContracts.OpenDocumentTree(),
+        callback = { treeUri ->
+            if (treeUri != null) {
+                onDocumentTreeAccessGranted(treeUri)
+            }
+            finishAndRemoveTask()
+        }
+    )
+
+    private fun onDocumentTreeAccessGranted(treeUri: Uri) {
         contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
 
         // Build moveDestination, exit if unsuccessful
         val moveDestination =
             NavigatorMoveDestination.Directory.fromTreeUri(this, treeUri)
-                ?: return finishAndRemoveTask(MoveResult.InternalError)
+                ?: return sendMoveResultBundleAndFinishAndRemoveTask(MoveResult.InternalError)
 
         // If user selected different destination, save as quick move destination
         if (moveDestination != moveBundle.destination) {
-            lifecycle.coroutineScope.launch(Dispatchers.IO) {
+            globalIoScope.launch {
                 navigatorConfigDataSource.saveQuickMoveDestination(
                     fileType = moveBundle.file.fileType,
                     sourceType = moveBundle.file.sourceType,
@@ -121,7 +121,7 @@ internal class QuickMoveDestinationPermissionQueryActivity : AbstractMoveActivit
             Intent.makeRestartActivityTask(
                 ComponentName(
                     context,
-                    QuickMoveDestinationPermissionQueryActivity::class.java
+                    QuickMoveDestinationAccessPermissionQueryActivity::class.java
                 )
             )
                 .putExtra(MoveBundle.EXTRA, moveBundle)

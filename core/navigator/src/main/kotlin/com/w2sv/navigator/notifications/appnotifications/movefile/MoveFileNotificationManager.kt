@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications.managers
+package com.w2sv.navigator.notifications.appnotifications.movefile
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -24,21 +24,19 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
-import com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryActivity
-import com.w2sv.navigator.moving.activity.destination_picking.DestinationPickerActivity
-import com.w2sv.navigator.moving.activity.destination_picking.FileDestinationPickerActivity
+import com.w2sv.navigator.moving.api.activity.AbstractDestinationPickerActivity
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
-import com.w2sv.navigator.notifications.AppNotificationChannel
-import com.w2sv.navigator.notifications.AppNotificationId
-import com.w2sv.navigator.notifications.FileDeletionActivity
+import com.w2sv.navigator.moving.quick.QuickMoveDestinationAccessPermissionQueryActivity
 import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.notifications.ViewFileIfPresentActivity
-import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceNotificationManager
-import com.w2sv.navigator.notifications.managers.abstrct.SummarizedMultiInstanceNotificationManager
+import com.w2sv.navigator.notifications.api.MultiInstanceNotificationManager
+import com.w2sv.navigator.notifications.api.SummarizedMultiInstanceNotificationManager
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
+import com.w2sv.navigator.notifications.appnotifications.batchmove.BatchMoveNotificationManager
+import com.w2sv.navigator.notifications.appnotifications.iconBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.IOException
 import javax.inject.Inject
@@ -66,12 +64,8 @@ internal class MoveFileNotificationManager @Inject constructor(
     data class Args(
         val moveFile: MoveFile,
         val quickMoveDestinations: List<NavigatorMoveDestination.Directory>,
-        override val resources: NotificationResources
-    ) : MultiInstanceNotificationManager.Args {
-
-        val moveFileWithNotificationResources: MoveFileWithNotificationResources
-            get() = MoveFileWithNotificationResources(moveFile, resources)
-    }
+        override val notificationResources: NotificationResources
+    ) : MultiInstanceNotificationManager.Args
 
     fun buildAndPostNotification(moveFile: MoveFile) {
         buildAndPostNotification(
@@ -81,7 +75,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                     moveFile.fileAndSourceType
                 )
                     .log { "Retrieved quickMoveDestination: $it" },
-                resources = getNotificationResources()
+                notificationResources = getNotificationResources()
             )
         )
     }
@@ -100,7 +94,7 @@ internal class MoveFileNotificationManager @Inject constructor(
     private fun buildAndPostNotification(args: Args) {
         super.buildAndPost(args)
 
-        notificationIdToArgs[args.resources.id] = args
+        notificationIdToArgs[args.notificationResources.id] = args
 
         if (activeNotificationCount >= 2 && showBatchMoveNotification.value) {
             batchMoveNotificationManager.buildAndPostNotification(notificationIdToArgs.values)
@@ -134,7 +128,7 @@ internal class MoveFileNotificationManager @Inject constructor(
 
             private fun setActionsAndIntents() {
                 // Set actions & intents
-                val requestCodeIterator = args.resources.pendingIntentRequestCodes(5).iterator()
+                val requestCodeIterator = args.notificationResources.pendingIntentRequestCodes(5).iterator()
 
                 addAction(getMoveFileAction(requestCodeIterator.next()))
 
@@ -159,7 +153,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                 setDeleteIntent(
                     getCleanupNotificationResourcesPendingIntent(
                         requestCode = requestCodeIterator.next(),
-                        notificationResources = args.resources
+                        notificationResources = args.notificationResources
                     )
                 )
             }
@@ -171,7 +165,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                     ViewFileIfPresentActivity.makeRestartActivityIntent(
                         context = context,
                         args = ViewFileIfPresentActivity.Args(args.moveFile),
-                        notificationResources = args.resources
+                        notificationResources = args.notificationResources
                     ),
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
@@ -183,11 +177,11 @@ internal class MoveFileNotificationManager @Inject constructor(
                     PendingIntent.getActivity(
                         context,
                         requestCode,
-                        DestinationPickerActivity.makeRestartActivityIntent<FileDestinationPickerActivity>(
+                        AbstractDestinationPickerActivity.makeRestartActivityIntent<FileDestinationPickerActivity>(
                             args = FileDestinationPickerActivity.Args(
                                 moveFile = args.moveFile,
                                 pickerStartDestination = args.quickMoveDestinations.firstOrNull()?.documentUri,
-                                notificationResources = args.resources
+                                notificationResources = args.notificationResources
                             ),
                             context = context
                         ),
@@ -206,11 +200,11 @@ internal class MoveFileNotificationManager @Inject constructor(
                     PendingIntent.getActivity(
                         context,
                         requestCode,
-                        QuickMoveDestinationPermissionQueryActivity.makeRestartActivityTaskIntent(
+                        QuickMoveDestinationAccessPermissionQueryActivity.makeRestartActivityTaskIntent(
                             MoveBundle.QuickMove(
                                 file = args.moveFile,
                                 destination = destination,
-                                destinationSelectionManner = DestinationSelectionManner.Quick(args.resources),
+                                destinationSelectionManner = DestinationSelectionManner.Quick(args.notificationResources),
                                 batched = false
                             ),
                             context = context
@@ -226,7 +220,7 @@ internal class MoveFileNotificationManager @Inject constructor(
                     PendingIntent.getActivity(
                         context,
                         requestCode,
-                        FileDeletionActivity.getIntent(args.moveFileWithNotificationResources, context),
+                        FileDeletionActivity.getIntent(args.moveFile, args.notificationResources, context),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )

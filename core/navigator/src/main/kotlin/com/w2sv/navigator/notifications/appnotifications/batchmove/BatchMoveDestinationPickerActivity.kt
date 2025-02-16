@@ -1,30 +1,28 @@
-package com.w2sv.navigator.moving.activity.destination_picking
+package com.w2sv.navigator.notifications.appnotifications.batchmove
 
 import android.net.Uri
+import android.os.Parcelable
 import androidx.activity.result.contract.ActivityResultContracts
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.util.DocumentUri
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
-import com.w2sv.navigator.MoveResultChannel
+import com.w2sv.navigator.moving.api.activity.AbstractDestinationPickerActivity
+import com.w2sv.navigator.moving.batch.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveFileWithNotificationResources
+import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
-import com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver
+import com.w2sv.navigator.notifications.NotificationResources
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
 
 @AndroidEntryPoint
-internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() {
-
-    @Inject
-    override lateinit var moveResultChannel: MoveResultChannel
+internal class BatchMoveDestinationPickerActivity : AbstractDestinationPickerActivity() {
 
     private val args: Args by lazy {
-        intent.getParcelableCompat<Args>(DestinationPickerActivity.Args.EXTRA)!!
+        intent.getParcelableCompat<Args>(AbstractDestinationPickerActivity.Args.EXTRA)!!
     }
 
     override fun launchPicker() {
@@ -52,11 +50,11 @@ internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() 
         // Build moveDestination, exit if unsuccessful
         val moveDestination =
             NavigatorMoveDestination.Directory.fromTreeUri(this, treeUri)
-                ?: return finishAndRemoveTask(MoveResult.InternalError)
+                ?: return sendMoveResultBundleAndFinishAndRemoveTask(MoveResult.InternalError)
 
         i { args.toString() }
 
-        BatchMoveBroadcastReceiver.sendBroadcast(
+        BatchMoveBroadcastReceiver.Companion.sendBroadcast(
             args = BatchMoveBroadcastReceiver.Args(
                 batchMoveBundles = args.moveFilesWithNotificationResources.map {
                     MoveBundle.DirectoryDestinationPicked(
@@ -76,5 +74,11 @@ internal class FileBatchDestinationPickerActivity : DestinationPickerActivity() 
     data class Args(
         val moveFilesWithNotificationResources: List<MoveFileWithNotificationResources>,
         override val pickerStartDestination: DocumentUri?
-    ) : DestinationPickerActivity.Args
+    ) : AbstractDestinationPickerActivity.Args
+
+    @Parcelize
+    data class MoveFileWithNotificationResources(
+        val moveFile: MoveFile,
+        val notificationResources: NotificationResources
+    ) : Parcelable
 }

@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications
+package com.w2sv.navigator.notifications.appnotifications
 
 /**
  * Enum assures required [id]-uniqueness.

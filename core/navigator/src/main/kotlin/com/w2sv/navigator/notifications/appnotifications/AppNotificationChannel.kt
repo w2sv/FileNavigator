@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications
+package com.w2sv.navigator.notifications.appnotifications
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

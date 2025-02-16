@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications.managers.abstrct
+package com.w2sv.navigator.notifications.api
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -6,7 +6,8 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
-import com.w2sv.navigator.notifications.AppNotificationChannel
+import com.w2sv.core.common.R
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationChannel
 
 internal abstract class AppNotificationManager<Args>(
     appNotificationChannel: AppNotificationChannel,
@@ -24,7 +25,7 @@ internal abstract class AppNotificationManager<Args>(
 
         @CallSuper
         override fun build(): Notification {
-            setSmallIcon(com.w2sv.core.common.R.drawable.ic_app_logo_24)
+            setSmallIcon(R.drawable.ic_app_logo_24)
 
             priority = NotificationCompat.PRIORITY_DEFAULT
 

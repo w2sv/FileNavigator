@@ -1,4 +1,4 @@
-package com.w2sv.navigator.moving.receiver
+package com.w2sv.navigator.moving.batch
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -12,7 +12,7 @@ import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.moving.moveTo
-import com.w2sv.navigator.notifications.managers.BatchMoveProgressNotificationManager
+import com.w2sv.navigator.notifications.appnotifications.batchmove.BatchMoveProgressNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import javax.inject.Singleton

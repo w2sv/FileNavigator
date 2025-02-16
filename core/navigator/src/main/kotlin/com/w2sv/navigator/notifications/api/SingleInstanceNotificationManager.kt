@@ -1,9 +1,9 @@
-package com.w2sv.navigator.notifications.managers.abstrct
+package com.w2sv.navigator.notifications.api
 
 import android.app.NotificationManager
 import android.content.Context
-import com.w2sv.navigator.notifications.AppNotificationChannel
-import com.w2sv.navigator.notifications.AppNotificationId
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
 
 /**
  * Manager for notifications of which only a single instance may be active at a time.

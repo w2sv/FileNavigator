@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications.managers
+package com.w2sv.navigator.notifications.appnotifications
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -7,8 +7,7 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import com.w2sv.core.navigator.R
 import com.w2sv.navigator.FileNavigator
-import com.w2sv.navigator.notifications.AppNotificationChannel
-import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
+import com.w2sv.navigator.notifications.api.AppNotificationManager
 import com.w2sv.navigator.shared.mainActivityPendingIntent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject

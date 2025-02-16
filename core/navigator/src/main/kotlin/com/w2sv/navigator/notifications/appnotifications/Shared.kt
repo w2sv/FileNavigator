@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications.managers
+package com.w2sv.navigator.notifications.appnotifications
 
 import android.content.Context
 import android.graphics.Bitmap

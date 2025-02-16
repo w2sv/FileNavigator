@@ -1,10 +1,10 @@
 package com.w2sv.navigator.shared
 
 import android.app.Dialog
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AlertDialog
+import com.w2sv.navigator.moving.api.activity.AbstractMoveActivity
 
-abstract class DialogHostingActivity: ComponentActivity() {
+internal abstract class DialogHostingActivity : AbstractMoveActivity() {
 
     protected var dialog: Dialog? = null
 
@@ -15,7 +15,7 @@ abstract class DialogHostingActivity: ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        // Prevents 'android.view.WindowLeaked: Activity com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryOverlayDialogActivity has
+        // Prevents 'android.view.WindowLeaked: Activity ... has
         // leaked window DecorView@f70b286[QuickMoveDestinationPermissionQueryOverlayDialogActivity] that was originally added here'
         dialog?.dismiss()
     }

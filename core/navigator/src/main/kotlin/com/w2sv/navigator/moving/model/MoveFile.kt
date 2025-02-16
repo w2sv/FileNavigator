@@ -1,9 +1,11 @@
 package com.w2sv.navigator.moving.model
 
 import android.content.Context
+import android.content.Intent
 import android.os.Parcelable
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
+import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.util.MediaUri
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
@@ -35,4 +37,11 @@ internal data class MoveFile(
     @IgnoredOnParcel
     val isGif: Boolean
         get() = fileType is FileType.Image && mediaStoreFileData.extension.lowercase() == "gif"
+
+    companion object {
+        const val EXTRA = "com.w2sv.filenavigator.extra.MoveFile"
+
+        fun fromIntent(intent: Intent): MoveFile =
+            intent.getParcelableCompat<MoveFile>(EXTRA)!!
+    }
 }

@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications.managers
+package com.w2sv.navigator.notifications.appnotifications.batchmove
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -8,15 +8,16 @@ import android.graphics.Color
 import androidx.core.app.NotificationCompat
 import com.w2sv.androidutils.res.isNightModeActiveCompat
 import com.w2sv.core.navigator.R
-import com.w2sv.navigator.moving.activity.destination_picking.DestinationPickerActivity
-import com.w2sv.navigator.moving.activity.destination_picking.FileBatchDestinationPickerActivity
+import com.w2sv.navigator.moving.api.activity.AbstractDestinationPickerActivity
+import com.w2sv.navigator.moving.batch.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
-import com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver
-import com.w2sv.navigator.notifications.AppNotificationChannel
-import com.w2sv.navigator.notifications.AppNotificationId
-import com.w2sv.navigator.notifications.managers.abstrct.SingleInstanceNotificationManager
+import com.w2sv.navigator.notifications.api.SingleInstanceNotificationManager
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationChannel
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
+import com.w2sv.navigator.notifications.appnotifications.drawableBitmap
+import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -63,10 +64,13 @@ internal class BatchMoveNotificationManager @Inject constructor(
                     PendingIntent.getActivity(
                         context,
                         PendingIntentRequestCode.MoveAction.ordinal,
-                        DestinationPickerActivity.makeRestartActivityIntent<FileBatchDestinationPickerActivity>(
-                            FileBatchDestinationPickerActivity.Args(
+                        AbstractDestinationPickerActivity.makeRestartActivityIntent<BatchMoveDestinationPickerActivity>(
+                            BatchMoveDestinationPickerActivity.Args(
                                 moveFilesWithNotificationResources = args.map { // TODO: optimizable?
-                                    it.moveFileWithNotificationResources
+                                    BatchMoveDestinationPickerActivity.MoveFileWithNotificationResources(
+                                        it.moveFile,
+                                        it.notificationResources
+                                    )
                                 },
                                 pickerStartDestination = null
                             ),
@@ -119,7 +123,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
                                     MoveBundle.QuickMove(
                                         file = it.moveFile,
                                         destinationSelectionManner = DestinationSelectionManner.Quick(
-                                            notificationResources = it.resources
+                                            notificationResources = it.notificationResources
                                         ),
                                         destination = destination,
                                         batched = true

@@ -1,4 +1,4 @@
-package com.w2sv.navigator.notifications.managers
+package com.w2sv.navigator.notifications.appnotifications
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -9,11 +9,9 @@ import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
-import com.w2sv.navigator.notifications.AppNotificationChannel
-import com.w2sv.navigator.notifications.AppNotificationId
 import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.notifications.managers.abstrct.AppNotificationManager
-import com.w2sv.navigator.notifications.managers.abstrct.MultiInstanceNotificationManager
+import com.w2sv.navigator.notifications.api.AppNotificationManager
+import com.w2sv.navigator.notifications.api.MultiInstanceNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,7 +30,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
     data class Args(
         val fileAndSourceType: FileAndSourceType,
         val autoMoveDestination: NavigatorMoveDestination.Directory,
-        override val resources: NotificationResources
+        override val notificationResources: NotificationResources
     ) : MultiInstanceNotificationManager.Args
 
     fun buildAndPostNotification(fileAndSourceType: FileAndSourceType, autoMoveDestination: NavigatorMoveDestination.Directory) {
@@ -40,7 +38,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
             Args(
                 fileAndSourceType = fileAndSourceType,
                 autoMoveDestination = autoMoveDestination,
-                resources = getNotificationResources()
+                notificationResources = getNotificationResources()
             )
         )
     }
@@ -75,8 +73,8 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
 
                 setDeleteIntent(
                     getCleanupNotificationResourcesPendingIntent(
-                        requestCode = args.resources.pendingIntentRequestCodes(1).first(),
-                        notificationResources = args.resources
+                        requestCode = args.notificationResources.pendingIntentRequestCodes(1).first(),
+                        notificationResources = args.notificationResources
                     )
                 )
 

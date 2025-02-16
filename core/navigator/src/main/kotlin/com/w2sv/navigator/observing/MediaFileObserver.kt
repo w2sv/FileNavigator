@@ -7,7 +7,7 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.kotlinutils.coroutines.flow.mapState
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
-import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
+import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import com.w2sv.navigator.observing.model.MediaStoreFileData
 import dagger.assisted.Assisted

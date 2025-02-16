@@ -1,4 +1,4 @@
-package com.w2sv.navigator.moving.activity.destination_picking
+package com.w2sv.navigator.notifications.appnotifications.movefile
 
 import android.content.Context
 import android.content.Intent
@@ -12,14 +12,14 @@ import com.w2sv.common.util.documentUri
 import com.w2sv.common.util.emit
 import com.w2sv.common.util.log
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
-import com.w2sv.navigator.MoveResultChannel
+import com.w2sv.navigator.moving.MoveBroadcastReceiver
+import com.w2sv.navigator.moving.api.activity.AbstractDestinationPickerActivity
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
-import com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver
 import com.w2sv.navigator.notifications.NotificationResources
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,16 +28,13 @@ import kotlinx.parcelize.Parcelize
 import slimber.log.i
 
 @AndroidEntryPoint
-internal class FileDestinationPickerActivity : DestinationPickerActivity() {
-
-    @Inject
-    override lateinit var moveResultChannel: MoveResultChannel
+internal class FileDestinationPickerActivity : AbstractDestinationPickerActivity() {
 
     @Inject
     lateinit var blacklistedMediaUris: MutableSharedFlow<MediaIdWithMediaType>
 
     private val args: Args by lazy {
-        intent.getParcelableCompat<Args>(DestinationPickerActivity.Args.EXTRA)!!
+        intent.getParcelableCompat<Args>(AbstractDestinationPickerActivity.Args.EXTRA)!!
     }
 
     override fun preemptiveMoveFailure(): MoveResult.Failure? =
@@ -50,30 +47,28 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
         documentCreator.launch(args.moveFile.mediaStoreFileData.name)
     }
 
-    private val documentCreator by lazy {
-        registerForActivityResult(
-            object :
-                ActivityResultContracts.CreateDocument(args.moveFile.fileType.simpleStorageMediaType.mimeType) {
-                override fun createIntent(context: Context, input: String): Intent {
-                    return super.createIntent(context, input)
-                        .addCategory(Intent.CATEGORY_OPENABLE)
-                        .apply {
-                            // Set picker start location
-                            intent.putExtra(
-                                DocumentsContract.EXTRA_INITIAL_URI,
-                                args.pickerStartDestination?.uri
-                            )
-                        }
-                }
-            },
-            callback = { contentUri ->
-                if (contentUri != null) {
-                    onDocumentCreated(contentUri)
-                }
-                finishAndRemoveTask()
+    private val documentCreator = registerForActivityResult(
+        object :
+            ActivityResultContracts.CreateDocument(args.moveFile.fileType.simpleStorageMediaType.mimeType) {
+            override fun createIntent(context: Context, input: String): Intent {
+                return super.createIntent(context, input)
+                    .addCategory(Intent.CATEGORY_OPENABLE)
+                    .apply {
+                        // Set picker start location
+                        intent.putExtra(
+                            DocumentsContract.EXTRA_INITIAL_URI,
+                            args.pickerStartDestination?.uri
+                        )
+                    }
             }
-        )
-    }
+        },
+        callback = { contentUri ->
+            if (contentUri != null) {
+                onDocumentCreated(contentUri)
+            }
+            finishAndRemoveTask()
+        }
+    )
 
     /**
      * @param contentUri E.g.: __content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots%2FScreenshot_2024-09-08-01-29-28-913_com.w2sv.filenavigator.debug.jpg__
@@ -101,7 +96,7 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
                 }
             }
 
-        MoveBroadcastReceiver.sendBroadcast(
+        MoveBroadcastReceiver.Companion.sendBroadcast(
             moveBundle = MoveBundle.FileDestinationPicked(
                 file = args.moveFile,
                 destination = destination,
@@ -116,5 +111,5 @@ internal class FileDestinationPickerActivity : DestinationPickerActivity() {
         val moveFile: MoveFile,
         val notificationResources: NotificationResources,
         override val pickerStartDestination: DocumentUri?
-    ) : DestinationPickerActivity.Args
+    ) : AbstractDestinationPickerActivity.Args
 }

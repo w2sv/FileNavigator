@@ -8,8 +8,8 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.util.collectOn
 import com.w2sv.common.util.log
 import com.w2sv.navigator.moving.MoveResultListener
-import com.w2sv.navigator.notifications.AppNotificationId
-import com.w2sv.navigator.notifications.managers.FileNavigatorIsRunningNotificationManager
+import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
+import com.w2sv.navigator.notifications.appnotifications.FileNavigatorIsRunningNotificationManager
 import com.w2sv.navigator.observing.FileObserver
 import com.w2sv.navigator.observing.FileObserverFactory
 import dagger.hilt.android.AndroidEntryPoint
