@@ -2,13 +2,13 @@ package com.w2sv.filenavigator.ui
 
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.navigation.NavHostController
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 
-val LocalNavHostController =
-    staticCompositionLocalOf<NavHostController> {
+val LocalDestinationsNavigator =
+    staticCompositionLocalOf<DestinationsNavigator> {
         throw UninitializedPropertyAccessException(
-            "LocalRootNavHostController not yet provided"
+            "LocalDestinationsNavigator not yet provided"
         )
     }
 
