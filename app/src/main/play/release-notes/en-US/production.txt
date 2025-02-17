@@ -1,2 +1,3 @@
-- Add drawer sheet item explanations
-- Improve app performance
+- Add 'Delete file' notification action
+- Fix 'Dynamic Colors' switch
+- UI refinements
