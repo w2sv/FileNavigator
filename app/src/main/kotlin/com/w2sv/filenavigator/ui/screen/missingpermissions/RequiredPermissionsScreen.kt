@@ -27,7 +27,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.popUpTo
 import com.w2sv.androidutils.openAppSettings
 import com.w2sv.common.util.goToManageExternalStorageSettings
 import com.w2sv.composed.OnChange
@@ -49,14 +48,17 @@ private object RequiredPermissionsScreenDefaults {
 
 @Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
-fun RequiredPermissionsScreen(postNotificationsPermissionState: PostNotificationsPermissionState, navigator: DestinationsNavigator) {
+fun RequiredPermissionsScreen(
+    postNotificationsPermissionState: PostNotificationsPermissionState,
+    destinationsNavigator: DestinationsNavigator
+) {
     val permissionCards =
         rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState.state)
 
     // Navigate to HomeScreenDestination if all permissions granted
     OnChange(value = permissionCards) {
         if (it.isEmpty()) {
-            navigator.navigate(
+            destinationsNavigator.navigate(
                 direction = HomeScreenDestination,
                 builder = {
                     launchSingleTop = true

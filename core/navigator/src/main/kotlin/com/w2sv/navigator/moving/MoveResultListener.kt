@@ -17,8 +17,8 @@ import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.NotificationResources
-import com.w2sv.navigator.notifications.managers.AutoMoveDestinationInvalidNotificationManager
-import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
+import com.w2sv.navigator.notifications.appnotifications.AutoMoveDestinationInvalidNotificationManager
+import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.LocalDateTime
 import javax.inject.Inject

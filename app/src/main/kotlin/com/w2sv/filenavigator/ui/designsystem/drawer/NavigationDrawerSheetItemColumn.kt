@@ -28,10 +28,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
-import androidx.navigation.NavController
 import com.ramcosta.composedestinations.generated.destinations.AppSettingsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.androidutils.openUrl
 import com.w2sv.androidutils.packagePlayStoreUrl
 import com.w2sv.androidutils.startActivity
@@ -39,7 +38,7 @@ import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.AppUrl
 import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.LocalNavHostController
+import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
 import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults
 import com.w2sv.filenavigator.ui.designsystem.RightAligned
@@ -53,7 +52,7 @@ internal fun NavigationDrawerSheetItemColumn(
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current,
-    navHostController: NavController = LocalNavHostController.current
+    destinationsNavigator: DestinationsNavigator = LocalDestinationsNavigator.current
 ) {
     Column(modifier = modifier) {
         remember {
@@ -68,7 +67,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
                         scope.launch {
                             closeDrawer()
-                            navHostController.navigate(AppSettingsScreenDestination)
+                            destinationsNavigator.navigate(AppSettingsScreenDestination)
                         }
                     }
                 ),
@@ -78,7 +77,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
                         scope.launch {
                             closeDrawer()
-                            navHostController.navigate(NavigatorSettingsScreenDestination)
+                            destinationsNavigator.navigate(NavigatorSettingsScreenDestination)
                         }
                     }
                 ),

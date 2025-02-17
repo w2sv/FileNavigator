@@ -35,11 +35,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
-import com.ramcosta.composedestinations.navigation.navigate
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.LocalNavHostController
+import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
 import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DEFAULT_ANIMATION_DURATION
@@ -52,7 +51,7 @@ import com.w2sv.navigator.FileNavigator
 fun NavigatorStatusCard(
     modifier: Modifier = Modifier,
     navigatorVM: NavigatorViewModel = activityViewModel(),
-    navController: NavController = LocalNavHostController.current,
+    destinationsNavigator: DestinationsNavigator = LocalDestinationsNavigator.current,
     context: Context = LocalContext.current
 ) {
     val navigatorIsRunning by navigatorVM.navigatorIsRunning.collectAsStateWithLifecycle()
@@ -117,7 +116,7 @@ fun NavigatorStatusCard(
                     .width(180.dp)
             )
             FilledIconButton(
-                onClick = { navController.navigate(NavigatorSettingsScreenDestination) }
+                onClick = { destinationsNavigator.navigate(NavigatorSettingsScreenDestination) }
             ) {
                 Icon(
                     painter = painterResource(id = com.w2sv.core.common.R.drawable.ic_settings_24),

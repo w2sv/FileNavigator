@@ -61,35 +61,37 @@
 
         <!-- Non-exported Broadcast Receivers -->
 
-        <receiver android:name="com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver" />
-        <receiver android:name="com.w2sv.navigator.notifications.NotificationResources$CleanupBroadcastReceiver" />
-        <receiver android:name="com.w2sv.navigator.moving.receiver.BatchMoveBroadcastReceiver" />
-        <receiver android:name="com.w2sv.navigator.moving.receiver.CancelBatchMoveBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.moving.MoveBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.notifications.CleanupNotificationResourcesBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.moving.batch.BatchMoveBroadcastReceiver" />
+        <receiver android:name="com.w2sv.navigator.moving.batch.CancelBatchMoveBroadcastReceiver" />
 
         <!-- Activities -->
 
         <activity
-            android:name="com.w2sv.navigator.moving.activity.destination_picking.FileDestinationPickerActivity"
+            android:name="com.w2sv.navigator.notifications.appnotifications.movefile.FileDestinationPickerActivity"
             android:taskAffinity="@string/task_affinity_file_moving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name="com.w2sv.navigator.moving.activity.destination_picking.FileBatchDestinationPickerActivity"
+            android:name="com.w2sv.navigator.notifications.appnotifications.batchmove.BatchMoveDestinationPickerActivity"
             android:taskAffinity="@string/task_affinity_file_moving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name="com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryActivity"
+            android:name="com.w2sv.navigator.moving.quick.QuickMoveDestinationAccessPermissionQueryActivity"
             android:taskAffinity="@string/task_affinity_file_moving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name="com.w2sv.navigator.moving.activity.QuickMoveDestinationPermissionQueryOverlayDialogActivity"
-            android:excludeFromRecents="true"
-            android:taskAffinity="@string/task_affinity_file_moving"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity
-            android:name="com.w2sv.navigator.notifications.ViewFileIfPresentActivity"
+            android:name="com.w2sv.navigator.notifications.appnotifications.movefile.ViewFileIfPresentActivity"
             android:noHistory="true"
             android:taskAffinity="@string/task_affinity_file_viewing"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.w2sv.navigator.notifications.appnotifications.movefile.FileDeletionActivity"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity="@string/task_affinity_file_deletion"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
     </application>
 
 </manifest>

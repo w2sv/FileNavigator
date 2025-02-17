@@ -10,9 +10,9 @@ import androidx.annotation.IntDef
 import com.w2sv.androidutils.hasPermission
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
+import com.w2sv.common.util.collectOn
 import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.core.navigator.R
-import com.w2sv.kotlinutils.coroutines.collectFromFlow
 import com.w2sv.kotlinutils.coroutines.launchDelayed
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.shared.mainActivityIntent
@@ -39,7 +39,7 @@ internal class FileNavigatorTileService : TileService() {
         i { "onStartListening" }
 
         // Update tile state reactively on navigator status change
-        scope.collectFromFlow(fileNavigatorIsRunning) { isRunning ->
+        fileNavigatorIsRunning.collectOn(scope) { isRunning ->
             updateTileState(if (isRunning) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE)
         }
     }

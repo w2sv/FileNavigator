@@ -15,13 +15,13 @@ import com.w2sv.common.util.mediaUri
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.launchDelayed
+import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
-import com.w2sv.navigator.moving.receiver.MoveBroadcastReceiver
-import com.w2sv.navigator.notifications.managers.MoveFileNotificationManager
+import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import com.w2sv.navigator.observing.model.MediaStoreFileData
 import kotlinx.coroutines.CoroutineScope

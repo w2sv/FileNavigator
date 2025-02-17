@@ -31,13 +31,12 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.RequiredPermissionsScreenDestination
 import com.ramcosta.composedestinations.navigation.dependency
-import com.ramcosta.composedestinations.navigation.navigate
-import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.Theme
+import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
-import com.w2sv.filenavigator.ui.LocalNavHostController
 import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.state.rememberObservedPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
@@ -85,6 +84,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     val navController = rememberNavController()
+                    val destinationsNavController = navController.rememberDestinationsNavigator()
 
                     val postNotificationsPermissionState =
                         rememberObservedPostNotificationsPermissionState(
@@ -101,9 +101,9 @@ class MainActivity : ComponentActivity() {
                                     RequiredPermissionsScreenDestination
                                 )
                             ) {
-                                navController.navigate(
+                                destinationsNavController.navigate(
                                     direction = RequiredPermissionsScreenDestination,
-                                    navOptionsBuilder = {
+                                    builder = {
                                         launchSingleTop = true
                                         popUpTo(RequiredPermissionsScreenDestination)
                                     }
@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     CompositionLocalProvider(
-                        LocalNavHostController provides navController,
+                        LocalDestinationsNavigator provides destinationsNavController,
                         LocalMoveDestinationPathConverter provides appVM.moveDestinationPathConverter
                     ) {
                         Surface(modifier = Modifier.fillMaxSize()) {
@@ -133,7 +133,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-
         appVM.updateManageAllFilesPermissionGranted()
     }
 }
