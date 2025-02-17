@@ -20,11 +20,11 @@ android {
         // Name built bundles "{versionName}-{buildFlavor}.aab"
         setProperty("archivesBaseName", versionName)
     }
-    rootProject.file("keystore.properties").let { keystorePropertiesFile ->
-        if (keystorePropertiesFile.exists()) {
-            signingConfigs.create("release") {
-                val keystoreProperties = Properties()
-                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    signingConfigs {
+        create("release") {
+            val keystorePropertiesFile = rootProject.file("keystore.properties")
+            if (keystorePropertiesFile.exists()) {
+                val keystoreProperties = Properties().apply { load(FileInputStream(keystorePropertiesFile)) }
 
                 storeFile = rootProject.file("keys.jks")
                 storePassword = keystoreProperties["storePassword"] as String
