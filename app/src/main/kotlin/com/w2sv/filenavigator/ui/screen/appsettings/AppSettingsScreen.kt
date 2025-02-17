@@ -105,6 +105,7 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
                         explanation = stringResource(id = R.string.use_colors_derived_from_your_wallpaper)
                     )
                 }
+                // Leave at the end for Modifier.animateContentSize() to animate it in and out
                 if (LocalUseDarkTheme.current) {
                     SwitchItemRow(
                         icon = { ItemRowIcon(res = R.drawable.ic_contrast_24) },

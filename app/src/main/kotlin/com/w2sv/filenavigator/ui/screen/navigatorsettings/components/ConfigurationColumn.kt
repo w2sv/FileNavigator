@@ -253,7 +253,7 @@ private fun MoreColumnItems(
     ) {
         SwitchItemRow(
             icon = { DefaultItemRowIcon(res = com.w2sv.core.navigator.R.drawable.ic_files_24) },
-            labelRes = R.string.batch_move_notification,
+            labelRes = R.string.show_batch_move_notification,
             checked = showBatchMoveNotification,
             onCheckedChange = setShowBatchMoveNotification,
             explanation = stringResource(R.string.batch_move_explanation)
