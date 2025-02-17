@@ -80,6 +80,7 @@
     <string name="provider_does_not_support_file_viewing">Provider doesn\'t support file viewing.</string>
     <string name="share_action_explanation">Share the app with someone who might appreciate it</string>
     <string name="report_a_bug_request_a_feature_explanation">Help make the app better!</string>
+    <string name="amoled_black_explanation">Use a higher contrast dark theme</string>
     <plurals name="add_file_types_button">
         <item quantity="one">Add File Type</item>
         <item quantity="other">Add File Types</item>

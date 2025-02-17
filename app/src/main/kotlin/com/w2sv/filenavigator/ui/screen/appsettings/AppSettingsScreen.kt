@@ -1,7 +1,7 @@
 package com.w2sv.filenavigator.ui.screen.appsettings
 
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -84,7 +84,7 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
             )
         }
         SettingsCard(title = stringResource(id = R.string.appearance)) {
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.VerticalItemRow)) {
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.VerticalItemRow), modifier = Modifier.animateContentSize()) {
                 ItemRow(
                     icon = { ItemRowIcon(res = R.drawable.ic_nightlight_24) },
                     labelRes = R.string.theme,
@@ -96,14 +96,6 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
                         horizontalArrangement = Arrangement.spacedBy(24.dp)
                     )
                 }
-                AnimatedVisibility(visible = LocalUseDarkTheme.current) {
-                    SwitchItemRow(
-                        icon = { ItemRowIcon(res = R.drawable.ic_contrast_24) },
-                        labelRes = R.string.amoled_black,
-                        checked = appPreferences.useAmoledBlackTheme(),
-                        onCheckedChange = appPreferences.setUseAmoledBlackTheme
-                    )
-                }
                 if (dynamicColorsSupported) {
                     SwitchItemRow(
                         icon = { ItemRowIcon(res = R.drawable.ic_palette_24) },
@@ -111,6 +103,15 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
                         checked = appPreferences.useDynamicColors(),
                         onCheckedChange = appPreferences.setUseDynamicColors,
                         explanation = stringResource(id = R.string.use_colors_derived_from_your_wallpaper)
+                    )
+                }
+                if (LocalUseDarkTheme.current) {
+                    SwitchItemRow(
+                        icon = { ItemRowIcon(res = R.drawable.ic_contrast_24) },
+                        labelRes = R.string.amoled_black,
+                        checked = appPreferences.useAmoledBlackTheme(),
+                        onCheckedChange = appPreferences.setUseAmoledBlackTheme,
+                        explanation = stringResource(R.string.amoled_black_explanation)
                     )
                 }
             }
