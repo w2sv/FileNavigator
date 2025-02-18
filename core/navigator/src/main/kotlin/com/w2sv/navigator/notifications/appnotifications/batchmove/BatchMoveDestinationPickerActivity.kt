@@ -5,7 +5,9 @@ import android.os.Parcelable
 import androidx.activity.result.contract.ActivityResultContracts
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.util.DocumentUri
+import com.w2sv.common.util.log
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
+import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.moving.api.activity.AbstractDestinationPickerActivity
 import com.w2sv.navigator.moving.batch.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
@@ -21,8 +23,8 @@ import slimber.log.i
 @AndroidEntryPoint
 internal class BatchMoveDestinationPickerActivity : AbstractDestinationPickerActivity() {
 
-    private val args: Args by lazy {
-        intent.getParcelableCompat<Args>(AbstractDestinationPickerActivity.Args.EXTRA)!!
+    private val args: Args by threadUnsafeLazy {
+        intent.getParcelableCompat<Args>(AbstractDestinationPickerActivity.Args.EXTRA)!!.log()
     }
 
     override fun launchPicker() {
@@ -51,8 +53,6 @@ internal class BatchMoveDestinationPickerActivity : AbstractDestinationPickerAct
         val moveDestination =
             NavigatorMoveDestination.Directory.fromTreeUri(this, treeUri)
                 ?: return sendMoveResultBundleAndFinishAndRemoveTask(MoveResult.InternalError)
-
-        i { args.toString() }
 
         BatchMoveBroadcastReceiver.Companion.sendBroadcast(
             args = BatchMoveBroadcastReceiver.Args(

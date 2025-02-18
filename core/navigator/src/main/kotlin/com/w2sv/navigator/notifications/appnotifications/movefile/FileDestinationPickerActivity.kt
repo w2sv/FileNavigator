@@ -9,9 +9,10 @@ import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.util.DocumentUri
 import com.w2sv.common.util.documentUri
-import com.w2sv.common.util.emit
 import com.w2sv.common.util.log
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
+import com.w2sv.kotlinutils.coroutines.flow.emit
+import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.api.activity.AbstractDestinationPickerActivity
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
@@ -33,7 +34,7 @@ internal class FileDestinationPickerActivity : AbstractDestinationPickerActivity
     @Inject
     lateinit var blacklistedMediaUris: MutableSharedFlow<MediaIdWithMediaType>
 
-    private val args: Args by lazy {
+    private val args: Args by threadUnsafeLazy {
         intent.getParcelableCompat<Args>(AbstractDestinationPickerActivity.Args.EXTRA)!!
     }
 

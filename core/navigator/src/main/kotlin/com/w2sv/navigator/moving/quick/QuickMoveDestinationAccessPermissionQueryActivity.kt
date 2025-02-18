@@ -12,6 +12,7 @@ import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.PreferencesRepository
+import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
@@ -38,7 +39,7 @@ internal class QuickMoveDestinationAccessPermissionQueryActivity : DialogHosting
     @GlobalScope(AppDispatcher.IO)
     lateinit var globalIoScope: CoroutineScope
 
-    private val moveBundle by lazy {
+    private val moveBundle by threadUnsafeLazy {
         MoveBundle.fromIntent<MoveBundle.QuickMove>(intent)
     }
 

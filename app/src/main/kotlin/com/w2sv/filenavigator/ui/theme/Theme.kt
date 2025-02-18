@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.w2sv.filenavigator.ui.LocalUseDarkTheme
+import com.w2sv.kotlinutils.threadUnsafeLazy
 
 @SuppressLint("NewApi")
 @Composable
@@ -40,7 +41,7 @@ fun AppTheme(
     }
 }
 
-private val staticColorSchemeDark by lazy {
+private val staticColorSchemeDark by threadUnsafeLazy {
     ColorScheme(
         primary = Color(0.29803923f, 0.8509804f, 0.88235295f, 1.0f),
         onPrimary = Color(0.0f, 0.21568628f, 0.22352941f, 1.0f),
@@ -89,7 +90,7 @@ private val staticColorSchemeDark by lazy {
     )
 }
 
-private val staticColorSchemeLight by lazy {
+private val staticColorSchemeLight by threadUnsafeLazy {
     ColorScheme(
         primary = Color(0.0f, 0.4117647f, 0.43137255f, 1.0f),
         onPrimary = Color(1.0f, 1.0f, 1.0f, 1.0f),

@@ -7,6 +7,7 @@ import androidx.lifecycle.coroutineScope
 import com.w2sv.androidutils.res.getHtmlFormattedText
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.core.navigator.R
+import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.shared.DialogHostingActivity
@@ -27,11 +28,11 @@ import kotlinx.coroutines.launch
  */
 internal class FileDeletionActivity : DialogHostingActivity() {
 
-    private val moveFile by lazy {
+    private val moveFile by threadUnsafeLazy {
         MoveFile.fromIntent(intent)
     }
 
-    private val notificationResources by lazy {
+    private val notificationResources by threadUnsafeLazy {
         NotificationResources.Companion.fromIntent(intent)
     }
 
