@@ -31,7 +31,7 @@ internal abstract class AbstractDestinationPickerActivity : AbstractMoveActivity
         val pickerStartDestination: DocumentUri?
 
         companion object {
-            const val EXTRA = "com.w2sv.navigator.extra.DestinationPickerActivity.Args"
+            const val EXTRA = "com.w2sv.navigator.extra.AbstractDestinationPickerActivity.Args"
         }
     }
 

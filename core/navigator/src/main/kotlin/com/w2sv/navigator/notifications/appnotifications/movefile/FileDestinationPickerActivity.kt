@@ -48,28 +48,33 @@ internal class FileDestinationPickerActivity : AbstractDestinationPickerActivity
         documentCreator.launch(args.moveFile.mediaStoreFileData.name)
     }
 
-    private val documentCreator = registerForActivityResult(
-        object :
-            ActivityResultContracts.CreateDocument(args.moveFile.fileType.simpleStorageMediaType.mimeType) {
-            override fun createIntent(context: Context, input: String): Intent {
-                return super.createIntent(context, input)
-                    .addCategory(Intent.CATEGORY_OPENABLE)
-                    .apply {
-                        // Set picker start location
-                        intent.putExtra(
-                            DocumentsContract.EXTRA_INITIAL_URI,
-                            args.pickerStartDestination?.uri
-                        )
-                    }
+    /**
+     * Must be lazy, as it accesses [args], which depend on the activity's [getIntent] being non-null, which is only guaranteed [onCreate].
+     * Will be initialized during [onCreate], which calls [launchPicker].
+     */
+    private val documentCreator by threadUnsafeLazy {
+        registerForActivityResult(
+            object :
+                ActivityResultContracts.CreateDocument(args.moveFile.fileType.simpleStorageMediaType.mimeType) {
+                override fun createIntent(context: Context, input: String): Intent =
+                    super.createIntent(context, input)
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .apply {
+                            // Set picker start location
+                            intent.putExtra(
+                                DocumentsContract.EXTRA_INITIAL_URI,
+                                args.pickerStartDestination?.uri
+                            )
+                        }
+            },
+            callback = { contentUri ->
+                if (contentUri != null) {
+                    onDocumentCreated(contentUri)
+                }
+                finishAndRemoveTask()
             }
-        },
-        callback = { contentUri ->
-            if (contentUri != null) {
-                onDocumentCreated(contentUri)
-            }
-            finishAndRemoveTask()
-        }
-    )
+        )
+    }
 
     /**
      * @param contentUri E.g.: __content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots%2FScreenshot_2024-09-08-01-29-28-913_com.w2sv.filenavigator.debug.jpg__
@@ -97,7 +102,7 @@ internal class FileDestinationPickerActivity : AbstractDestinationPickerActivity
                 }
             }
 
-        MoveBroadcastReceiver.Companion.sendBroadcast(
+        MoveBroadcastReceiver.sendBroadcast(
             moveBundle = MoveBundle.FileDestinationPicked(
                 file = args.moveFile,
                 destination = destination,

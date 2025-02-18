@@ -1,6 +1,5 @@
 package com.w2sv.datastore.proto.navigatorconfig
 
-import com.w2sv.common.util.map
 import com.w2sv.datastore.AutoMoveConfigProto
 import com.w2sv.datastore.FileTypeConfigProto
 import com.w2sv.datastore.NavigatorConfigProto
@@ -18,6 +17,7 @@ import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
+import com.w2sv.kotlinutils.map
 
 fun NavigatorConfig.toProto(hasBeenMigrated: Boolean): NavigatorConfigProto =
     NavigatorConfigMapper.toProto(this, hasBeenMigrated)
