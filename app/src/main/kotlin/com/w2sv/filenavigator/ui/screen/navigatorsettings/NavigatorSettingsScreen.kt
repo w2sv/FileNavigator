@@ -16,13 +16,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -44,9 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -55,26 +50,23 @@ import com.w2sv.composed.OnChange
 import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
-import com.w2sv.composed.rememberStyledTextResource
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
-import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AddFileTypesBottomSheet
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AutoMoveIntroductionDialogIfNotYetShown
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
-import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
 import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -84,34 +76,16 @@ import kotlinx.coroutines.launch
 fun NavigatorSettingsScreen(
     navigator: DestinationsNavigator,
     navigatorVM: NavigatorViewModel = activityViewModel(),
-    appVM: AppViewModel = activityViewModel(),
     context: Context = LocalContext.current,
     scope: CoroutineScope = rememberCoroutineScope(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
-    if (rememberShowAutoMoveIntroductionWithDelay(
-            showAutoMoveIntroduction = appVM.showAutoMoveIntroduction.collectAsStateWithLifecycle().value
-        )
-    ) {
-        AutoMoveIntroductionDialog(
-            onDismissRequest = remember {
-                {
-                    appVM.saveShowAutoMoveIntroduction(
-                        false
-                    )
-                }
-            }
-        )
-    }
-
     CollectLatestFromFlow(
         flow = navigatorVM.makeSnackbarVisuals,
         key1 = snackbarHostState
     ) { makeSnackbarVisuals ->
         snackbarHostState.dismissCurrentSnackbarAndShow(makeSnackbarVisuals(context))
     }
-
-    val navigatorConfigHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
 
     var fabButtonRowIsShowing by remember {
         mutableStateOf(false)
@@ -126,6 +100,8 @@ fun NavigatorSettingsScreen(
 
     BackHandler(onBack = onBack)
 
+    AutoMoveIntroductionDialogIfNotYetShown()
+
     var showAddFileTypesBottomSheet by rememberSaveable {
         mutableStateOf(false)
     }
@@ -139,16 +115,18 @@ fun NavigatorSettingsScreen(
         },
         floatingActionButton = {
             ConfigurationButtonRow(
-                configurationHasChanged = navigatorConfigHasChanged,
-                resetConfiguration = remember { { navigatorVM.reversibleConfig.reset() } },
+                configurationHasChanged = navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle().value,
+                resetConfiguration = remember { navigatorVM.reversibleConfig::reset },
                 syncConfiguration = remember {
                     {
-                        navigatorVM.viewModelScope.launch {
-                            navigatorVM.reversibleConfig.sync()
-                        }
+                        navigatorVM
+                            .launchConfigSync()
                             .invokeOnCompletion {
                                 scope.launch {
-                                    snapshotFlow { fabButtonRowIsShowing }.filter { !it }.take(1)
+                                    // Show 'Applied navigator settings' snackbar only when fab buttons have disappeared
+                                    snapshotFlow { fabButtonRowIsShowing }
+                                        .filter { !it }
+                                        .take(1)
                                         .collect {
                                             snackbarHostState.dismissCurrentSnackbarAndShow(
                                                 AppSnackbarVisuals(
@@ -161,9 +139,7 @@ fun NavigatorSettingsScreen(
                             }
                     }
                 },
-                onVisibilityStateChange = {
-                    fabButtonRowIsShowing = it
-                },
+                onVisibilityStateChange = { fabButtonRowIsShowing = it },
                 modifier = Modifier
                     .padding(
                         top = 8.dp, // Snackbar padding
@@ -172,11 +148,12 @@ fun NavigatorSettingsScreen(
                     .height(70.dp)
             )
         },
-        snackbarHost = {
-            AppSnackbarHost()
-        }
+        snackbarHost = { AppSnackbarHost() }
     ) { paddingValues ->
+        val navigatorConfig by navigatorVM.reversibleConfig.collectAsStateWithLifecycle()
+
         NavigatorConfigurationColumn(
+            config = navigatorConfig,
             reversibleConfig = navigatorVM.reversibleConfig,
             showAddFileTypesBottomSheet = remember { { showAddFileTypesBottomSheet = true } },
             modifier = Modifier
@@ -187,7 +164,7 @@ fun NavigatorSettingsScreen(
 
         if (showAddFileTypesBottomSheet) {
             AddFileTypesBottomSheet(
-                disabledFileTypes = navigatorVM.reversibleConfig.collectAsStateWithLifecycle().value.disabledFileTypes.toPersistentList(),
+                disabledFileTypes = navigatorConfig.disabledFileTypes.toPersistentList(),
                 addFileTypes = remember {
                     {
                         it.forEach { fileType ->
@@ -198,63 +175,6 @@ fun NavigatorSettingsScreen(
                 onDismissRequest = remember { { showAddFileTypesBottomSheet = false } }
             )
         }
-    }
-}
-
-@Composable
-private fun rememberShowAutoMoveIntroductionWithDelay(showAutoMoveIntroduction: Boolean): Boolean {
-    var showAutoMoveIntroductionWithDelay by remember {
-        mutableStateOf(false)
-    }
-    OnChange(value = showAutoMoveIntroduction) {
-        if (it) {
-            delay(500)
-        }
-        showAutoMoveIntroductionWithDelay = it
-    }
-    return showAutoMoveIntroductionWithDelay
-}
-
-@Composable
-private fun AutoMoveIntroductionDialog(onDismissRequest: () -> Unit, modifier: Modifier = Modifier) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = { Text(text = stringResource(R.string.introducing_auto_move)) },
-        icon = { Text(text = "🎉", fontSize = 30.sp) },
-        confirmButton = {
-            DialogButton(
-                text = stringResource(R.string.awesome),
-                onClick = onDismissRequest
-            )
-        },
-        text = {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                Text(
-                    text = stringResource(R.string.auto_move_introduction_paragraph_1),
-                    modifier = Modifier.padding(bottom = TextSectionBottomPadding)
-                )
-                Text(
-                    text = rememberStyledTextResource(R.string.auto_move_introduction_paragraph_2),
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .padding(bottom = TextSectionBottomPadding)
-                )
-                Text(
-                    text = stringResource(R.string.auto_move_introduction_paragraph_3)
-                )
-            }
-        },
-        modifier = modifier
-    )
-}
-
-private val TextSectionBottomPadding = 6.dp
-
-@Preview
-@Composable
-private fun AutoMoveIntroductionPrev() {
-    AppTheme {
-        AutoMoveIntroductionDialog(onDismissRequest = {})
     }
 }
 
@@ -335,7 +255,7 @@ private fun ConfigurationFABButton(
 
 @Preview
 @Composable
-private fun Prev() {
+private fun ConfigurationFABButtonPrev() {
     AppTheme {
         ConfigurationFABButton(
             imageVector = Icons.Default.Clear,

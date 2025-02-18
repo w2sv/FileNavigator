@@ -30,6 +30,7 @@ val LocalSnackbarHostState = compositionLocalOf { SnackbarHostState() }
 @Immutable
 data class SnackbarAction(val label: String, val callback: () -> Unit)
 
+@Immutable
 data class AppSnackbarVisuals(
     override val message: String,
     override val duration: SnackbarDuration = SnackbarDuration.Short,

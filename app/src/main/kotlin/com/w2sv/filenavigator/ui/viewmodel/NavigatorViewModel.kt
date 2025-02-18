@@ -11,6 +11,7 @@ import com.w2sv.navigator.system_broadcastreceiver.manager.NavigatorConfigContro
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -52,4 +53,7 @@ class NavigatorViewModel @Inject constructor(
             }
         }
     )
+
+    fun launchConfigSync(): Job =
+        viewModelScope.launch { reversibleConfig.sync() }
 }
