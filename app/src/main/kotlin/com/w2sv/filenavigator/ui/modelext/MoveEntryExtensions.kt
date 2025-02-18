@@ -14,7 +14,7 @@ fun MovedFile.exists(context: Context): Boolean {
         documentUri
             .documentFile(context)
             .exists() // prints "java.lang.IllegalArgumentException: Failed to determine if ... is child of ...: java.io.FileNotFoundException: Missing file for ... at ..." to console without actually raising it
-    } catch (e: IllegalArgumentException) {
+    } catch (_: IllegalArgumentException) {
         false
     }
 }
@@ -41,7 +41,7 @@ fun MovedFile.launchViewMovedFileActivity(context: Context): SnackbarVisuals? {
                 }
         )
         null
-    } catch (e: ActivityNotFoundException) {
+    } catch (_: ActivityNotFoundException) {
         AppSnackbarVisuals(
             message = context.getString(R.string.provider_does_not_support_file_viewing),
             kind = SnackbarKind.Error
