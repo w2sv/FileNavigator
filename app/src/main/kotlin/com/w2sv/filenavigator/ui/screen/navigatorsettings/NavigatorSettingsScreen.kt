@@ -64,6 +64,7 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorCo
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
+import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
@@ -115,7 +116,7 @@ fun NavigatorSettingsScreen(
         },
         floatingActionButton = {
             ConfigurationButtonRow(
-                configurationHasChanged = navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle().value,
+                configurationHasChanged = navigatorVM.reversibleConfig.statesDissimilar.lifecycleAwareStateValue(),
                 resetConfiguration = remember { navigatorVM.reversibleConfig::reset },
                 syncConfiguration = remember {
                     {

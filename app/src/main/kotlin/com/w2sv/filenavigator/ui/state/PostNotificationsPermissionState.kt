@@ -14,7 +14,7 @@ import com.w2sv.composed.OnChange
 value class PostNotificationsPermissionState(val state: PermissionState?)
 
 @Composable
-fun rememberObservedPostNotificationsPermissionState(
+fun rememberPostNotificationsPermissionState(
     onPermissionResult: (Boolean) -> Unit,
     onStatusChanged: (Boolean) -> Unit
 ): PostNotificationsPermissionState =

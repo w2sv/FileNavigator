@@ -38,8 +38,9 @@ import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.LocalUseDarkTheme
-import com.w2sv.filenavigator.ui.state.rememberObservedPostNotificationsPermissionState
+import com.w2sv.filenavigator.ui.state.rememberPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,14 +62,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CompositionLocalProvider(
-                LocalUseDarkTheme provides useDarkTheme(theme = appVM.theme.collectAsStateWithLifecycle().value)
-            ) {
-                val useDarkTheme = LocalUseDarkTheme.current
+            val useDarkTheme = useDarkTheme(theme = appVM.theme.lifecycleAwareStateValue())
+            CompositionLocalProvider(LocalUseDarkTheme provides useDarkTheme) {
                 AppTheme(
                     useDarkTheme = useDarkTheme,
-                    useAmoledBlackTheme = appVM.useAmoledBlackTheme.collectAsStateWithLifecycle().value,
-                    useDynamicColors = appVM.useDynamicColors.collectAsStateWithLifecycle().value
+                    useAmoledBlackTheme = appVM.useAmoledBlackTheme.lifecycleAwareStateValue(),
+                    useDynamicColors = appVM.useDynamicColors.lifecycleAwareStateValue()
                 ) {
                     // Reset system bar styles on theme change
                     LaunchedEffect(useDarkTheme, triggerStatusBarStyleUpdate) {
@@ -87,7 +86,7 @@ class MainActivity : ComponentActivity() {
                     val destinationsNavController = navController.rememberDestinationsNavigator()
 
                     val postNotificationsPermissionState =
-                        rememberObservedPostNotificationsPermissionState(
+                        rememberPostNotificationsPermissionState(
                             onPermissionResult = { appVM.savePostNotificationsPermissionRequestedIfRequired() },
                             onStatusChanged = appVM::setPostNotificationsPermissionGranted
                         )
@@ -97,10 +96,7 @@ class MainActivity : ComponentActivity() {
                         if (!allPermissionsGranted) {
                             FileNavigator.stop(this)
 
-                            if (!navController.isRouteOnBackStack(
-                                    RequiredPermissionsScreenDestination
-                                )
-                            ) {
+                            if (!navController.isRouteOnBackStack(RequiredPermissionsScreenDestination)) {
                                 destinationsNavController.navigate(
                                     direction = RequiredPermissionsScreenDestination,
                                     builder = {
