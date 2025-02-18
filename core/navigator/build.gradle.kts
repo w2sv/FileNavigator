@@ -18,7 +18,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.appcompat)
 
-    implementation(libs.w2sv.androidutils)
+    implementation(libs.w2sv.androidutils.core)
     implementation(libs.w2sv.kotlinutils)
     implementation(libs.slimber)
 

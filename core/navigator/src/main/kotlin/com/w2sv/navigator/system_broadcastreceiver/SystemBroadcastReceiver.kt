@@ -1,18 +1,16 @@
 package com.w2sv.navigator.system_broadcastreceiver
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import com.w2sv.common.util.LoggingBroadcastReceiver
+import com.w2sv.common.util.logIdentifier
 import slimber.log.i
 
-abstract class SystemBroadcastReceiver(private val action: String) : BroadcastReceiver() {
-
-    private val logIdentifier: String
-        get() = this::class.java.simpleName
+abstract class SystemBroadcastReceiver(private val action: String) : LoggingBroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        i { "$logIdentifier.onReceive" }
+        super.onReceive(context, intent)
 
         if (intent.action != action) return
 

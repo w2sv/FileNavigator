@@ -103,7 +103,7 @@ dependencies {
     implementation(projects.core.database)
     baselineProfile(projects.benchmarking)
 
-    implementation(libs.w2sv.androidutils)
+    implementation(libs.w2sv.androidutils.core)
     implementation(libs.w2sv.kotlinutils)
     implementation(libs.w2sv.reversiblestate)
     implementation(libs.w2sv.composed)

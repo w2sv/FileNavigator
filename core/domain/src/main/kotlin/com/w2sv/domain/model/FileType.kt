@@ -17,9 +17,6 @@ sealed class FileType(
     val sourceTypes: List<SourceType>
 ) : Parcelable {
 
-    val logIdentifier: String
-        get() = this::class.java.simpleName
-
     val isMediaType: Boolean
         get() = this is Media
 

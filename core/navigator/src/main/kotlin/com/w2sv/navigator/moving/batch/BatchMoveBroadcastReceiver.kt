@@ -1,12 +1,12 @@
 package com.w2sv.navigator.moving.batch
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
+import com.w2sv.common.util.LoggingBroadcastReceiver
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 @AndroidEntryPoint
-internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
+internal class BatchMoveBroadcastReceiver : LoggingBroadcastReceiver() {
 
     @Inject
     lateinit var moveResultChannel: MoveResultChannel
@@ -44,6 +44,8 @@ internal class BatchMoveBroadcastReceiver : BroadcastReceiver() {
     lateinit var scope: CoroutineScope
 
     override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+
         val args = intent.getParcelableCompat<Args>(Args.EXTRA)!!
 
         val destinationDocumentFile = args.destination.documentFile(context)

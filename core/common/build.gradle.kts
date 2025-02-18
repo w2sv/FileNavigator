@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.w2sv.androidutils)
+    implementation(libs.w2sv.androidutils.core)
     implementation(libs.slimber)
     implementation(libs.w2sv.simplestorage)
 

@@ -1,24 +1,24 @@
 package com.w2sv.navigator.notifications
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.w2sv.common.util.LoggingBroadcastReceiver
 import com.w2sv.common.util.log
 import com.w2sv.navigator.notifications.api.MultiInstanceNotificationManager
 import com.w2sv.navigator.shared.plus
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import slimber.log.i
 
 @AndroidEntryPoint
-internal class CleanupNotificationResourcesBroadcastReceiver : BroadcastReceiver() {
+internal class CleanupNotificationResourcesBroadcastReceiver : LoggingBroadcastReceiver() {
 
     @Inject
     @JvmSuppressWildcards
     lateinit var multiInstanceAppNotificationManagers: Set<MultiInstanceNotificationManager<*>>
 
     override fun onReceive(context: Context, intent: Intent) {
-        i { "onReceive" }
+        super.onReceive(context, intent)
+
         NotificationResources.Companion.optionalFromIntent(intent)
             ?.let { resources ->
                 multiInstanceAppNotificationManagers
