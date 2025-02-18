@@ -1,10 +1,10 @@
 package com.w2sv.domain.model.navigatorconfig
 
-import com.w2sv.common.util.copy
-import com.w2sv.common.util.update
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestination
+import com.w2sv.kotlinutils.copy
+import com.w2sv.kotlinutils.update
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

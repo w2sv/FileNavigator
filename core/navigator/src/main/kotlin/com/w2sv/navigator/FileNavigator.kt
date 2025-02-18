@@ -5,8 +5,8 @@ import android.content.Intent
 import com.w2sv.androidutils.UnboundService
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.common.util.collectOn
 import com.w2sv.common.util.log
+import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.navigator.moving.MoveResultListener
 import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
 import com.w2sv.navigator.notifications.appnotifications.FileNavigatorIsRunningNotificationManager

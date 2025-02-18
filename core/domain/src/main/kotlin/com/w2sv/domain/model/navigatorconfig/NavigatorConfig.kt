@@ -1,10 +1,10 @@
 package com.w2sv.domain.model.navigatorconfig
 
-import com.w2sv.common.util.copy
-import com.w2sv.common.util.map
-import com.w2sv.common.util.update
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
+import com.w2sv.kotlinutils.copy
+import com.w2sv.kotlinutils.map
+import com.w2sv.kotlinutils.update
 
 data class NavigatorConfig(
     val fileTypeConfigMap: Map<FileType, FileTypeConfig>,

@@ -8,12 +8,11 @@ import android.os.Handler
 import com.anggrayudi.storage.media.MediaType
 import com.google.common.collect.EvictingQueue
 import com.w2sv.common.util.MediaId
-import com.w2sv.common.util.cancelIfActive
-import com.w2sv.common.util.collectOn
 import com.w2sv.common.util.log
 import com.w2sv.common.util.mediaUri
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
+import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.kotlinutils.coroutines.launchDelayed
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
@@ -86,7 +85,7 @@ internal abstract class FileObserver(
         false
 
     private fun cancelAndResetMoveFileProcedureJob() {
-        moveFileWithProcedureJob?.procedureJob?.cancelIfActive()
+        moveFileWithProcedureJob?.procedureJob?.cancel()
         moveFileWithProcedureJob = null
     }
 
