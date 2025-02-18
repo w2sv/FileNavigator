@@ -3,6 +3,8 @@ package com.w2sv.navigator.observing
 import android.content.Context
 import android.os.Handler
 import com.anggrayudi.storage.media.MediaType
+import com.w2sv.common.di.AppDispatcher
+import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.util.logIdentifier
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
@@ -15,6 +17,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
@@ -26,7 +29,8 @@ internal class NonMediaFileObserver @AssistedInject constructor(
     moveFileNotificationManager: MoveFileNotificationManager,
     mediaStoreDataProducer: MediaStoreDataProducer,
     @ApplicationContext context: Context,
-    blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>
+    blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>,
+    @GlobalScope(AppDispatcher.IO) scope: CoroutineScope
 ) :
     FileObserver(
         mediaType = MediaType.DOWNLOADS,
@@ -35,7 +39,8 @@ internal class NonMediaFileObserver @AssistedInject constructor(
         mediaStoreDataProducer = mediaStoreDataProducer,
         fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
         handler = handler,
-        blacklistedMediaUris = blacklistedMediaUris
+        blacklistedMediaUris = blacklistedMediaUris,
+        scope = scope
     ) {
 
     @AssistedFactory

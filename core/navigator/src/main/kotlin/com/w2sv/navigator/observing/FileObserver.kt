@@ -24,7 +24,6 @@ import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotifi
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import com.w2sv.navigator.observing.model.MediaStoreFileData
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +44,7 @@ private enum class FileChangeOperation(private val flag: Int?) {
     Unclassified(null);
 
     companion object {
-        fun determine(contentObserverOnChangeFlags: Int): FileChangeOperation =
+        operator fun get(contentObserverOnChangeFlags: Int): FileChangeOperation =
             entries.first { it.flag == null || it.flag and contentObserverOnChangeFlags != 0 }
     }
 }
@@ -57,11 +56,10 @@ internal abstract class FileObserver(
     private val mediaStoreDataProducer: MediaStoreDataProducer,
     private val fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
     handler: Handler,
-    blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>
+    blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>,
+    private val scope: CoroutineScope
 ) :
     ContentObserver(handler) {
-
-    private val scope = CoroutineScope(Dispatchers.IO) // TODO
 
     private val mediaUriBlacklist = EvictingQueue.create<MediaId>(3)
     private var moveFileWithProcedureJob: MoveFileWithProcedureJob? = null
@@ -94,7 +92,7 @@ internal abstract class FileObserver(
         uri: Uri?,
         flags: Int
     ) {
-        when (FileChangeOperation.determine(flags).also { emitOnChangeLog(uri, it) }) {
+        when (FileChangeOperation[flags].also { emitOnChangeLog(uri, it) }) {
             FileChangeOperation.Insert -> Unit
             FileChangeOperation.Update, FileChangeOperation.Unclassified -> onChangeCore(uri)
             FileChangeOperation.Delete -> cancelAndResetMoveFileProcedureJob()
