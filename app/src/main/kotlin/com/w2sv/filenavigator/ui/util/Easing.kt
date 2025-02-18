@@ -4,9 +4,10 @@ import android.view.animation.AnticipateInterpolator
 import android.view.animation.AnticipateOvershootInterpolator
 import android.view.animation.OvershootInterpolator
 import com.w2sv.composed.extensions.toEasing
+import com.w2sv.kotlinutils.threadUnsafeLazy
 
 object Easing {
-    val Anticipate = AnticipateInterpolator().toEasing()
-    val Overshoot = OvershootInterpolator().toEasing()
-    val AnticipateOvershoot = AnticipateOvershootInterpolator().toEasing()
+    val Anticipate by threadUnsafeLazy { AnticipateInterpolator().toEasing() }
+    val Overshoot by threadUnsafeLazy { OvershootInterpolator().toEasing() }
+    val AnticipateOvershoot by threadUnsafeLazy { AnticipateOvershootInterpolator().toEasing() }
 }
