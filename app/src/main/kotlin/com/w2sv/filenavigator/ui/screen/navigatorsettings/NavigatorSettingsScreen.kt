@@ -72,7 +72,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
-@Destination<RootGraph>(style = NavigationTransitions::class)
+@Destination<RootGraph>(start = true, style = NavigationTransitions::class)
 @Composable
 fun NavigatorSettingsScreen(
     navigator: DestinationsNavigator,
@@ -104,7 +104,7 @@ fun NavigatorSettingsScreen(
     AutoMoveIntroductionDialogIfNotYetShown()
 
     var showAddFileTypesBottomSheet by rememberSaveable {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
     Scaffold(

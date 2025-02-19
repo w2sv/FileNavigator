@@ -18,7 +18,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -26,9 +30,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.toMutableStateList
@@ -37,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,7 +53,6 @@ import com.w2sv.composed.extensions.thenIf
 import com.w2sv.composed.extensions.toMutableStateMap
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
-import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.theme.AppTheme
@@ -70,6 +78,8 @@ fun AddFileTypesBottomSheet(
                 .toMutableStateMap()
         )
     }
+
+    var showFileTypeCreationDialog by rememberSaveable { mutableStateOf(true) }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -99,7 +109,7 @@ fun AddFileTypesBottomSheet(
             }
             item {
                 CreateFileTypeCard(
-                    onClick = {},
+                    onClick = { showFileTypeCreationDialog = true },
                     modifier = Modifier
                         .padding(bottom = 12.dp)
                 )
@@ -128,6 +138,12 @@ fun AddFileTypesBottomSheet(
                 .padding(bottom = 12.dp) // To prevent elevation shadow cutoff
         )
         Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility))
+    }
+
+    if (showFileTypeCreationDialog) {
+        FileTypeCreationDialog(
+            onDismissRequest = { showFileTypeCreationDialog = false }
+        )
     }
 }
 
@@ -167,8 +183,13 @@ private fun CreateFileTypeCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    GridCard(false, onClick, modifier) {
-        Text("Create a new file type")
+    GridCard(isSelected = false, onClick = onClick, modifier = modifier) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = null,
+            modifier = Modifier.size(32.dp)
+        )
+        Text("Create a file type", textAlign = TextAlign.Center)
     }
 }
 
@@ -196,7 +217,8 @@ private fun GridCard(
                     shape = MaterialTheme.shapes.medium
                 )
             },
-        elevation = AppCardDefaults.elevation
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

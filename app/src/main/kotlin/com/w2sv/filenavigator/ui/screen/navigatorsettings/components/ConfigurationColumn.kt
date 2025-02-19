@@ -146,13 +146,11 @@ fun NavigatorConfigurationColumn(
                 SectionHeader(
                     text = stringResource(id = R.string.file_types)
                 )
-                AnimatedVisibility(visible = config.disabledFileTypes.isNotEmpty()) {
-                    FilledTonalIconButton(onClick = showAddFileTypesBottomSheet) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(R.string.add_a_file_type)
-                        )
-                    }
+                FilledTonalIconButton(onClick = showAddFileTypesBottomSheet) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.add_a_file_type)
+                    )
                 }
             }
         }
