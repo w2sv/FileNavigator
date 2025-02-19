@@ -85,7 +85,7 @@ w2sv-datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:d
 w2sv-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:preferences", version.ref = "datastoreutils" }
 w2sv-kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "kotlinutils" }
 w2sv-reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.6-rc2"
-w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.0.2.1-rc2"
+w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.0.2.2-rc1"
 
 [bundles]
 instrumentationTest = [
