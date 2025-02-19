@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.composed.extensions.thenIf
@@ -45,6 +47,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
+import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.kotlinutils.toggle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -90,6 +93,13 @@ fun AddFileTypesBottomSheet(
                     fileType = fileType,
                     isSelected = selectionMap.getValue(fileType),
                     onClick = { selectionMap.toggle(fileType) },
+                    modifier = Modifier
+                        .padding(bottom = 12.dp)
+                )
+            }
+            item {
+                CreateFileTypeCard(
+                    onClick = {},
                     modifier = Modifier
                         .padding(bottom = 12.dp)
                 )
@@ -145,6 +155,38 @@ private fun FileTypeCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    GridCard(isSelected = isSelected, onClick = onClick, modifier = modifier) {
+        FileTypeIcon(fileType, modifier = Modifier.size(46.dp))
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(text = stringResource(id = fileType.labelRes))
+    }
+}
+
+@Composable
+private fun CreateFileTypeCard(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    GridCard(false, onClick, modifier) {
+        Text("Create a new file type")
+    }
+}
+
+@Preview
+@Composable
+private fun CreateFileTypeCardPrev() {
+    AppTheme {
+        CreateFileTypeCard({})
+    }
+}
+
+@Composable
+private fun GridCard(
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
     ElevatedCard(
         modifier = modifier
             .thenIf(isSelected) {
@@ -161,11 +203,8 @@ private fun FileTypeCard(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable { onClick() }
-                .padding(12.dp)
-        ) {
-            FileTypeIcon(fileType, modifier = Modifier.size(46.dp))
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(text = stringResource(id = fileType.labelRes))
-        }
+                .padding(12.dp),
+            content = content
+        )
     }
 }
