@@ -1,5 +1,7 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
+import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,15 +12,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.TooltipScope
+import androidx.compose.material3.TooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -40,6 +49,7 @@ import com.w2sv.kotlinutils.coroutines.flow.emit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
 private enum class FileExtensionInvalidityReason(val errorMessage: String) {
     ContainsSpecialCharacter("Extension must not contain special characters"),
@@ -55,7 +65,11 @@ private class CustomFileType(private val scope: CoroutineScope) {
         name = value.trim().replaceFirstChar(Char::titlecase)
     }
 
-    val fileExtensions = mutableStateListOf<String>()
+    val extensions = mutableStateListOf<String>()
+
+    fun deleteExtension(index: Int) {
+        extensions.removeAt(index)
+    }
 
     var newFileExtension by mutableStateOf("")
         private set
@@ -67,18 +81,18 @@ private class CustomFileType(private val scope: CoroutineScope) {
     val newFileExtensionInvalidityReason by derivedStateOf {
         when {
             newFileExtension.any { !it.isLetterOrDigit() } -> FileExtensionInvalidityReason.ContainsSpecialCharacter
-            fileExtensions.contains(newFileExtension) -> FileExtensionInvalidityReason.AlreadyAmongstFileExtensions
+            extensions.contains(newFileExtension) -> FileExtensionInvalidityReason.AlreadyAmongstFileExtensions
             else -> null
         }
     }
     val newFileExtensionCanBeAdded by derivedStateOf { newFileExtensionInvalidityReason == null && newFileExtension.isNotBlank() }
 
     fun addNewFileExtension() {
-        fileExtensions.add(newFileExtension)
+        extensions.add(newFileExtension)
         newFileExtension = ""
     }
 
-    val canBeCreated by derivedStateOf { name.isNotEmpty() && fileExtensions.isNotEmpty() }
+    val canBeCreated by derivedStateOf { name.isNotEmpty() && extensions.isNotEmpty() }
 
     val clearFocus get() = _clearFocus.asSharedFlow()
     private val _clearFocus = MutableSharedFlow<Unit>()
@@ -114,20 +128,6 @@ private fun StatelessFileTypeCreationDialog(customFileType: CustomFileType, onDi
                     placeholder = { Text("Enter name") },
                     singleLine = true
                 )
-//                Text(
-//                    text = "File Extensions",
-//                    modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
-//                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-//                )
-//                LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 32.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-//                    items(customFileType.fileExtensions) {
-//                        if (it.isNotEmpty()) {
-//                            Badge {
-//                                Text(it)
-//                            }
-//                        }
-//                    }
-//                }
                 FileExtensionTextField(
                     customFileType = customFileType,
                     modifier = Modifier
@@ -135,20 +135,67 @@ private fun StatelessFileTypeCreationDialog(customFileType: CustomFileType, onDi
                         .padding(vertical = 16.dp)
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    customFileType.fileExtensions.forEachIndexed { i, el ->
-                        Badge(containerColor = MaterialTheme.colorScheme.secondaryContainer) {
-                            Text(
-                                text = el,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                style = MaterialTheme.typography.labelLarge
-                            )
-                        }
+                    customFileType.extensions.forEachIndexed { i, extension ->
+                        FileExtensionBadgeWithTooltip(extension = extension, deleteExtension = { customFileType.deleteExtension(i) })
                     }
                 }
             }
         },
         confirmButton = { DialogButton("Create", onClick = {}, enabled = customFileType.canBeCreated) },
     )
+}
+
+@Composable
+private fun FileExtensionBadgeWithTooltip(
+    extension: String,
+    deleteExtension: () -> Unit,
+    modifier: Modifier = Modifier,
+    scope: CoroutineScope = rememberCoroutineScope()
+) {
+    val tooltipState = remember { TooltipState() }
+
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        tooltip = {
+            FileExtensionDeletionTooltip(
+                onClick = {
+                    deleteExtension()
+                    tooltipState.dismiss()
+                }
+            )
+        },
+        state = tooltipState,
+        modifier = modifier
+    ) {
+        FileExtensionBadge(extension, modifier = Modifier.clickable { scope.launch { tooltipState.show() } })
+    }
+}
+
+@SuppressLint("ComposeUnstableReceiver")
+@Composable
+private fun TooltipScope.FileExtensionDeletionTooltip(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    PlainTooltip(caretSize = TooltipDefaults.caretSize, tonalElevation = 4.dp, shadowElevation = 4.dp, modifier = modifier) {
+        IconButton(onClick = onClick) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete file extension",
+            )
+        }
+    }
+}
+
+@Composable
+private fun FileExtensionBadge(extension: String, modifier: Modifier = Modifier) {
+    Badge(
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        modifier = modifier
+    ) {
+        Text(
+            text = extension,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
 }
 
 @Composable
@@ -163,8 +210,8 @@ private fun FileExtensionTextField(customFileType: CustomFileType, modifier: Mod
         trailingIcon = when {
             customFileType.newFileExtensionCanBeAdded -> {
                 {
-                    IconButton(onClick = customFileType::addNewFileExtension) {
-                        Icon(Icons.Default.Check, contentDescription = null, tint = AppColor.success)
+                    FilledTonalIconButton(onClick = customFileType::addNewFileExtension) {
+                        Icon(Icons.Default.Add, contentDescription = null, tint = AppColor.success)
                     }
                 }
             }
@@ -196,8 +243,12 @@ private fun FileExtensionTextField(customFileType: CustomFileType, modifier: Mod
 private fun StatelessFileTypeCreationDialogPrev() {
     AppTheme {
         StatelessFileTypeCreationDialog(
-            CustomFileType(rememberCoroutineScope()).apply { fileExtensions.addAll(listOf("jpg", "png", "jpg", "jpg", "jpgasdf")) },
-            {}
+            customFileType = CustomFileType(rememberCoroutineScope())
+                .apply {
+                    extensions.addAll(listOf("jpg", "png", "jpgasdf"))
+                    updateNewFileExtension("dot")
+                },
+            onDismissRequest = {}
         )
     }
 }

@@ -30,13 +30,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.toMutableStateList
@@ -67,6 +63,7 @@ fun AddFileTypesBottomSheet(
     disabledFileTypes: ImmutableList<FileType>,
     addFileTypes: (List<FileType>) -> Unit,
     onDismissRequest: () -> Unit,
+    onCreateFileTypeCardClick: () -> Unit,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     scope: CoroutineScope = rememberCoroutineScope()
@@ -78,8 +75,6 @@ fun AddFileTypesBottomSheet(
                 .toMutableStateMap()
         )
     }
-
-    var showFileTypeCreationDialog by rememberSaveable { mutableStateOf(true) }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -109,7 +104,7 @@ fun AddFileTypesBottomSheet(
             }
             item {
                 CreateFileTypeCard(
-                    onClick = { showFileTypeCreationDialog = true },
+                    onClick = onCreateFileTypeCardClick,
                     modifier = Modifier
                         .padding(bottom = 12.dp)
                 )
@@ -138,12 +133,6 @@ fun AddFileTypesBottomSheet(
                 .padding(bottom = 12.dp) // To prevent elevation shadow cutoff
         )
         Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility))
-    }
-
-    if (showFileTypeCreationDialog) {
-        FileTypeCreationDialog(
-            onDismissRequest = { showFileTypeCreationDialog = false }
-        )
     }
 }
 

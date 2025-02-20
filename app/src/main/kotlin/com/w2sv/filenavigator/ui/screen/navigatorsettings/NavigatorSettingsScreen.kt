@@ -60,6 +60,7 @@ import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AddFileTypesBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AutoMoveIntroductionDialogIfNotYetShown
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.FileTypeCreationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
@@ -104,6 +105,9 @@ fun NavigatorSettingsScreen(
     AutoMoveIntroductionDialogIfNotYetShown()
 
     var showAddFileTypesBottomSheet by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var showFileTypeCreationDialog by rememberSaveable {
         mutableStateOf(true)
     }
 
@@ -173,7 +177,13 @@ fun NavigatorSettingsScreen(
                         }
                     }
                 },
-                onDismissRequest = remember { { showAddFileTypesBottomSheet = false } }
+                onDismissRequest = remember { { showAddFileTypesBottomSheet = false } },
+                onCreateFileTypeCardClick = remember { { showFileTypeCreationDialog = true } }
+            )
+        }
+        if (showFileTypeCreationDialog) {
+            FileTypeCreationDialog(
+                onDismissRequest = { showFileTypeCreationDialog = false }
             )
         }
     }
