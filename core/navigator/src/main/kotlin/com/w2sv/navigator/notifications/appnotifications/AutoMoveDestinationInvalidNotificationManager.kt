@@ -62,7 +62,7 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
                         }
                         append(" ${context.getString(R.string.has_been_deleted_and_got_therefore_removed_from)} ")
                         bold {
-                            append(context.getString(args.fileAndSourceType.fileType.labelRes))
+                            append(args.fileAndSourceType.fileType.label(context))
                         }
                         append(" -> ")
                         bold {

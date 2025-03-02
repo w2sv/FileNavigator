@@ -69,7 +69,7 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
                     mediaUri = capturedDestination.mediaUri,
                     name = name,
                     originalName = originalName,
-                    type = file.fileType,
+                    fileType = file.fileType,
                     sourceType = file.sourceType,
                     moveDestination = capturedDestination.parent,
                     moveDateTime = dateTime,
@@ -82,7 +82,7 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
                     moveDestination = capturedDestination,
                     name = name,
                     originalName = originalName,
-                    type = file.fileType,
+                    fileType = file.fileType,
                     sourceType = file.sourceType,
                     moveDateTime = dateTime
                 )
@@ -96,7 +96,7 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
                     mediaUri = movedFileDocumentUri.mediaUri(context)!!,
                     name = file.mediaStoreFileData.name,
                     originalName = null,
-                    type = file.fileType,
+                    fileType = file.fileType,
                     sourceType = file.sourceType,
                     moveDestination = capturedDestination,
                     moveDateTime = dateTime,

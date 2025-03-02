@@ -3,6 +3,7 @@ package com.w2sv.domain.model
 import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
+import androidx.annotation.MainThread
 import com.w2sv.core.domain.R
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -10,16 +11,11 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType) : Parcelable {
 
-    /**
-     * @return
-     * - Screenshot, Camera, Recording -> sourceTypeIcon
-     * - else -> fileTypeIcon
-     */
     @IgnoredOnParcel
     @get:DrawableRes
     val iconRes: Int by lazy {
-        when (sourceType) {
-            SourceType.Screenshot, SourceType.Camera, SourceType.Recording -> sourceType.iconRes
+        when {
+            sourceType in listOf(SourceType.Screenshot, SourceType.Camera, SourceType.Recording) -> sourceType.iconRes
             else -> fileType.iconRes
         }
     }
@@ -35,16 +31,18 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
     fun label(context: Context, isGif: Boolean): String =
         when {
             isGif -> context.getString(R.string.gif)
-            fileType is FileType.Image && sourceType == SourceType.Camera -> context.getString(R.string.photo)
+            fileType is PresetFileType.Image && sourceType == SourceType.Camera -> context.getString(R.string.photo)
             sourceType == SourceType.Screenshot || sourceType == SourceType.Recording -> context.getString(
                 sourceType.labelRes
             )
 
+            fileType is CustomFileType -> fileType.name
+
             sourceType == SourceType.Download -> context.getString(
                 R.string.file_type_download,
-                context.getString(fileType.labelRes)
+                context.getString((fileType as PresetFileType).labelRes)
             )
 
-            else -> context.getString(fileType.labelRes)
+            else -> context.getString((fileType as PresetFileType).labelRes)
         }
 }

@@ -1,15 +1,30 @@
 package com.w2sv.filenavigator.ui.modelext
 
+import android.annotation.SuppressLint
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetFileType
 
 /**
- * Returns previously cached Color.
+ * @return previously cached Color.
  */
 val FileType.color: Color
-    get() = fileTypeColors.getValue(this)
+    get() = Color(colorInt)  // TODO fileTypeColors.getValue(this)
 
-private val fileTypeColors =
-    FileType
-        .values
-        .associateWith { Color(it.colorInt) }
+//private val fileTypeColors =
+//    PresetFileType
+//        .values
+//        .associateWith { Color(it.colorInt) }
+
+@SuppressLint("ComposeUnstableReceiver")
+@Composable
+@ReadOnlyComposable
+fun FileType.stringResource(): String =
+    when (this) {
+        is PresetFileType -> stringResource(labelRes)
+        is CustomFileType -> name
+    }

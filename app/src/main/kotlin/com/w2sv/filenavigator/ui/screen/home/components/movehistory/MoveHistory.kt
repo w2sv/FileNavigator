@@ -170,7 +170,7 @@ private fun FileNameWithTypeAndSourceIcon(moveEntry: MovedFile, modifier: Modifi
         Icon(
             painter = painterResource(id = moveEntry.fileAndSourceType.iconRes),
             contentDescription = null,
-            tint = moveEntry.type.color
+            tint = moveEntry.fileType.color
         )
     }
 }

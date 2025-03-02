@@ -36,7 +36,7 @@ internal data class MovedFileEntity(
         documentUri = movedFile.documentUri.uri,
         name = movedFile.name,
         originalName = movedFile.originalName,
-        type = movedFile.type,
+        type = movedFile.fileType,
         sourceType = movedFile.sourceType,
         moveDateTime = movedFile.moveDateTime,
         autoMoved = movedFile.autoMoved,
@@ -59,7 +59,7 @@ internal data class MovedFileEntity(
                     mediaUri = local.mediaUri.mediaUri,
                     name = name,
                     originalName = originalName,
-                    type = type,
+                    fileType = type,
                     sourceType = sourceType,
                     moveDestination = LocalDestination(local.moveDestination.documentUri),
                     moveDateTime = moveDateTime,
@@ -76,7 +76,7 @@ internal data class MovedFileEntity(
                     ),
                     name = name,
                     originalName = originalName,
-                    type = type,
+                    fileType = type,
                     sourceType = sourceType,
                     moveDateTime = moveDateTime
                 )

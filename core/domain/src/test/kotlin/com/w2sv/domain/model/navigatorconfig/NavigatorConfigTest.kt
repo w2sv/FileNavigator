@@ -1,6 +1,6 @@
 package com.w2sv.domain.model.navigatorconfig
 
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.kotlinutils.copy
@@ -18,7 +18,7 @@ internal class NavigatorConfigTest {
         val config = NavigatorConfig.default.run {
             copy(
                 fileTypeConfigMap = fileTypeConfigMap.copy {
-                    FileType.Media.values.forEach { mediaFileType ->
+                    PresetFileType.Media.values.forEach { mediaFileType ->
                         update(mediaFileType) { fileTypeConfig ->
                             fileTypeConfig.copy(enabled = false)
                         }
@@ -26,14 +26,14 @@ internal class NavigatorConfigTest {
                 }
             )
         }
-        assertEquals(FileType.NonMedia.values, config.enabledFileTypes)
-        assertEquals(FileType.Media.values, config.disabledFileTypes)
+        assertEquals(PresetFileType.NonMedia.values, config.enabledFileTypes)
+        assertEquals(PresetFileType.Media.values, config.disabledFileTypes)
     }
 
     @Test
     fun testCopyWithAlteredFileTypeConfig() {
         val config =
-            NavigatorConfig.default.copyWithAlteredFileTypeConfig(FileType.Image) { fileTypeConfig ->
+            NavigatorConfig.default.copyWithAlteredFileTypeConfig(PresetFileType.Image) { fileTypeConfig ->
                 fileTypeConfig.copy(
                     enabled = false,
                     sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.copy {
@@ -56,7 +56,7 @@ internal class NavigatorConfigTest {
 
         val expected = NavigatorConfig(
             fileTypeConfigMap = mapOf(
-                FileType.Image to FileTypeConfig(
+                PresetFileType.Image to FileTypeConfig(
                     enabled = false,
                     sourceTypeConfigMap = mapOf(
                         SourceType.Camera to SourceConfig(
@@ -76,7 +76,7 @@ internal class NavigatorConfigTest {
                         SourceType.Download to SourceConfig()
                     )
                 ),
-                FileType.Video to FileTypeConfig(
+                PresetFileType.Video to FileTypeConfig(
                     enabled = true,
                     sourceTypeConfigMap = mapOf(
                         SourceType.Camera to SourceConfig(),
@@ -84,7 +84,7 @@ internal class NavigatorConfigTest {
                         SourceType.Download to SourceConfig()
                     )
                 ),
-                FileType.Audio to FileTypeConfig(
+                PresetFileType.Audio to FileTypeConfig(
                     enabled = true,
                     sourceTypeConfigMap = mapOf(
                         SourceType.Recording to SourceConfig(),
@@ -92,36 +92,11 @@ internal class NavigatorConfigTest {
                         SourceType.Download to SourceConfig()
                     )
                 ),
-                FileType.PDF to FileTypeConfig(
-                    enabled = true,
-                    sourceTypeConfigMap = mapOf(
-                        SourceType.Download to SourceConfig()
-                    )
-                ),
-                FileType.Text to FileTypeConfig(
-                    enabled = true,
-                    sourceTypeConfigMap = mapOf(
-                        SourceType.Download to SourceConfig()
-                    )
-                ),
-                FileType.Archive to FileTypeConfig(
-                    enabled = true,
-                    sourceTypeConfigMap = mapOf(
-                        SourceType.Download to SourceConfig()
-                    )
-                ),
-                FileType.APK to FileTypeConfig(
-                    enabled = true,
-                    sourceTypeConfigMap = mapOf(
-                        SourceType.Download to SourceConfig()
-                    )
-                ),
-                FileType.EBook to FileTypeConfig(
-                    enabled = true,
-                    sourceTypeConfigMap = mapOf(
-                        SourceType.Download to SourceConfig()
-                    )
-                )
+                PresetFileType.PDF to nonMediaFileTypeConfig(),
+                PresetFileType.Text to nonMediaFileTypeConfig(),
+                PresetFileType.Archive to nonMediaFileTypeConfig(),
+                PresetFileType.APK to nonMediaFileTypeConfig(),
+                PresetFileType.EBook to nonMediaFileTypeConfig()
             ),
             showBatchMoveNotification = true,
             disableOnLowBattery = false,
@@ -134,3 +109,11 @@ internal class NavigatorConfigTest {
         )
     }
 }
+
+private fun nonMediaFileTypeConfig(enabled: Boolean = true): FileTypeConfig =
+    FileTypeConfig(
+        enabled = enabled,
+        sourceTypeConfigMap = mapOf(
+            SourceType.Download to SourceConfig()
+        )
+    )

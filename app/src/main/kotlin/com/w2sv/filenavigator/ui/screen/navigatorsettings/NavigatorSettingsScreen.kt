@@ -67,6 +67,7 @@ import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filter
@@ -108,7 +109,7 @@ fun NavigatorSettingsScreen(
         mutableStateOf(false)
     }
     var showFileTypeCreationDialog by rememberSaveable {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     Scaffold(
@@ -178,12 +179,15 @@ fun NavigatorSettingsScreen(
                     }
                 },
                 onDismissRequest = remember { { showAddFileTypesBottomSheet = false } },
-                onCreateFileTypeCardClick = remember { { showFileTypeCreationDialog = true } }
+                onCreateFileTypeCardClick = remember { { showFileTypeCreationDialog = true } },
+                selectFileType = navigatorVM.reversibleConfig.selectFileType
             )
         }
         if (showFileTypeCreationDialog) {
             FileTypeCreationDialog(
-                onDismissRequest = { showFileTypeCreationDialog = false }
+                fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
+                onDismissRequest = { showFileTypeCreationDialog = false },
+                onCreateFileType = navigatorVM.reversibleConfig::createCustomFileType
             )
         }
     }

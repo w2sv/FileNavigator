@@ -10,12 +10,12 @@ class FileTypeTest {
 
     @Test
     fun testParceling() {
-        FileType.Image.testParceling()
-        FileType.Video.testParceling()
-        FileType.Audio.testParceling()
+        PresetFileType.Image.testParceling()
+        PresetFileType.Video.testParceling()
+        PresetFileType.Audio.testParceling()
 
-        FileType.EBook.testParceling()
-        FileType.PDF.testParceling()
-        FileType.APK.testParceling()
+        PresetFileType.EBook.testParceling()
+        PresetFileType.PDF.testParceling()
+        PresetFileType.APK.testParceling()
     }
 }

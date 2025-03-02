@@ -45,16 +45,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.w2sv.composed.CollectFromFlow
 import com.w2sv.composed.extensions.thenIf
 import com.w2sv.composed.extensions.toMutableStateMap
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
+import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.kotlinutils.toggle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -64,6 +67,7 @@ fun AddFileTypesBottomSheet(
     addFileTypes: (List<FileType>) -> Unit,
     onDismissRequest: () -> Unit,
     onCreateFileTypeCardClick: () -> Unit,
+    selectFileType: Flow<FileType>,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     scope: CoroutineScope = rememberCoroutineScope()
@@ -74,6 +78,10 @@ fun AddFileTypesBottomSheet(
                 .associateWith { false }
                 .toMutableStateMap()
         )
+    }
+
+    CollectFromFlow(selectFileType) { fileType ->
+        selectionMap[fileType] = true
     }
 
     ModalBottomSheet(
@@ -163,7 +171,7 @@ private fun FileTypeCard(
     GridCard(isSelected = isSelected, onClick = onClick, modifier = modifier) {
         FileTypeIcon(fileType, modifier = Modifier.size(46.dp))
         Spacer(modifier = Modifier.height(6.dp))
-        Text(text = stringResource(id = fileType.labelRes))
+        Text(text = fileType.stringResource())
     }
 }
 

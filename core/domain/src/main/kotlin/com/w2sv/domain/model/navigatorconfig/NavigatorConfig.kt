@@ -1,7 +1,10 @@
 package com.w2sv.domain.model.navigatorconfig
 
+import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.defaultConfig
 import com.w2sv.kotlinutils.copy
 import com.w2sv.kotlinutils.map
 import com.w2sv.kotlinutils.update
@@ -23,6 +26,13 @@ data class NavigatorConfig(
             }
     }
 
+    val fileTypes by lazy {
+        buildSet {
+            addAll(enabledFileTypes)
+            addAll(disabledFileTypes)
+        }
+    }
+
     // ================
     // Access Helpers
     // ================
@@ -39,6 +49,13 @@ data class NavigatorConfig(
     // ================
     // Copying
     // ================
+
+    fun addCustomFileType(type: CustomFileType): NavigatorConfig =
+        copy(
+            fileTypeConfigMap = fileTypeConfigMap.copy {
+                put(type, type.defaultConfig(enabled = false))
+            }
+        )
 
     fun copyWithAlteredFileTypeConfig(fileType: FileType, alterFileTypeConfig: (FileTypeConfig) -> FileTypeConfig): NavigatorConfig =
         copy(
@@ -84,7 +101,7 @@ data class NavigatorConfig(
     companion object {
         val default by lazy {
             NavigatorConfig(
-                fileTypeConfigMap = FileType.values.associateWith { defaultFileTypeConfig(it) },
+                fileTypeConfigMap = PresetFileType.values.associateWith { fileType -> fileType.defaultConfig() },
                 showBatchMoveNotification = true,
                 disableOnLowBattery = false,
                 startOnBoot = false
@@ -92,9 +109,3 @@ data class NavigatorConfig(
         }
     }
 }
-
-private fun defaultFileTypeConfig(fileType: FileType): FileTypeConfig =
-    FileTypeConfig(
-        enabled = true,
-        sourceTypeConfigMap = fileType.sourceTypes.associateWith { SourceConfig() }
-    )

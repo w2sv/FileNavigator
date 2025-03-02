@@ -7,7 +7,7 @@ import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.util.logIdentifier
 import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
 internal class NonMediaFileObserver @AssistedInject constructor(
-    @Assisted private val enabledFileTypesStateFlow: StateFlow<Set<FileType.NonMedia>>,
+    @Assisted private val enabledFileTypesStateFlow: StateFlow<Set<PresetFileType.NonMedia>>,
     @Assisted fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
     @Assisted handler: Handler,
     moveFileNotificationManager: MoveFileNotificationManager,
@@ -46,13 +46,13 @@ internal class NonMediaFileObserver @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         operator fun invoke(
-            enabledFileTypesStateFlow: StateFlow<Set<FileType.NonMedia>>,
+            enabledFileTypesStateFlow: StateFlow<Set<PresetFileType.NonMedia>>,
             fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
             handler: Handler
         ): NonMediaFileObserver
     }
 
-    private val enabledFileTypes: Set<FileType.NonMedia>
+    private val enabledFileTypes: Set<PresetFileType.NonMedia>
         get() = enabledFileTypesStateFlow.value
 
     override val logIdentifier: String

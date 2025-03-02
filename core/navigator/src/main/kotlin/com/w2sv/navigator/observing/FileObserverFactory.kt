@@ -5,14 +5,15 @@ import android.os.HandlerThread
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.flow.mapState
 import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
 import slimber.log.i
+import javax.inject.Inject
 
 typealias FileTypeConfigMap = Map<FileType, FileTypeConfig>
 
@@ -41,7 +42,7 @@ internal class FileObserverFactory @Inject constructor(
     }
 
     private fun mediaFileObservers(handler: Handler): List<MediaFileObserver> =
-        FileType.Media.values
+        PresetFileType.Media.values
             .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
             .map { mediaFileType ->
                 mediaFileObserverFactory.invoke(
@@ -54,7 +55,7 @@ internal class FileObserverFactory @Inject constructor(
     private fun nonMediaFileObserver(handler: Handler): NonMediaFileObserver? =
         fileTypeConfigMapStateFlow
             .mapState { fileTypeConfigMap ->
-                FileType.NonMedia.values.filter { fileTypeConfigMap.getValue(it).enabled }.toSet()
+                PresetFileType.NonMedia.values.filter { fileTypeConfigMap.getValue(it).enabled }.toSet()
             }
             .let { enabledFileTypesStateFlow ->
                 if (enabledFileTypesStateFlow.value.isNotEmpty()) {

@@ -4,25 +4,32 @@ option java_package = "com.w2sv.datastore";
 option java_multiple_files = true;
 
 message NavigatorConfigProto {
-  map<int32, FileTypeConfigProto> file_type_to_config = 1;
-  bool disable_on_low_battery = 2;
-  bool start_on_boot = 3;
-  bool has_been_migrated = 4;
-  bool show_batch_move_notification = 5;
+    map<int32, FileTypeConfigProto> file_type_to_config = 1;
+    repeated CustomFileTypeProto custom_file_types = 6;
+    bool disable_on_low_battery = 2;
+    bool start_on_boot = 3;
+    bool has_been_migrated = 4;
+    bool show_batch_move_notification = 5;
+}
+
+message CustomFileTypeProto {
+    string name = 1;
+    repeated string extensions = 2;
+    int32 ordinal = 3;
 }
 
 message FileTypeConfigProto {
-  bool enabled = 1;
-  map<int32, SourceConfigProto> source_type_to_config = 2;
+    bool enabled = 1;
+    map<int32, SourceConfigProto> source_type_to_config = 2;
 }
 
 message SourceConfigProto {
-  bool enabled = 1;
-  repeated string last_move_destinations = 2;
-  AutoMoveConfigProto auto_move_config = 3;
+    bool enabled = 1;
+    repeated string last_move_destinations = 2;
+    AutoMoveConfigProto auto_move_config = 3;
 }
 
 message AutoMoveConfigProto {
-  bool enabled = 1;
-  string destination = 2;
+    bool enabled = 1;
+    string destination = 2;
 }

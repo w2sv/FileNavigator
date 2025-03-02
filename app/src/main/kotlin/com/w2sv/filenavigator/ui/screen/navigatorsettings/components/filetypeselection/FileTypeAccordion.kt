@@ -37,6 +37,7 @@ import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.modelext.color
+import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.SubDirectoryIcon
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.rememberSelectAutoMoveDestination
 import kotlinx.collections.immutable.ImmutableMap
@@ -115,7 +116,7 @@ private fun FileTypeRow(
                 .size(34.dp)
         )
         Text(
-            text = stringResource(id = fileType.labelRes),
+            text = fileType.stringResource(),
             fontSize = 18.sp
         )
         Spacer(modifier = Modifier.weight(1f))

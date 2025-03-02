@@ -11,7 +11,7 @@ sealed interface MovedFile {
     val documentUri: DocumentUri
     val name: String
     val originalName: String?
-    val type: FileType
+    val fileType: FileType
     val sourceType: SourceType
     val moveDestination: MoveDestinationApi
     val moveDateTime: LocalDateTime
@@ -24,7 +24,7 @@ sealed interface MovedFile {
         get() = this as? External
 
     val fileAndSourceType
-        get() = FileAndSourceType(type, sourceType)
+        get() = FileAndSourceType(fileType, sourceType)
 
     /**
      * A file that has been moved to a directory [moveDestination] residing on the local file system.
@@ -35,7 +35,7 @@ sealed interface MovedFile {
         val mediaUri: MediaUri,
         override val name: String,
         override val originalName: String?,
-        override val type: FileType,
+        override val fileType: FileType,
         override val sourceType: SourceType,
         override val moveDestination: LocalDestinationApi,
         override val moveDateTime: LocalDateTime,
@@ -49,7 +49,7 @@ sealed interface MovedFile {
     data class External(
         override val name: String,
         override val originalName: String?,
-        override val type: FileType,
+        override val fileType: FileType,
         override val sourceType: SourceType,
         override val moveDestination: ExternalDestinationApi,
         override val moveDateTime: LocalDateTime

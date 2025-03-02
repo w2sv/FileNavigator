@@ -4,6 +4,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 
 internal object PreMigrationNavigatorPreferencesKey {
@@ -14,12 +15,12 @@ internal object PreMigrationNavigatorPreferencesKey {
         sequence {
             yield(disableOnLowBattery)
             yieldAll(
-                FileType.values
+                PresetFileType.values
                     .flatMap { it.associatedPreMigrationKeys() }
             )
         }
 
-    private fun FileType.associatedPreMigrationKeys(): Sequence<Preferences.Key<*>> =
+    private fun PresetFileType.associatedPreMigrationKeys(): Sequence<Preferences.Key<*>> =
         sequence {
             yield(fileTypeEnabled(this@associatedPreMigrationKeys))
 

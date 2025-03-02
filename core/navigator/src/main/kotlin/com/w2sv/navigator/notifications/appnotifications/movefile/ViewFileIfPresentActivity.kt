@@ -45,7 +45,7 @@ internal class ViewFileIfPresentActivity : LoggingComponentActivity() {
 
         constructor(moveFile: MoveFile) : this(
             mediaUri = moveFile.mediaUri,
-            mimeType = moveFile.fileType.simpleStorageMediaType.mimeType,
+            mimeType = moveFile.fileType.mediaType.mimeType,
             absPath = moveFile.mediaStoreFileData.absPath
         )
 

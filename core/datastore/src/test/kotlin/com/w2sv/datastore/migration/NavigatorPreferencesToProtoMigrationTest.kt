@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.preferencesOf
 import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.datastore.proto.navigatorconfig.toExternal
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import kotlinx.coroutines.flow.flowOf
@@ -63,12 +63,12 @@ internal class NavigatorPreferencesToProtoMigrationTest {
                 preferencesOf(
                     PreMigrationNavigatorPreferencesKey.disableOnLowBattery to true,
 
-                    PreMigrationNavigatorPreferencesKey.fileTypeEnabled(FileType.Image) to false,
-                    PreMigrationNavigatorPreferencesKey.fileTypeEnabled(FileType.Video) to false,
-                    PreMigrationNavigatorPreferencesKey.fileTypeEnabled(FileType.PDF) to false,
+                    PreMigrationNavigatorPreferencesKey.fileTypeEnabled(PresetFileType.Image) to false,
+                    PreMigrationNavigatorPreferencesKey.fileTypeEnabled(PresetFileType.Video) to false,
+                    PreMigrationNavigatorPreferencesKey.fileTypeEnabled(PresetFileType.PDF) to false,
 
                     PreMigrationNavigatorPreferencesKey.sourceTypeEnabled(
-                        FileType.Audio,
+                        PresetFileType.Audio,
                         SourceType.Recording
                     ) to false
                 )
@@ -83,16 +83,16 @@ internal class NavigatorPreferencesToProtoMigrationTest {
                 NavigatorConfig
                     .default
                     .copy(disableOnLowBattery = true)
-                    .copyWithAlteredFileTypeConfig(FileType.Image) {
+                    .copyWithAlteredFileTypeConfig(PresetFileType.Image) {
                         it.copy(enabled = false)
                     }
-                    .copyWithAlteredFileTypeConfig(FileType.Video) {
+                    .copyWithAlteredFileTypeConfig(PresetFileType.Video) {
                         it.copy(enabled = false)
                     }
-                    .copyWithAlteredFileTypeConfig(FileType.PDF) {
+                    .copyWithAlteredFileTypeConfig(PresetFileType.PDF) {
                         it.copy(enabled = false)
                     }
-                    .copyWithAlteredSourceConfig(FileType.Audio, SourceType.Recording) {
+                    .copyWithAlteredSourceConfig(PresetFileType.Audio, SourceType.Recording) {
                         it.copy(enabled = false)
                     }
             )

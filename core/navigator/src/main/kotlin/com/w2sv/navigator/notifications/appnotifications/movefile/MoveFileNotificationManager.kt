@@ -20,7 +20,7 @@ import com.w2sv.common.util.removeSlashSuffix
 import com.w2sv.common.util.slashPrefixed
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
@@ -38,15 +38,15 @@ import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
 import com.w2sv.navigator.notifications.appnotifications.batchmove.BatchMoveNotificationManager
 import com.w2sv.navigator.notifications.appnotifications.iconBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.io.IOException
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import slimber.log.i
+import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 internal class MoveFileNotificationManager @Inject constructor(
@@ -271,11 +271,11 @@ private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
 
 private fun MoveFile.largeNotificationIcon(context: Context): Bitmap? =
     when (fileType) {
-        FileType.Image -> context.contentResolver.loadBitmapWithFileNotFoundHandling(
+        PresetFileType.Image -> context.contentResolver.loadBitmapWithFileNotFoundHandling(
             mediaUri.uri
         )
 
-        FileType.Video -> {
+        PresetFileType.Video -> {
             try {
                 context.contentResolver.loadThumbnail(
                     mediaUri.uri,
@@ -322,23 +322,18 @@ private fun MoveFile.notificationLabel(context: Context): String =
 
                 SourceType.Camera -> context.getString(
                     when (fileType) {
-                        FileType.Image -> com.w2sv.core.domain.R.string.photo
-                        FileType.Video -> com.w2sv.core.domain.R.string.video
+                        PresetFileType.Image -> com.w2sv.core.domain.R.string.photo
+                        PresetFileType.Video -> com.w2sv.core.domain.R.string.video
                         else -> throw IllegalArgumentException()
                     }
                 )
 
                 SourceType.Download -> context.getString(
                     com.w2sv.core.domain.R.string.file_type_download,
-                    context.getString(fileType.labelRes)
+                    fileType.label(context)
                 )
 
-                SourceType.OtherApp ->
-                    "/${mediaStoreFileData.parentDirName} ${
-                        context.getString(
-                            fileType.labelRes
-                        )
-                    }"
+                SourceType.OtherApp -> "/${mediaStoreFileData.parentDirName} ${fileType.label(context)}"
             }
         }
     }

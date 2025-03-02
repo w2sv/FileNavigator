@@ -41,11 +41,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.w2sv.domain.model.CustomFileType
+import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.ClearFocusOnFlowEmissionOrKeyboardHidden
 import com.w2sv.kotlinutils.coroutines.flow.emit
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -57,7 +60,7 @@ private enum class FileExtensionInvalidityReason(val errorMessage: String) {
 }
 
 @Stable
-private class CustomFileType(private val scope: CoroutineScope) {
+private class EditedCustomFileType(private val scope: CoroutineScope, private val usedFileTypes: Collection<FileType>) {
     var name by mutableStateOf("")
         private set
 
@@ -100,48 +103,70 @@ private class CustomFileType(private val scope: CoroutineScope) {
     fun clearFocus() {
         _clearFocus.emit(Unit, scope)
     }
+
+    fun toCustomFileType(): CustomFileType =
+        CustomFileType(name, extensions, usedFileTypes.map { it.ordinal }.max() + 1)  // TODO
 }
 
 @Composable
-fun FileTypeCreationDialog(onDismissRequest: () -> Unit, modifier: Modifier = Modifier) {
+fun FileTypeCreationDialog(
+    fileTypes: ImmutableSet<FileType>,
+    onDismissRequest: () -> Unit,
+    onCreateFileType: (CustomFileType) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val scope = rememberCoroutineScope()
-    val customFileType = remember { CustomFileType(scope) }  // TODO: rememberSavable
+    val editedCustomFileType = remember(fileTypes) { EditedCustomFileType(scope, fileTypes) }  // TODO: rememberSavable
 
-    StatelessFileTypeCreationDialog(customFileType, onDismissRequest, modifier)
+    StatelessFileTypeCreationDialog(editedCustomFileType, onDismissRequest, onCreateFileType, modifier)
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun StatelessFileTypeCreationDialog(customFileType: CustomFileType, onDismissRequest: () -> Unit, modifier: Modifier = Modifier) {
+private fun StatelessFileTypeCreationDialog(
+    editedCustomFileType: EditedCustomFileType,
+    onDismissRequest: () -> Unit,
+    createFileType: (CustomFileType) -> Unit,
+    modifier: Modifier = Modifier
+) {
     AlertDialog(
-        modifier = modifier.pointerInput(Unit) { detectTapGestures { customFileType.clearFocus() } },
+        modifier = modifier.pointerInput(Unit) { detectTapGestures { editedCustomFileType.clearFocus() } },
         title = { Text("Create a file type") },
         onDismissRequest = onDismissRequest,
         text = {
-            ClearFocusOnFlowEmissionOrKeyboardHidden(customFileType.clearFocus)
+            ClearFocusOnFlowEmissionOrKeyboardHidden(editedCustomFileType.clearFocus)
 
             Column {
                 Spacer(Modifier.height(24.dp))
                 OutlinedTextField(
-                    value = customFileType.name,
-                    onValueChange = customFileType::updateName,
+                    value = editedCustomFileType.name,
+                    onValueChange = editedCustomFileType::updateName,
                     placeholder = { Text("Enter name") },
                     singleLine = true
                 )
                 FileExtensionTextField(
-                    customFileType = customFileType,
+                    editedCustomFileType = editedCustomFileType,
                     modifier = Modifier
                         .width(192.dp)
                         .padding(vertical = 16.dp)
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    customFileType.extensions.forEachIndexed { i, extension ->
-                        FileExtensionBadgeWithTooltip(extension = extension, deleteExtension = { customFileType.deleteExtension(i) })
+                    editedCustomFileType.extensions.forEachIndexed { i, extension ->
+                        FileExtensionBadgeWithTooltip(extension = extension, deleteExtension = { editedCustomFileType.deleteExtension(i) })
                     }
                 }
             }
         },
-        confirmButton = { DialogButton("Create", onClick = {}, enabled = customFileType.canBeCreated) },
+        confirmButton = {
+            DialogButton(
+                text = "Create",
+                onClick = {
+                    createFileType(editedCustomFileType.toCustomFileType())
+                    onDismissRequest()
+                },
+                enabled = editedCustomFileType.canBeCreated
+            )
+        },
     )
 }
 
@@ -199,24 +224,24 @@ private fun FileExtensionBadge(extension: String, modifier: Modifier = Modifier)
 }
 
 @Composable
-private fun FileExtensionTextField(customFileType: CustomFileType, modifier: Modifier = Modifier) {
+private fun FileExtensionTextField(editedCustomFileType: EditedCustomFileType, modifier: Modifier = Modifier) {
     OutlinedTextField(
-        value = customFileType.newFileExtension,
-        onValueChange = customFileType::updateNewFileExtension,
+        value = editedCustomFileType.newFileExtension,
+        onValueChange = editedCustomFileType::updateNewFileExtension,
         textStyle = MaterialTheme.typography.bodyLarge,
         placeholder = { Text("Enter file extension", maxLines = 1) },
         singleLine = true,
         modifier = modifier,
         trailingIcon = when {
-            customFileType.newFileExtensionCanBeAdded -> {
+            editedCustomFileType.newFileExtensionCanBeAdded -> {
                 {
-                    FilledTonalIconButton(onClick = customFileType::addNewFileExtension) {
+                    FilledTonalIconButton(onClick = editedCustomFileType::addNewFileExtension) {
                         Icon(Icons.Default.Add, contentDescription = null, tint = AppColor.success)
                     }
                 }
             }
 
-            customFileType.newFileExtensionInvalidityReason != null -> {
+            editedCustomFileType.newFileExtensionInvalidityReason != null -> {
                 {
                     Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                 }
@@ -226,8 +251,8 @@ private fun FileExtensionTextField(customFileType: CustomFileType, modifier: Mod
                 null
             }
         },
-        isError = customFileType.newFileExtensionInvalidityReason != null,
-        supportingText = customFileType.newFileExtensionInvalidityReason?.let { invalidityReason ->
+        isError = editedCustomFileType.newFileExtensionInvalidityReason != null,
+        supportingText = editedCustomFileType.newFileExtensionInvalidityReason?.let { invalidityReason ->
             {
                 Text(
                     text = invalidityReason.errorMessage,
@@ -243,12 +268,13 @@ private fun FileExtensionTextField(customFileType: CustomFileType, modifier: Mod
 private fun StatelessFileTypeCreationDialogPrev() {
     AppTheme {
         StatelessFileTypeCreationDialog(
-            customFileType = CustomFileType(rememberCoroutineScope())
+            editedCustomFileType = EditedCustomFileType(rememberCoroutineScope(), emptyList())
                 .apply {
                     extensions.addAll(listOf("jpg", "png", "jpgasdf"))
                     updateNewFileExtension("dot")
                 },
-            onDismissRequest = {}
+            onDismissRequest = {},
+            createFileType = {}
         )
     }
 }

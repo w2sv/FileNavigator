@@ -6,7 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.w2sv.common.util.DocumentUri
 import com.w2sv.common.util.MediaUri
 import com.w2sv.database.AppDatabase
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.ExternalDestination
@@ -61,7 +61,7 @@ internal class RoomMovedFileRepositoryTest {
                     mediaUri = MediaUri.parse("kjasdf"),
                     name = "someFile.jpg",
                     originalName = null,
-                    type = FileType.Image,
+                    fileType = PresetFileType.Image,
                     sourceType = SourceType.Screenshot,
                     moveDestination = LocalDestination.parse("kjhasdfkjh"),
                     moveDateTime = LocalDateTime.now(),
@@ -75,7 +75,7 @@ internal class RoomMovedFileRepositoryTest {
                     ),
                     name = "someFile.jpg",
                     originalName = "previousName.jpg",
-                    type = FileType.Image,
+                    fileType = PresetFileType.Image,
                     sourceType = SourceType.Screenshot,
                     moveDateTime = LocalDateTime.now()
                 ),
@@ -87,7 +87,7 @@ internal class RoomMovedFileRepositoryTest {
                     ),
                     name = "someFile.jpg",
                     originalName = null,
-                    type = FileType.Image,
+                    fileType = PresetFileType.Image,
                     sourceType = SourceType.Screenshot,
                     moveDateTime = LocalDateTime.now()
                 )

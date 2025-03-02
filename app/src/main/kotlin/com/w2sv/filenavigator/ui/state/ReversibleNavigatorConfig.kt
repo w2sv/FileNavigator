@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.state
 
 import androidx.compose.runtime.Stable
+import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -12,8 +13,11 @@ import com.w2sv.filenavigator.ui.viewmodel.MakeSnackbarVisuals
 import com.w2sv.reversiblestate.ReversibleState
 import com.w2sv.reversiblestate.ReversibleStateFlow
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
@@ -90,6 +94,14 @@ class ReversibleNavigatorConfig(
                 )
             }
         )
+    }
+
+    val selectFileType: SharedFlow<FileType> get() = _selectFileType.asSharedFlow()
+    private val _selectFileType = MutableSharedFlow<FileType>()
+
+    fun createCustomFileType(type: CustomFileType) {
+        update { it.addCustomFileType(type) }
+        _selectFileType.tryEmit(type)
     }
 
     private inline fun updateOrEmitSnackbar(

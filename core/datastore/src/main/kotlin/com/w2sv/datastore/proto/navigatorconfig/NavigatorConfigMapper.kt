@@ -1,15 +1,19 @@
 package com.w2sv.datastore.proto.navigatorconfig
 
 import com.w2sv.datastore.AutoMoveConfigProto
+import com.w2sv.datastore.CustomFileTypeProto
 import com.w2sv.datastore.FileTypeConfigProto
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.SourceConfigProto
 import com.w2sv.datastore.autoMoveConfigProto
+import com.w2sv.datastore.customFileTypeProto
 import com.w2sv.datastore.fileTypeConfigProto
 import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.datastore.proto.ProtoMapper
 import com.w2sv.datastore.sourceConfigProto
+import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
@@ -28,13 +32,20 @@ fun NavigatorConfigProto.toExternal(): NavigatorConfig =
 private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, NavigatorConfig> {
     override fun toExternal(proto: NavigatorConfigProto): NavigatorConfig =
         NavigatorConfig(
-            fileTypeConfigMap = proto.fileTypeToConfigMap.map { (fileTypeIndex, configProto) ->
-                FileType.values[fileTypeIndex] to FileTypeConfigMapper.toExternal(configProto)
+            fileTypeConfigMap = proto.fileTypeToConfigMap.map { (ordinal, fileTypeConfigProto) ->
+                fileType(ordinal, proto) to FileTypeConfigMapper.toExternal(fileTypeConfigProto)
             },
             showBatchMoveNotification = proto.showBatchMoveNotification,
             disableOnLowBattery = proto.disableOnLowBattery,
             startOnBoot = proto.startOnBoot
         )
+
+    private fun fileType(ordinal: Int, proto: NavigatorConfigProto): FileType =
+        try {
+            PresetFileType[ordinal]
+        } catch (_: IndexOutOfBoundsException) {
+            CustomFileTypeMapper.toExternal(proto.customFileTypesList[ordinal])
+        }
 
     override fun toProto(external: NavigatorConfig): NavigatorConfigProto =
         toProto(external, false)
@@ -42,8 +53,11 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
     fun toProto(external: NavigatorConfig, hasBeenMigrated: Boolean): NavigatorConfigProto =
         navigatorConfigProto {
             this.fileTypeToConfig.putAll(
-                external.fileTypeConfigMap.map { (fileType, config) ->
-                    fileType.ordinal to FileTypeConfigMapper.toProto(config)
+                external.fileTypeConfigMap.map { (fileType, fileTypeConfig) ->
+                    fileType.asCustomTypeOrNull?.let { customFileType ->
+                        this.customFileTypes.add(CustomFileTypeMapper.toProto(customFileType))
+                    }
+                    fileType.ordinal to FileTypeConfigMapper.toProto(fileTypeConfig)
                 }
             )
             this.showBatchMoveNotification = external.showBatchMoveNotification
@@ -108,6 +122,18 @@ private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveC
         autoMoveConfigProto {
             enabled = external.enabled
             destination = external.destination?.uriString ?: ""
+        }
+}
+
+private object CustomFileTypeMapper : ProtoMapper<CustomFileTypeProto, CustomFileType> {
+    override fun toExternal(proto: CustomFileTypeProto): CustomFileType =
+        CustomFileType(proto.name, proto.extensionsList, proto.ordinal)
+
+    override fun toProto(external: CustomFileType): CustomFileTypeProto =
+        customFileTypeProto {
+            name = external.name
+            extensions.addAll(external.fileExtensions)
+            ordinal = external.ordinal
         }
 }
 

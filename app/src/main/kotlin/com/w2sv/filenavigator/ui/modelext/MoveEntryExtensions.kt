@@ -28,13 +28,13 @@ fun MovedFile.launchViewMovedFileActivity(context: Context): SnackbarVisuals? {
                     localOrNull?.let {
                         setDataAndType(
                             it.mediaUri.uri,
-                            this@launchViewMovedFileActivity.type.simpleStorageMediaType.mimeType
+                            this@launchViewMovedFileActivity.fileType.mediaType.mimeType
                         )
                     }
                     externalOrNull?.let {
                         setDataAndType(
                             documentUri.uri,
-                            this@launchViewMovedFileActivity.type.simpleStorageMediaType.mimeType
+                            this@launchViewMovedFileActivity.fileType.mediaType.mimeType
                         )
                         setPackage(it.moveDestination.providerPackageName)
                     }

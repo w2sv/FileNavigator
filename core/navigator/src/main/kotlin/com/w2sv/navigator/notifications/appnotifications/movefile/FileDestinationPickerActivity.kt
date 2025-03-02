@@ -55,7 +55,7 @@ internal class FileDestinationPickerActivity : AbstractDestinationPickerActivity
     private val documentCreator by threadUnsafeLazy {
         registerForActivityResult(
             object :
-                ActivityResultContracts.CreateDocument(args.moveFile.fileType.simpleStorageMediaType.mimeType) {
+                ActivityResultContracts.CreateDocument(args.moveFile.fileType.mediaType.mimeType) {
                 override fun createIntent(context: Context, input: String): Intent =
                     super.createIntent(context, input)
                         .addCategory(Intent.CATEGORY_OPENABLE)
@@ -94,7 +94,7 @@ internal class FileDestinationPickerActivity : AbstractDestinationPickerActivity
                     blacklistedMediaUris.emit(
                         value = MediaIdWithMediaType(
                             mediaId = localFileDestination.mediaUri.id!!,
-                            mediaType = args.moveFile.fileType.simpleStorageMediaType
+                            mediaType = args.moveFile.fileType.mediaType
                         )
                             .log { "Emitting $it" },
                         scope = lifecycleScope
