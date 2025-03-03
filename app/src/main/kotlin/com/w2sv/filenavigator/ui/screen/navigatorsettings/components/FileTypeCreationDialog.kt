@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -11,10 +13,12 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
@@ -40,8 +44,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.containsSpecialCharacter
@@ -59,6 +65,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlin.text.trim
+import com.w2sv.core.domain.R
 
 interface InputInvalidityReason {
     val errorMessage: String
@@ -192,6 +199,7 @@ private fun StatelessFileTypeCreationDialog(
 ) {
     AlertDialog(
         modifier = modifier.pointerInput(Unit) { detectTapGestures { customFileTypeEditor.clearFocus() } },
+        icon = { Icon(painterResource(R.drawable.ic_custom_file_type_24), contentDescription = null, modifier = Modifier.size(42.dp)) },
         title = { Text("Create a file type") },
         onDismissRequest = onDismissRequest,
         text = {
@@ -200,16 +208,19 @@ private fun StatelessFileTypeCreationDialog(
             Column {
                 Spacer(Modifier.height(24.dp))
                 OutlinedTextField(
-                    value = customFileTypeEditor.nameEditor.value,
-                    onValueChange = customFileTypeEditor.nameEditor::update,
-                    placeholder = { Text("Enter name") },
-                    singleLine = true
+                    editor = customFileTypeEditor.nameEditor,
+                    placeholderText = "Enter name",
+                    labelText = "Name",
+                    onApply = customFileTypeEditor::clearFocus
                 )
-                FileExtensionTextField(
-                    customFileTypeEditor = customFileTypeEditor,
+                OutlinedTextField(
+                    editor = customFileTypeEditor.extensionEditor,
+                    placeholderText = "Enter file extension",
+                    onApply = customFileTypeEditor::addExtension,
                     modifier = Modifier
                         .width(192.dp)
-                        .padding(vertical = 16.dp)
+                        .padding(vertical = 16.dp),
+                    applyIconImageVector = Icons.Outlined.Add
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     customFileTypeEditor.extensions.forEachIndexed { i, extension ->
@@ -285,24 +296,35 @@ private fun FileExtensionBadge(extension: String, modifier: Modifier = Modifier)
 }
 
 @Composable
-private fun FileExtensionTextField(customFileTypeEditor: CustomFileTypeEditor, modifier: Modifier = Modifier) {
+private fun OutlinedTextField(
+    editor: TextEditor<*>,
+    placeholderText: String,
+    onApply: () -> Unit,
+    modifier: Modifier = Modifier,
+    labelText: String? = null,
+    applyIconImageVector: ImageVector = Icons.Outlined.Check
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
     OutlinedTextField(
-        value = customFileTypeEditor.extensionEditor.value,
-        onValueChange = customFileTypeEditor.extensionEditor::update,
+        value = editor.value,
+        onValueChange = { editor.update(it) },
         textStyle = MaterialTheme.typography.bodyLarge,
-        placeholder = { Text("Enter file extension", maxLines = 1) },
+        placeholder = { Text(placeholderText, maxLines = 1) },
+        label = labelText?.let { { Text(labelText, maxLines = 1) } },
         singleLine = true,
         modifier = modifier,
         trailingIcon = when {
-            customFileTypeEditor.extensionEditor.isValid -> {
+            editor.isValid && isFocused -> {
                 {
-                    FilledTonalIconButton(onClick = customFileTypeEditor::addExtension) {
-                        Icon(Icons.Default.Add, contentDescription = null, tint = AppColor.success)
+                    FilledTonalIconButton(onClick = onApply, modifier = Modifier.padding(end = 4.dp)) {
+                        Icon(applyIconImageVector, contentDescription = null, tint = AppColor.success)
                     }
                 }
             }
 
-            customFileTypeEditor.extensionEditor.invalidityReason != null -> {
+            editor.invalidityReason != null -> {
                 {
                     Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                 }
@@ -312,15 +334,16 @@ private fun FileExtensionTextField(customFileTypeEditor: CustomFileTypeEditor, m
                 null
             }
         },
-        isError = customFileTypeEditor.extensionEditor.invalidityReason != null,
-        supportingText = customFileTypeEditor.extensionEditor.invalidityReason?.let { invalidityReason ->
+        isError = editor.invalidityReason != null,
+        supportingText = editor.invalidityReason?.let { invalidityReason ->
             {
                 Text(
                     text = invalidityReason.errorMessage,
                     color = MaterialTheme.colorScheme.error,
                 )
             }
-        }
+        },
+        interactionSource = interactionSource
     )
 }
 
