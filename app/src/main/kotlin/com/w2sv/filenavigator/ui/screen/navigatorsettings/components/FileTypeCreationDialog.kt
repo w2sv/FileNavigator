@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -38,11 +39,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
@@ -50,37 +52,79 @@ import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.ClearFocusOnFlowEmissionOrKeyboardHidden
 import com.w2sv.kotlinutils.coroutines.flow.emit
+import com.w2sv.kotlinutils.threadUnsafeLazy
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlin.text.trim
 
-private enum class FileExtensionInvalidityReason(val errorMessage: String) {
+interface InputInvalidityReason {
+    val errorMessage: String
+}
+
+private enum class FileTypeNameInvalidityReason(override val errorMessage: String) : InputInvalidityReason {
+    ContainsSpecialCharacter("Name must not contain special characters"),
+    AlreadyExists("File type already exists")
+}
+
+private enum class FileExtensionInvalidityReason(override val errorMessage: String) : InputInvalidityReason {
     ContainsSpecialCharacter("Extension must not contain special characters"),
-    AlreadyAmongstFileExtensions("Already amongst added extensions")
+    AlreadyAmongstAddedExtensions("Already amongst added extensions")
 }
 
 @Stable
-open class TextEditor private constructor(private val mutableState: MutableState<String>) : State<String> by mutableState {
+class TextEditor<T : InputInvalidityReason> private constructor(
+    private val initialText: String,
+    private val mutableState: MutableState<String>,
+    private val processInput: (String) -> String,
+    private val findInvalidityReason: (String) -> T?
+) :
+    State<String> by mutableState {
 
-    constructor(initialText: String = ""): this(mutableStateOf(initialText))
+    constructor(initialText: String = "", processInput: (String) -> String = { it }, findInvalidityReason: (String) -> T? = { null })
+        : this(
+        initialText = initialText,
+        mutableState = mutableStateOf(initialText),
+        processInput = processInput,
+        findInvalidityReason = findInvalidityReason
+    )
 
     fun update(input: String) {
         mutableState.value = processInput(input)
     }
 
-    open fun processInput(input: String): String = input
+    val invalidityReason by derivedStateOf { findInvalidityReason(value) }
+    val isValid by derivedStateOf { invalidityReason == null && value.isNotBlank() }
+
+    fun pop(): String = value.also { mutableState.value = initialText }
 }
 
 @Stable
-private class EditedCustomFileType(private val scope: CoroutineScope, private val usedFileTypes: Collection<FileType>) {
-    var name by mutableStateOf("")
-        private set
-
-    fun updateName(value: String) {
-        name = value.trim().replaceFirstChar(Char::titlecase)
+private class CustomFileTypeEditor(
+    private val scope: CoroutineScope,
+    private val existingFileTypes: Collection<FileType>,
+    private val context: Context
+) {
+    private val existingFileTypeNames by threadUnsafeLazy {
+        buildSet { existingFileTypes.forEach { add(it.label(context)) } }
     }
+
+    val nameEditor = TextEditor(
+        processInput = { it.trim().replaceFirstChar(Char::titlecase) },
+        findInvalidityReason = { input ->
+            when {
+                input.containsSpecialCharacter() -> FileTypeNameInvalidityReason.ContainsSpecialCharacter
+                input in existingFileTypeNames -> FileTypeNameInvalidityReason.AlreadyExists
+                else -> null
+            }
+        }
+    )
+
+    // ===================
+    // Extensions
+    // ===================
 
     val extensions = mutableStateListOf<String>()
 
@@ -88,28 +132,26 @@ private class EditedCustomFileType(private val scope: CoroutineScope, private va
         extensions.removeAt(index)
     }
 
-    var newFileExtension by mutableStateOf("")
-        private set
-
-    fun updateNewFileExtension(value: String) {
-        newFileExtension = value.trim().lowercase()
-    }
-
-    val newFileExtensionInvalidityReason by derivedStateOf {
-        when {
-            newFileExtension.any { !it.isLetterOrDigit() } -> FileExtensionInvalidityReason.ContainsSpecialCharacter
-            extensions.contains(newFileExtension) -> FileExtensionInvalidityReason.AlreadyAmongstFileExtensions
-            else -> null
+    val extensionEditor = TextEditor(
+        processInput = { it.trim().lowercase() },
+        findInvalidityReason = { input ->
+            when {
+                input.containsSpecialCharacter() -> FileExtensionInvalidityReason.ContainsSpecialCharacter
+                input in extensions -> FileExtensionInvalidityReason.AlreadyAmongstAddedExtensions
+                else -> null
+            }
         }
-    }
-    val newFileExtensionCanBeAdded by derivedStateOf { newFileExtensionInvalidityReason == null && newFileExtension.isNotBlank() }
+    )
 
-    fun addNewFileExtension() {
-        extensions.add(newFileExtension)
-        newFileExtension = ""
+    fun addExtension() {
+        extensions.add(extensionEditor.pop())
     }
 
-    val canBeCreated by derivedStateOf { name.isNotEmpty() && extensions.isNotEmpty() }
+    val canBeCreated by derivedStateOf { nameEditor.isValid && extensions.isNotEmpty() }
+
+    // ===================
+    // Focus
+    // ===================
 
     val clearFocus get() = _clearFocus.asSharedFlow()
     private val _clearFocus = MutableSharedFlow<Unit>()
@@ -119,7 +161,11 @@ private class EditedCustomFileType(private val scope: CoroutineScope, private va
     }
 
     fun toCustomFileType(): CustomFileType =
-        CustomFileType(name, extensions, usedFileTypes.map { it.ordinal }.max() + 1)  // TODO
+        CustomFileType(
+            name = nameEditor.value,
+            fileExtensions = extensions,
+            ordinal = existingFileTypes.map { it.ordinal }.max() + 1  // TODO
+        )
 }
 
 @Composable
@@ -130,43 +176,44 @@ fun FileTypeCreationDialog(
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
-    val editedCustomFileType = remember(fileTypes) { EditedCustomFileType(scope, fileTypes) }  // TODO: rememberSavable
+    val context = LocalContext.current
+    val customFileTypeEditor = remember(fileTypes) { CustomFileTypeEditor(scope, fileTypes, context) }  // TODO: rememberSavable
 
-    StatelessFileTypeCreationDialog(editedCustomFileType, onDismissRequest, onCreateFileType, modifier)
+    StatelessFileTypeCreationDialog(customFileTypeEditor, onDismissRequest, onCreateFileType, modifier)
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun StatelessFileTypeCreationDialog(
-    editedCustomFileType: EditedCustomFileType,
+    customFileTypeEditor: CustomFileTypeEditor,
     onDismissRequest: () -> Unit,
     createFileType: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
-        modifier = modifier.pointerInput(Unit) { detectTapGestures { editedCustomFileType.clearFocus() } },
+        modifier = modifier.pointerInput(Unit) { detectTapGestures { customFileTypeEditor.clearFocus() } },
         title = { Text("Create a file type") },
         onDismissRequest = onDismissRequest,
         text = {
-            ClearFocusOnFlowEmissionOrKeyboardHidden(editedCustomFileType.clearFocus)
+            ClearFocusOnFlowEmissionOrKeyboardHidden(customFileTypeEditor.clearFocus)
 
             Column {
                 Spacer(Modifier.height(24.dp))
                 OutlinedTextField(
-                    value = editedCustomFileType.name,
-                    onValueChange = editedCustomFileType::updateName,
+                    value = customFileTypeEditor.nameEditor.value,
+                    onValueChange = customFileTypeEditor.nameEditor::update,
                     placeholder = { Text("Enter name") },
                     singleLine = true
                 )
                 FileExtensionTextField(
-                    editedCustomFileType = editedCustomFileType,
+                    customFileTypeEditor = customFileTypeEditor,
                     modifier = Modifier
                         .width(192.dp)
                         .padding(vertical = 16.dp)
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    editedCustomFileType.extensions.forEachIndexed { i, extension ->
-                        FileExtensionBadgeWithTooltip(extension = extension, deleteExtension = { editedCustomFileType.deleteExtension(i) })
+                    customFileTypeEditor.extensions.forEachIndexed { i, extension ->
+                        FileExtensionBadgeWithTooltip(extension = extension, deleteExtension = { customFileTypeEditor.deleteExtension(i) })
                     }
                 }
             }
@@ -175,10 +222,10 @@ private fun StatelessFileTypeCreationDialog(
             DialogButton(
                 text = "Create",
                 onClick = {
-                    createFileType(editedCustomFileType.toCustomFileType())
+                    createFileType(customFileTypeEditor.toCustomFileType())
                     onDismissRequest()
                 },
-                enabled = editedCustomFileType.canBeCreated
+                enabled = customFileTypeEditor.canBeCreated
             )
         },
     )
@@ -238,24 +285,24 @@ private fun FileExtensionBadge(extension: String, modifier: Modifier = Modifier)
 }
 
 @Composable
-private fun FileExtensionTextField(editedCustomFileType: EditedCustomFileType, modifier: Modifier = Modifier) {
+private fun FileExtensionTextField(customFileTypeEditor: CustomFileTypeEditor, modifier: Modifier = Modifier) {
     OutlinedTextField(
-        value = editedCustomFileType.newFileExtension,
-        onValueChange = editedCustomFileType::updateNewFileExtension,
+        value = customFileTypeEditor.extensionEditor.value,
+        onValueChange = customFileTypeEditor.extensionEditor::update,
         textStyle = MaterialTheme.typography.bodyLarge,
         placeholder = { Text("Enter file extension", maxLines = 1) },
         singleLine = true,
         modifier = modifier,
         trailingIcon = when {
-            editedCustomFileType.newFileExtensionCanBeAdded -> {
+            customFileTypeEditor.extensionEditor.isValid -> {
                 {
-                    FilledTonalIconButton(onClick = editedCustomFileType::addNewFileExtension) {
+                    FilledTonalIconButton(onClick = customFileTypeEditor::addExtension) {
                         Icon(Icons.Default.Add, contentDescription = null, tint = AppColor.success)
                     }
                 }
             }
 
-            editedCustomFileType.newFileExtensionInvalidityReason != null -> {
+            customFileTypeEditor.extensionEditor.invalidityReason != null -> {
                 {
                     Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                 }
@@ -265,8 +312,8 @@ private fun FileExtensionTextField(editedCustomFileType: EditedCustomFileType, m
                 null
             }
         },
-        isError = editedCustomFileType.newFileExtensionInvalidityReason != null,
-        supportingText = editedCustomFileType.newFileExtensionInvalidityReason?.let { invalidityReason ->
+        isError = customFileTypeEditor.extensionEditor.invalidityReason != null,
+        supportingText = customFileTypeEditor.extensionEditor.invalidityReason?.let { invalidityReason ->
             {
                 Text(
                     text = invalidityReason.errorMessage,
@@ -281,11 +328,12 @@ private fun FileExtensionTextField(editedCustomFileType: EditedCustomFileType, m
 @Composable
 private fun StatelessFileTypeCreationDialogPrev() {
     AppTheme {
+        val context = LocalContext.current
         StatelessFileTypeCreationDialog(
-            editedCustomFileType = EditedCustomFileType(rememberCoroutineScope(), emptyList())
+            customFileTypeEditor = CustomFileTypeEditor(rememberCoroutineScope(), emptyList(), context)
                 .apply {
                     extensions.addAll(listOf("jpg", "png", "jpgasdf"))
-                    updateNewFileExtension("dot")
+                    extensionEditor.update("dot")
                 },
             onDismissRequest = {},
             createFileType = {}
