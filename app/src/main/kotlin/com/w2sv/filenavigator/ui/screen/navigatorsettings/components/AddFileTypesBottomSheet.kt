@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.w2sv.common.util.log
 import com.w2sv.composed.CollectFromFlow
 import com.w2sv.composed.extensions.thenIf
 import com.w2sv.composed.extensions.toMutableStateMap
@@ -59,6 +60,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import slimber.log.i
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -72,7 +74,7 @@ fun AddFileTypesBottomSheet(
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val selectionMap = remember(disabledFileTypes) {
+    val selectionMap = remember {
         EnabledKeysTrackingSnapshotStateMap(
             disabledFileTypes
                 .associateWith { false }
@@ -81,7 +83,9 @@ fun AddFileTypesBottomSheet(
     }
 
     CollectFromFlow(selectFileType) { fileType ->
-        selectionMap[fileType] = true
+        i { "Putting $fileType=true" }
+        selectionMap.put(fileType, true)
+        selectionMap.log()
     }
 
     ModalBottomSheet(
@@ -108,6 +112,7 @@ fun AddFileTypesBottomSheet(
                     onClick = { selectionMap.toggle(fileType) },
                     modifier = Modifier
                         .padding(bottom = 12.dp)
+                        .animateItem()
                 )
             }
             item {
@@ -115,6 +120,7 @@ fun AddFileTypesBottomSheet(
                     onClick = onCreateFileTypeCardClick,
                     modifier = Modifier
                         .padding(bottom = 12.dp)
+                        .animateItem()
                 )
             }
         }
@@ -159,6 +165,9 @@ private class EnabledKeysTrackingSnapshotStateMap<K>(private val map: SnapshotSt
                     enabledKeys.remove(key)
                 }
             }
+
+    override fun toString(): String =
+        "Map=$map | enabledKeys=${enabledKeys.toList()}"
 }
 
 @Composable

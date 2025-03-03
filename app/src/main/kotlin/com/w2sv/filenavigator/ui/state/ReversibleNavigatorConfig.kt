@@ -10,6 +10,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.viewmodel.MakeSnackbarVisuals
+import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.reversiblestate.ReversibleState
 import com.w2sv.reversiblestate.ReversibleStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -20,9 +21,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import slimber.log.i
 
 @Stable
 class ReversibleNavigatorConfig(
+    private val scope: CoroutineScope,
     reversibleStateFlow: ReversibleStateFlow<NavigatorConfig>,
     private val makeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit
 ) : ReversibleState by reversibleStateFlow,
@@ -34,6 +37,7 @@ class ReversibleNavigatorConfig(
         makeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
         onStateSynced: () -> Unit
     ) : this(
+        scope = scope,
         reversibleStateFlow = ReversibleStateFlow(
             scope = scope,
             appliedStateFlow = navigatorConfigDataSource.navigatorConfig.stateIn(
@@ -101,7 +105,8 @@ class ReversibleNavigatorConfig(
 
     fun createCustomFileType(type: CustomFileType) {
         update { it.addCustomFileType(type) }
-        _selectFileType.tryEmit(type)
+        _selectFileType.emit(type, scope)
+        i { "Emitted $type on selectFileType" }
     }
 
     private inline fun updateOrEmitSnackbar(

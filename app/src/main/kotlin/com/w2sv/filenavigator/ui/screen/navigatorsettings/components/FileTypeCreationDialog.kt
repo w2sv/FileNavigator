@@ -29,7 +29,9 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TooltipScope
 import androidx.compose.material3.TooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -57,6 +59,18 @@ import kotlinx.coroutines.launch
 private enum class FileExtensionInvalidityReason(val errorMessage: String) {
     ContainsSpecialCharacter("Extension must not contain special characters"),
     AlreadyAmongstFileExtensions("Already amongst added extensions")
+}
+
+@Stable
+open class TextEditor private constructor(private val mutableState: MutableState<String>) : State<String> by mutableState {
+
+    constructor(initialText: String = ""): this(mutableStateOf(initialText))
+
+    fun update(input: String) {
+        mutableState.value = processInput(input)
+    }
+
+    open fun processInput(input: String): String = input
 }
 
 @Stable
