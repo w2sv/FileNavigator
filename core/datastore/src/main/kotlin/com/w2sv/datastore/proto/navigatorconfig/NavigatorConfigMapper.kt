@@ -44,7 +44,7 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
         try {
             PresetFileType[ordinal]
         } catch (_: IndexOutOfBoundsException) {
-            CustomFileTypeMapper.toExternal(proto.customFileTypesList[ordinal])
+            CustomFileTypeMapper.toExternal(proto.customFileTypesList.first { it.ordinal == ordinal })
         }
 
     override fun toProto(external: NavigatorConfig): NavigatorConfigProto =
