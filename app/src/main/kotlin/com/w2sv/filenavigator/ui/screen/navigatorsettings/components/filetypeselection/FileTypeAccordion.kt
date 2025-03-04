@@ -46,15 +46,13 @@ import kotlinx.collections.immutable.ImmutableMap
 fun FileTypeAccordion(
     fileType: FileType,
     excludeFileType: () -> Unit,
-    setSourceAutoMoveConfigs: (AutoMoveConfig) -> Unit,
+    setSourceAutoMoveConfigs: ((AutoMoveConfig) -> Unit)?,
     sourceTypeConfigMap: ImmutableMap<SourceType, SourceConfig>,
     onSourceCheckedChange: (SourceType, Boolean) -> Unit,
     setSourceAutoMoveConfig: (SourceType, AutoMoveConfig) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-    ) {
+    Column(modifier = modifier) {
         Header(
             fileType = fileType,
             excludeFileType = excludeFileType,
@@ -73,14 +71,16 @@ fun FileTypeAccordion(
 private fun Header(
     fileType: FileType,
     excludeFileType: () -> Unit,
-    setSourceAutoMoveConfigs: (AutoMoveConfig) -> Unit,
+    setSourceAutoMoveConfigs: ((AutoMoveConfig) -> Unit)?,
     modifier: Modifier = Modifier
 ) {
-    val selectAutoMoveDestination = rememberSelectAutoMoveDestination(
-        onDestinationSelected = {
-            setSourceAutoMoveConfigs(AutoMoveConfig(enabled = true, destination = it))
-        }
-    )
+    val selectAutoMoveDestination = setSourceAutoMoveConfigs?.let { nonNullSetSourceAutoMoveConfigs ->
+        rememberSelectAutoMoveDestination(
+            onDestinationSelected = { destination ->
+                nonNullSetSourceAutoMoveConfigs(AutoMoveConfig(enabled = true, destination = destination))
+            }
+        )
+    }
 
     Surface(
         tonalElevation = 2.dp,
@@ -92,7 +92,7 @@ private fun Header(
         FileTypeRow(
             fileType = fileType,
             excludeFileType = excludeFileType,
-            setSourceAutoMoveConfigs = { selectAutoMoveDestination.launch(null) }
+            setSourceAutoMoveConfigs = selectAutoMoveDestination?.let { { it.launch(null) } }
         )
     }
 }
@@ -101,7 +101,7 @@ private fun Header(
 private fun FileTypeRow(
     fileType: FileType,
     excludeFileType: () -> Unit,
-    setSourceAutoMoveConfigs: () -> Unit,
+    setSourceAutoMoveConfigs: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -120,7 +120,9 @@ private fun FileTypeRow(
             fontSize = 18.sp
         )
         Spacer(modifier = Modifier.weight(1f))
-        MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = setSourceAutoMoveConfigs)
+        setSourceAutoMoveConfigs?.let {
+            MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = it)
+        }
         Text(
             text = stringResource(R.string.exclude),
             modifier = Modifier

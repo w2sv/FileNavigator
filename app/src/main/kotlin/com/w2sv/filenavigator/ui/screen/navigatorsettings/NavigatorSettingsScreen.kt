@@ -106,7 +106,7 @@ fun NavigatorSettingsScreen(
     AutoMoveIntroductionDialogIfNotYetShown()
 
     var showAddFileTypesBottomSheet by rememberSaveable {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
     var showFileTypeCreationDialog by rememberSaveable {
         mutableStateOf(false)

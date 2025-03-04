@@ -166,12 +166,18 @@ fun NavigatorConfigurationColumn(
                         )
                     }
                 },
-                setSourceAutoMoveConfigs = { autoMoveConfig ->
-                    reversibleConfig.update {
-                        it.copyWithAlteredAutoMoveConfigs(
-                            fileType = fileType,
-                            autoMoveConfig = autoMoveConfig
-                        )
+                setSourceAutoMoveConfigs = remember(fileType) {
+                    if (fileType.isMediaType) {
+                        { autoMoveConfig ->
+                            reversibleConfig.update {
+                                it.copyWithAlteredAutoMoveConfigs(
+                                    fileType = fileType,
+                                    autoMoveConfig = autoMoveConfig
+                                )
+                            }
+                        }
+                    } else {
+                        null
                     }
                 },
                 sourceTypeConfigMap = config.fileTypeConfig(fileType).sourceTypeConfigMap.toImmutableMap(),
@@ -184,10 +190,12 @@ fun NavigatorConfigurationColumn(
                         )
                     }
                 },
-                setSourceAutoMoveConfig = { sourceType, autoMoveConfig ->
-                    reversibleConfig.update {
-                        it.copyWithAlteredAutoMoveConfig(fileType, sourceType) {
-                            autoMoveConfig
+                setSourceAutoMoveConfig = remember(fileType) {
+                    { sourceType, autoMoveConfig ->
+                        reversibleConfig.update {
+                            it.copyWithAlteredAutoMoveConfig(fileType, sourceType) {
+                                autoMoveConfig
+                            }
                         }
                     }
                 },
