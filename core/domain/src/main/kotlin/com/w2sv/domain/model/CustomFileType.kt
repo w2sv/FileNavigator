@@ -1,6 +1,7 @@
 package com.w2sv.domain.model
 
 import android.os.Parcelable
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import com.w2sv.core.domain.R
 import kotlinx.parcelize.IgnoredOnParcel
@@ -15,7 +16,8 @@ data class CustomFileType(
     Parcelable {
 
     @IgnoredOnParcel
-    override val colorInt: Int = -16252812
+    @ColorInt
+    override val colorInt: Int = -13590298
 
     @IgnoredOnParcel
     @DrawableRes
