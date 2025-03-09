@@ -163,20 +163,32 @@ private class CustomFileTypeEditor(
 }
 
 @Composable
+private fun rememberCustomFileTypeEditor(
+    existingFileTypes: ImmutableSet<FileType>,
+    initialFileType: CustomFileType? = null,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    context: Context = LocalContext.current
+): CustomFileTypeEditor {
+    return remember(initialFileType, existingFileTypes) {
+        if (initialFileType != null) {
+            CustomFileTypeEditor(initialFileType, existingFileTypes, scope, context)
+        } else {
+            CustomFileTypeEditor(existingFileTypes, scope, context)
+        }
+    }
+}
+
+@Composable
 fun FileTypeCreationDialog(
     fileTypes: ImmutableSet<FileType>,
     onDismissRequest: () -> Unit,
     onCreateFileType: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-    val customFileTypeEditor = remember(fileTypes) { CustomFileTypeEditor(fileTypes, scope, context) }  // TODO: rememberSavable
-
     StatelessFileTypeConfigurationDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.create_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.create),
-        customFileTypeEditor = customFileTypeEditor,
+        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes),
         onDismissRequest = onDismissRequest,
         createFileType = onCreateFileType,
         modifier = modifier
@@ -191,14 +203,10 @@ fun CustomFileTypeConfigurationDialog(
     onCreateFileType: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-    val customFileTypeEditor = remember(fileTypes) { CustomFileTypeEditor(fileType, fileTypes, scope, context) }  // TODO: rememberSavable
-
     StatelessFileTypeConfigurationDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.save),
-        customFileTypeEditor = customFileTypeEditor,
+        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, fileType),
         onDismissRequest = onDismissRequest,
         createFileType = onCreateFileType,
         modifier = modifier
