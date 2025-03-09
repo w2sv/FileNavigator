@@ -16,7 +16,7 @@ sealed interface PresetFileType : Parcelable, FileType {
 
     @IgnoredOnParcel
     override val ordinal: Int
-        get() = values.indexOf(this)  // TODO: cache
+        get() = ordinalsMap.getValue(this)
 
     sealed class Media(
         @StringRes override val labelRes: Int,
@@ -52,6 +52,8 @@ sealed interface PresetFileType : Parcelable, FileType {
 
         operator fun get(ordinal: Int): PresetFileType =
             values[ordinal]
+
+        private val ordinalsMap by lazy { values.withIndex().associate { it.value to it.index } }
     }
 
     @Parcelize

@@ -116,7 +116,6 @@ fun UnpaddedSwitch(
         onDispose { }
     }
 
-    // TODO: Add Swipeable modifier b/223797571
     val toggleableModifier =
         if (onCheckedChange != null) {
             Modifier.toggleable(

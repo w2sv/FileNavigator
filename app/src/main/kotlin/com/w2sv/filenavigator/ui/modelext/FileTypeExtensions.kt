@@ -13,12 +13,9 @@ import com.w2sv.domain.model.PresetFileType
  * @return previously cached Color.
  */
 val FileType.color: Color
-    get() = Color(colorInt)  // TODO fileTypeColors.getValue(this)
+    get() = colorCache.getOrPut(colorInt) { Color(colorInt) }
 
-//private val fileTypeColors =
-//    PresetFileType
-//        .values
-//        .associateWith { Color(it.colorInt) }
+private val colorCache = mutableMapOf<Int, Color>()
 
 @SuppressLint("ComposeUnstableReceiver")
 @Composable

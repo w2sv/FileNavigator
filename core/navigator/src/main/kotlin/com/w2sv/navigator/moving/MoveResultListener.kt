@@ -33,7 +33,7 @@ internal class MoveResultListener @Inject constructor(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val moveFileNotificationManager: MoveFileNotificationManager,
     private val autoMoveDestinationInvalidNotificationManager: AutoMoveDestinationInvalidNotificationManager,
-    @GlobalScope(AppDispatcher.IO) private val scope: CoroutineScope, // TODO
+    @GlobalScope(AppDispatcher.IO) private val scope: CoroutineScope,
     @ApplicationContext private val context: Context
 ) {
     suspend fun onMoveResult(moveResultBundle: MoveResult.Bundle) {
