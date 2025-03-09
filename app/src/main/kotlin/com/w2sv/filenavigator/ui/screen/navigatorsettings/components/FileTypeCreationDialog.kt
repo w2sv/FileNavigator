@@ -36,6 +36,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -82,21 +85,6 @@ private class CustomFileTypeEditor(
     private val scope: CoroutineScope,
     private val context: Context
 ) {
-    constructor(
-        existingFileTypes: Collection<FileType>,
-        scope: CoroutineScope,
-        context: Context
-    ) : this(
-        initialFileType = CustomFileType(
-            name = "",
-            fileExtensions = emptyList(),
-            ordinal = existingFileTypes.map { it.ordinal }.max() + 1
-        ),
-        existingFileTypes = existingFileTypes,
-        scope = scope,
-        context = context
-    )
-
     private val existingFileTypeNames by threadUnsafeLazy {
         buildSet { existingFileTypes.forEach { add(it.label(context)) } }
     }
@@ -160,6 +148,28 @@ private class CustomFileTypeEditor(
     fun clearFocus() {
         _clearFocus.emit(Unit, scope)
     }
+
+    companion object {
+        fun saver(
+            existingFileTypes: Collection<FileType>,
+            scope: CoroutineScope,
+            context: Context
+        ): Saver<CustomFileTypeEditor, Pair<CustomFileType, String>> =
+            object : Saver<CustomFileTypeEditor, Pair<CustomFileType, String>> {
+                override fun SaverScope.save(value: CustomFileTypeEditor): Pair<CustomFileType, String> =
+                    value.fileType to value.extensionEditor.getValue()
+
+                override fun restore(value: Pair<CustomFileType, String>): CustomFileTypeEditor =
+                    CustomFileTypeEditor(
+                        initialFileType = value.first,
+                        existingFileTypes = existingFileTypes,
+                        scope = scope,
+                        context = context
+                    ).apply {
+                        extensionEditor.update(value.second)
+                    }
+            }
+    }
 }
 
 @Composable
@@ -169,12 +179,17 @@ private fun rememberCustomFileTypeEditor(
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current
 ): CustomFileTypeEditor {
-    return remember(initialFileType, existingFileTypes) {
-        if (initialFileType != null) {
-            CustomFileTypeEditor(initialFileType, existingFileTypes, scope, context)
-        } else {
-            CustomFileTypeEditor(existingFileTypes, scope, context)
-        }
+    return rememberSaveable(initialFileType, existingFileTypes, saver = CustomFileTypeEditor.saver(existingFileTypes, scope, context)) {
+        CustomFileTypeEditor(
+            initialFileType = initialFileType ?: CustomFileType(
+                name = "",
+                fileExtensions = emptyList(),
+                ordinal = existingFileTypes.map { it.ordinal }.max() + 1
+            ),
+            existingFileTypes = existingFileTypes,
+            scope = scope,
+            context = context
+        )
     }
 }
 
@@ -324,7 +339,7 @@ private fun OutlinedTextField(
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     OutlinedTextField(
-        value = editor.getValue(),  // TODO: Meh
+        value = editor.getValue(),
         onValueChange = { editor.update(it) },
         textStyle = MaterialTheme.typography.bodyLarge,
         placeholder = { Text(placeholderText, maxLines = 1) },
