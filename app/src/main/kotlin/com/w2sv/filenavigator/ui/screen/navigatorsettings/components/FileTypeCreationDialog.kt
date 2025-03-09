@@ -2,6 +2,7 @@ package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.annotation.IntRange
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -34,29 +35,30 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TooltipScope
 import androidx.compose.material3.TooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.containsSpecialCharacter
+import com.w2sv.core.domain.R
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.ClearFocusOnFlowEmissionOrKeyboardHidden
+import com.w2sv.filenavigator.ui.util.InputInvalidityReason
+import com.w2sv.filenavigator.ui.util.ProxyTextEditor
+import com.w2sv.filenavigator.ui.util.StatefulTextEditor
+import com.w2sv.filenavigator.ui.util.TextEditor
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import kotlinx.collections.immutable.ImmutableSet
@@ -65,11 +67,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlin.text.trim
-import com.w2sv.core.domain.R
-
-interface InputInvalidityReason {
-    val errorMessage: String
-}
 
 private enum class FileTypeNameInvalidityReason(override val errorMessage: String) : InputInvalidityReason {
     ContainsSpecialCharacter("Name must not contain special characters"),
@@ -82,43 +79,41 @@ private enum class FileExtensionInvalidityReason(override val errorMessage: Stri
 }
 
 @Stable
-class TextEditor<T : InputInvalidityReason> private constructor(
-    private val initialText: String,
-    private val mutableState: MutableState<String>,
-    private val processInput: (String) -> String,
-    private val findInvalidityReason: (String) -> T?
-) :
-    State<String> by mutableState {
-
-    constructor(initialText: String = "", processInput: (String) -> String = { it }, findInvalidityReason: (String) -> T? = { null })
-        : this(
-        initialText = initialText,
-        mutableState = mutableStateOf(initialText),
-        processInput = processInput,
-        findInvalidityReason = findInvalidityReason
-    )
-
-    fun update(input: String) {
-        mutableState.value = processInput(input)
-    }
-
-    val invalidityReason by derivedStateOf { findInvalidityReason(value) }
-    val isValid by derivedStateOf { invalidityReason == null && value.isNotBlank() }
-
-    fun pop(): String = value.also { mutableState.value = initialText }
-}
-
-@Stable
 private class CustomFileTypeEditor(
-    private val scope: CoroutineScope,
+    initialFileType: CustomFileType,
     private val existingFileTypes: Collection<FileType>,
+    private val scope: CoroutineScope,
     private val context: Context
 ) {
+    constructor(
+        existingFileTypes: Collection<FileType>,
+        scope: CoroutineScope,
+        context: Context
+    ) : this(
+        initialFileType = CustomFileType(
+            name = "",
+            fileExtensions = emptyList(),
+            ordinal = existingFileTypes.map { it.ordinal }.max() + 1
+        ),
+        existingFileTypes = existingFileTypes,
+        scope = scope,
+        context = context
+    )
+
     private val existingFileTypeNames by threadUnsafeLazy {
         buildSet { existingFileTypes.forEach { add(it.label(context)) } }
     }
 
-    val nameEditor = TextEditor(
+    var fileType by mutableStateOf(initialFileType)
+        private set
+
+    private fun updateFileType(update: (CustomFileType) -> CustomFileType) {
+        fileType = update(fileType)
+    }
+
+    val nameEditor = ProxyTextEditor(
+        getValue = { fileType.name },
+        setValue = { value -> updateFileType { it.copy(name = value) } },
         processInput = { it.trim().replaceFirstChar(Char::titlecase) },
         findInvalidityReason = { input ->
             when {
@@ -133,28 +128,26 @@ private class CustomFileTypeEditor(
     // Extensions
     // ===================
 
-    val extensions = mutableStateListOf<String>()
-
-    fun deleteExtension(index: Int) {
-        extensions.removeAt(index)
+    fun deleteExtension(@IntRange(from = 0L) index: Int) {
+        updateFileType { it.copy(fileExtensions = it.fileExtensions.toMutableList().apply { removeAt(index) }) }
     }
 
-    val extensionEditor = TextEditor(
+    val extensionEditor = StatefulTextEditor(
         processInput = { it.trim().lowercase() },
         findInvalidityReason = { input ->
             when {
                 input.containsSpecialCharacter() -> FileExtensionInvalidityReason.ContainsSpecialCharacter
-                input in extensions -> FileExtensionInvalidityReason.AlreadyAmongstAddedExtensions
+                input in initialFileType.fileExtensions -> FileExtensionInvalidityReason.AlreadyAmongstAddedExtensions
                 else -> null
             }
         }
     )
 
     fun addExtension() {
-        extensions.add(extensionEditor.pop())
+        updateFileType { it.copy(fileExtensions = it.fileExtensions + extensionEditor.pop()) }
     }
 
-    val canBeCreated by derivedStateOf { nameEditor.isValid && extensions.isNotEmpty() }
+    val canBeCreated by derivedStateOf { nameEditor.isValid && initialFileType.fileExtensions.isNotEmpty() }
 
     // ===================
     // Focus
@@ -166,13 +159,6 @@ private class CustomFileTypeEditor(
     fun clearFocus() {
         _clearFocus.emit(Unit, scope)
     }
-
-    fun toCustomFileType(): CustomFileType =
-        CustomFileType(
-            name = nameEditor.value,
-            fileExtensions = extensions,
-            ordinal = existingFileTypes.map { it.ordinal }.max() + 1  // TODO
-        )
 }
 
 @Composable
@@ -184,14 +170,31 @@ fun FileTypeCreationDialog(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val customFileTypeEditor = remember(fileTypes) { CustomFileTypeEditor(scope, fileTypes, context) }  // TODO: rememberSavable
+    val customFileTypeEditor = remember(fileTypes) { CustomFileTypeEditor(fileTypes, scope, context) }  // TODO: rememberSavable
 
-    StatelessFileTypeCreationDialog(customFileTypeEditor, onDismissRequest, onCreateFileType, modifier)
+    StatelessFileTypeCreationDialog("Create a file type", "Create", customFileTypeEditor, onDismissRequest, onCreateFileType, modifier)
+}
+
+@Composable
+fun CustomFileTypeConfigurationDialog(
+    fileType: CustomFileType,
+    fileTypes: ImmutableSet<FileType>,
+    onDismissRequest: () -> Unit,
+    onCreateFileType: (CustomFileType) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val customFileTypeEditor = remember(fileTypes) { CustomFileTypeEditor(fileType, fileTypes, scope, context) }  // TODO: rememberSavable
+
+    StatelessFileTypeCreationDialog("Edit file type", "Save", customFileTypeEditor, onDismissRequest, onCreateFileType, modifier)
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun StatelessFileTypeCreationDialog(
+    title: String,
+    confirmButtonText: String,
     customFileTypeEditor: CustomFileTypeEditor,
     onDismissRequest: () -> Unit,
     createFileType: (CustomFileType) -> Unit,
@@ -200,7 +203,7 @@ private fun StatelessFileTypeCreationDialog(
     AlertDialog(
         modifier = modifier.pointerInput(Unit) { detectTapGestures { customFileTypeEditor.clearFocus() } },
         icon = { Icon(painterResource(R.drawable.ic_custom_file_type_24), contentDescription = null, modifier = Modifier.size(42.dp)) },
-        title = { Text("Create a file type") },
+        title = { Text(title) },
         onDismissRequest = onDismissRequest,
         text = {
             ClearFocusOnFlowEmissionOrKeyboardHidden(customFileTypeEditor.clearFocus)
@@ -223,7 +226,7 @@ private fun StatelessFileTypeCreationDialog(
                     applyIconImageVector = Icons.Outlined.Add
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    customFileTypeEditor.extensions.forEachIndexed { i, extension ->
+                    customFileTypeEditor.fileType.fileExtensions.forEachIndexed { i, extension ->
                         FileExtensionBadgeWithTooltip(extension = extension, deleteExtension = { customFileTypeEditor.deleteExtension(i) })
                     }
                 }
@@ -231,14 +234,17 @@ private fun StatelessFileTypeCreationDialog(
         },
         confirmButton = {
             DialogButton(
-                text = "Create",
+                text = confirmButtonText,
                 onClick = {
-                    createFileType(customFileTypeEditor.toCustomFileType())
+                    createFileType(customFileTypeEditor.fileType)
                     onDismissRequest()
                 },
                 enabled = customFileTypeEditor.canBeCreated
             )
         },
+        dismissButton = {
+            DialogButton(text = "Cancel", onClick = onDismissRequest)
+        }
     )
 }
 
@@ -308,7 +314,7 @@ private fun OutlinedTextField(
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     OutlinedTextField(
-        value = editor.value,
+        value = editor.getValue(),  // TODO: Meh
         onValueChange = { editor.update(it) },
         textStyle = MaterialTheme.typography.bodyLarge,
         placeholder = { Text(placeholderText, maxLines = 1) },
@@ -347,19 +353,19 @@ private fun OutlinedTextField(
     )
 }
 
-@Preview
-@Composable
-private fun StatelessFileTypeCreationDialogPrev() {
-    AppTheme {
-        val context = LocalContext.current
-        StatelessFileTypeCreationDialog(
-            customFileTypeEditor = CustomFileTypeEditor(rememberCoroutineScope(), emptyList(), context)
-                .apply {
-                    extensions.addAll(listOf("jpg", "png", "jpgasdf"))
-                    extensionEditor.update("dot")
-                },
-            onDismissRequest = {},
-            createFileType = {}
-        )
-    }
-}
+//@Preview
+//@Composable
+//private fun StatelessFileTypeCreationDialogPrev() {
+//    AppTheme {
+//        val context = LocalContext.current
+//        StatelessFileTypeCreationDialog(
+//            customFileTypeEditor = CustomFileTypeEditor(rememberCoroutineScope(), emptyList(), context)
+//                .apply {
+//                    extensions.addAll(listOf("jpg", "png", "jpgasdf"))
+//                    extensionEditor.update("dot")
+//                },
+//            onDismissRequest = {},
+//            createFileType = {}
+//        )
+//    }
+//}

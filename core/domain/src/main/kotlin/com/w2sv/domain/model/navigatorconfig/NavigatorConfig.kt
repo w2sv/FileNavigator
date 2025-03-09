@@ -57,6 +57,16 @@ data class NavigatorConfig(
             }
         )
 
+    fun editCustomFileType(editedType: CustomFileType): NavigatorConfig {
+        val preEditType = fileTypeConfigMap.keys.first { it.ordinal == editedType.ordinal }
+        return copy(
+            fileTypeConfigMap = fileTypeConfigMap.copy {
+                val fileTypeConfig = requireNotNull(remove(preEditType))
+                put(editedType, fileTypeConfig)
+            }
+        )
+    }
+
     fun copyWithAlteredFileTypeConfig(fileType: FileType, alterFileTypeConfig: (FileTypeConfig) -> FileTypeConfig): NavigatorConfig =
         copy(
             fileTypeConfigMap = fileTypeConfigMap.copy {

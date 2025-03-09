@@ -61,6 +61,7 @@ import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AddFileTypesBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AutoMoveIntroductionDialogIfNotYetShown
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.CustomFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.FileTypeCreationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.theme.AppTheme
@@ -166,14 +167,20 @@ fun NavigatorSettingsScreen(
             config = navigatorConfig,
             reversibleConfig = navigatorVM.reversibleConfig,
             showAddFileTypesBottomSheet = remember { { showAddFileTypesBottomSheet = true } },
+            showCustomFileTypeConfigurationDialog = { showFileTypeConfigurationDialogFor = it },
             modifier = Modifier
                 .padding(top = paddingValues.calculateTopPadding())
                 .padding(horizontal = Padding.defaultHorizontal)
                 .fillMaxSize()
         )
 
-        showFileTypeConfigurationDialogFor?.let {
-
+        showFileTypeConfigurationDialogFor?.let { fileType ->
+            CustomFileTypeConfigurationDialog(
+                fileType = fileType,
+                fileTypes = remember { (navigatorConfig.fileTypes - fileType).toImmutableSet() },
+                onDismissRequest = { showFileTypeConfigurationDialogFor = null },
+                onCreateFileType = navigatorVM.reversibleConfig::editCustomFileType
+            )
         }
         if (showAddFileTypesBottomSheet) {
             AddFileTypesBottomSheet(

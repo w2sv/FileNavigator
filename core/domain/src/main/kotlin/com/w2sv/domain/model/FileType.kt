@@ -14,9 +14,6 @@ sealed interface FileType : Parcelable {
     val iconRes: Int
 
     @IgnoredOnParcel
-    val isCustomType: Boolean get() = this is CustomFileType
-
-    @IgnoredOnParcel
     val asCustomTypeOrNull: CustomFileType? get() = this as? CustomFileType
 
     @IgnoredOnParcel

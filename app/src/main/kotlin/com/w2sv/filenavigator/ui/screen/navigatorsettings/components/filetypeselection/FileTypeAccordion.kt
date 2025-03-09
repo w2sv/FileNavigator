@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
@@ -52,13 +53,15 @@ fun FileTypeAccordion(
     sourceTypeConfigMap: ImmutableMap<SourceType, SourceConfig>,
     onSourceCheckedChange: (SourceType, Boolean) -> Unit,
     setSourceAutoMoveConfig: (SourceType, AutoMoveConfig) -> Unit,
+    showCustomFileTypeConfigurationDialog: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         Header(
             fileType = fileType,
             excludeFileType = excludeFileType,
-            setSourceAutoMoveConfigs = setSourceAutoMoveConfigs
+            setSourceAutoMoveConfigs = setSourceAutoMoveConfigs,
+            showCustomFileTypeConfigurationDialog = showCustomFileTypeConfigurationDialog
         )
         SourcesSurface(
             fileType = fileType,
@@ -74,6 +77,7 @@ private fun Header(
     fileType: FileType,
     excludeFileType: () -> Unit,
     setSourceAutoMoveConfigs: ((AutoMoveConfig) -> Unit)?,
+    showCustomFileTypeConfigurationDialog: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val selectAutoMoveDestination = setSourceAutoMoveConfigs?.let { nonNullSetSourceAutoMoveConfigs ->
@@ -94,7 +98,8 @@ private fun Header(
         FileTypeRow(
             fileType = fileType,
             excludeFileType = excludeFileType,
-            setSourceAutoMoveConfigs = selectAutoMoveDestination?.let { { it.launch(null) } }
+            setSourceAutoMoveConfigs = selectAutoMoveDestination?.let { { it.launch(null) } },
+            showCustomFileTypeConfigurationDialog = showCustomFileTypeConfigurationDialog
         )
     }
 }
@@ -104,6 +109,7 @@ private fun FileTypeRow(
     fileType: FileType,
     excludeFileType: () -> Unit,
     setSourceAutoMoveConfigs: (() -> Unit)?,
+    showCustomFileTypeConfigurationDialog: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -127,8 +133,8 @@ private fun FileTypeRow(
         setSourceAutoMoveConfigs?.let {
             MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = it)
         }
-        if (fileType.isCustomType) {
-            IconButton({}) {
+        if (fileType is CustomFileType) {
+            IconButton(onClick = { showCustomFileTypeConfigurationDialog(fileType) }) {
                 Icon(Icons.Default.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             }
         }

@@ -109,6 +109,10 @@ class ReversibleNavigatorConfig(
         i { "Emitted $type on selectFileType" }
     }
 
+    fun editCustomFileType(editedType: CustomFileType) {
+        update { it.editCustomFileType(editedType) }
+    }
+
     private inline fun updateOrEmitSnackbar(
         checkedNew: Boolean,
         checkedCount: Int,
