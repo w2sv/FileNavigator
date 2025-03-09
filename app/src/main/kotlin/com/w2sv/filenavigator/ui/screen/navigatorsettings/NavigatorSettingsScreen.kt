@@ -111,7 +111,7 @@ fun NavigatorSettingsScreen(
         mutableStateOf(false)
     }
     var showFileTypeCreationDialog by rememberSaveable {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
     var showFileTypeConfigurationDialogFor by rememberSaveable {
         mutableStateOf<CustomFileType?>(null)

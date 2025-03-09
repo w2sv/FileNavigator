@@ -3,27 +3,40 @@ package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 import android.content.Context
 import androidx.annotation.IntRange
 import androidx.annotation.StringRes
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -40,12 +53,15 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.core.domain.R
@@ -54,6 +70,7 @@ import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
+import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.util.ClearFocusOnFlowEmissionOrKeyboardHidden
 import com.w2sv.filenavigator.ui.util.InputInvalidityReason
@@ -257,7 +274,12 @@ private fun StatelessFileTypeConfigurationDialog(
         text = {
             ClearFocusOnFlowEmissionOrKeyboardHidden(customFileTypeEditor.clearFocus)
 
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .animateContentSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 OutlinedTextField(
                     editor = customFileTypeEditor.nameEditor,
                     placeholderText = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_name_field_placeholder),
@@ -269,13 +291,40 @@ private fun StatelessFileTypeConfigurationDialog(
                     placeholderText = stringResource(com.w2sv.filenavigator.R.string.add_file_extension_field_placeholder),
                     onApply = customFileTypeEditor::addExtension,
                     modifier = Modifier
-                        .width(192.dp)
-                        .padding(vertical = 16.dp),
+                        .width(192.dp),
                     applyIconImageVector = Icons.Outlined.Add
                 )
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    customFileTypeEditor.fileType.fileExtensions.forEachIndexed { i, extension ->
-                        FileExtensionBadgeWithTooltip(extension = extension, deleteExtension = { customFileTypeEditor.deleteExtension(i) })
+                if (customFileTypeEditor.fileType.fileExtensions.isNotEmpty()) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        customFileTypeEditor.fileType.fileExtensions.forEachIndexed { i, extension ->
+                            FileExtensionBadgeWithTooltip(
+                                extension = extension,
+                                deleteExtension = { customFileTypeEditor.deleteExtension(i) })
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text("Color", style = MaterialTheme.typography.bodyLarge)
+                    Box(contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier
+                                .size(46.dp)
+                                .clip(CircleShape)
+                                .background(customFileTypeEditor.fileType.color)
+                        )
+                        IconButton(
+                            onClick = {}, modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .offset(14.dp, 14.dp)
+                        ) {
+                            Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(28.dp))
+                        }
                     }
                 }
             }

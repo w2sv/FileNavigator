@@ -25,8 +25,10 @@ data class CustomFileType(
     override val iconRes: Int = R.drawable.ic_custom_file_type_24
 
     companion object {
-        @IntRange(from = 1000)
+        @IntRange(from = MIN_ORDINAL.toLong())
         fun ordinal(existingFileTypes: Collection<FileType>): Int =
-            maxOf(1000, existingFileTypes.maxOf { it.ordinal } + 1)
+            maxOf(MIN_ORDINAL, existingFileTypes.maxOf { it.ordinal } + 1)
+
+        private const val MIN_ORDINAL = 1_000
     }
 }
