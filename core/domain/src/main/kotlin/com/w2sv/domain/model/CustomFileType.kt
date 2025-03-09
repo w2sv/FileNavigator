@@ -1,34 +1,44 @@
 package com.w2sv.domain.model
 
+import android.graphics.Color
 import android.os.Parcelable
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
-import androidx.annotation.IntRange
 import com.w2sv.core.domain.R
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import kotlin.random.Random
 
 @Parcelize
 data class CustomFileType(
     val name: String,
     override val fileExtensions: List<String>,
+    @ColorInt override val colorInt: Int,
     override val ordinal: Int
 ) : NonMediaFileType(),
     Parcelable {
-
-    @IgnoredOnParcel
-    @ColorInt
-    override val colorInt: Int = -13590298
 
     @IgnoredOnParcel
     @DrawableRes
     override val iconRes: Int = R.drawable.ic_custom_file_type_24
 
     companion object {
-        @IntRange(from = MIN_ORDINAL.toLong())
-        fun ordinal(existingFileTypes: Collection<FileType>): Int =
-            maxOf(MIN_ORDINAL, existingFileTypes.maxOf { it.ordinal } + 1)
+        fun newEmpty(existingFileTypes: Collection<FileType>): CustomFileType =
+            CustomFileType(
+                name = "",
+                fileExtensions = emptyList(),
+                colorInt = randomColor(),
+                ordinal = maxOf(MIN_ORDINAL, existingFileTypes.maxOf { it.ordinal } + 1)
+            )
 
         private const val MIN_ORDINAL = 1_000
     }
 }
+
+@ColorInt
+private fun randomColor(): Int =
+    Color.rgb(
+        Random.nextInt(256),
+        Random.nextInt(256),
+        Random.nextInt(256)
+    )

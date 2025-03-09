@@ -32,6 +32,6 @@ internal object FileTypeConverter {
             "Text" -> PresetFileType.Text
             "Archive" -> PresetFileType.Archive
             "EBook" -> PresetFileType.EBook
-            else -> CustomFileType(name, emptyList(), -1) // TODO
+            else -> CustomFileType(name, emptyList(), -1, -1) // TODO
         }
 }

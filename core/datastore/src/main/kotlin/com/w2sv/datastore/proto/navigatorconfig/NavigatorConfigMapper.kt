@@ -127,12 +127,18 @@ private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveC
 
 private object CustomFileTypeMapper : ProtoMapper<CustomFileTypeProto, CustomFileType> {
     override fun toExternal(proto: CustomFileTypeProto): CustomFileType =
-        CustomFileType(proto.name, proto.extensionsList, proto.ordinal)
+        CustomFileType(
+            name = proto.name,
+            fileExtensions = proto.extensionsList,
+            colorInt = proto.color,
+            ordinal = proto.ordinal
+        )
 
     override fun toProto(external: CustomFileType): CustomFileTypeProto =
         customFileTypeProto {
             name = external.name
             extensions.addAll(external.fileExtensions)
+            color = external.colorInt
             ordinal = external.ordinal
         }
 }

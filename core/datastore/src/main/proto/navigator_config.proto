@@ -15,7 +15,8 @@ message NavigatorConfigProto {
 message CustomFileTypeProto {
     string name = 1;
     repeated string extensions = 2;
-    int32 ordinal = 3;
+    int32 color = 3;
+    int32 ordinal = 4;
 }
 
 message FileTypeConfigProto {

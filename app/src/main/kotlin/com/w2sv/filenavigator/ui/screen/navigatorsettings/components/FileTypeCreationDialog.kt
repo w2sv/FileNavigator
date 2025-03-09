@@ -4,9 +4,7 @@ import android.content.Context
 import androidx.annotation.IntRange
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -26,14 +24,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -61,7 +57,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.core.domain.R
@@ -210,11 +205,7 @@ private fun rememberCustomFileTypeEditor(
         saver = CustomFileTypeEditor.saver(existingFileTypes, createFileType, scope, context)
     ) {
         CustomFileTypeEditor(
-            initialFileType = initialFileType ?: CustomFileType(
-                name = "",
-                fileExtensions = emptyList(),
-                ordinal = CustomFileType.ordinal(existingFileTypes)
-            ),
+            initialFileType = initialFileType ?: CustomFileType.newEmpty(existingFileTypes),
             existingFileTypes = existingFileTypes,
             createFileType = createFileType,
             scope = scope,
