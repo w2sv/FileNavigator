@@ -3,6 +3,7 @@ package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.IntRange
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -47,6 +48,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.core.domain.R
@@ -68,14 +70,14 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlin.text.trim
 
-private enum class FileTypeNameInvalidityReason(override val errorMessage: String) : InputInvalidityReason {
-    ContainsSpecialCharacter("Name must not contain special characters"),
-    AlreadyExists("File type already exists")
+private enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageId: Int) : InputInvalidityReason {
+    ContainsSpecialCharacter(com.w2sv.filenavigator.R.string.name_must_not_contain_special_characters),
+    AlreadyExists(com.w2sv.filenavigator.R.string.file_type_already_exists)
 }
 
-private enum class FileExtensionInvalidityReason(override val errorMessage: String) : InputInvalidityReason {
-    ContainsSpecialCharacter("Extension must not contain special characters"),
-    AlreadyAmongstAddedExtensions("Already amongst added extensions")
+private enum class FileExtensionInvalidityReason(@StringRes override val errorMessageId: Int) : InputInvalidityReason {
+    ContainsSpecialCharacter(com.w2sv.filenavigator.R.string.extension_must_not_contain_special_characters),
+    AlreadyAmongstAddedExtensions(com.w2sv.filenavigator.R.string.already_amongst_added_extensions)
 }
 
 @Stable
@@ -172,7 +174,14 @@ fun FileTypeCreationDialog(
     val context = LocalContext.current
     val customFileTypeEditor = remember(fileTypes) { CustomFileTypeEditor(fileTypes, scope, context) }  // TODO: rememberSavable
 
-    StatelessFileTypeCreationDialog("Create a file type", "Create", customFileTypeEditor, onDismissRequest, onCreateFileType, modifier)
+    StatelessFileTypeCreationDialog(
+        title = stringResource(com.w2sv.filenavigator.R.string.create_file_type_dialog_title),
+        confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.create),
+        customFileTypeEditor = customFileTypeEditor,
+        onDismissRequest = onDismissRequest,
+        createFileType = onCreateFileType,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -187,7 +196,14 @@ fun CustomFileTypeConfigurationDialog(
     val context = LocalContext.current
     val customFileTypeEditor = remember(fileTypes) { CustomFileTypeEditor(fileType, fileTypes, scope, context) }  // TODO: rememberSavable
 
-    StatelessFileTypeCreationDialog("Edit file type", "Save", customFileTypeEditor, onDismissRequest, onCreateFileType, modifier)
+    StatelessFileTypeCreationDialog(
+        title = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_dialog_title),
+        confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.save),
+        customFileTypeEditor = customFileTypeEditor,
+        onDismissRequest = onDismissRequest,
+        createFileType = onCreateFileType,
+        modifier = modifier
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -212,13 +228,13 @@ private fun StatelessFileTypeCreationDialog(
                 Spacer(Modifier.height(24.dp))
                 OutlinedTextField(
                     editor = customFileTypeEditor.nameEditor,
-                    placeholderText = "Enter name",
-                    labelText = "Name",
+                    placeholderText = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_name_field_placeholder),
+                    labelText = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_name_field_label),
                     onApply = customFileTypeEditor::clearFocus
                 )
                 OutlinedTextField(
                     editor = customFileTypeEditor.extensionEditor,
-                    placeholderText = "Enter file extension",
+                    placeholderText = stringResource(com.w2sv.filenavigator.R.string.add_file_extension_field_placeholder),
                     onApply = customFileTypeEditor::addExtension,
                     modifier = Modifier
                         .width(192.dp)
@@ -243,7 +259,7 @@ private fun StatelessFileTypeCreationDialog(
             )
         },
         dismissButton = {
-            DialogButton(text = "Cancel", onClick = onDismissRequest)
+            DialogButton(text = stringResource(com.w2sv.core.navigator.R.string.cancel), onClick = onDismissRequest)
         }
     )
 }
@@ -281,7 +297,7 @@ private fun TooltipScope.FileExtensionDeletionTooltip(onClick: () -> Unit, modif
         IconButton(onClick = onClick) {
             Icon(
                 imageVector = Icons.Default.Delete,
-                contentDescription = "Delete file extension",
+                contentDescription = stringResource(com.w2sv.filenavigator.R.string.delete_file_extension),
             )
         }
     }
@@ -344,7 +360,7 @@ private fun OutlinedTextField(
         supportingText = editor.invalidityReason?.let { invalidityReason ->
             {
                 Text(
-                    text = invalidityReason.errorMessage,
+                    text = stringResource(invalidityReason.errorMessageId),
                     color = MaterialTheme.colorScheme.error,
                 )
             }

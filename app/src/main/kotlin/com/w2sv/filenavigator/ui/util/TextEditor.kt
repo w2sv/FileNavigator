@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 
 interface InputInvalidityReason {
-    val errorMessage: String
+    val errorMessageId: Int
 }
 
 abstract class TextEditor<T : InputInvalidityReason>(
