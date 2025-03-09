@@ -67,6 +67,9 @@ data class NavigatorConfig(
         )
     }
 
+    fun deleteCustomFileType(type: CustomFileType): NavigatorConfig =
+        copy(fileTypeConfigMap = fileTypeConfigMap.copy { remove(type) })
+
     fun copyWithAlteredFileTypeConfig(fileType: FileType, alterFileTypeConfig: (FileTypeConfig) -> FileTypeConfig): NavigatorConfig =
         copy(
             fileTypeConfigMap = fileTypeConfigMap.copy {

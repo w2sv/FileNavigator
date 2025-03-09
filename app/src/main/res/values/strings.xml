@@ -93,6 +93,7 @@
     <string name="save">Save</string>
     <string name="create_file_type_dialog_title">Create a file type</string>
     <string name="create">Create</string>
+    <string name="delete_file_type">Delete file type</string>
     <plurals name="add_file_types_button">
         <item quantity="one">Add File Type</item>
         <item quantity="other">Add File Types</item>

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
@@ -27,6 +28,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -49,10 +52,13 @@ import com.w2sv.common.util.log
 import com.w2sv.composed.CollectFromFlow
 import com.w2sv.composed.extensions.thenIf
 import com.w2sv.composed.extensions.toMutableStateMap
+import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
+import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
 import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.kotlinutils.toggle
@@ -67,6 +73,7 @@ import slimber.log.i
 fun AddFileTypesBottomSheet(
     disabledFileTypes: ImmutableList<FileType>,
     addFileTypes: (List<FileType>) -> Unit,
+    deleteCustomFileType: (CustomFileType) -> Unit,
     onDismissRequest: () -> Unit,
     onCreateFileTypeCardClick: () -> Unit,
     selectFileType: Flow<FileType>,
@@ -79,6 +86,18 @@ fun AddFileTypesBottomSheet(
             disabledFileTypes
                 .associateWith { false }
                 .toMutableStateMap()
+        )
+    }
+
+    @Composable
+    fun LazyGridItemScope.fileTypeCard(fileType: FileType) {
+        FileTypeCard(
+            fileType = fileType,
+            isSelected = selectionMap.getValue(fileType),
+            onClick = { selectionMap.toggle(fileType) },
+            modifier = Modifier
+                .padding(bottom = 12.dp)
+                .animateItem()
         )
     }
 
@@ -106,14 +125,13 @@ fun AddFileTypesBottomSheet(
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
         ) {
             items(disabledFileTypes) { fileType ->
-                FileTypeCard(
-                    fileType = fileType,
-                    isSelected = selectionMap.getValue(fileType),
-                    onClick = { selectionMap.toggle(fileType) },
-                    modifier = Modifier
-                        .padding(bottom = 12.dp)
-                        .animateItem()
-                )
+                if (fileType is CustomFileType) {
+                    DeleteCustomFileTypeTooltipBox(deleteCustomFileType = { deleteCustomFileType(fileType) }) {
+                        fileTypeCard(fileType)
+                    }
+                } else {
+                    fileTypeCard(fileType)
+                }
             }
             item {
                 CreateFileTypeCard(
@@ -148,6 +166,28 @@ fun AddFileTypesBottomSheet(
         )
         Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility))
     }
+}
+
+@Composable
+private fun DeleteCustomFileTypeTooltipBox(
+    deleteCustomFileType: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    val tooltipState = rememberExtendedTooltipState()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        tooltip = {
+            DeletionTooltip(
+                onClick = {
+                    deleteCustomFileType()
+                    tooltipState.dismiss()
+                },
+                contentDescription = stringResource(R.string.delete_file_type)
+            )
+        },
+        state = tooltipState,
+        content = content
+    )
 }
 
 @Stable

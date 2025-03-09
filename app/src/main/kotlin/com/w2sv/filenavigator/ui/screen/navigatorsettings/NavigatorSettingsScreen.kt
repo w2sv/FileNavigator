@@ -192,6 +192,7 @@ fun NavigatorSettingsScreen(
                         }
                     }
                 },
+                deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
                 onDismissRequest = remember { { showAddFileTypesBottomSheet = false } },
                 onCreateFileTypeCardClick = remember { { showFileTypeCreationDialog = true } },
                 selectFileType = navigatorVM.reversibleConfig.selectFileType

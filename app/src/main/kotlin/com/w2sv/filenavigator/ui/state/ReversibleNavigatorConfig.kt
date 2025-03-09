@@ -113,6 +113,10 @@ class ReversibleNavigatorConfig(
         update { it.editCustomFileType(editedType) }
     }
 
+    fun deleteCustomFileType(type: CustomFileType) {
+        update { it.deleteCustomFileType(type) }
+    }
+
     private inline fun updateOrEmitSnackbar(
         checkedNew: Boolean,
         checkedCount: Int,

@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.IntRange
 import androidx.annotation.StringRes
@@ -12,13 +11,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Warning
@@ -26,15 +24,11 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.TooltipScope
-import androidx.compose.material3.TooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -54,7 +48,9 @@ import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.core.domain.R
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
+import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
+import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.util.ClearFocusOnFlowEmissionOrKeyboardHidden
 import com.w2sv.filenavigator.ui.util.InputInvalidityReason
@@ -67,7 +63,6 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
 import kotlin.text.trim
 
 private enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageId: Int) : InputInvalidityReason {
@@ -113,6 +108,10 @@ private class CustomFileTypeEditor(
         fileType = update(fileType)
     }
 
+    // ===================
+    // Name
+    // ===================
+
     val nameEditor = ProxyTextEditor(
         getValue = { fileType.name },
         setValue = { value -> updateFileType { it.copy(name = value) } },
@@ -149,7 +148,7 @@ private class CustomFileTypeEditor(
         updateFileType { it.copy(fileExtensions = it.fileExtensions + extensionEditor.pop()) }
     }
 
-    val canBeCreated by derivedStateOf { nameEditor.isValid && initialFileType.fileExtensions.isNotEmpty() }
+    val canBeCreated by derivedStateOf { nameEditor.isValid && fileType.fileExtensions.isNotEmpty() }
 
     // ===================
     // Focus
@@ -174,7 +173,7 @@ fun FileTypeCreationDialog(
     val context = LocalContext.current
     val customFileTypeEditor = remember(fileTypes) { CustomFileTypeEditor(fileTypes, scope, context) }  // TODO: rememberSavable
 
-    StatelessFileTypeCreationDialog(
+    StatelessFileTypeConfigurationDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.create_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.create),
         customFileTypeEditor = customFileTypeEditor,
@@ -196,7 +195,7 @@ fun CustomFileTypeConfigurationDialog(
     val context = LocalContext.current
     val customFileTypeEditor = remember(fileTypes) { CustomFileTypeEditor(fileType, fileTypes, scope, context) }  // TODO: rememberSavable
 
-    StatelessFileTypeCreationDialog(
+    StatelessFileTypeConfigurationDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.save),
         customFileTypeEditor = customFileTypeEditor,
@@ -208,7 +207,7 @@ fun CustomFileTypeConfigurationDialog(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun StatelessFileTypeCreationDialog(
+private fun StatelessFileTypeConfigurationDialog(
     title: String,
     confirmButtonText: String,
     customFileTypeEditor: CustomFileTypeEditor,
@@ -217,15 +216,15 @@ private fun StatelessFileTypeCreationDialog(
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
-        modifier = modifier.pointerInput(Unit) { detectTapGestures { customFileTypeEditor.clearFocus() } },
+        modifier = modifier
+            .pointerInput(Unit) { detectTapGestures { customFileTypeEditor.clearFocus() } },
         icon = { Icon(painterResource(R.drawable.ic_custom_file_type_24), contentDescription = null, modifier = Modifier.size(42.dp)) },
         title = { Text(title) },
         onDismissRequest = onDismissRequest,
         text = {
             ClearFocusOnFlowEmissionOrKeyboardHidden(customFileTypeEditor.clearFocus)
 
-            Column {
-                Spacer(Modifier.height(24.dp))
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 OutlinedTextField(
                     editor = customFileTypeEditor.nameEditor,
                     placeholderText = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_name_field_placeholder),
@@ -269,37 +268,24 @@ private fun FileExtensionBadgeWithTooltip(
     extension: String,
     deleteExtension: () -> Unit,
     modifier: Modifier = Modifier,
-    scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val tooltipState = remember { TooltipState() }
+    val tooltipState = rememberExtendedTooltipState()
 
     TooltipBox(
         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
         tooltip = {
-            FileExtensionDeletionTooltip(
+            DeletionTooltip(
                 onClick = {
                     deleteExtension()
                     tooltipState.dismiss()
-                }
+                },
+                contentDescription = stringResource(com.w2sv.filenavigator.R.string.delete_file_extension)
             )
         },
         state = tooltipState,
         modifier = modifier
     ) {
-        FileExtensionBadge(extension, modifier = Modifier.clickable { scope.launch { tooltipState.show() } })
-    }
-}
-
-@SuppressLint("ComposeUnstableReceiver")
-@Composable
-private fun TooltipScope.FileExtensionDeletionTooltip(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    PlainTooltip(caretSize = TooltipDefaults.caretSize, tonalElevation = 4.dp, shadowElevation = 4.dp, modifier = modifier) {
-        IconButton(onClick = onClick) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = stringResource(com.w2sv.filenavigator.R.string.delete_file_extension),
-            )
-        }
+        FileExtensionBadge(extension, modifier = Modifier.clickable(onClick = tooltipState.showTooltip))
     }
 }
 
