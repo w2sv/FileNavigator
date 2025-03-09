@@ -50,6 +50,7 @@ import com.w2sv.composed.OnChange
 import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
+import com.w2sv.domain.model.CustomFileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -106,10 +107,13 @@ fun NavigatorSettingsScreen(
     AutoMoveIntroductionDialogIfNotYetShown()
 
     var showAddFileTypesBottomSheet by rememberSaveable {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     var showFileTypeCreationDialog by rememberSaveable {
         mutableStateOf(false)
+    }
+    var showFileTypeConfigurationDialogFor by rememberSaveable {
+        mutableStateOf<CustomFileType?>(null)
     }
 
     Scaffold(
@@ -168,6 +172,9 @@ fun NavigatorSettingsScreen(
                 .fillMaxSize()
         )
 
+        showFileTypeConfigurationDialogFor?.let {
+
+        }
         if (showAddFileTypesBottomSheet) {
             AddFileTypesBottomSheet(
                 disabledFileTypes = navigatorConfig.disabledFileTypes.toPersistentList(),

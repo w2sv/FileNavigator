@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -108,13 +110,15 @@ private fun FileTypeRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        FileTypeIcon(
-            fileType = fileType,
-            tint = fileType.color,
-            modifier = Modifier
-                .padding(horizontal = 12.dp)
-                .size(34.dp)
-        )
+        Box {
+            FileTypeIcon(
+                fileType = fileType,
+                tint = fileType.color,
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .size(34.dp)
+            )
+        }
         Text(
             text = fileType.stringResource(),
             fontSize = 18.sp
@@ -122,6 +126,11 @@ private fun FileTypeRow(
         Spacer(modifier = Modifier.weight(1f))
         setSourceAutoMoveConfigs?.let {
             MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = it)
+        }
+        if (fileType.isCustomType) {
+            IconButton({}) {
+                Icon(Icons.Default.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            }
         }
         Text(
             text = stringResource(R.string.exclude),
