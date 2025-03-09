@@ -82,6 +82,7 @@ private enum class FileExtensionInvalidityReason(@StringRes override val errorMe
 private class CustomFileTypeEditor(
     initialFileType: CustomFileType,
     private val existingFileTypes: Collection<FileType>,
+    private val createFileType: (CustomFileType) -> Unit,
     private val scope: CoroutineScope,
     private val context: Context
 ) {
@@ -136,6 +137,10 @@ private class CustomFileTypeEditor(
         updateFileType { it.copy(fileExtensions = it.fileExtensions + extensionEditor.pop()) }
     }
 
+    fun create() {
+        createFileType(fileType)
+    }
+
     val canBeCreated by derivedStateOf { nameEditor.isValid && fileType.fileExtensions.isNotEmpty() }
 
     // ===================
@@ -152,6 +157,7 @@ private class CustomFileTypeEditor(
     companion object {
         fun saver(
             existingFileTypes: Collection<FileType>,
+            createFileType: (CustomFileType) -> Unit,
             scope: CoroutineScope,
             context: Context
         ): Saver<CustomFileTypeEditor, Pair<CustomFileType, String>> =
@@ -163,6 +169,7 @@ private class CustomFileTypeEditor(
                     CustomFileTypeEditor(
                         initialFileType = value.first,
                         existingFileTypes = existingFileTypes,
+                        createFileType = createFileType,
                         scope = scope,
                         context = context
                     ).apply {
@@ -175,18 +182,24 @@ private class CustomFileTypeEditor(
 @Composable
 private fun rememberCustomFileTypeEditor(
     existingFileTypes: ImmutableSet<FileType>,
+    createFileType: (CustomFileType) -> Unit,
     initialFileType: CustomFileType? = null,
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current
 ): CustomFileTypeEditor {
-    return rememberSaveable(initialFileType, existingFileTypes, saver = CustomFileTypeEditor.saver(existingFileTypes, scope, context)) {
+    return rememberSaveable(
+        initialFileType,
+        existingFileTypes,
+        saver = CustomFileTypeEditor.saver(existingFileTypes, createFileType, scope, context)
+    ) {
         CustomFileTypeEditor(
             initialFileType = initialFileType ?: CustomFileType(
                 name = "",
                 fileExtensions = emptyList(),
-                ordinal = existingFileTypes.map { it.ordinal }.max() + 1
+                ordinal = CustomFileType.ordinal(existingFileTypes)
             ),
             existingFileTypes = existingFileTypes,
+            createFileType = createFileType,
             scope = scope,
             context = context
         )
@@ -197,15 +210,14 @@ private fun rememberCustomFileTypeEditor(
 fun FileTypeCreationDialog(
     fileTypes: ImmutableSet<FileType>,
     onDismissRequest: () -> Unit,
-    onCreateFileType: (CustomFileType) -> Unit,
+    createFileType: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     StatelessFileTypeConfigurationDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.create_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.create),
-        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes),
+        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, createFileType),
         onDismissRequest = onDismissRequest,
-        createFileType = onCreateFileType,
         modifier = modifier
     )
 }
@@ -215,15 +227,14 @@ fun CustomFileTypeConfigurationDialog(
     fileType: CustomFileType,
     fileTypes: ImmutableSet<FileType>,
     onDismissRequest: () -> Unit,
-    onCreateFileType: (CustomFileType) -> Unit,
+    createFileType: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     StatelessFileTypeConfigurationDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.save),
-        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, fileType),
+        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, createFileType, fileType),
         onDismissRequest = onDismissRequest,
-        createFileType = onCreateFileType,
         modifier = modifier
     )
 }
@@ -235,7 +246,6 @@ private fun StatelessFileTypeConfigurationDialog(
     confirmButtonText: String,
     customFileTypeEditor: CustomFileTypeEditor,
     onDismissRequest: () -> Unit,
-    createFileType: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
@@ -274,7 +284,7 @@ private fun StatelessFileTypeConfigurationDialog(
             DialogButton(
                 text = confirmButtonText,
                 onClick = {
-                    createFileType(customFileTypeEditor.fileType)
+                    customFileTypeEditor.create()
                     onDismissRequest()
                 },
                 enabled = customFileTypeEditor.canBeCreated

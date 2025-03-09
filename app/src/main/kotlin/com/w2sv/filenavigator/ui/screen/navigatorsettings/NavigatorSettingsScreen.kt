@@ -179,7 +179,7 @@ fun NavigatorSettingsScreen(
                 fileType = fileType,
                 fileTypes = remember { (navigatorConfig.fileTypes - fileType).toImmutableSet() },
                 onDismissRequest = { showFileTypeConfigurationDialogFor = null },
-                onCreateFileType = navigatorVM.reversibleConfig::editCustomFileType
+                createFileType = navigatorVM.reversibleConfig::editCustomFileType
             )
         }
         if (showAddFileTypesBottomSheet) {
@@ -202,7 +202,7 @@ fun NavigatorSettingsScreen(
             FileTypeCreationDialog(
                 fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
                 onDismissRequest = { showFileTypeCreationDialog = false },
-                onCreateFileType = navigatorVM.reversibleConfig::createCustomFileType
+                createFileType = navigatorVM.reversibleConfig::createCustomFileType
             )
         }
     }
