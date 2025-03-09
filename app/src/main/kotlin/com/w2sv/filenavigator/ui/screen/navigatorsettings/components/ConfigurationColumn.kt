@@ -135,9 +135,7 @@ fun NavigatorConfigurationColumn(
     showCustomFileTypeConfigurationDialog: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier
-    ) {
+    LazyColumn(modifier = modifier) {
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),

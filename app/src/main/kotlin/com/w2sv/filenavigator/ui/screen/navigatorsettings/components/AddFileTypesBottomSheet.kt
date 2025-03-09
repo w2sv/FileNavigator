@@ -32,13 +32,8 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -48,7 +43,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.w2sv.common.util.log
 import com.w2sv.composed.CollectFromFlow
 import com.w2sv.composed.extensions.thenIf
 import com.w2sv.composed.extensions.toMutableStateMap
@@ -61,6 +55,7 @@ import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
 import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.util.EnabledKeysTrackingSnapshotStateMap
 import com.w2sv.kotlinutils.toggle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -89,22 +84,22 @@ fun AddFileTypesBottomSheet(
         )
     }
 
-    @Composable
-    fun LazyGridItemScope.fileTypeCard(fileType: FileType) {
-        FileTypeCard(
-            fileType = fileType,
-            isSelected = selectionMap.getValue(fileType),
-            onClick = { selectionMap.toggle(fileType) },
-            modifier = Modifier
-                .padding(bottom = 12.dp)
-                .animateItem()
-        )
-    }
-
     CollectFromFlow(selectFileType) { fileType ->
         i { "Putting $fileType=true" }
         selectionMap.put(fileType, true)
-        selectionMap.log()
+    }
+
+    val fileTypeCard: @Composable LazyGridItemScope.(FileType) -> Unit = remember {
+        { fileType ->
+            FileTypeCard(
+                fileType = fileType,
+                isSelected = selectionMap.getValue(fileType),
+                onClick = { selectionMap.toggle(fileType) },
+                modifier = Modifier
+                    .padding(bottom = 12.dp)
+                    .animateItem()
+            )
+        }
     }
 
     ModalBottomSheet(
@@ -124,7 +119,7 @@ fun AddFileTypesBottomSheet(
             columns = GridCells.FixedSize(92.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
         ) {
-            items(disabledFileTypes) { fileType ->
+            items(disabledFileTypes, key = { it.ordinal }) { fileType ->
                 if (fileType is CustomFileType) {
                     DeleteCustomFileTypeTooltipBox(deleteCustomFileType = { deleteCustomFileType(fileType) }) {
                         fileTypeCard(fileType)
@@ -188,26 +183,6 @@ private fun DeleteCustomFileTypeTooltipBox(
         state = tooltipState,
         content = content
     )
-}
-
-@Stable
-private class EnabledKeysTrackingSnapshotStateMap<K>(private val map: SnapshotStateMap<K, Boolean> = mutableStateMapOf()) :
-    MutableMap<K, Boolean> by map {
-
-    val enabledKeys: SnapshotStateList<K> = keys.filter { getValue(it) }.toMutableStateList()
-
-    override fun put(key: K, value: Boolean): Boolean? =
-        map.put(key, value)
-            .also {
-                if (value) {
-                    enabledKeys.add(key)
-                } else {
-                    enabledKeys.remove(key)
-                }
-            }
-
-    override fun toString(): String =
-        "Map=$map | enabledKeys=${enabledKeys.toList()}"
 }
 
 @Composable
