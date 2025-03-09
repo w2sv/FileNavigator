@@ -164,10 +164,7 @@ fun AddFileTypesBottomSheet(
 }
 
 @Composable
-private fun DeleteCustomFileTypeTooltipBox(
-    deleteCustomFileType: () -> Unit,
-    content: @Composable () -> Unit
-) {
+private fun DeleteCustomFileTypeTooltipBox(deleteCustomFileType: () -> Unit, content: @Composable () -> Unit) {
     val tooltipState = rememberExtendedTooltipState()
     TooltipBox(
         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
@@ -200,10 +197,7 @@ private fun FileTypeCard(
 }
 
 @Composable
-private fun CreateFileTypeCard(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun CreateFileTypeCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
     GridCard(isSelected = false, onClick = onClick, modifier = modifier) {
         Icon(
             imageVector = Icons.Default.Add,

@@ -23,12 +23,16 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("ComposeUnstableReceiver")
 @Composable
-fun TooltipScope.DeletionTooltip(onClick: () -> Unit, contentDescription: String, modifier: Modifier = Modifier) {
+fun TooltipScope.DeletionTooltip(
+    onClick: () -> Unit,
+    contentDescription: String,
+    modifier: Modifier = Modifier
+) {
     PlainTooltip(caretSize = TooltipDefaults.caretSize, tonalElevation = 4.dp, shadowElevation = 4.dp, modifier = modifier) {
         IconButton(onClick = onClick) {
             Icon(
                 imageVector = Icons.Default.Delete,
-                contentDescription = contentDescription,
+                contentDescription = contentDescription
             )
         }
     }

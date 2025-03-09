@@ -74,11 +74,11 @@ import com.w2sv.filenavigator.ui.util.StatefulTextEditor
 import com.w2sv.filenavigator.ui.util.TextEditor
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
+import kotlin.text.trim
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlin.text.trim
 
 private enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageId: Int) : InputInvalidityReason {
     ContainsSpecialCharacter(com.w2sv.filenavigator.R.string.name_must_not_contain_special_characters),
@@ -290,7 +290,8 @@ private fun StatelessFileTypeConfigurationDialog(
                         customFileTypeEditor.fileType.fileExtensions.forEachIndexed { i, extension ->
                             FileExtensionBadgeWithTooltip(
                                 extension = extension,
-                                deleteExtension = { customFileTypeEditor.deleteExtension(i) })
+                                deleteExtension = { customFileTypeEditor.deleteExtension(i) }
+                            )
                         }
                     }
                 }
@@ -310,7 +311,8 @@ private fun StatelessFileTypeConfigurationDialog(
                                 .background(customFileTypeEditor.fileType.color)
                         )
                         IconButton(
-                            onClick = {}, modifier = Modifier
+                            onClick = {},
+                            modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .offset(14.dp, 14.dp)
                         ) {
@@ -340,7 +342,7 @@ private fun StatelessFileTypeConfigurationDialog(
 private fun FileExtensionBadgeWithTooltip(
     extension: String,
     deleteExtension: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val tooltipState = rememberExtendedTooltipState()
 
@@ -420,7 +422,7 @@ private fun OutlinedTextField(
             {
                 Text(
                     text = stringResource(invalidityReason.errorMessageId),
-                    color = MaterialTheme.colorScheme.error,
+                    color = MaterialTheme.colorScheme.error
                 )
             }
         },
@@ -428,9 +430,9 @@ private fun OutlinedTextField(
     )
 }
 
-//@Preview
-//@Composable
-//private fun StatelessFileTypeCreationDialogPrev() {
+// @Preview
+// @Composable
+// private fun StatelessFileTypeCreationDialogPrev() {
 //    AppTheme {
 //        val context = LocalContext.current
 //        StatelessFileTypeCreationDialog(
@@ -443,4 +445,4 @@ private fun OutlinedTextField(
 //            createFileType = {}
 //        )
 //    }
-//}
+// }

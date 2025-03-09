@@ -1,7 +1,6 @@
 package com.w2sv.domain.repository
 
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
