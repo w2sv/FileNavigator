@@ -1,12 +1,14 @@
 package com.w2sv.filenavigator.ui.designsystem
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -15,6 +17,8 @@ fun DialogButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    contentColor: Color = MaterialTheme.colorScheme.secondary,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     enabled: Boolean = true
 ) {
     ElevatedButton(
@@ -24,15 +28,13 @@ fun DialogButton(
         border = if (enabled) {
             BorderStroke(
                 Dp.Hairline,
-                MaterialTheme.colorScheme.primary
+                contentColor
             )
         } else {
             null
         },
         elevation = ButtonDefaults.elevatedButtonElevation(8.dp),
-        colors = ButtonDefaults.elevatedButtonColors(
-            contentColor = MaterialTheme.colorScheme.secondary
-        )
+        colors = ButtonDefaults.elevatedButtonColors(contentColor = contentColor, containerColor = containerColor)
     ) {
         Text(text = text)
     }

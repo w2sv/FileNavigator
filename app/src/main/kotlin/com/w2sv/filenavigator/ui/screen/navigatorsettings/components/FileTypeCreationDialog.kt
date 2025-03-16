@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -33,6 +32,7 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -58,6 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.core.domain.R
 import com.w2sv.domain.model.CustomFileType
@@ -74,11 +75,11 @@ import com.w2sv.filenavigator.ui.util.StatefulTextEditor
 import com.w2sv.filenavigator.ui.util.TextEditor
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
-import kotlin.text.trim
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlin.text.trim
 
 private enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageId: Int) : InputInvalidityReason {
     ContainsSpecialCharacter(com.w2sv.filenavigator.R.string.name_must_not_contain_special_characters),
@@ -139,7 +140,7 @@ private class CustomFileTypeEditor(
         findInvalidityReason = { input ->
             when {
                 input.containsSpecialCharacter() -> FileExtensionInvalidityReason.ContainsSpecialCharacter
-                input in initialFileType.fileExtensions -> FileExtensionInvalidityReason.AlreadyAmongstAddedExtensions
+                input in fileType.fileExtensions -> FileExtensionInvalidityReason.AlreadyAmongstAddedExtensions
                 else -> null
             }
         }
@@ -259,7 +260,7 @@ private fun StatelessFileTypeConfigurationDialog(
     AlertDialog(
         modifier = modifier
             .pointerInput(Unit) { detectTapGestures { customFileTypeEditor.clearFocus() } },
-        icon = { Icon(painterResource(R.drawable.ic_custom_file_type_24), contentDescription = null, modifier = Modifier.size(42.dp)) },
+        icon = { Icon(painterResource(R.drawable.ic_custom_file_type_24), contentDescription = null, modifier = Modifier.size(44.dp)) },
         title = { Text(title) },
         onDismissRequest = onDismissRequest,
         text = {
@@ -269,7 +270,7 @@ private fun StatelessFileTypeConfigurationDialog(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .animateContentSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 OutlinedTextField(
                     editor = customFileTypeEditor.nameEditor,
@@ -280,10 +281,11 @@ private fun StatelessFileTypeConfigurationDialog(
                 OutlinedTextField(
                     editor = customFileTypeEditor.extensionEditor,
                     placeholderText = stringResource(com.w2sv.filenavigator.R.string.add_file_extension_field_placeholder),
+                    labelText = "File Extension",
                     onApply = customFileTypeEditor::addExtension,
-                    modifier = Modifier
-                        .width(192.dp),
-                    applyIconImageVector = Icons.Outlined.Add
+                    applyIconImageVector = Icons.Outlined.Add,
+                    showApplyIconOnlyWhenFocused = false,
+                    showDisabledApplyButtonWhenEmpty = true
                 )
                 if (customFileTypeEditor.fileType.fileExtensions.isNotEmpty()) {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -302,7 +304,7 @@ private fun StatelessFileTypeConfigurationDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text("Color", style = MaterialTheme.typography.bodyLarge)
+                    Text("Color", style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp))
                     Box(contentAlignment = Alignment.Center) {
                         Box(
                             modifier = Modifier
@@ -329,7 +331,9 @@ private fun StatelessFileTypeConfigurationDialog(
                     customFileTypeEditor.create()
                     onDismissRequest()
                 },
-                enabled = customFileTypeEditor.canBeCreated
+                enabled = customFileTypeEditor.canBeCreated,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             )
         },
         dismissButton = {
@@ -385,7 +389,9 @@ private fun OutlinedTextField(
     onApply: () -> Unit,
     modifier: Modifier = Modifier,
     labelText: String? = null,
-    applyIconImageVector: ImageVector = Icons.Outlined.Check
+    applyIconImageVector: ImageVector = Icons.Outlined.Check,
+    showApplyIconOnlyWhenFocused: Boolean = true,
+    showDisabledApplyButtonWhenEmpty: Boolean = false
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -399,17 +405,22 @@ private fun OutlinedTextField(
         singleLine = true,
         modifier = modifier,
         trailingIcon = when {
-            editor.isValid && isFocused -> {
-                {
-                    FilledTonalIconButton(onClick = onApply, modifier = Modifier.padding(end = 4.dp)) {
-                        Icon(applyIconImageVector, contentDescription = null, tint = AppColor.success)
-                    }
-                }
-            }
-
             editor.invalidityReason != null -> {
                 {
                     Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                }
+            }
+
+            editor.isValid && (!showApplyIconOnlyWhenFocused || isFocused) || showDisabledApplyButtonWhenEmpty -> {
+                {
+                    FilledTonalIconButton(
+                        onClick = onApply,
+                        modifier = Modifier.padding(end = 4.dp),
+                        enabled = editor.isValid,
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(contentColor = AppColor.success)
+                    ) {
+                        Icon(applyIconImageVector, contentDescription = null)
+                    }
                 }
             }
 

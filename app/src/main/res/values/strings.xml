@@ -86,8 +86,8 @@
     <string name="extension_must_not_contain_special_characters">Extension must not contain special characters</string>
     <string name="already_amongst_added_extensions">Already amongst added extensions</string>
     <string name="delete_file_extension">Delete file extension</string>
-    <string name="add_file_extension_field_placeholder">Enter file extension</string>
-    <string name="edit_file_type_name_field_placeholder">Enter name</string>
+    <string name="add_file_extension_field_placeholder">Enter a file extension</string>
+    <string name="edit_file_type_name_field_placeholder">Enter a name</string>
     <string name="edit_file_type_name_field_label">Name</string>
     <string name="edit_file_type_dialog_title">Edit file type</string>
     <string name="save">Save</string>
