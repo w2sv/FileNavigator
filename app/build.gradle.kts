@@ -108,6 +108,7 @@ dependencies {
     implementation(libs.w2sv.reversiblestate)
     implementation(libs.w2sv.composed)
     implementation(libs.w2sv.composed.permissions)
+    implementation(libs.w2sv.colorpicker)
 
     // Androidx
     implementation(libs.androidx.core)

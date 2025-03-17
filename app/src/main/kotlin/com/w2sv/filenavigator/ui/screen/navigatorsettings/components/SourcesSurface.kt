@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeselection
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -32,9 +32,6 @@ import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.TweakedSegmentedButton
 import com.w2sv.filenavigator.ui.modelext.color
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AutoMoveRow
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.rememberAutoMoveDestinationPath
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.rememberSelectAutoMoveDestination
 import com.w2sv.filenavigator.ui.util.orOnSurfaceDisabledIf
 import kotlinx.collections.immutable.ImmutableMap
 

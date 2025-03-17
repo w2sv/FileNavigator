@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.designsystem
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
@@ -38,4 +37,21 @@ fun DialogButton(
     ) {
         Text(text = text)
     }
+}
+
+@Composable
+fun HighlightedDialogButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    DialogButton(
+        text = text,
+        onClick = onClick,
+        enabled = enabled,
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+    )
 }

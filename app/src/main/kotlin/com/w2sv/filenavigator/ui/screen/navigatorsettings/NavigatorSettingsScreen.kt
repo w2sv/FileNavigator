@@ -76,7 +76,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
-@Destination<RootGraph>(start = true, style = NavigationTransitions::class)
+@Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
 fun NavigatorSettingsScreen(
     navigator: DestinationsNavigator,
@@ -111,7 +111,7 @@ fun NavigatorSettingsScreen(
         mutableStateOf(false)
     }
     var showFileTypeCreationDialog by rememberSaveable {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     var showFileTypeConfigurationDialogFor by rememberSaveable {
         mutableStateOf<CustomFileType?>(null)

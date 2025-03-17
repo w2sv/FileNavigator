@@ -48,7 +48,6 @@ import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.Spacing
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeselection.FileTypeAccordion
 import com.w2sv.filenavigator.ui.state.ReversibleNavigatorConfig
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.update

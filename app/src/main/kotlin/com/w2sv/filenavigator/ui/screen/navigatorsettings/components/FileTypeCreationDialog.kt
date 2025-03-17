@@ -52,6 +52,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -65,6 +67,7 @@ import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
+import com.w2sv.filenavigator.ui.designsystem.HighlightedDialogButton
 import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.theme.AppColor
@@ -75,11 +78,11 @@ import com.w2sv.filenavigator.ui.util.StatefulTextEditor
 import com.w2sv.filenavigator.ui.util.TextEditor
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
+import kotlin.text.trim
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlin.text.trim
 
 private enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageId: Int) : InputInvalidityReason {
     ContainsSpecialCharacter(com.w2sv.filenavigator.R.string.name_must_not_contain_special_characters),
@@ -149,6 +152,18 @@ private class CustomFileTypeEditor(
     fun addExtension() {
         updateFileType { it.copy(fileExtensions = it.fileExtensions + extensionEditor.pop()) }
     }
+
+    // ===================
+    // Color
+    // ===================
+
+    fun updateColor(color: Color) {
+        updateFileType { it.copy(colorInt = color.toArgb()) }
+    }
+
+    // ===================
+    // Creation
+    // ===================
 
     fun create() {
         createFileType(fileType)
@@ -222,7 +237,7 @@ fun FileTypeCreationDialog(
     createFileType: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    StatelessFileTypeConfigurationDialog(
+    FileTypeConfigurationDialogWithColorPickerDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.create_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.create),
         customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, createFileType),
@@ -239,13 +254,43 @@ fun CustomFileTypeConfigurationDialog(
     createFileType: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    StatelessFileTypeConfigurationDialog(
+    FileTypeConfigurationDialogWithColorPickerDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.save),
         customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, createFileType, fileType),
         onDismissRequest = onDismissRequest,
         modifier = modifier
     )
+}
+
+@Composable
+private fun FileTypeConfigurationDialogWithColorPickerDialog(
+    title: String,
+    confirmButtonText: String,
+    customFileTypeEditor: CustomFileTypeEditor,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var showColorPickerDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    StatelessFileTypeConfigurationDialog(
+        title = title,
+        confirmButtonText = confirmButtonText,
+        customFileTypeEditor = customFileTypeEditor,
+        onDismissRequest = onDismissRequest,
+        onConfigureColorButtonPress = { showColorPickerDialog = true },
+        modifier = modifier
+    )
+
+    if (showColorPickerDialog) {
+        ColorPickerDialog(
+            initialColor = customFileTypeEditor.fileType.color,
+            applyColor = customFileTypeEditor::updateColor,
+            onDismissRequest = { showColorPickerDialog = false }
+        )
+    }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -255,6 +300,7 @@ private fun StatelessFileTypeConfigurationDialog(
     confirmButtonText: String,
     customFileTypeEditor: CustomFileTypeEditor,
     onDismissRequest: () -> Unit,
+    onConfigureColorButtonPress: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
@@ -313,7 +359,7 @@ private fun StatelessFileTypeConfigurationDialog(
                                 .background(customFileTypeEditor.fileType.color)
                         )
                         IconButton(
-                            onClick = {},
+                            onClick = onConfigureColorButtonPress,
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .offset(14.dp, 14.dp)
@@ -325,15 +371,13 @@ private fun StatelessFileTypeConfigurationDialog(
             }
         },
         confirmButton = {
-            DialogButton(
+            HighlightedDialogButton(
                 text = confirmButtonText,
                 onClick = {
                     customFileTypeEditor.create()
                     onDismissRequest()
                 },
-                enabled = customFileTypeEditor.canBeCreated,
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                enabled = customFileTypeEditor.canBeCreated
             )
         },
         dismissButton = {

@@ -79,6 +79,7 @@ roboelectric = "org.robolectric:robolectric:4.14.1"
 slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
 textflow = "io.github.oleksandrbalan:textflow-material3:1.2.1"
 w2sv-androidutils-core = "com.github.w2sv.AndroidUtils:core:0.4.5-rc1"
+w2sv-colorpicker = "com.github.w2sv:Compose-Color-Picker-Bundle:1.0.0-rc9"
 w2sv-composed = { module = "com.github.w2sv.Composed:composed", version.ref = "composed" }
 w2sv-composed-permissions = { module = "com.github.w2sv.Composed:permissions", version.ref = "composed" }
 w2sv-datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:datastoreflow", version.ref = "datastoreutils" }
