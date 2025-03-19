@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Parcelable
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
+import androidx.annotation.VisibleForTesting
 import com.w2sv.core.domain.R
 import kotlin.random.Random
 import kotlinx.parcelize.IgnoredOnParcel
@@ -31,7 +32,8 @@ data class CustomFileType(
                 ordinal = maxOf(MIN_ORDINAL, existingFileTypes.maxOf { it.ordinal } + 1)
             )
 
-        private const val MIN_ORDINAL = 1_000
+        @VisibleForTesting
+        internal const val MIN_ORDINAL = 1_000
     }
 }
 

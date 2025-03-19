@@ -6,7 +6,9 @@ import kotlinx.parcelize.parcelableCreator
 import org.junit.Assert.assertEquals
 
 /**
- * Requires @RunWith(RobolectricTestRunner::class) annotation on calling test class.
+ * Parcels the receiver, recreates it from the parcel and asserts whether the original instance and the recreated one are equal.
+ *
+ * Requires `@RunWith(RobolectricTestRunner::class)` annotation on calling test class.
  */
 inline fun <reified T : Parcelable> T.testParceling(flags: Int = 0) {
     val parcel = Parcel.obtain()
