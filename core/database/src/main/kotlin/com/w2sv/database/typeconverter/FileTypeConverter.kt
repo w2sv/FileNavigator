@@ -18,12 +18,12 @@ internal object FileTypeConverter {
             PresetFileType.Text -> "Text"
             PresetFileType.Archive -> "Archive"
             PresetFileType.EBook -> "EBook"
-            is CustomFileType -> fileType.name
+            is CustomFileType -> fileType.serialized()
         }
 
     @TypeConverter
-    fun toFileType(name: String): FileType =
-        when (name) {
+    fun toFileType(string: String): FileType =
+        when (string) {
             "Image" -> PresetFileType.Image
             "Audio" -> PresetFileType.Audio
             "Video" -> PresetFileType.Video
@@ -32,6 +32,21 @@ internal object FileTypeConverter {
             "Text" -> PresetFileType.Text
             "Archive" -> PresetFileType.Archive
             "EBook" -> PresetFileType.EBook
-            else -> CustomFileType(name, emptyList(), -1, -1) // TODO
+            else -> CustomFileType.deserialized(string)
         }
 }
+
+private fun CustomFileType.serialized(): String =
+    "$name$DELIMITER_CHAR$colorInt"
+
+private fun CustomFileType.Companion.deserialized(string: String): CustomFileType {
+    val (name, colorInt) = string.split(DELIMITER_CHAR)
+    return CustomFileType(
+        name = name,
+        fileExtensions = emptyList(),
+        colorInt = colorInt.toInt(),
+        ordinal = -1
+    )
+}
+
+private const val DELIMITER_CHAR = ","
