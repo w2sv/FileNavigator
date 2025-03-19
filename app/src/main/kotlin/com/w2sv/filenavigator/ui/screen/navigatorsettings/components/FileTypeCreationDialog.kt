@@ -120,7 +120,7 @@ private class CustomFileTypeEditor(
     val nameEditor = ProxyTextEditor(
         getValue = { fileType.name },
         setValue = { value -> updateFileType { it.copy(name = value) } },
-        processInput = { it.trim().replaceFirstChar(Char::titlecase) },
+        processInput = { it.trim() },
         findInvalidityReason = { input ->
             when {
                 input.containsSpecialCharacter() -> FileTypeNameInvalidityReason.ContainsSpecialCharacter

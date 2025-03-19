@@ -16,7 +16,6 @@ internal class FileTypeConverterTest {
 
     @Test
     fun testBackAndForthCustomFileTypeConversion() {
-
         fun test(customFileType: CustomFileType) {
             val recreatedFileType = FileTypeConverter.toFileType(FileTypeConverter.fromFileType(customFileType)) as CustomFileType
             assertEquals(customFileType.name, recreatedFileType.name)
