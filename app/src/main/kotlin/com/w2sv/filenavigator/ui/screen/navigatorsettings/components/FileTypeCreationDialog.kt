@@ -62,6 +62,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.common.util.containsSpecialCharacter
+import com.w2sv.common.util.mutate
 import com.w2sv.core.domain.R
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
@@ -78,18 +79,18 @@ import com.w2sv.filenavigator.ui.util.StatefulTextEditor
 import com.w2sv.filenavigator.ui.util.TextEditor
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
-import kotlin.text.trim
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlin.text.trim
 
-private enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageId: Int) : InputInvalidityReason {
+private enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageRes: Int) : InputInvalidityReason {
     ContainsSpecialCharacter(com.w2sv.filenavigator.R.string.name_must_not_contain_special_characters),
     AlreadyExists(com.w2sv.filenavigator.R.string.file_type_already_exists)
 }
 
-private enum class FileExtensionInvalidityReason(@StringRes override val errorMessageId: Int) : InputInvalidityReason {
+private enum class FileExtensionInvalidityReason(@StringRes override val errorMessageRes: Int) : InputInvalidityReason {
     ContainsSpecialCharacter(com.w2sv.filenavigator.R.string.extension_must_not_contain_special_characters),
     AlreadyAmongstAddedExtensions(com.w2sv.filenavigator.R.string.already_amongst_added_extensions)
 }
@@ -135,7 +136,7 @@ private class CustomFileTypeEditor(
     // ===================
 
     fun deleteExtension(@IntRange(from = 0L) index: Int) {
-        updateFileType { it.copy(fileExtensions = it.fileExtensions.toMutableList().apply { removeAt(index) }) }
+        updateFileType { it.copy(fileExtensions = it.fileExtensions.mutate { removeAt(index) }) }
     }
 
     val extensionEditor = StatefulTextEditor(
@@ -476,7 +477,7 @@ private fun OutlinedTextField(
         supportingText = editor.invalidityReason?.let { invalidityReason ->
             {
                 Text(
-                    text = stringResource(invalidityReason.errorMessageId),
+                    text = stringResource(invalidityReason.errorMessageRes),
                     color = MaterialTheme.colorScheme.error
                 )
             }
