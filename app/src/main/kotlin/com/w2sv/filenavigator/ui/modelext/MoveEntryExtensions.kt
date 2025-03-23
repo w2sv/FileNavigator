@@ -25,18 +25,20 @@ fun MovedFile.launchViewMovedFileActivity(context: Context): SnackbarVisuals? {
             Intent()
                 .setAction(Intent.ACTION_VIEW)
                 .apply {
-                    localOrNull?.let {
-                        setDataAndType(
-                            it.mediaUri.uri,
-                            this@launchViewMovedFileActivity.fileType.mediaType.mimeType
-                        )
-                    }
-                    externalOrNull?.let {
-                        setDataAndType(
-                            documentUri.uri,
-                            this@launchViewMovedFileActivity.fileType.mediaType.mimeType
-                        )
-                        setPackage(it.moveDestination.providerPackageName)
+                    when (this@launchViewMovedFileActivity) {
+                        is MovedFile.Local -> {
+                            setDataAndType(
+                                mediaUri.uri,
+                                this@launchViewMovedFileActivity.fileType.mediaType.mimeType
+                            )
+                        }
+                        is MovedFile.External -> {
+                            setDataAndType(
+                                documentUri.uri,
+                                this@launchViewMovedFileActivity.fileType.mediaType.mimeType
+                            )
+                            setPackage(moveDestination.providerPackageName)
+                        }
                     }
                 }
         )
