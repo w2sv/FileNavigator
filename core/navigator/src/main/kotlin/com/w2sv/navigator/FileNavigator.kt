@@ -10,7 +10,7 @@ import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.navigator.moving.MoveResultListener
 import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
 import com.w2sv.navigator.notifications.appnotifications.FileNavigatorIsRunningNotificationManager
-import com.w2sv.navigator.observing.FileObserver
+import com.w2sv.navigator.observing.FileTypeObserver
 import com.w2sv.navigator.observing.FileObserverFactory
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -58,7 +58,7 @@ class FileNavigator : UnboundService() {
 
             Action.REREGISTER_MEDIA_OBSERVERS -> {
                 unregisterFileObservers()
-                activeFileObservers = getRegisteredFileObservers()
+                activeFileTypeObservers = getRegisteredFileObservers()
             }
 
             else -> try {
@@ -81,7 +81,7 @@ class FileNavigator : UnboundService() {
         )
 
         i { "Registering file observers" }
-        activeFileObservers = getRegisteredFileObservers()
+        activeFileTypeObservers = getRegisteredFileObservers()
         moveResultChannel
             .consumeAsFlow()
             .collectOn(scope = scope, collector = moveResultListener::onMoveResult)
@@ -89,9 +89,9 @@ class FileNavigator : UnboundService() {
         isRunning.setState(true)
     }
 
-    private var activeFileObservers: List<FileObserver>? = null
+    private var activeFileTypeObservers: List<FileTypeObserver>? = null
 
-    private fun getRegisteredFileObservers(): List<FileObserver> {
+    private fun getRegisteredFileObservers(): List<FileTypeObserver> {
         return fileObserverFactory.invoke()
             .onEach { observer ->
                 contentResolver.registerContentObserver(
@@ -112,7 +112,7 @@ class FileNavigator : UnboundService() {
     }
 
     private fun unregisterFileObservers() {
-        activeFileObservers
+        activeFileTypeObservers
             ?.forEach {
                 contentResolver.unregisterContentObserver(it)
             }

@@ -11,6 +11,8 @@ import com.w2sv.common.util.MediaId
 import com.w2sv.common.util.log
 import com.w2sv.common.util.mediaUri
 import com.w2sv.domain.model.FileAndSourceType
+import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.kotlinutils.coroutines.launchDelayed
@@ -26,7 +28,6 @@ import com.w2sv.navigator.observing.model.MediaStoreFileData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import slimber.log.i
@@ -49,12 +50,12 @@ private enum class FileChangeOperation(private val flag: Int?) {
     }
 }
 
-internal abstract class FileObserver(
+internal abstract class FileTypeObserver(
     val mediaType: MediaType,
     private val context: Context,
     private val moveFileNotificationManager: MoveFileNotificationManager,
     private val mediaStoreDataProducer: MediaStoreDataProducer,
-    private val fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
+    private val getAutoMoveConfig: (FileType, SourceType) -> AutoMoveConfig,
     handler: Handler,
     blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>,
     private val scope: CoroutineScope
@@ -131,7 +132,7 @@ internal abstract class FileObserver(
             }
         }
 
-        enabledFileAndSourceTypeOrNull(mediaStoreDataRetrievalResult.data)
+        determineMatchingEnabledFileAndSourceTypeOrNull(mediaStoreDataRetrievalResult.data)
             ?.let { fileAndSourceType ->
                 val moveFile = MoveFile(
                     mediaUri = mediaUri,
@@ -140,14 +141,7 @@ internal abstract class FileObserver(
                 )
                     .log { "Calling onMoveFile on $it" }
 
-                val enabledAutoMoveDestination =
-                    fileTypeConfigMapStateFlow
-                        .value
-                        .getValue(moveFile.fileType)
-                        .sourceTypeConfigMap
-                        .getValue(moveFile.sourceType)
-                        .autoMoveConfig
-                        .enabledDestinationOrNull
+                val enabledAutoMoveDestination = getAutoMoveConfig(moveFile.fileType, moveFile.sourceType).enabledDestinationOrNull
 
                 moveFileWithProcedureJob = MoveFileWithProcedureJob(
                     moveFile = moveFile,
@@ -173,7 +167,11 @@ internal abstract class FileObserver(
             }
     }
 
-    protected abstract fun enabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType?
+    /**
+     * Determines the enabled [FileAndSourceType] combination, being subject of this [FileTypeObserver] and corresponding to the [mediaStoreFileData], or `null` if there is none.
+     * This method determines whether the observer will fire for the observed file corresponding to [mediaStoreFileData] or not.
+     */
+    protected abstract fun determineMatchingEnabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType?
 }
 
 private val AutoMoveConfig.enabledDestinationOrNull: NavigatorMoveDestination.Directory?

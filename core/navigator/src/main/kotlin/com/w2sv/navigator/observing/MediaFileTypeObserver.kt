@@ -4,11 +4,12 @@ import android.content.Context
 import android.os.Handler
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
+import com.w2sv.common.util.filterKeysByValueToSet
 import com.w2sv.common.util.logIdentifier
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
-import com.w2sv.kotlinutils.coroutines.flow.mapState
+import com.w2sv.domain.model.navigatorconfig.SourceTypeConfigMap
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
@@ -22,9 +23,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
-internal class MediaFileObserver @AssistedInject constructor(
+internal class MediaFileTypeObserver @AssistedInject constructor(
     @Assisted private val fileType: PresetFileType.Media,
-    @Assisted fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
+    @Assisted private val sourceTypeConfigMapStateFlow: StateFlow<SourceTypeConfigMap>,
     @Assisted handler: Handler,
     moveFileNotificationManager: MoveFileNotificationManager,
     mediaStoreDataProducer: MediaStoreDataProducer,
@@ -32,12 +33,12 @@ internal class MediaFileObserver @AssistedInject constructor(
     blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>,
     @GlobalScope(AppDispatcher.IO) scope: CoroutineScope
 ) :
-    FileObserver(
+    FileTypeObserver(
         mediaType = fileType.mediaType,
         context = context,
         moveFileNotificationManager = moveFileNotificationManager,
         mediaStoreDataProducer = mediaStoreDataProducer,
-        fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
+        getAutoMoveConfig = { _, sourceType -> sourceTypeConfigMapStateFlow.value.getValue(sourceType).autoMoveConfig },
         handler = handler,
         blacklistedMediaUris = blacklistedMediaUris,
         scope = scope
@@ -47,21 +48,17 @@ internal class MediaFileObserver @AssistedInject constructor(
     interface Factory {
         operator fun invoke(
             fileType: PresetFileType.Media,
-            fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
+            sourceTypeConfigMapStateFlow: StateFlow<SourceTypeConfigMap>,
             handler: Handler
-        ): MediaFileObserver
+        ): MediaFileTypeObserver
     }
 
-    private val enabledSourceTypesStateFlow: StateFlow<Set<SourceType>> =
-        fileTypeConfigMapStateFlow.mapState { fileTypeConfigMap ->
-            val fileTypeConfig = fileTypeConfigMap.getValue(fileType)
-            fileType.sourceTypes
-                .filter { fileTypeConfig.sourceTypeConfigMap.getValue(it).enabled }
-                .toSet()
-        }
-
-    private val enabledSourceTypes
-        get() = enabledSourceTypesStateFlow.value
+    /**
+     * [FileTypeObserver]s will be relaunched when the user makes a change about the en-/disabled [SourceType]s,
+     * therefore we don't need a [StateFlow] here to react to changes.
+     */
+    private val enabledSourceTypes: Set<SourceType> =
+        sourceTypeConfigMapStateFlow.value.filterKeysByValueToSet { it.enabled }
 
     override val logIdentifier: String
         get() = "${this.javaClass.simpleName}.${fileType.logIdentifier}"
@@ -70,7 +67,7 @@ internal class MediaFileObserver @AssistedInject constructor(
         i { "Initialized ${fileType.logIdentifier} MediaFileObserver with sources ${enabledSourceTypes.map { it.name }}" }
     }
 
-    override fun enabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType? {
+    override fun determineMatchingEnabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType? {
         val sourceType = mediaStoreFileData.sourceType()
 
         return if (enabledSourceTypes.contains(sourceType)) {

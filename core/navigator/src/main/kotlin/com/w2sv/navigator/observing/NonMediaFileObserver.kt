@@ -5,9 +5,8 @@ import android.os.Handler
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.common.util.logIdentifier
 import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.NonMediaFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
@@ -22,8 +21,11 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
+/**
+ * @param enabledNonMediaFileTypes [FileTypeObserver]s will be relaunched when the user makes a change about the en-/disabled FileTypes, therefore we don't need a [StateFlow] here to react to changes.
+ */
 internal class NonMediaFileObserver @AssistedInject constructor(
-    @Assisted private val enabledFileTypesStateFlow: StateFlow<Set<PresetFileType.NonMedia>>,
+    @Assisted private val enabledNonMediaFileTypes: Collection<NonMediaFileType>,
     @Assisted fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
     @Assisted handler: Handler,
     moveFileNotificationManager: MoveFileNotificationManager,
@@ -32,12 +34,19 @@ internal class NonMediaFileObserver @AssistedInject constructor(
     blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>,
     @GlobalScope(AppDispatcher.IO) scope: CoroutineScope
 ) :
-    FileObserver(
+    FileTypeObserver(
         mediaType = MediaType.DOWNLOADS,
         context = context,
         moveFileNotificationManager = moveFileNotificationManager,
         mediaStoreDataProducer = mediaStoreDataProducer,
-        fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
+        getAutoMoveConfig = { fileType, sourceType ->
+            fileTypeConfigMapStateFlow
+                .value
+                .getValue(fileType)
+                .sourceTypeConfigMap
+                .getValue(sourceType)
+                .autoMoveConfig
+        },
         handler = handler,
         blacklistedMediaUris = blacklistedMediaUris,
         scope = scope
@@ -46,26 +55,21 @@ internal class NonMediaFileObserver @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         operator fun invoke(
-            enabledFileTypesStateFlow: StateFlow<Set<PresetFileType.NonMedia>>,
+            enabledNonMediaFileTypes: Collection<NonMediaFileType>,
             fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
             handler: Handler
         ): NonMediaFileObserver
     }
 
-    private val enabledFileTypes: Set<PresetFileType.NonMedia>
-        get() = enabledFileTypesStateFlow.value
-
     override val logIdentifier: String
         get() = this.javaClass.simpleName
 
     init {
-        i { "Initialized NonMediaFileObserver with fileTypes: ${enabledFileTypes.map { it.logIdentifier }}" }
+        i { "Initialized NonMediaFileObserver with fileTypes: $enabledNonMediaFileTypes" }
     }
 
-    override fun enabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType? =
-        enabledFileTypes
+    override fun determineMatchingEnabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType? =
+        enabledNonMediaFileTypes
             .firstOrNull { it.fileExtensions.contains(mediaStoreFileData.extension) }
-            ?.let { fileType ->
-                FileAndSourceType(fileType, SourceType.Download)
-            }
+            ?.let { fileType -> FileAndSourceType(fileType, SourceType.Download) }
 }

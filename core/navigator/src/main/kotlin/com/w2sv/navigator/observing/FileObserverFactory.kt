@@ -5,62 +5,66 @@ import android.os.HandlerThread
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.NonMediaFileType
 import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.flow.mapState
 import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
+import javax.inject.Inject
 
 typealias FileTypeConfigMap = Map<FileType, FileTypeConfig>
 
 internal class FileObserverFactory @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
     @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
-    private val mediaFileObserverFactory: MediaFileObserver.Factory,
+    private val mediaFileTypeObserverFactory: MediaFileTypeObserver.Factory,
     private val nonMediaFileObserverFactory: NonMediaFileObserver.Factory,
     @FileObserverHandlerThread private val handlerThread: HandlerThread
 ) {
-    private val fileTypeConfigMapStateFlow by lazy {
+    private val navigatorConfigStateFlow by lazy {
         navigatorConfigDataSource.navigatorConfig
-            .map { it.fileTypeConfigMap }
             .stateInWithBlockingInitial(scope)
     }
 
-    operator fun invoke(): List<FileObserver> {
+    private val fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>
+        get() = navigatorConfigStateFlow.mapState { it.fileTypeConfigMap }
+
+    private val enabledFileTypes: Set<FileType>
+        get() = navigatorConfigStateFlow.value.enabledFileTypes
+
+    operator fun invoke(): List<FileTypeObserver> {
         val handler = handlerThread.handler()
 
         return buildList {
             addAll(
-                mediaFileObservers(handler)
+                mediaFileTypeObservers(handler)
             )
-            nonMediaFileObserver(handler)?.let(::add)
+            nonMediaFileTypeObserver(handler)?.let(::add)
         }
     }
 
-    private fun mediaFileObservers(handler: Handler): List<MediaFileObserver> =
+    private fun mediaFileTypeObservers(handler: Handler): List<MediaFileTypeObserver> =
         PresetFileType.Media.values
-            .filter { fileTypeConfigMapStateFlow.value.getValue(it).enabled }
+            .filter { it in enabledFileTypes }
             .map { mediaFileType ->
-                mediaFileObserverFactory.invoke(
+                mediaFileTypeObserverFactory.invoke(
                     fileType = mediaFileType,
-                    fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
+                    sourceTypeConfigMapStateFlow = fileTypeConfigMapStateFlow.mapState { it.getValue(mediaFileType).sourceTypeConfigMap },
                     handler = handler
                 )
             }
 
-    private fun nonMediaFileObserver(handler: Handler): NonMediaFileObserver? =
-        fileTypeConfigMapStateFlow
-            .mapState { fileTypeConfigMap ->
-                PresetFileType.NonMedia.values.filter { fileTypeConfigMap.getValue(it).enabled }.toSet()
-            }
-            .let { enabledFileTypesStateFlow ->
-                if (enabledFileTypesStateFlow.value.isNotEmpty()) {
+    private fun nonMediaFileTypeObserver(handler: Handler): NonMediaFileObserver? =
+        enabledFileTypes
+            .filterIsInstance<NonMediaFileType>()
+            .let { enabledNonMediaFileTypes ->
+                if (enabledNonMediaFileTypes.isNotEmpty()) {
                     nonMediaFileObserverFactory.invoke(
-                        enabledFileTypesStateFlow = enabledFileTypesStateFlow,
+                        enabledNonMediaFileTypes = enabledNonMediaFileTypes,
                         fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
                         handler = handler
                     )
