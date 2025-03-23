@@ -152,7 +152,7 @@ fun NavigatorConfigurationColumn(
                 }
             }
         }
-        items(config.enabledFileTypes, key = { it }) { fileType ->
+        items(config.sortedEnabledFileTypes, key = { it }) { fileType ->
             i { "Laying out ${fileType.logIdentifier}" }
 
             FileTypeAccordion(
@@ -169,7 +169,7 @@ fun NavigatorConfigurationColumn(
                     if (fileType.isMediaType) {
                         { autoMoveConfig ->
                             reversibleConfig.update {
-                                it.copyWithAlteredAutoMoveConfigs(
+                                it.updateAutoMoveConfigs(
                                     fileType = fileType,
                                     autoMoveConfig = autoMoveConfig
                                 )
@@ -192,7 +192,7 @@ fun NavigatorConfigurationColumn(
                 setSourceAutoMoveConfig = remember(fileType) {
                     { sourceType, autoMoveConfig ->
                         reversibleConfig.update {
-                            it.copyWithAlteredAutoMoveConfig(fileType, sourceType) {
+                            it.updateAutoMoveConfig(fileType, sourceType) {
                                 autoMoveConfig
                             }
                         }

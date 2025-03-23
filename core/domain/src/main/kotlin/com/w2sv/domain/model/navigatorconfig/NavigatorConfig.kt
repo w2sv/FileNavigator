@@ -1,5 +1,6 @@
 package com.w2sv.domain.model.navigatorconfig
 
+import com.w2sv.common.util.filterKeysByValueToSet
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.PresetFileType
@@ -15,17 +16,25 @@ data class NavigatorConfig(
     val disableOnLowBattery: Boolean,
     val startOnBoot: Boolean
 ) {
-    val enabledFileTypes: List<FileType> by lazy {
-        fileTypeConfigMap.run { keys.filter { getValue(it).enabled } }
+    val enabledFileTypes: Set<FileType> by lazy {
+        fileTypeConfigMap.filterKeysByValueToSet { it.enabled }
     }
 
-    val disabledFileTypes: List<FileType> by lazy {
-        (fileTypeConfigMap.keys - enabledFileTypes.toSet())
-            .sortedBy { fileType ->
-                fileType.ordinal
-            }
+    val sortedEnabledFileTypes: List<FileType> by lazy {
+        enabledFileTypes.sortedByOrdinal()
     }
 
+    val disabledFileTypes: Set<FileType> by lazy {
+        fileTypeConfigMap.keys - enabledFileTypes
+    }
+
+    val sortedDisabledFileTypes: List<FileType> by lazy {
+        disabledFileTypes.sortedByOrdinal()
+    }
+
+    /**
+     * @return A [Set] of all [FileType]s included in the config
+     */
     val fileTypes by lazy {
         buildSet {
             addAll(enabledFileTypes)
@@ -47,16 +56,24 @@ data class NavigatorConfig(
         fileTypeConfig(fileType).sourceTypeConfigMap.getValue(sourceType)
 
     // ================
-    // Copying
+    // Copying with modifications
     // ================
 
-    fun addCustomFileType(type: CustomFileType): NavigatorConfig =
+    /**
+     * Adds [type] to the configuration with a default [FileTypeConfig], with [FileTypeConfig.enabled] set to [enabled].
+     * @see defaultConfig
+     */
+    fun addCustomFileType(type: CustomFileType, enabled: Boolean = false): NavigatorConfig =
         copy(
             fileTypeConfigMap = fileTypeConfigMap.copy {
-                put(type, type.defaultConfig(enabled = false))
+                put(type, type.defaultConfig(enabled = enabled))
             }
         )
 
+    /**
+     * Replaces the current pre-edited [CustomFileType] with [editedType] whilst keeping the corresponding [FileTypeConfig].
+     * Pre-edited and [editedType] will be matched through their [CustomFileType.ordinal].
+     */
     fun editCustomFileType(editedType: CustomFileType): NavigatorConfig {
         val preEditType = fileTypeConfigMap.keys.first { it.ordinal == editedType.ordinal }
         return copy(
@@ -70,30 +87,33 @@ data class NavigatorConfig(
     fun deleteCustomFileType(type: CustomFileType): NavigatorConfig =
         copy(fileTypeConfigMap = fileTypeConfigMap.copy { remove(type) })
 
-    fun copyWithAlteredFileTypeConfig(fileType: FileType, alterFileTypeConfig: (FileTypeConfig) -> FileTypeConfig): NavigatorConfig =
+    fun updateFileTypeConfig(fileType: FileType, update: (FileTypeConfig) -> FileTypeConfig): NavigatorConfig =
         copy(
             fileTypeConfigMap = fileTypeConfigMap.copy {
-                update(fileType, alterFileTypeConfig)
+                this.update(fileType, update)
             }
         )
 
-    fun copyWithAlteredSourceConfig(
+    fun updateSourceConfig(
         fileType: FileType,
         sourceType: SourceType,
-        alterSourceConfig: (SourceConfig) -> SourceConfig
+        update: (SourceConfig) -> SourceConfig
     ): NavigatorConfig =
-        copyWithAlteredFileTypeConfig(
+        updateFileTypeConfig(
             fileType = fileType
         ) {
             it.copy(
                 sourceTypeConfigMap = it.sourceTypeConfigMap.copy {
-                    update(sourceType, alterSourceConfig)
+                    this.update(sourceType, update)
                 }
             )
         }
 
-    fun copyWithAlteredAutoMoveConfigs(fileType: FileType, autoMoveConfig: AutoMoveConfig): NavigatorConfig =
-        copyWithAlteredFileTypeConfig(
+    /**
+     * Sets all [AutoMoveConfig]s of [fileType]'s [SourceType]'s to [autoMoveConfig].
+     */
+    fun updateAutoMoveConfigs(fileType: FileType, autoMoveConfig: AutoMoveConfig): NavigatorConfig =
+        updateFileTypeConfig(
             fileType = fileType
         ) {
             it.copy(
@@ -103,12 +123,12 @@ data class NavigatorConfig(
             )
         }
 
-    fun copyWithAlteredAutoMoveConfig(
+    fun updateAutoMoveConfig(
         fileType: FileType,
         sourceType: SourceType,
-        alterSourceAutoMoveConfig: (AutoMoveConfig) -> AutoMoveConfig
-    ) = copyWithAlteredSourceConfig(fileType, sourceType) {
-        it.copy(autoMoveConfig = alterSourceAutoMoveConfig(it.autoMoveConfig))
+        modifyAutoMoveConfig: (AutoMoveConfig) -> AutoMoveConfig
+    ) = updateSourceConfig(fileType, sourceType) {
+        it.copy(autoMoveConfig = modifyAutoMoveConfig(it.autoMoveConfig))
     }
 
     companion object {
@@ -122,3 +142,6 @@ data class NavigatorConfig(
         }
     }
 }
+
+private fun Collection<FileType>.sortedByOrdinal(): List<FileType> =
+    sortedBy { fileType -> fileType.ordinal }

@@ -26,14 +26,14 @@ internal class NavigatorConfigTest {
                 }
             )
         }
-        assertEquals(PresetFileType.NonMedia.values, config.enabledFileTypes)
-        assertEquals(PresetFileType.Media.values, config.disabledFileTypes)
+        assertEquals(PresetFileType.NonMedia.values.toSet(), config.enabledFileTypes)
+        assertEquals(PresetFileType.Media.values.toSet(), config.disabledFileTypes)
     }
 
     @Test
-    fun testCopyWithAlteredFileTypeConfig() {
+    fun testUpdateFileTypeConfig() {
         val config =
-            NavigatorConfig.default.copyWithAlteredFileTypeConfig(PresetFileType.Image) { fileTypeConfig ->
+            NavigatorConfig.default.updateFileTypeConfig(PresetFileType.Image) { fileTypeConfig ->
                 fileTypeConfig.copy(
                     enabled = false,
                     sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.copy {

@@ -22,22 +22,22 @@ internal class NavigatorConfigMapperTest {
     fun testNonDefaultMapping() {
         val nonDefaultConfig = NavigatorConfig.default
             .copy(disableOnLowBattery = true, startOnBoot = true)
-            .copyWithAlteredFileTypeConfig(PresetFileType.Video) {
+            .updateFileTypeConfig(PresetFileType.Video) {
                 it.copy(enabled = false)
             }
-            .copyWithAlteredAutoMoveConfig(PresetFileType.APK, SourceType.Download) {
+            .updateAutoMoveConfig(PresetFileType.APK, SourceType.Download) {
                 AutoMoveConfig(
                     enabled = true,
                     destination = LocalDestination.parse("some/move/destination")
                 )
             }
-            .copyWithAlteredAutoMoveConfig(PresetFileType.Image, SourceType.Download) {
+            .updateAutoMoveConfig(PresetFileType.Image, SourceType.Download) {
                 AutoMoveConfig(
                     enabled = true,
                     destination = LocalDestination.parse("some/other/move/destination")
                 )
             }
-            .copyWithAlteredSourceConfig(PresetFileType.Audio, SourceType.Recording) {
+            .updateSourceConfig(PresetFileType.Audio, SourceType.Recording) {
                 it.copy(
                     enabled = false,
                     quickMoveDestinations = listOf(

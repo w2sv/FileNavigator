@@ -32,6 +32,8 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -55,7 +57,6 @@ import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
 import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.util.EnabledKeysTrackingSnapshotStateMap
 import com.w2sv.kotlinutils.toggle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -77,11 +78,14 @@ fun AddFileTypesBottomSheet(
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     val selectionMap = remember {
-        EnabledKeysTrackingSnapshotStateMap(
-            disabledFileTypes
-                .associateWith { false }
-                .toMutableStateMap()
-        )
+        disabledFileTypes
+            .associateWith { false }
+            .toMutableStateMap()
+    }
+    val selectedTypes by remember {
+        derivedStateOf {
+            selectionMap.keys.filter { selectionMap.getValue(it) }
+        }
     }
 
     CollectFromFlow(selectFileType) { fileType ->
@@ -140,18 +144,18 @@ fun AddFileTypesBottomSheet(
         DialogButton(
             text = pluralStringResource(
                 id = R.plurals.add_file_types_button,
-                count = selectionMap.enabledKeys.size
+                count = selectedTypes.size
             ),
             onClick = remember {
                 {
-                    addFileTypes(selectionMap.enabledKeys)
+                    addFileTypes(selectedTypes)
                     scope.launch {
                         sheetState.hide()
                         onDismissRequest()
                     }
                 }
             },
-            enabled = selectionMap.enabledKeys.isNotEmpty(),
+            enabled = selectedTypes.isNotEmpty(),
             modifier = Modifier
                 .padding(end = 16.dp)
                 .animateContentSize()

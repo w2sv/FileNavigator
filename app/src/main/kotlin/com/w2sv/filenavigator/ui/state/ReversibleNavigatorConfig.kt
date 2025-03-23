@@ -59,7 +59,7 @@ class ReversibleNavigatorConfig(
             checkedCount = value.enabledFileTypes.size,
             update = {
                 update { config ->
-                    config.copyWithAlteredFileTypeConfig(fileType) { it.copy(enabled = checkedNew) }
+                    config.updateFileTypeConfig(fileType) { it.copy(enabled = checkedNew) }
                 }
             },
             makeSnackbarVisuals = {
@@ -83,7 +83,7 @@ class ReversibleNavigatorConfig(
             checkedCount = value.enabledSourceTypesCount(fileType),
             update = {
                 update { config ->
-                    config.copyWithAlteredSourceConfig(
+                    config.updateSourceConfig(
                         fileType = fileType,
                         sourceType = sourceType
                     ) {

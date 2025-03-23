@@ -40,7 +40,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
 
     override suspend fun unsetAutoMoveConfig(fileType: FileType, sourceType: SourceType) {
         updateData {
-            it.copyWithAlteredAutoMoveConfig(fileType, sourceType) {
+            it.updateAutoMoveConfig(fileType, sourceType) {
                 AutoMoveConfig.Empty
             }
         }
@@ -52,7 +52,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
         destination: LocalDestinationApi
     ) {
         updateData { config ->
-            config.copyWithAlteredSourceConfig(
+            config.updateSourceConfig(
                 fileType,
                 sourceType
             ) { sourceConfig ->
@@ -68,7 +68,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
 
     override suspend fun unsetQuickMoveDestination(fileType: FileType, sourceType: SourceType) {
         updateData { config ->
-            config.copyWithAlteredSourceConfig(
+            config.updateSourceConfig(
                 fileType,
                 sourceType
             ) {
