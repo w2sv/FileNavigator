@@ -36,7 +36,7 @@ sealed interface PresetFileType : Parcelable, FileType {
         @StringRes override val labelRes: Int,
         @DrawableRes override val iconRes: Int,
         @ColorInt override val colorInt: Int,
-        override val fileExtensions: List<String>
+        override val fileExtensions: Collection<String>
     ) : PresetFileType, NonMediaFileType() {
         companion object {
             @JvmStatic
@@ -101,7 +101,7 @@ sealed interface PresetFileType : Parcelable, FileType {
         R.string.text,
         R.drawable.ic_text_file_24,
         -1046887,
-        listOf(
+        setOf(
             "txt",
             "text",
             "asc",
@@ -125,7 +125,7 @@ sealed interface PresetFileType : Parcelable, FileType {
         R.string.archive,
         R.drawable.ic_folder_zip_24,
         -8232367,
-        listOf(
+        setOf(
             "zip",
             "rar",
             "tar",
@@ -163,7 +163,7 @@ sealed interface PresetFileType : Parcelable, FileType {
         R.string.ebook,
         R.drawable.ic_book_24,
         -5728974,
-        listOf(
+        setOf(
             "epub",
             "azw",
             "azw1",
