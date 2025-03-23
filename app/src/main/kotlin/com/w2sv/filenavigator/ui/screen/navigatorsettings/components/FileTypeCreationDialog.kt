@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -66,6 +67,8 @@ import com.w2sv.common.util.mutate
 import com.w2sv.core.domain.R
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.NonMediaFileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.HighlightedDialogButton
@@ -79,20 +82,55 @@ import com.w2sv.filenavigator.ui.util.StatefulTextEditor
 import com.w2sv.filenavigator.ui.util.TextEditor
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
-import kotlin.text.trim
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlin.text.trim
 
 private enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageRes: Int) : InputInvalidityReason {
     ContainsSpecialCharacter(com.w2sv.filenavigator.R.string.name_must_not_contain_special_characters),
     AlreadyExists(com.w2sv.filenavigator.R.string.file_type_already_exists)
 }
 
-private enum class FileExtensionInvalidityReason(@StringRes override val errorMessageRes: Int) : InputInvalidityReason {
-    ContainsSpecialCharacter(com.w2sv.filenavigator.R.string.extension_must_not_contain_special_characters),
-    AlreadyAmongstAddedExtensions(com.w2sv.filenavigator.R.string.already_amongst_added_extensions)
+sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageRes: Int) : InputInvalidityReason {
+    data object ContainsSpecialCharacter :
+        FileExtensionInvalidityReason(com.w2sv.filenavigator.R.string.extension_must_not_contain_special_characters)
+
+    data object AlreadyAmongstAddedExtensions :
+        FileExtensionInvalidityReason(com.w2sv.filenavigator.R.string.already_amongst_added_extensions)
+
+    sealed class IsExistingFileExtension<FT : FileType>(@StringRes errorMessageRes: Int) : FileExtensionInvalidityReason(errorMessageRes) {
+        protected abstract val fileExtension: String
+        protected abstract val fileType: FT
+
+        @Composable
+        @ReadOnlyComposable
+        override fun text(): String =
+            stringResource(errorMessageRes, fileExtension, fileType.label(LocalContext.current))
+    }
+
+    data class IsMediaFileTypeExtension(override val fileExtension: String, override val fileType: PresetFileType.Media) :
+        IsExistingFileExtension<PresetFileType.Media>(com.w2sv.filenavigator.R.string.is_media_file_type_extension_invalidity_reason) {
+
+        companion object {
+            fun get(fileExtension: String): IsMediaFileTypeExtension? =
+                PresetFileType.Media.values
+                    .firstOrNull { fileExtension in it.fileExtensions }
+                    ?.let { mediaFileType -> IsMediaFileTypeExtension(fileExtension, mediaFileType) }
+        }
+    }
+
+    data class IsOtherNonMediaFileTypeExtension(override val fileExtension: String, override val fileType: NonMediaFileType) :
+        IsExistingFileExtension<NonMediaFileType>(com.w2sv.filenavigator.R.string.is_other_non_media_file_type_extension_invalidity_reason) {
+
+        companion object {
+            fun get(fileExtension: String, nonMediaFileTypes: Collection<NonMediaFileType>): IsOtherNonMediaFileTypeExtension? =
+                nonMediaFileTypes
+                    .firstOrNull { fileExtension in it.fileExtensions }
+                    ?.let { fileType -> IsOtherNonMediaFileTypeExtension(fileExtension, fileType) }
+        }
+    }
 }
 
 @Stable
@@ -105,6 +143,10 @@ private class CustomFileTypeEditor(
 ) {
     private val existingFileTypeNames by threadUnsafeLazy {
         buildSet { existingFileTypes.forEach { add(it.label(context)) } }
+    }
+
+    private val existingNonMediaFileTypes by threadUnsafeLazy {
+        existingFileTypes.filterIsInstance<NonMediaFileType>()
     }
 
     var fileType by mutableStateOf(initialFileType)
@@ -145,7 +187,8 @@ private class CustomFileTypeEditor(
             when {
                 input.containsSpecialCharacter() -> FileExtensionInvalidityReason.ContainsSpecialCharacter
                 input in fileType.fileExtensions -> FileExtensionInvalidityReason.AlreadyAmongstAddedExtensions
-                else -> null
+                else -> FileExtensionInvalidityReason.IsMediaFileTypeExtension.get(input)
+                    ?: FileExtensionInvalidityReason.IsOtherNonMediaFileTypeExtension.get(input, existingNonMediaFileTypes)
             }
         }
     )
@@ -328,7 +371,7 @@ private fun StatelessFileTypeConfigurationDialog(
                 OutlinedTextField(
                     editor = customFileTypeEditor.extensionEditor,
                     placeholderText = stringResource(com.w2sv.filenavigator.R.string.add_file_extension_field_placeholder),
-                    labelText = "File Extension",
+                    labelText = stringResource(com.w2sv.filenavigator.R.string.file_extension),
                     onApply = customFileTypeEditor::addExtension,
                     applyIconImageVector = Icons.Outlined.Add,
                     showApplyIconOnlyWhenFocused = false,
@@ -351,7 +394,10 @@ private fun StatelessFileTypeConfigurationDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text("Color", style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp))
+                    Text(
+                        text = stringResource(com.w2sv.filenavigator.R.string.color),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp)
+                    )
                     Box(contentAlignment = Alignment.Center) {
                         Box(
                             modifier = Modifier
@@ -477,7 +523,7 @@ private fun OutlinedTextField(
         supportingText = editor.invalidityReason?.let { invalidityReason ->
             {
                 Text(
-                    text = stringResource(invalidityReason.errorMessageRes),
+                    text = invalidityReason.text(),
                     color = MaterialTheme.colorScheme.error
                 )
             }

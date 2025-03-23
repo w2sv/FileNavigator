@@ -81,10 +81,12 @@
     <string name="share_action_explanation">Share the app with someone who might appreciate it</string>
     <string name="report_a_bug_request_a_feature_explanation">Help make the app better!</string>
     <string name="amoled_black_explanation">Use a higher contrast dark theme</string>
-    <string name="name_must_not_contain_special_characters">Name must not contain special characters</string>
-    <string name="file_type_already_exists">File type already exists</string>
-    <string name="extension_must_not_contain_special_characters">Extension must not contain special characters</string>
-    <string name="already_amongst_added_extensions">Already amongst added extensions</string>
+    <string name="name_must_not_contain_special_characters">Name must not contain special characters.</string>
+    <string name="file_type_already_exists">File type already exists.</string>
+    <string name="extension_must_not_contain_special_characters">Extension must not contain special characters.</string>
+    <string name="already_amongst_added_extensions">Already amongst added extensions.</string>
+    <string name="is_media_file_type_extension_invalidity_reason">%1$s is a %2$s file extension and must not be re-added.</string>
+    <string name="is_other_non_media_file_type_extension_invalidity_reason">%1$s is a %2$s file extension.</string>
     <string name="delete_file_extension">Delete file extension</string>
     <string name="add_file_extension_field_placeholder">Enter a file extension</string>
     <string name="edit_file_type_name_field_placeholder">Enter a name</string>
@@ -95,6 +97,8 @@
     <string name="create">Create</string>
     <string name="delete_file_type">Delete file type</string>
     <string name="cancel">Cancel</string>
+    <string name="file_extension">File Extension</string>
+    <string name="color">Color</string>
     <plurals name="add_file_types_button">
         <item quantity="one">Add File Type</item>
         <item quantity="other">Add File Types</item>
