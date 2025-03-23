@@ -22,7 +22,8 @@ import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
 /**
- * @param enabledNonMediaFileTypes [FileTypeObserver]s will be relaunched when the user makes a change about the en-/disabled FileTypes, therefore we don't need a [StateFlow] here to react to changes.
+ * @param enabledNonMediaFileTypes [FileTypeObserver]s will be relaunched when the user makes a change about the en-/disabled FileTypes,
+ * therefore we don't need a [StateFlow] here to react to changes.
  */
 internal class NonMediaFileObserver @AssistedInject constructor(
     @Assisted private val enabledNonMediaFileTypes: Collection<NonMediaFileType>,

@@ -10,6 +10,8 @@ import kotlinx.parcelize.IgnoredOnParcel
 sealed interface FileType : Parcelable {
     val mediaType: MediaType
     val sourceTypes: List<SourceType>
+    val fileExtensions: Collection<String>
+
     val ordinal: Int
     val iconRes: Int
 
@@ -36,8 +38,6 @@ internal fun FileType.defaultConfig(enabled: Boolean = true): FileTypeConfig =
     )
 
 sealed class NonMediaFileType : FileType {
-    abstract val fileExtensions: Collection<String>
-
     override val mediaType = MediaType.DOWNLOADS
     override val sourceTypes = listOf(SourceType.Download)
 }

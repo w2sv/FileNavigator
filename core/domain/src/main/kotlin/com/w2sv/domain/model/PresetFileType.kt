@@ -23,7 +23,8 @@ sealed interface PresetFileType : Parcelable, FileType {
         @DrawableRes override val iconRes: Int,
         @ColorInt override val colorInt: Int,
         override val mediaType: MediaType,
-        override val sourceTypes: List<SourceType>
+        override val sourceTypes: List<SourceType>,
+        override val fileExtensions: Collection<String>
     ) : PresetFileType, FileType {
         companion object {
             @JvmStatic
@@ -67,6 +68,11 @@ sealed interface PresetFileType : Parcelable, FileType {
             SourceType.Screenshot,
             SourceType.OtherApp,
             SourceType.Download
+        ),
+        fileExtensions = setOf(
+            "bmp", "cgm", "djv", "djvu", "gif", "ico", "ief", "jp2", "jpe", "jpeg", "jpg",
+            "mac", "pbm", "pgm", "png", "pnm", "ppm", "ras", "rgb", "svg", "svgz", "tif",
+            "tiff", "wbmp", "webp", "xbm", "xpm", "xwd"
         )
     )
 
@@ -76,7 +82,12 @@ sealed interface PresetFileType : Parcelable, FileType {
         iconRes = R.drawable.ic_video_file_24,
         colorInt = -13449,
         mediaType = MediaType.VIDEO,
-        sourceTypes = listOf(SourceType.Camera, SourceType.OtherApp, SourceType.Download)
+        sourceTypes = listOf(SourceType.Camera, SourceType.OtherApp, SourceType.Download),
+        fileExtensions = setOf(
+            "3g2", "3gp", "asf", "avi", "f4v", "flv", "h261", "h263", "h264", "jpgv",
+            "jpm", "m1v", "m2v", "m4u", "m4v", "mkv", "mov", "mp4", "mp4v", "mpg",
+            "mpeg", "ogv", "qt", "ts", "vob", "webm", "wm", "wmv"
+        )
     )
 
     @Parcelize
@@ -85,7 +96,12 @@ sealed interface PresetFileType : Parcelable, FileType {
         iconRes = R.drawable.ic_audio_file_24,
         colorInt = -891856,
         mediaType = MediaType.AUDIO,
-        sourceTypes = listOf(SourceType.Recording, SourceType.OtherApp, SourceType.Download)
+        sourceTypes = listOf(SourceType.Recording, SourceType.OtherApp, SourceType.Download),
+        fileExtensions = setOf(
+            "aac", "aif", "aifc", "aiff", "au", "flac", "kar", "m3u", "m4a", "m4b", "m4p",
+            "mp2", "mp3", "mpga", "oga", "ogg", "opus", "ra", "ram", "snd", "wav", "weba",
+            "wma"
+        )
     )
 
     @Parcelize
@@ -102,21 +118,8 @@ sealed interface PresetFileType : Parcelable, FileType {
         R.drawable.ic_text_file_24,
         -1046887,
         setOf(
-            "txt",
-            "text",
-            "asc",
-            "csv",
-            "xml",
-            "json",
-            "md",
-            "doc",
-            "docx",
-            "odt",
-            "wpd",
-            "cfg",
-            "log",
-            "ini",
-            "properties"
+            "txt", "text", "asc", "csv", "xml", "json", "md", "doc", "docx", "odt",
+            "wpd", "cfg", "log", "ini", "properties"
         )
     )
 
@@ -126,27 +129,8 @@ sealed interface PresetFileType : Parcelable, FileType {
         R.drawable.ic_folder_zip_24,
         -8232367,
         setOf(
-            "zip",
-            "rar",
-            "tar",
-            "7z",
-            "gz",
-            "bz2",
-            "xz",
-            "z",
-            "iso",
-            "cab",
-            "tbz",
-            "pkg",
-            "deb",
-            "rpm",
-            "sit",
-            "dmg",
-            "jar",
-            "war",
-            "ear",
-            "zipx",
-            "tgz"
+            "zip", "rar", "tar", "7z", "gz", "bz2", "xz", "z", "iso", "cab", "tbz",
+            "pkg", "deb", "rpm", "sit", "dmg", "jar", "war", "ear", "zipx", "tgz"
         )
     )
 
@@ -164,33 +148,9 @@ sealed interface PresetFileType : Parcelable, FileType {
         R.drawable.ic_book_24,
         -5728974,
         setOf(
-            "epub",
-            "azw",
-            "azw1",
-            "azw2",
-            "azw3",
-            "mobi",
-            "iba",
-            "rtf",
-            "tpz",
-            "mart",
-            "tk3",
-            "aep",
-            "dnl",
-            "ybk",
-            "lit",
-            "ebk",
-            "prc",
-            "kfx",
-            "ava",
-            "orb",
-            "koob",
-            "epub",
-            "bpnueb",
-            "pef",
-            "vbk",
-            "fkb",
-            "bkk"
+            "epub", "azw", "azw1", "azw2", "azw3", "mobi", "iba", "rtf", "tpz", "mart",
+            "tk3", "aep", "dnl", "ybk", "lit", "ebk", "prc", "kfx", "ava", "orb", "koob",
+            "bpnueb", "pef", "vbk", "fkb", "bkk"
         )
     )
 }
