@@ -19,6 +19,7 @@ internal object FileTypeConverter {
             PresetFileType.Archive -> "Archive"
             PresetFileType.EBook -> "EBook"
             is CustomFileType -> fileType.serialized()
+            else -> error("Should not happen") // TODO
         }
 
     @TypeConverter

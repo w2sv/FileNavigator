@@ -3,12 +3,17 @@ package com.w2sv.datastore.proto.navigatorconfig
 import androidx.annotation.VisibleForTesting
 import androidx.datastore.core.DataStore
 import com.w2sv.datastore.NavigatorConfigProto
+import com.w2sv.domain.model.ExtensionConfigurableFileType
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.NonMediaFileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
+import com.w2sv.kotlinutils.copy
+import com.w2sv.kotlinutils.update
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -38,6 +43,10 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
         }
     }
 
+    // ==================
+    // Auto move
+    // ==================
+
     override suspend fun unsetAutoMoveConfig(fileType: FileType, sourceType: SourceType) {
         updateData {
             it.updateAutoMoveConfig(fileType, sourceType) {
@@ -45,6 +54,10 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
             }
         }
     }
+
+    // ==================
+    // Quick move
+    // ==================
 
     override suspend fun saveQuickMoveDestination(
         fileType: FileType,
@@ -79,6 +92,37 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
 
     override fun quickMoveDestinations(fileType: FileType, sourceType: SourceType): Flow<List<LocalDestinationApi>> =
         navigatorConfig.map { it.sourceConfig(fileType, sourceType).quickMoveDestinations }
+
+    // ==================
+    // File extension exclusion
+    // ==================
+
+    override suspend fun excludeFileExtension(fileType: ExtensionConfigurableFileType, fileExtension: String) {
+        updateExtensionConfigurableFileTypeToExcludedExtensions {
+            update(fileType) { excludedFileExtensions -> excludedFileExtensions + fileExtension }
+        }
+    }
+
+    override suspend fun setExcludedFileExtensions(
+        fileType: ExtensionConfigurableFileType,
+        excludedFileExtensions: Collection<String>
+    ) {
+        updateExtensionConfigurableFileTypeToExcludedExtensions {
+            put(fileType, excludedFileExtensions)
+        }
+    }
+
+    private suspend fun updateExtensionConfigurableFileTypeToExcludedExtensions(
+        block: MutableMap<ExtensionConfigurableFileType, Collection<String>>.() -> Unit
+    ) {
+        updateData { navigatorConfig ->
+            navigatorConfig.copy(
+                extensionConfigurableFileTypeToExcludedExtensions = navigatorConfig.extensionConfigurableFileTypeToExcludedExtensions.copy(
+                    block
+                )
+            )
+        }
+    }
 }
 
 @VisibleForTesting

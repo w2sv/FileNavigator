@@ -2,7 +2,9 @@ package com.w2sv.domain.model.navigatorconfig
 
 import com.w2sv.common.util.filterKeysByValueToSet
 import com.w2sv.domain.model.CustomFileType
+import com.w2sv.domain.model.ExtensionConfigurableFileType
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.NonMediaFileType
 import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.defaultConfig
@@ -12,6 +14,7 @@ import com.w2sv.kotlinutils.update
 
 data class NavigatorConfig(
     val fileTypeConfigMap: Map<FileType, FileTypeConfig>,
+    val extensionConfigurableFileTypeToExcludedExtensions: Map<ExtensionConfigurableFileType, Collection<String>>,
     val showBatchMoveNotification: Boolean,
     val disableOnLowBattery: Boolean,
     val startOnBoot: Boolean
@@ -31,6 +34,28 @@ data class NavigatorConfig(
     val sortedDisabledFileTypes: List<FileType> by lazy {
         disabledFileTypes.sortedByOrdinal()
     }
+
+    val enabledNonMediaFileTypesWithExtensions: List<NonMediaFileType.WithExtensions> by lazy {
+        enabledFileTypes.filterIsInstance<NonMediaFileType>().withExtensions()
+    }
+
+    val nonMediaFileTypesWithExtensions: List<NonMediaFileType.WithExtensions> by lazy {
+        fileTypeConfigMap.keys.filterIsInstance<NonMediaFileType>().withExtensions()
+    }
+
+    private fun Collection<NonMediaFileType>.withExtensions(): List<NonMediaFileType.WithExtensions> =
+        map { nonMediaFileType ->
+            when (nonMediaFileType) {
+                is NonMediaFileType.WithExtensions -> nonMediaFileType
+                is PresetFileType.NonMedia.ExtensionConfigurable -> PresetFileType.NonMedia.ExtensionConfigured(
+                    fileType = nonMediaFileType,
+                    excludedExtensions = extensionConfigurableFileTypeToExcludedExtensions.getValue(nonMediaFileType)
+                        .toSet() // TODO: evaluate where to convert to Set
+                )
+
+                is PresetFileType.NonMedia.ExtensionConfigured -> error("fileTypeConfigMap should not contain file types of type PresetFileType.NonMedia.ExtensionConfigured") // TODO: refactor so that impossible
+            }
+        }
 
     /**
      * @return A [Set] of all [FileType]s included in the config
@@ -99,9 +124,7 @@ data class NavigatorConfig(
         sourceType: SourceType,
         update: (SourceConfig) -> SourceConfig
     ): NavigatorConfig =
-        updateFileTypeConfig(
-            fileType = fileType
-        ) {
+        updateFileTypeConfig(fileType = fileType) {
             it.copy(
                 sourceTypeConfigMap = it.sourceTypeConfigMap.copy {
                     this.update(sourceType, update)
@@ -113,9 +136,7 @@ data class NavigatorConfig(
      * Sets all [AutoMoveConfig]s of [fileType]'s [SourceType]'s to [autoMoveConfig].
      */
     fun updateAutoMoveConfigs(fileType: FileType, autoMoveConfig: AutoMoveConfig): NavigatorConfig =
-        updateFileTypeConfig(
-            fileType = fileType
-        ) {
+        updateFileTypeConfig(fileType = fileType) {
             it.copy(
                 sourceTypeConfigMap = it.sourceTypeConfigMap.map { (sourceType, sourceConfig) ->
                     sourceType to sourceConfig.copy(autoMoveConfig = autoMoveConfig)
@@ -135,6 +156,7 @@ data class NavigatorConfig(
         val default by lazy {
             NavigatorConfig(
                 fileTypeConfigMap = PresetFileType.values.associateWith { fileType -> fileType.defaultConfig() },
+                extensionConfigurableFileTypeToExcludedExtensions = PresetFileType.NonMedia.ExtensionConfigurable.values.associateWith { emptySet() },
                 showBatchMoveNotification = true,
                 disableOnLowBattery = false,
                 startOnBoot = false

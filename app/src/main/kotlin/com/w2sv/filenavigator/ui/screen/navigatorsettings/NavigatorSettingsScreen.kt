@@ -69,6 +69,7 @@ import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
@@ -178,6 +179,7 @@ fun NavigatorSettingsScreen(
             CustomFileTypeConfigurationDialog(
                 fileType = fileType,
                 fileTypes = remember { (navigatorConfig.fileTypes - fileType).toImmutableSet() },
+                nonMediaFileTypesWithExtensions = navigatorConfig.nonMediaFileTypesWithExtensions.toImmutableList(),
                 onDismissRequest = { showFileTypeConfigurationDialogFor = null },
                 createFileType = navigatorVM.reversibleConfig::editCustomFileType
             )
@@ -201,6 +203,7 @@ fun NavigatorSettingsScreen(
         if (showFileTypeCreationDialog) {
             FileTypeCreationDialog(
                 fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
+                nonMediaFileTypesWithExtensions = navigatorConfig.nonMediaFileTypesWithExtensions.toImmutableList(),
                 onDismissRequest = { showFileTypeCreationDialog = false },
                 createFileType = navigatorVM.reversibleConfig::createCustomFileType
             )

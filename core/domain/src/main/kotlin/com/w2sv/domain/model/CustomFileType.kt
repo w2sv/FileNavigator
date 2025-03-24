@@ -1,5 +1,6 @@
 package com.w2sv.domain.model
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Parcelable
 import androidx.annotation.ColorInt
@@ -16,12 +17,14 @@ data class CustomFileType(
     override val fileExtensions: List<String>,
     @ColorInt override val colorInt: Int,
     override val ordinal: Int
-) : NonMediaFileType(),
+) : NonMediaFileType.WithExtensions,
     Parcelable {
 
     @IgnoredOnParcel
     @DrawableRes
     override val iconRes: Int = R.drawable.ic_custom_file_type_24
+
+    override fun label(context: Context): String = name
 
     companion object {
         fun newEmpty(existingFileTypes: Collection<FileType>): CustomFileType =

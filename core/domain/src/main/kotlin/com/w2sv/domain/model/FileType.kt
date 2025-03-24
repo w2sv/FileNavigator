@@ -7,13 +7,12 @@ import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import kotlinx.parcelize.IgnoredOnParcel
 
-sealed interface FileType : Parcelable {
+interface FileType : Parcelable {
     val mediaType: MediaType
     val sourceTypes: List<SourceType>
-    val fileExtensions: Collection<String>
-
     val ordinal: Int
     val iconRes: Int
+    val colorInt: Int
 
     @IgnoredOnParcel
     val asCustomTypeOrNull: CustomFileType? get() = this as? CustomFileType
@@ -22,13 +21,7 @@ sealed interface FileType : Parcelable {
     val isMediaType: Boolean
         get() = this is PresetFileType.Media
 
-    fun label(context: Context): String =
-        when (this) {
-            is PresetFileType -> context.getString(labelRes)
-            is CustomFileType -> name
-        }
-
-    val colorInt: Int
+    fun label(context: Context): String
 }
 
 internal fun FileType.defaultConfig(enabled: Boolean = true): FileTypeConfig =
@@ -37,7 +30,3 @@ internal fun FileType.defaultConfig(enabled: Boolean = true): FileTypeConfig =
         sourceTypeConfigMap = sourceTypes.associateWith { SourceConfig() }
     )
 
-sealed class NonMediaFileType : FileType {
-    override val mediaType = MediaType.DOWNLOADS
-    override val sourceTypes = listOf(SourceType.Download)
-}

@@ -5,7 +5,6 @@ import android.os.HandlerThread
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.NonMediaFileType
 import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
@@ -26,15 +25,14 @@ internal class FileObserverFactory @Inject constructor(
     @FileObserverHandlerThread private val handlerThread: HandlerThread
 ) {
     private val navigatorConfigStateFlow by lazy {
-        navigatorConfigDataSource.navigatorConfig
-            .stateInWithBlockingInitial(scope)
+        navigatorConfigDataSource.navigatorConfig.stateInWithBlockingInitial(scope)
     }
+
+    private val navigatorConfig
+        get() = navigatorConfigStateFlow.value
 
     private val fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>
         get() = navigatorConfigStateFlow.mapState { it.fileTypeConfigMap }
-
-    private val enabledFileTypes: Set<FileType>
-        get() = navigatorConfigStateFlow.value.enabledFileTypes
 
     operator fun invoke(): List<FileTypeObserver> {
         val handler = handlerThread.handler()
@@ -49,7 +47,7 @@ internal class FileObserverFactory @Inject constructor(
 
     private fun mediaFileTypeObservers(handler: Handler): List<MediaFileTypeObserver> =
         PresetFileType.Media.values
-            .filter { it in enabledFileTypes }
+            .filter { it in navigatorConfig.enabledFileTypes }
             .map { mediaFileType ->
                 mediaFileTypeObserverFactory.invoke(
                     fileType = mediaFileType,
@@ -59,12 +57,12 @@ internal class FileObserverFactory @Inject constructor(
             }
 
     private fun nonMediaFileTypeObserver(handler: Handler): NonMediaFileObserver? =
-        enabledFileTypes
-            .filterIsInstance<NonMediaFileType>()
-            .let { enabledNonMediaFileTypes ->
-                if (enabledNonMediaFileTypes.isNotEmpty()) {
+        navigatorConfig
+            .enabledNonMediaFileTypesWithExtensions
+            .let { enabledNonMediaFileTypesWithExtensions ->
+                if (enabledNonMediaFileTypesWithExtensions.isNotEmpty()) {
                     nonMediaFileObserverFactory.invoke(
-                        enabledNonMediaFileTypes = enabledNonMediaFileTypes,
+                        enabledNonMediaFileTypesWithExtensions = enabledNonMediaFileTypesWithExtensions,
                         fileTypeConfigMapStateFlow = fileTypeConfigMapStateFlow,
                         handler = handler
                     )

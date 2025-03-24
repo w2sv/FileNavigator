@@ -82,6 +82,7 @@ import com.w2sv.filenavigator.ui.util.StatefulTextEditor
 import com.w2sv.filenavigator.ui.util.TextEditor
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -121,11 +122,17 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
         }
     }
 
-    data class IsOtherNonMediaFileTypeExtension(override val fileExtension: String, override val fileType: NonMediaFileType) :
-        IsExistingFileExtension<NonMediaFileType>(com.w2sv.filenavigator.R.string.is_other_non_media_file_type_extension_invalidity_reason) {
+    data class IsOtherNonMediaFileTypeExtension(
+        override val fileExtension: String,
+        override val fileType: NonMediaFileType.WithExtensions
+    ) :
+        IsExistingFileExtension<NonMediaFileType.WithExtensions>(com.w2sv.filenavigator.R.string.is_other_non_media_file_type_extension_invalidity_reason) {
 
         companion object {
-            fun get(fileExtension: String, nonMediaFileTypes: Collection<NonMediaFileType>): IsOtherNonMediaFileTypeExtension? =
+            fun get(
+                fileExtension: String,
+                nonMediaFileTypes: Collection<NonMediaFileType.WithExtensions>
+            ): IsOtherNonMediaFileTypeExtension? =
                 nonMediaFileTypes
                     .firstOrNull { fileExtension in it.fileExtensions }
                     ?.let { fileType -> IsOtherNonMediaFileTypeExtension(fileExtension, fileType) }
@@ -137,16 +144,13 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
 private class CustomFileTypeEditor(
     initialFileType: CustomFileType,
     private val existingFileTypes: Collection<FileType>,
+    private val nonMediaFileTypesWithExtensions: Collection<NonMediaFileType.WithExtensions>,
     private val createFileType: (CustomFileType) -> Unit,
     private val scope: CoroutineScope,
     private val context: Context
 ) {
     private val existingFileTypeNames by threadUnsafeLazy {
         buildSet { existingFileTypes.forEach { add(it.label(context)) } }
-    }
-
-    private val existingNonMediaFileTypes by threadUnsafeLazy {
-        existingFileTypes.filterIsInstance<NonMediaFileType>()
     }
 
     var fileType by mutableStateOf(initialFileType)
@@ -188,7 +192,7 @@ private class CustomFileTypeEditor(
                 input.containsSpecialCharacter() -> FileExtensionInvalidityReason.ContainsSpecialCharacter
                 input in fileType.fileExtensions -> FileExtensionInvalidityReason.AlreadyAmongstAddedExtensions
                 else -> FileExtensionInvalidityReason.IsMediaFileTypeExtension.get(input)
-                    ?: FileExtensionInvalidityReason.IsOtherNonMediaFileTypeExtension.get(input, existingNonMediaFileTypes)
+                    ?: FileExtensionInvalidityReason.IsOtherNonMediaFileTypeExtension.get(input, nonMediaFileTypesWithExtensions)
             }
         }
     )
@@ -229,6 +233,7 @@ private class CustomFileTypeEditor(
     companion object {
         fun saver(
             existingFileTypes: Collection<FileType>,
+            nonMediaFileTypesWithExtensions: ImmutableList<NonMediaFileType.WithExtensions>,
             createFileType: (CustomFileType) -> Unit,
             scope: CoroutineScope,
             context: Context
@@ -241,6 +246,7 @@ private class CustomFileTypeEditor(
                     CustomFileTypeEditor(
                         initialFileType = value.first,
                         existingFileTypes = existingFileTypes,
+                        nonMediaFileTypesWithExtensions = nonMediaFileTypesWithExtensions,
                         createFileType = createFileType,
                         scope = scope,
                         context = context
@@ -254,6 +260,7 @@ private class CustomFileTypeEditor(
 @Composable
 private fun rememberCustomFileTypeEditor(
     existingFileTypes: ImmutableSet<FileType>,
+    nonMediaFileTypesWithExtensions: ImmutableList<NonMediaFileType.WithExtensions>,
     createFileType: (CustomFileType) -> Unit,
     initialFileType: CustomFileType? = null,
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -262,11 +269,12 @@ private fun rememberCustomFileTypeEditor(
     return rememberSaveable(
         initialFileType,
         existingFileTypes,
-        saver = CustomFileTypeEditor.saver(existingFileTypes, createFileType, scope, context)
+        saver = CustomFileTypeEditor.saver(existingFileTypes, nonMediaFileTypesWithExtensions, createFileType, scope, context)
     ) {
         CustomFileTypeEditor(
             initialFileType = initialFileType ?: CustomFileType.newEmpty(existingFileTypes),
             existingFileTypes = existingFileTypes,
+            nonMediaFileTypesWithExtensions = nonMediaFileTypesWithExtensions,
             createFileType = createFileType,
             scope = scope,
             context = context
@@ -277,6 +285,7 @@ private fun rememberCustomFileTypeEditor(
 @Composable
 fun FileTypeCreationDialog(
     fileTypes: ImmutableSet<FileType>,
+    nonMediaFileTypesWithExtensions: ImmutableList<NonMediaFileType.WithExtensions>,
     onDismissRequest: () -> Unit,
     createFileType: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
@@ -284,7 +293,7 @@ fun FileTypeCreationDialog(
     FileTypeConfigurationDialogWithColorPickerDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.create_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.create),
-        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, createFileType),
+        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, nonMediaFileTypesWithExtensions, createFileType),
         onDismissRequest = onDismissRequest,
         modifier = modifier
     )
@@ -294,6 +303,7 @@ fun FileTypeCreationDialog(
 fun CustomFileTypeConfigurationDialog(
     fileType: CustomFileType,
     fileTypes: ImmutableSet<FileType>,
+    nonMediaFileTypesWithExtensions: ImmutableList<NonMediaFileType.WithExtensions>,
     onDismissRequest: () -> Unit,
     createFileType: (CustomFileType) -> Unit,
     modifier: Modifier = Modifier
@@ -301,7 +311,7 @@ fun CustomFileTypeConfigurationDialog(
     FileTypeConfigurationDialogWithColorPickerDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.save),
-        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, createFileType, fileType),
+        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, nonMediaFileTypesWithExtensions, createFileType, fileType),
         onDismissRequest = onDismissRequest,
         modifier = modifier
     )

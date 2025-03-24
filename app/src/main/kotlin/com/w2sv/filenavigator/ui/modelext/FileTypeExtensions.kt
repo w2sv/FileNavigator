@@ -24,4 +24,5 @@ fun FileType.stringResource(): String =
     when (this) {
         is PresetFileType -> stringResource(labelRes)
         is CustomFileType -> name
+        else -> error("Should not happen")  // TODO
     }

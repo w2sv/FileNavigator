@@ -1,9 +1,12 @@
 package com.w2sv.domain.model
 
+import android.content.Context
+import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.os.ParcelCompat
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.core.domain.R
 import com.w2sv.domain.model.PresetFileType.Media
@@ -11,12 +14,15 @@ import com.w2sv.domain.model.PresetFileType.NonMedia
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
-sealed interface PresetFileType : Parcelable, FileType {
+sealed interface PresetFileType : FileType {
     val labelRes: Int
 
     @IgnoredOnParcel
     override val ordinal: Int
         get() = ordinalsMap.getValue(this)
+
+    override fun label(context: Context): String =
+        context.getString(labelRes)
 
     sealed class Media(
         @StringRes override val labelRes: Int,
@@ -25,7 +31,7 @@ sealed interface PresetFileType : Parcelable, FileType {
         override val mediaType: MediaType,
         override val sourceTypes: List<SourceType>,
         override val fileExtensions: Collection<String>
-    ) : PresetFileType, FileType {
+    ) : PresetFileType, FileExtensionsHolder {
         companion object {
             @JvmStatic
             val values: List<Media>
@@ -33,12 +39,59 @@ sealed interface PresetFileType : Parcelable, FileType {
         }
     }
 
-    sealed class NonMedia(
-        @StringRes override val labelRes: Int,
-        @DrawableRes override val iconRes: Int,
-        @ColorInt override val colorInt: Int,
-        override val fileExtensions: Collection<String>
-    ) : PresetFileType, NonMediaFileType() {
+    sealed interface NonMedia : PresetFileType, NonMediaFileType {
+
+        sealed class ExtensionPreset(
+            @StringRes override val labelRes: Int,
+            @DrawableRes override val iconRes: Int,
+            @ColorInt override val colorInt: Int,
+            override val fileExtensions: Collection<String>
+        ) : NonMedia, NonMediaFileType.WithExtensions
+
+        sealed class ExtensionConfigurable(
+            @StringRes override val labelRes: Int,
+            @DrawableRes override val iconRes: Int,
+            @ColorInt override val colorInt: Int,
+            override val defaultFileExtensions: Set<String>
+        ) : NonMedia, ExtensionConfigurableFileType {
+
+            companion object {
+                @JvmStatic
+                val values: List<ExtensionConfigurable>
+                    get() = listOf(Text, Archive, EBook)
+            }
+        }
+
+        data class ExtensionConfigured(val fileType: ExtensionConfigurable, val excludedExtensions: Set<String>) :
+            NonMedia by fileType,
+            NonMediaFileType.WithExtensions {
+
+            @IgnoredOnParcel
+            override val fileExtensions: Set<String> = fileType.defaultFileExtensions - excludedExtensions
+
+            // TODO: maybe refactor such that this class is not Parcelable anymore, as it does not actually need to be
+            override fun writeToParcel(parcel: Parcel, flags: Int) {
+                parcel.writeParcelable(fileType, flags) // Manually write fileType
+                parcel.writeStringList(excludedExtensions.toList()) // Convert Set to List
+            }
+
+            override fun describeContents(): Int = 0
+
+            companion object CREATOR : Parcelable.Creator<ExtensionConfigured> {
+                override fun createFromParcel(parcel: Parcel): ExtensionConfigured {
+                    val fileType: ExtensionConfigurable = ParcelCompat.readParcelable(
+                        parcel,
+                        ExtensionConfigurable::class.java.classLoader,
+                        ExtensionConfigurable::class.java
+                    )!!
+                    val excludedExtensions = parcel.createStringArrayList()?.toSet() ?: emptySet()
+                    return ExtensionConfigured(fileType, excludedExtensions)
+                }
+
+                override fun newArray(size: Int): Array<ExtensionConfigured?> = arrayOfNulls(size)
+            }
+        }
+
         companion object {
             @JvmStatic
             val values: List<NonMedia>
@@ -105,15 +158,15 @@ sealed interface PresetFileType : Parcelable, FileType {
     )
 
     @Parcelize
-    data object PDF : NonMedia(
+    data object PDF : NonMedia.ExtensionPreset(
         R.string.pdf,
         R.drawable.ic_pdf_24,
         -14941188,
-        listOf("pdf")
+        setOf("pdf")
     )
 
     @Parcelize
-    data object Text : NonMedia(
+    data object Text : NonMedia.ExtensionConfigurable(
         R.string.text,
         R.drawable.ic_text_file_24,
         -1046887,
@@ -124,7 +177,7 @@ sealed interface PresetFileType : Parcelable, FileType {
     )
 
     @Parcelize
-    data object Archive : NonMedia(
+    data object Archive : NonMedia.ExtensionConfigurable(
         R.string.archive,
         R.drawable.ic_folder_zip_24,
         -8232367,
@@ -135,15 +188,15 @@ sealed interface PresetFileType : Parcelable, FileType {
     )
 
     @Parcelize
-    data object APK : NonMedia(
+    data object APK : NonMedia.ExtensionPreset(
         R.string.apk,
         R.drawable.ic_apk_file_24,
         -15410306,
-        listOf("apk")
+        setOf("apk")
     )
 
     @Parcelize
-    data object EBook : NonMedia(
+    data object EBook : NonMedia.ExtensionConfigurable(
         R.string.ebook,
         R.drawable.ic_book_24,
         -5728974,

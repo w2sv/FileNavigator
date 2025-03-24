@@ -12,6 +12,7 @@ import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.datastore.proto.ProtoMapper
 import com.w2sv.datastore.sourceConfigProto
 import com.w2sv.domain.model.CustomFileType
+import com.w2sv.domain.model.ExtensionConfigurableFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
@@ -34,6 +35,9 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
         NavigatorConfig(
             fileTypeConfigMap = proto.fileTypeToConfigMap.map { (ordinal, fileTypeConfigProto) ->
                 fileType(ordinal, proto) to FileTypeConfigMapper.toExternal(fileTypeConfigProto)
+            },
+            extensionConfigurableFileTypeToExcludedExtensions = proto.extensionConfigurableFileTypeToExcludedExtensionsMap.map { (fileTypeOrdinal, extensionsString) ->
+                (fileType(fileTypeOrdinal, proto) as ExtensionConfigurableFileType) to extensionsString.split(EXTENSION_DELIMITER)
             },
             showBatchMoveNotification = proto.showBatchMoveNotification,
             disableOnLowBattery = proto.disableOnLowBattery,
@@ -58,6 +62,11 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
                         this.customFileTypes.add(CustomFileTypeMapper.toProto(customFileType))
                     }
                     fileType.ordinal to FileTypeConfigMapper.toProto(fileTypeConfig)
+                }
+            )
+            this.extensionConfigurableFileTypeToExcludedExtensions.putAll(
+                external.extensionConfigurableFileTypeToExcludedExtensions.map { (fileType, fileExtensions) ->
+                    fileType.ordinal to fileExtensions.joinToString(EXTENSION_DELIMITER)
                 }
             )
             this.showBatchMoveNotification = external.showBatchMoveNotification
@@ -142,6 +151,8 @@ private object CustomFileTypeMapper : ProtoMapper<CustomFileTypeProto, CustomFil
             ordinal = external.ordinal
         }
 }
+
+private const val EXTENSION_DELIMITER = ","
 
 private val MoveDestinationApi.uriString: String
     get() = documentUri.uri.toString()

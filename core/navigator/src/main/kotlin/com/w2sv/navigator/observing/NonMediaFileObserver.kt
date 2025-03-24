@@ -22,11 +22,11 @@ import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
 /**
- * @param enabledNonMediaFileTypes [FileTypeObserver]s will be relaunched when the user makes a change about the en-/disabled FileTypes,
+ * @param enabledNonMediaFileTypesWithExtensions [FileTypeObserver]s will be relaunched when the user makes a change about the en-/disabled FileTypes,
  * therefore we don't need a [StateFlow] here to react to changes.
  */
 internal class NonMediaFileObserver @AssistedInject constructor(
-    @Assisted private val enabledNonMediaFileTypes: Collection<NonMediaFileType>,
+    @Assisted private val enabledNonMediaFileTypesWithExtensions: Collection<NonMediaFileType.WithExtensions>,
     @Assisted fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
     @Assisted handler: Handler,
     moveFileNotificationManager: MoveFileNotificationManager,
@@ -56,7 +56,7 @@ internal class NonMediaFileObserver @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         operator fun invoke(
-            enabledNonMediaFileTypes: Collection<NonMediaFileType>,
+            enabledNonMediaFileTypesWithExtensions: Collection<NonMediaFileType.WithExtensions>,
             fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
             handler: Handler
         ): NonMediaFileObserver
@@ -66,11 +66,11 @@ internal class NonMediaFileObserver @AssistedInject constructor(
         get() = this.javaClass.simpleName
 
     init {
-        i { "Initialized NonMediaFileObserver with fileTypes: $enabledNonMediaFileTypes" }
+        i { "Initialized NonMediaFileObserver with fileTypes: $enabledNonMediaFileTypesWithExtensions" }
     }
 
     override fun determineMatchingEnabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType? =
-        enabledNonMediaFileTypes
+        enabledNonMediaFileTypesWithExtensions
             .firstOrNull { it.fileExtensions.contains(mediaStoreFileData.extension) }
             ?.let { fileType -> FileAndSourceType(fileType, SourceType.Download) }
 }

@@ -5,6 +5,7 @@ option java_multiple_files = true;
 
 message NavigatorConfigProto {
     map<int32, FileTypeConfigProto> file_type_to_config = 1;
+    map<int32, string> extension_configurable_file_type_to_excluded_extensions = 7;
     repeated CustomFileTypeProto custom_file_types = 6;
     bool disable_on_low_battery = 2;
     bool start_on_boot = 3;
