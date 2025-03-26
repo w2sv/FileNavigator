@@ -24,7 +24,7 @@ ktlint = "12.1.2"
 lifecycle = "2.8.7"
 # @keep
 minSdk = "30"
-protobuf = "4.29.3"
+protobuf = "4.30.2"
 protobuf-plugin = "0.9.4"
 room = "2.6.1"
 triplet-play = "3.12.1"
