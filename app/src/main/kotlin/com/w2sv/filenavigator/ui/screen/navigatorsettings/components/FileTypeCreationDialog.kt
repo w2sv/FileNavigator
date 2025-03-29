@@ -4,18 +4,19 @@ import android.content.Context
 import androidx.annotation.IntRange
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,16 +26,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Badge
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -44,7 +42,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
@@ -55,11 +52,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.common.util.containsSpecialCharacter
@@ -72,18 +70,21 @@ import com.w2sv.domain.model.PresetFileType
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.HighlightedDialogButton
+import com.w2sv.filenavigator.ui.designsystem.OutlinedTextField
 import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.theme.AppColor
+import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.ClearFocusOnFlowEmissionOrKeyboardHidden
 import com.w2sv.filenavigator.ui.util.InputInvalidityReason
 import com.w2sv.filenavigator.ui.util.ProxyTextEditor
 import com.w2sv.filenavigator.ui.util.StatefulTextEditor
-import com.w2sv.filenavigator.ui.util.TextEditor
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -372,28 +373,38 @@ private fun StatelessFileTypeConfigurationDialog(
                     .animateContentSize(),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                OutlinedTextField(
-                    editor = customFileTypeEditor.nameEditor,
-                    placeholderText = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_name_field_placeholder),
-                    labelText = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_name_field_label),
-                    onApply = customFileTypeEditor::clearFocus
-                )
-                OutlinedTextField(
-                    editor = customFileTypeEditor.extensionEditor,
-                    placeholderText = stringResource(com.w2sv.filenavigator.R.string.add_file_extension_field_placeholder),
-                    labelText = stringResource(com.w2sv.filenavigator.R.string.file_extension),
-                    onApply = customFileTypeEditor::addExtension,
-                    applyIconImageVector = Icons.Outlined.Add,
-                    showApplyIconOnlyWhenFocused = false,
-                    showDisabledApplyButtonWhenEmpty = true
-                )
-                if (customFileTypeEditor.fileType.fileExtensions.isNotEmpty()) {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        customFileTypeEditor.fileType.fileExtensions.forEachIndexed { i, extension ->
-                            FileExtensionBadgeWithTooltip(
-                                extension = extension,
-                                deleteExtension = { customFileTypeEditor.deleteExtension(i) }
-                            )
+                ValidityIndicatingArea(customFileTypeEditor.nameEditor.isValid) {
+                    OutlinedTextField(
+                        editor = customFileTypeEditor.nameEditor,
+                        placeholderText = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_name_field_placeholder),
+                        labelText = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_name_field_label),
+                        onApply = customFileTypeEditor::clearFocus
+                    )
+                }
+                ValidityIndicatingArea(
+                    customFileTypeEditor.fileType.fileExtensions.isNotEmpty(),
+                    modifier = Modifier.animateContentSize()
+                ) {
+                    Column {
+                        OutlinedTextField(
+                            editor = customFileTypeEditor.extensionEditor,
+                            placeholderText = stringResource(com.w2sv.filenavigator.R.string.add_file_extension_field_placeholder),
+                            labelText = stringResource(com.w2sv.filenavigator.R.string.file_extension),
+                            onApply = customFileTypeEditor::addExtension,
+                            applyIconImageVector = Icons.Outlined.Add,
+                            showApplyIconOnlyWhenFocused = false,
+                            showDisabledApplyButtonWhenEmpty = true
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        if (customFileTypeEditor.fileType.fileExtensions.isNotEmpty()) {
+                            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                customFileTypeEditor.fileType.fileExtensions.forEachIndexed { i, extension ->
+                                    FileExtensionChipWithTooltip(
+                                        extension = extension,
+                                        deleteExtension = { customFileTypeEditor.deleteExtension(i) }
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -405,7 +416,7 @@ private fun StatelessFileTypeConfigurationDialog(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
-                        text = stringResource(com.w2sv.filenavigator.R.string.color),
+                        text = "${stringResource(com.w2sv.filenavigator.R.string.color)}:",
                         style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp)
                     )
                     Box(contentAlignment = Alignment.Center) {
@@ -413,15 +424,23 @@ private fun StatelessFileTypeConfigurationDialog(
                             modifier = Modifier
                                 .size(46.dp)
                                 .clip(CircleShape)
+                                .border(Dp.Hairline, MaterialTheme.colorScheme.outline, CircleShape)
                                 .background(customFileTypeEditor.fileType.color)
                         )
-                        IconButton(
+                        FilledTonalIconButton(
                             onClick = onConfigureColorButtonPress,
+                            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                                    alpha = 0.7f
+                                )
+                            ),
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
-                                .offset(14.dp, 14.dp)
+                                .offset(8.dp, 8.dp)
+                                .border(Dp.Hairline, MaterialTheme.colorScheme.outline, CircleShape)
+                                .size(32.dp)
                         ) {
-                            Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(28.dp))
+                            Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(24.dp))
                         }
                     }
                 }
@@ -444,7 +463,18 @@ private fun StatelessFileTypeConfigurationDialog(
 }
 
 @Composable
-private fun FileExtensionBadgeWithTooltip(
+private fun ValidityIndicatingArea(isValid: Boolean, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Box(
+        modifier = modifier
+            .border(1.dp, if (isValid) AppColor.success else AppColor.error, shape = MaterialTheme.shapes.extraSmall)
+            .padding(12.dp)
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun FileExtensionChipWithTooltip(
     extension: String,
     deleteExtension: () -> Unit,
     modifier: Modifier = Modifier
@@ -465,96 +495,43 @@ private fun FileExtensionBadgeWithTooltip(
         state = tooltipState,
         modifier = modifier
     ) {
-        FileExtensionBadge(extension, modifier = Modifier.clickable(onClick = tooltipState.showTooltip))
+        FileExtensionChip(extension, onClick = tooltipState.showTooltip)
     }
 }
 
 @Composable
-private fun FileExtensionBadge(extension: String, modifier: Modifier = Modifier) {
-    Badge(
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        modifier = modifier
-    ) {
-        Text(
-            text = extension,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
-}
-
-@Composable
-private fun OutlinedTextField(
-    editor: TextEditor<*>,
-    placeholderText: String,
-    onApply: () -> Unit,
-    modifier: Modifier = Modifier,
-    labelText: String? = null,
-    applyIconImageVector: ImageVector = Icons.Outlined.Check,
-    showApplyIconOnlyWhenFocused: Boolean = true,
-    showDisabledApplyButtonWhenEmpty: Boolean = false
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
-
-    OutlinedTextField(
-        value = editor.getValue(),
-        onValueChange = { editor.update(it) },
-        textStyle = MaterialTheme.typography.bodyLarge,
-        placeholder = { Text(placeholderText, maxLines = 1) },
-        label = labelText?.let { { Text(labelText, maxLines = 1) } },
-        singleLine = true,
+private fun FileExtensionChip(extension: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    InputChip(
+        selected = true,
+        onClick = onClick,
         modifier = modifier,
-        trailingIcon = when {
-            editor.invalidityReason != null -> {
-                {
-                    Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
-                }
-            }
-
-            editor.isValid && (!showApplyIconOnlyWhenFocused || isFocused) || showDisabledApplyButtonWhenEmpty -> {
-                {
-                    FilledTonalIconButton(
-                        onClick = onApply,
-                        modifier = Modifier.padding(end = 4.dp),
-                        enabled = editor.isValid,
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(contentColor = AppColor.success)
-                    ) {
-                        Icon(applyIconImageVector, contentDescription = null)
-                    }
-                }
-            }
-
-            else -> {
-                null
-            }
+        label = {
+            Text(
+                text = extension,
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                style = MaterialTheme.typography.bodyLarge
+            )
         },
-        isError = editor.invalidityReason != null,
-        supportingText = editor.invalidityReason?.let { invalidityReason ->
-            {
-                Text(
-                    text = invalidityReason.text(),
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        },
-        interactionSource = interactionSource
+        elevation = InputChipDefaults.inputChipElevation(elevation = 4.dp),
+        border = BorderStroke(Dp.Hairline, MaterialTheme.colorScheme.primary)
     )
 }
 
-// @Preview
-// @Composable
-// private fun StatelessFileTypeCreationDialogPrev() {
-//    AppTheme {
-//        val context = LocalContext.current
-//        StatelessFileTypeCreationDialog(
-//            customFileTypeEditor = CustomFileTypeEditor(rememberCoroutineScope(), emptyList(), context)
-//                .apply {
-//                    extensions.addAll(listOf("jpg", "png", "jpgasdf"))
-//                    extensionEditor.update("dot")
-//                },
-//            onDismissRequest = {},
-//            createFileType = {}
-//        )
-//    }
-// }
+@Preview
+@Composable
+private fun StatelessFileTypeCreationDialogPrev() {
+    AppTheme {
+        StatelessFileTypeConfigurationDialog(
+            title = "Create a file type",
+            confirmButtonText = "Apply",
+            customFileTypeEditor = rememberCustomFileTypeEditor(
+                existingFileTypes = persistentSetOf(),
+                nonMediaFileTypesWithExtensions = persistentListOf(),
+                createFileType = {},
+                initialFileType = CustomFileType("Html", listOf("html", "htm"), Color.Magenta.toArgb(), -1)
+            ),
+            onDismissRequest = {},
+            onConfigureColorButtonPress = {}
+        )
+    }
+}

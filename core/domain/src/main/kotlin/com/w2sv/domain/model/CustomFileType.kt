@@ -27,6 +27,9 @@ data class CustomFileType(
     override fun label(context: Context): String = name
 
     companion object {
+        /**
+         * @param existingFileTypes Must not be empty.
+         */
         fun newEmpty(existingFileTypes: Collection<FileType>): CustomFileType =
             CustomFileType(
                 name = "",
