@@ -62,16 +62,16 @@ sealed interface PresetFileType : FileType {
             }
         }
 
-        data class ExtensionConfigured(val fileType: ExtensionConfigurable, val excludedExtensions: Set<String>) :
-            NonMedia by fileType,
+        data class ExtensionConfigured(val extensionConfigurableFileType: ExtensionConfigurable, val excludedExtensions: Set<String>) :
+            NonMedia by extensionConfigurableFileType,
             NonMediaFileType.WithExtensions {
 
             @IgnoredOnParcel
-            override val fileExtensions: Set<String> = fileType.defaultFileExtensions - excludedExtensions
+            override val fileExtensions: Set<String> = extensionConfigurableFileType.defaultFileExtensions - excludedExtensions
 
             // TODO: maybe refactor such that this class is not Parcelable anymore, as it does not actually need to be
             override fun writeToParcel(parcel: Parcel, flags: Int) {
-                parcel.writeParcelable(fileType, flags) // Manually write fileType
+                parcel.writeParcelable(extensionConfigurableFileType, flags) // Manually write fileType
                 parcel.writeStringList(excludedExtensions.toList()) // Convert Set to List
             }
 

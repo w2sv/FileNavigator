@@ -48,7 +48,7 @@ data class NavigatorConfig(
             when (nonMediaFileType) {
                 is NonMediaFileType.WithExtensions -> nonMediaFileType
                 is PresetFileType.NonMedia.ExtensionConfigurable -> PresetFileType.NonMedia.ExtensionConfigured(
-                    fileType = nonMediaFileType,
+                    extensionConfigurableFileType = nonMediaFileType,
                     excludedExtensions = extensionConfigurableFileTypeToExcludedExtensions.getValue(nonMediaFileType)
                         .toSet() // TODO: evaluate where to convert to Set
                 )
@@ -153,6 +153,19 @@ data class NavigatorConfig(
     ) = updateSourceConfig(fileType, sourceType) {
         it.copy(autoMoveConfig = modifyAutoMoveConfig(it.autoMoveConfig))
     }
+
+    fun excludeFileExtension(fileType: ExtensionConfigurableFileType, fileExtension: String): NavigatorConfig =
+        updateExtensionConfigurableFileTypeToExcludedExtensions {
+            update(fileType) { excludedFileExtensions -> excludedFileExtensions + fileExtension }
+        }
+
+    fun setExcludedFileExtensions(fileType: ExtensionConfigurableFileType, excludedFileExtensions: Collection<String>): NavigatorConfig =
+        updateExtensionConfigurableFileTypeToExcludedExtensions {
+            put(fileType, excludedFileExtensions)
+        }
+
+    fun updateExtensionConfigurableFileTypeToExcludedExtensions(block: MutableMap<ExtensionConfigurableFileType, Collection<String>>.() -> Unit): NavigatorConfig =
+        copy(extensionConfigurableFileTypeToExcludedExtensions = extensionConfigurableFileTypeToExcludedExtensions.copy(block))
 
     companion object {
         val default by lazy {

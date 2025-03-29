@@ -90,34 +90,6 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
 
     override fun quickMoveDestinations(fileType: FileType, sourceType: SourceType): Flow<List<LocalDestinationApi>> =
         navigatorConfig.map { it.sourceConfig(fileType, sourceType).quickMoveDestinations }
-
-    // ==================
-    // File extension exclusion
-    // ==================
-
-    override suspend fun excludeFileExtension(fileType: ExtensionConfigurableFileType, fileExtension: String) {
-        updateExtensionConfigurableFileTypeToExcludedExtensions {
-            update(fileType) { excludedFileExtensions -> excludedFileExtensions + fileExtension }
-        }
-    }
-
-    override suspend fun setExcludedFileExtensions(fileType: ExtensionConfigurableFileType, excludedFileExtensions: Collection<String>) {
-        updateExtensionConfigurableFileTypeToExcludedExtensions {
-            put(fileType, excludedFileExtensions)
-        }
-    }
-
-    private suspend fun updateExtensionConfigurableFileTypeToExcludedExtensions(
-        block: MutableMap<ExtensionConfigurableFileType, Collection<String>>.() -> Unit
-    ) {
-        updateData { navigatorConfig ->
-            navigatorConfig.copy(
-                extensionConfigurableFileTypeToExcludedExtensions = navigatorConfig.extensionConfigurableFileTypeToExcludedExtensions.copy(
-                    block
-                )
-            )
-        }
-    }
 }
 
 @VisibleForTesting

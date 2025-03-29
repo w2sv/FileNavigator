@@ -61,8 +61,8 @@ import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AddFileTypesBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AutoMoveIntroductionDialogIfNotYetShown
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.CustomFileTypeConfigurationDialog
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.FileTypeCreationDialog
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeConfigurationDialog
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.FileTypeCreationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
@@ -181,7 +181,8 @@ fun NavigatorSettingsScreen(
                 fileTypes = remember { (navigatorConfig.fileTypes - fileType).toImmutableSet() },
                 nonMediaFileTypesWithExtensions = navigatorConfig.nonMediaFileTypesWithExtensions.toImmutableList(),
                 onDismissRequest = { showFileTypeConfigurationDialogFor = null },
-                createFileType = navigatorVM.reversibleConfig::editCustomFileType
+                createFileType = navigatorVM.reversibleConfig::editCustomFileType,
+                excludeExtensionFromFileType = navigatorVM.reversibleConfig::excludeFileExtension
             )
         }
         if (showAddFileTypesBottomSheet) {
@@ -205,7 +206,8 @@ fun NavigatorSettingsScreen(
                 fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
                 nonMediaFileTypesWithExtensions = navigatorConfig.nonMediaFileTypesWithExtensions.toImmutableList(),
                 onDismissRequest = { showFileTypeCreationDialog = false },
-                createFileType = navigatorVM.reversibleConfig::createCustomFileType
+                createFileType = navigatorVM.reversibleConfig::createCustomFileType,
+                excludeExtensionFromFileType = navigatorVM.reversibleConfig::excludeFileExtension
             )
         }
     }

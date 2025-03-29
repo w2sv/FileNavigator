@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration
 
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll

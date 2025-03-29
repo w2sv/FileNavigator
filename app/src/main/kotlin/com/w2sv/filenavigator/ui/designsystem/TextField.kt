@@ -2,6 +2,9 @@ package com.w2sv.filenavigator.ui.designsystem
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
@@ -25,6 +28,7 @@ import com.w2sv.filenavigator.ui.util.TextEditor
 /**
  * An [OutlinedTextField] based on a [TextEditor].
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OutlinedTextField(
     editor: TextEditor<*>,
@@ -35,7 +39,8 @@ fun OutlinedTextField(
     applyIconImageVector: ImageVector = Icons.Outlined.Check,
     errorColor: Color = AppColor.error,
     showApplyIconOnlyWhenFocused: Boolean = true,
-    showDisabledApplyButtonWhenEmpty: Boolean = false
+    showDisabledApplyButtonWhenEmpty: Boolean = false,
+    actionButton: (@Composable () -> Unit)? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -75,10 +80,13 @@ fun OutlinedTextField(
         isError = editor.invalidityReason != null,
         supportingText = editor.invalidityReason?.let { invalidityReason ->
             {
-                Text(
-                    text = invalidityReason.text(),
-                    color = errorColor
-                )
+                FlowRow {
+                    Text(
+                        text = invalidityReason.text(),
+                        color = errorColor
+                    )
+                    actionButton?.invoke()
+                }
             }
         },
         interactionSource = interactionSource
