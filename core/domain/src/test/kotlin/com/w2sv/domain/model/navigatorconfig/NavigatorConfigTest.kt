@@ -98,7 +98,8 @@ internal class NavigatorConfigTest {
                 PresetFileType.APK to nonMediaFileTypeConfig(),
                 PresetFileType.EBook to nonMediaFileTypeConfig()
             ),
-            extensionConfigurableFileTypeToExcludedExtensions = PresetFileType.NonMedia.ExtensionConfigurable.values.associateWith { emptySet() },
+            extensionConfigurableFileTypeToExcludedExtensions = PresetFileType.NonMedia.ExtensionConfigurable.values
+                .associateWith { emptySet() },
             showBatchMoveNotification = true,
             disableOnLowBattery = false,
             startOnBoot = false

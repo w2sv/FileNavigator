@@ -75,7 +75,8 @@ sealed interface PresetFileType : FileType {
                 parcel.writeStringList(excludedExtensions.toList()) // Convert Set to List
             }
 
-            override fun describeContents(): Int = 0
+            override fun describeContents(): Int =
+                0
 
             companion object CREATOR : Parcelable.Creator<ExtensionConfigured> {
                 override fun createFromParcel(parcel: Parcel): ExtensionConfigured {
@@ -88,7 +89,8 @@ sealed interface PresetFileType : FileType {
                     return ExtensionConfigured(fileType, excludedExtensions)
                 }
 
-                override fun newArray(size: Int): Array<ExtensionConfigured?> = arrayOfNulls(size)
+                override fun newArray(size: Int): Array<ExtensionConfigured?> =
+                    arrayOfNulls(size)
             }
         }
 

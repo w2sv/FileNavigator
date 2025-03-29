@@ -29,4 +29,3 @@ internal fun FileType.defaultConfig(enabled: Boolean = true): FileTypeConfig =
         enabled = enabled,
         sourceTypeConfigMap = sourceTypes.associateWith { SourceConfig() }
     )
-

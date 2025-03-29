@@ -81,14 +81,14 @@ import com.w2sv.filenavigator.ui.util.ProxyTextEditor
 import com.w2sv.filenavigator.ui.util.StatefulTextEditor
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
+import kotlin.text.trim
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlin.text.trim
 
 private enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageRes: Int) : InputInvalidityReason {
     ContainsSpecialCharacter(com.w2sv.filenavigator.R.string.name_must_not_contain_special_characters),
@@ -127,7 +127,9 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
         override val fileExtension: String,
         override val fileType: NonMediaFileType.WithExtensions
     ) :
-        IsExistingFileExtension<NonMediaFileType.WithExtensions>(com.w2sv.filenavigator.R.string.is_other_non_media_file_type_extension_invalidity_reason) {
+        IsExistingFileExtension<NonMediaFileType.WithExtensions>(
+            com.w2sv.filenavigator.R.string.is_other_non_media_file_type_extension_invalidity_reason
+        ) {
 
         companion object {
             fun get(
@@ -463,7 +465,11 @@ private fun StatelessFileTypeConfigurationDialog(
 }
 
 @Composable
-private fun ValidityIndicatingArea(isValid: Boolean, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+private fun ValidityIndicatingArea(
+    isValid: Boolean,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
     Box(
         modifier = modifier
             .border(1.dp, if (isValid) AppColor.success else AppColor.error, shape = MaterialTheme.shapes.extraSmall)
@@ -500,7 +506,11 @@ private fun FileExtensionChipWithTooltip(
 }
 
 @Composable
-private fun FileExtensionChip(extension: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun FileExtensionChip(
+    extension: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     InputChip(
         selected = true,
         onClick = onClick,
@@ -526,10 +536,16 @@ private fun StatelessFileTypeCreationDialogPrev() {
             confirmButtonText = "Apply",
             customFileTypeEditor = rememberCustomFileTypeEditor(
                 existingFileTypes = persistentSetOf(),
-                nonMediaFileTypesWithExtensions = persistentListOf(),
+                nonMediaFileTypesWithExtensions = PresetFileType.NonMedia.ExtensionConfigurable.values.map {
+                    PresetFileType.NonMedia.ExtensionConfigured(
+                        it,
+                        emptySet()
+                    )
+                }.toImmutableList(),
                 createFileType = {},
                 initialFileType = CustomFileType("Html", listOf("html", "htm"), Color.Magenta.toArgb(), -1)
-            ),
+            )
+                .apply { extensionEditor.update("json") },
             onDismissRequest = {},
             onConfigureColorButtonPress = {}
         )

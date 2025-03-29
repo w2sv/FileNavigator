@@ -2,8 +2,6 @@ package com.w2sv.domain.repository
 
 import com.w2sv.domain.model.ExtensionConfigurableFileType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.NonMediaFileType
-import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -37,13 +35,7 @@ interface NavigatorConfigDataSource {
     // File extension exclusion
     // ==================
 
-    suspend fun excludeFileExtension(
-        fileType: ExtensionConfigurableFileType,
-        fileExtension: String
-    )
+    suspend fun excludeFileExtension(fileType: ExtensionConfigurableFileType, fileExtension: String)
 
-    suspend fun setExcludedFileExtensions(
-        fileType: ExtensionConfigurableFileType,
-        excludedFileExtensions: Collection<String>
-    )
+    suspend fun setExcludedFileExtensions(fileType: ExtensionConfigurableFileType, excludedFileExtensions: Collection<String>)
 }

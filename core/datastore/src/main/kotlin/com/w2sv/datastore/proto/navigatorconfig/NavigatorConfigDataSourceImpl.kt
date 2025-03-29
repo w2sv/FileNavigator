@@ -5,8 +5,6 @@ import androidx.datastore.core.DataStore
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.domain.model.ExtensionConfigurableFileType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.NonMediaFileType
-import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
@@ -103,10 +101,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun setExcludedFileExtensions(
-        fileType: ExtensionConfigurableFileType,
-        excludedFileExtensions: Collection<String>
-    ) {
+    override suspend fun setExcludedFileExtensions(fileType: ExtensionConfigurableFileType, excludedFileExtensions: Collection<String>) {
         updateExtensionConfigurableFileTypeToExcludedExtensions {
             put(fileType, excludedFileExtensions)
         }

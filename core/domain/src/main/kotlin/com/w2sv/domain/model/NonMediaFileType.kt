@@ -8,5 +8,5 @@ sealed interface NonMediaFileType : FileType {
     override val mediaType get() = MediaType.DOWNLOADS
     override val sourceTypes get() = nonMediaSourceTypes
 
-    sealed interface WithExtensions: NonMediaFileType, FileExtensionsHolder
+    sealed interface WithExtensions : NonMediaFileType, FileExtensionsHolder
 }

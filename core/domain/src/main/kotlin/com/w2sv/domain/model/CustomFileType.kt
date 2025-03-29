@@ -24,7 +24,8 @@ data class CustomFileType(
     @DrawableRes
     override val iconRes: Int = R.drawable.ic_custom_file_type_24
 
-    override fun label(context: Context): String = name
+    override fun label(context: Context): String =
+        name
 
     companion object {
         /**

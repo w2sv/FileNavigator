@@ -10,8 +10,8 @@ import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.navigator.moving.MoveResultListener
 import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
 import com.w2sv.navigator.notifications.appnotifications.FileNavigatorIsRunningNotificationManager
-import com.w2sv.navigator.observing.FileTypeObserver
 import com.w2sv.navigator.observing.FileObserverFactory
+import com.w2sv.navigator.observing.FileTypeObserver
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope

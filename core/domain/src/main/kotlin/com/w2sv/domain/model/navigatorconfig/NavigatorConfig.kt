@@ -53,7 +53,9 @@ data class NavigatorConfig(
                         .toSet() // TODO: evaluate where to convert to Set
                 )
 
-                is PresetFileType.NonMedia.ExtensionConfigured -> error("fileTypeConfigMap should not contain file types of type PresetFileType.NonMedia.ExtensionConfigured") // TODO: refactor so that impossible
+                is PresetFileType.NonMedia.ExtensionConfigured -> error(
+                    "fileTypeConfigMap should not contain file types of type PresetFileType.NonMedia.ExtensionConfigured"
+                ) // TODO: refactor so that impossible
             }
         }
 
@@ -156,7 +158,8 @@ data class NavigatorConfig(
         val default by lazy {
             NavigatorConfig(
                 fileTypeConfigMap = PresetFileType.values.associateWith { fileType -> fileType.defaultConfig() },
-                extensionConfigurableFileTypeToExcludedExtensions = PresetFileType.NonMedia.ExtensionConfigurable.values.associateWith { emptySet() },
+                extensionConfigurableFileTypeToExcludedExtensions = PresetFileType.NonMedia.ExtensionConfigurable.values
+                    .associateWith { emptySet() },
                 showBatchMoveNotification = true,
                 disableOnLowBattery = false,
                 startOnBoot = false
