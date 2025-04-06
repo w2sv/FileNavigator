@@ -92,6 +92,7 @@
     <string name="edit_file_type_name_field_placeholder">Enter a name</string>
     <string name="edit_file_type_name_field_label">Name</string>
     <string name="edit_file_type_dialog_title">Edit file type</string>
+    <string name="preset_non_media_file_type_configuration_dialog_title">Edit %1$s file type</string>
     <string name="save">Save</string>
     <string name="create_file_type_dialog_title">Create a file type</string>
     <string name="create">Create</string>
@@ -99,6 +100,8 @@
     <string name="cancel">Cancel</string>
     <string name="file_extension">File Extension</string>
     <string name="color">Color</string>
+    <string name="file_extensions">File Extensions</string>
+    <string name="leave_at_least_one_file_extension_enabled">Leave at least one file extension enabled.</string>
     <plurals name="add_file_types_button">
         <item quantity="one">Add File Type</item>
         <item quantity="other">Add File Types</item>

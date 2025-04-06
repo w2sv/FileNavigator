@@ -2,9 +2,7 @@ package com.w2sv.filenavigator.ui.designsystem
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
@@ -28,7 +26,6 @@ import com.w2sv.filenavigator.ui.util.TextEditor
 /**
  * An [OutlinedTextField] based on a [TextEditor].
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OutlinedTextField(
     editor: TextEditor<*>,
@@ -40,6 +37,7 @@ fun OutlinedTextField(
     errorColor: Color = AppColor.error,
     showApplyIconOnlyWhenFocused: Boolean = true,
     showDisabledApplyButtonWhenEmpty: Boolean = false,
+    enabled: Boolean = true,
     actionButton: (@Composable () -> Unit)? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -52,6 +50,7 @@ fun OutlinedTextField(
         placeholder = { Text(placeholderText, maxLines = 1) },
         label = labelText?.let { { Text(labelText, maxLines = 1) } },
         singleLine = true,
+        enabled = enabled,
         modifier = modifier,
         trailingIcon = when {
             editor.invalidityReason != null -> {

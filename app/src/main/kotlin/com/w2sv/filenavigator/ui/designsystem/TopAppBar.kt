@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.designsystem
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NavigationDrawerScreenTopAppBar(
     title: String,

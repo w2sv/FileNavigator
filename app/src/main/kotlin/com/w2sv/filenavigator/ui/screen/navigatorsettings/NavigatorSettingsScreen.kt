@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
 import android.content.Context
+import android.os.Parcelable
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterExitState
@@ -51,6 +52,7 @@ import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
 import com.w2sv.domain.model.CustomFileType
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -61,9 +63,10 @@ import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AddFileTypesBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AutoMoveIntroductionDialogIfNotYetShown
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeConfigurationDialog
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.FileTypeCreationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeConfigurationDialog
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeCreationDialog
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.PresetNonMediaFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
@@ -76,6 +79,22 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+private sealed interface FileTypeConfigurationDialog : Parcelable {
+
+    @Parcelize
+    data object CreateType : FileTypeConfigurationDialog
+
+    @Parcelize
+    @JvmInline
+    value class ConfigureCustomType(val fileType: CustomFileType) : FileTypeConfigurationDialog
+
+    @Parcelize
+    @JvmInline
+    value class ConfigurePresetNonMediaType(val fileType: PresetFileType.NonMedia) : FileTypeConfigurationDialog
+}
 
 @Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
@@ -111,11 +130,8 @@ fun NavigatorSettingsScreen(
     var showAddFileTypesBottomSheet by rememberSaveable {
         mutableStateOf(false)
     }
-    var showFileTypeCreationDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-    var showFileTypeConfigurationDialogFor by rememberSaveable {
-        mutableStateOf<CustomFileType?>(null)
+    var fileTypeConfigurationDialog by rememberSaveable {
+        mutableStateOf<FileTypeConfigurationDialog?>(null)
     }
 
     Scaffold(
@@ -168,23 +184,18 @@ fun NavigatorSettingsScreen(
             config = navigatorConfig,
             reversibleConfig = navigatorVM.reversibleConfig,
             showAddFileTypesBottomSheet = remember { { showAddFileTypesBottomSheet = true } },
-            showCustomFileTypeConfigurationDialog = { showFileTypeConfigurationDialogFor = it },
+            showFileTypeConfigurationDialog = { fileType ->
+                fileTypeConfigurationDialog = when (fileType) {
+                    is PresetFileType.NonMedia -> FileTypeConfigurationDialog.ConfigurePresetNonMediaType(fileType)
+                    is CustomFileType -> FileTypeConfigurationDialog.ConfigureCustomType(fileType)
+                }
+            },
             modifier = Modifier
                 .padding(top = paddingValues.calculateTopPadding())
                 .padding(horizontal = Padding.defaultHorizontal)
                 .fillMaxSize()
         )
 
-        showFileTypeConfigurationDialogFor?.let { fileType ->
-            CustomFileTypeConfigurationDialog(
-                fileType = fileType,
-                fileTypes = remember { (navigatorConfig.fileTypes - fileType).toImmutableSet() },
-                nonMediaFileTypesWithExtensions = navigatorConfig.nonMediaFileTypesWithExtensions.toImmutableList(),
-                onDismissRequest = { showFileTypeConfigurationDialogFor = null },
-                createFileType = navigatorVM.reversibleConfig::editCustomFileType,
-                excludeExtensionFromFileType = navigatorVM.reversibleConfig::excludeFileExtension
-            )
-        }
         if (showAddFileTypesBottomSheet) {
             AddFileTypesBottomSheet(
                 disabledFileTypes = navigatorConfig.sortedDisabledFileTypes.toPersistentList(),
@@ -197,18 +208,39 @@ fun NavigatorSettingsScreen(
                 },
                 deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
                 onDismissRequest = remember { { showAddFileTypesBottomSheet = false } },
-                onCreateFileTypeCardClick = remember { { showFileTypeCreationDialog = true } },
+                onCreateFileTypeCardClick = remember { { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType } },
                 selectFileType = navigatorVM.reversibleConfig.selectFileType
             )
         }
-        if (showFileTypeCreationDialog) {
-            FileTypeCreationDialog(
-                fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
-                nonMediaFileTypesWithExtensions = navigatorConfig.nonMediaFileTypesWithExtensions.toImmutableList(),
-                onDismissRequest = { showFileTypeCreationDialog = false },
-                createFileType = navigatorVM.reversibleConfig::createCustomFileType,
-                excludeExtensionFromFileType = navigatorVM.reversibleConfig::excludeFileExtension
-            )
+
+        fileTypeConfigurationDialog?.let {
+            val closeDialog = remember { { fileTypeConfigurationDialog = null } }
+
+            when (it) {
+                FileTypeConfigurationDialog.CreateType -> CustomFileTypeCreationDialog(
+                    fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
+                    nonMediaFileTypesWithExtensions = navigatorConfig.nonMediaFileTypesWithExtensions.toImmutableList(),
+                    onDismissRequest = closeDialog,
+                    createFileType = navigatorVM.reversibleConfig::createCustomFileType,
+                    excludeExtensionFromFileType = navigatorVM.reversibleConfig::excludeFileExtension
+                )
+
+                is FileTypeConfigurationDialog.ConfigureCustomType -> CustomFileTypeConfigurationDialog(
+                    fileType = it.fileType,
+                    fileTypes = remember { (navigatorConfig.fileTypes - it.fileType).toImmutableSet() },
+                    nonMediaFileTypesWithExtensions = navigatorConfig.nonMediaFileTypesWithExtensions.toImmutableList(),
+                    onDismissRequest = closeDialog,
+                    createFileType = navigatorVM.reversibleConfig::editCustomFileType,
+                    excludeExtensionFromFileType = navigatorVM.reversibleConfig::excludeFileExtension
+                )
+
+                is FileTypeConfigurationDialog.ConfigurePresetNonMediaType -> PresetNonMediaFileTypeConfigurationDialog(
+                    fileType = it.fileType,
+                    excludedExtensions = navigatorConfig.excludedPresetNonMediaTypeFileExtensions(it.fileType).toImmutableList(),
+                    setExcludedFileExtensions = navigatorVM.reversibleConfig::setExcludedFileExtensions,
+                    onDismissRequest = closeDialog
+                )
+            }
         }
     }
 }

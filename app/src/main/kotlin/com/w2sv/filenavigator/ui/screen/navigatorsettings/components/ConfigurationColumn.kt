@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.common.util.logIdentifier
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
-import com.w2sv.domain.model.CustomFileType
+import com.w2sv.domain.model.NonMediaFileType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -131,7 +131,7 @@ fun NavigatorConfigurationColumn(
     config: NavigatorConfig,
     reversibleConfig: ReversibleNavigatorConfig,
     showAddFileTypesBottomSheet: () -> Unit,
-    showCustomFileTypeConfigurationDialog: (CustomFileType) -> Unit,
+    showFileTypeConfigurationDialog: (NonMediaFileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier) {
@@ -198,7 +198,7 @@ fun NavigatorConfigurationColumn(
                         }
                     }
                 },
-                showCustomFileTypeConfigurationDialog = showCustomFileTypeConfigurationDialog,
+                showFileTypeConfigurationDialog = showFileTypeConfigurationDialog,
                 modifier = Modifier
                     .padding(vertical = 4.dp)
                     .animateItem()

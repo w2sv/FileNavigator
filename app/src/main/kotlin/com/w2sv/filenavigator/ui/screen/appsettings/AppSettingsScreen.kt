@@ -5,7 +5,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,7 +43,6 @@ import com.w2sv.filenavigator.ui.designsystem.drawer.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.designsystem.drawer.model.AppPreferences
 import com.w2sv.filenavigator.ui.designsystem.drawer.model.rememberAppPreferences
 
-@OptIn(ExperimentalLayoutApi::class)
 @Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
 fun AppSettingsScreen(navigator: DestinationsNavigator, appPreferences: AppPreferences = rememberAppPreferences()) {

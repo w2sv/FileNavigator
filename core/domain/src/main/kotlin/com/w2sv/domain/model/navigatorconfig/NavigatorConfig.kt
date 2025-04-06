@@ -43,6 +43,16 @@ data class NavigatorConfig(
         fileTypeConfigMap.keys.filterIsInstance<NonMediaFileType>().withExtensions()
     }
 
+    fun excludedPresetNonMediaTypeFileExtensions(fileType: PresetFileType.NonMedia): Set<String> =
+        when (fileType) {
+            is PresetFileType.NonMedia.ExtensionPreset -> emptySet()
+            is PresetFileType.NonMedia.ExtensionConfigurable -> extensionConfigurableFileTypeToExcludedExtensions.getOrDefault(
+                fileType,
+                emptySet()
+            )
+            else -> error("Shouldn't happen") // TODO
+        }
+
     private fun Collection<NonMediaFileType>.withExtensions(): List<NonMediaFileType.WithExtensions> =
         map { nonMediaFileType ->
             when (nonMediaFileType) {
@@ -163,7 +173,9 @@ data class NavigatorConfig(
             put(fileType, excludedFileExtensions)
         }
 
-    fun updateExtensionConfigurableFileTypeToExcludedExtensions(block: MutableMap<ExtensionConfigurableFileType, Set<String>>.() -> Unit): NavigatorConfig =
+    fun updateExtensionConfigurableFileTypeToExcludedExtensions(
+        block: MutableMap<ExtensionConfigurableFileType, Set<String>>.() -> Unit
+    ): NavigatorConfig =
         copy(extensionConfigurableFileTypeToExcludedExtensions = extensionConfigurableFileTypeToExcludedExtensions.copy(block))
 
     companion object {

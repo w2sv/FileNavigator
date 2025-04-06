@@ -72,13 +72,20 @@ fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
             }
         },
         modifier = modifier
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            visuals.kind?.let { kind ->
-                Icon(imageVector = kind.icon, contentDescription = null, tint = kind.iconTint)
-                Spacer(modifier = Modifier.width(10.dp))
-            }
-            Text(text = visuals.message)
+    ) { AppSnackbarContent(visuals.kind, visuals.message) }
+}
+
+@Composable
+fun AppSnackbarContent(
+    snackbarKind: SnackbarKind?,
+    message: String,
+    modifier: Modifier = Modifier
+) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+        snackbarKind?.let {
+            Icon(imageVector = it.icon, contentDescription = null, tint = it.iconTint)
+            Spacer(modifier = Modifier.width(10.dp))
         }
+        Text(text = message)
     }
 }

@@ -3,6 +3,7 @@ package com.w2sv.filenavigator.ui.state
 import androidx.compose.runtime.Stable
 import com.w2sv.common.util.mutate
 import com.w2sv.domain.model.CustomFileType
+import com.w2sv.domain.model.ExtensionConfigurableFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.NonMediaFileType
 import com.w2sv.domain.model.PresetFileType
@@ -129,8 +130,12 @@ class ReversibleNavigatorConfig(
             is CustomFileType -> editCustomFileType(fileType.copy(fileExtensions = fileType.fileExtensions.mutate { remove(extension) }))
             is PresetFileType.NonMedia.ExtensionConfigurable -> update { it.excludeFileExtension(fileType, extension) }
             is PresetFileType.NonMedia.ExtensionConfigured -> excludeFileExtension(extension, fileType.extensionConfigurableFileType)
-            is PresetFileType.NonMedia.ExtensionPreset -> error("$fileType must not be of type ExtensionPreset")  // TODO
+            is PresetFileType.NonMedia.ExtensionPreset -> error("$fileType must not be of type ExtensionPreset") // TODO
         }
+    }
+
+    fun setExcludedFileExtensions(fileType: ExtensionConfigurableFileType, excludedExtensions: Set<String>) {
+        update { it.setExcludedFileExtensions(fileType, excludedExtensions) }
     }
 
     private inline fun updateOrEmitSnackbar(

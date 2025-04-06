@@ -3,7 +3,6 @@ package com.w2sv.datastore.proto.navigatorconfig
 import androidx.annotation.VisibleForTesting
 import androidx.datastore.core.DataStore
 import com.w2sv.datastore.NavigatorConfigProto
-import com.w2sv.domain.model.ExtensionConfigurableFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
@@ -11,7 +10,6 @@ import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.copy
-import com.w2sv.kotlinutils.update
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

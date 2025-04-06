@@ -12,6 +12,9 @@ fun String.slashPrefixed(): String =
 fun String.lineBreakSuffixed(): String =
     "$this\n"
 
+fun String.colonSuffixed(): String =
+    "$this:"
+
 fun formattedFileSize(bytes: Long, locale: Locale = Locale.getDefault()): String {
     if (bytes in -999..999) {
         return "$bytes B"
