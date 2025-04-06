@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.common.util.mutate
+import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileExtensionsHolder
 import com.w2sv.domain.model.FileType
@@ -35,6 +36,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import slimber.log.i
 import kotlin.collections.forEach
 import kotlin.getValue
 
@@ -100,7 +102,7 @@ private fun <T : FileExtensionsHolder> Collection<T>.findMatching(fileExtension:
 class CustomFileTypeEditor(
     initialFileType: CustomFileType,
     private val existingFileTypes: Collection<FileType>,
-    private val nonMediaFileTypesWithExtensions: Collection<NonMediaFileType.WithExtensions>,
+    initialNonMediaFileTypesWithExtensions: Collection<NonMediaFileType.WithExtensions>,
     private val createFileType: (CustomFileType) -> Unit,
     private val scope: CoroutineScope,
     private val context: Context
@@ -139,6 +141,12 @@ class CustomFileTypeEditor(
 
     fun deleteExtension(@IntRange(from = 0L) index: Int) {
         updateFileType { it.copy(fileExtensions = it.fileExtensions.mutate { removeAt(index) }) }
+    }
+
+    private var nonMediaFileTypesWithExtensions by mutableStateOf(initialNonMediaFileTypesWithExtensions)
+
+    fun updateNonMediaFileTypesWithExtensions(nonMediaFileTypesWithExtensions: Collection<NonMediaFileType.WithExtensions>) {
+        this.nonMediaFileTypesWithExtensions = nonMediaFileTypesWithExtensions
     }
 
     val extensionEditor = StatefulTextEditor(
@@ -201,7 +209,7 @@ class CustomFileTypeEditor(
                     CustomFileTypeEditor(
                         initialFileType = value.first,
                         existingFileTypes = existingFileTypes,
-                        nonMediaFileTypesWithExtensions = nonMediaFileTypesWithExtensions,
+                        initialNonMediaFileTypesWithExtensions = nonMediaFileTypesWithExtensions,
                         createFileType = createFileType,
                         scope = scope,
                         context = context
@@ -221,19 +229,25 @@ fun rememberCustomFileTypeEditor(
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current
 ): CustomFileTypeEditor {
-    return rememberSaveable(
+    val editor = rememberSaveable(
         initialFileType,
         existingFileTypes,
-        nonMediaFileTypesWithExtensions,
         saver = CustomFileTypeEditor.saver(existingFileTypes, nonMediaFileTypesWithExtensions, createFileType, scope, context)
     ) {
         CustomFileTypeEditor(
             initialFileType = initialFileType ?: CustomFileType.newEmpty(existingFileTypes),
             existingFileTypes = existingFileTypes,
-            nonMediaFileTypesWithExtensions = nonMediaFileTypesWithExtensions,
+            initialNonMediaFileTypesWithExtensions = nonMediaFileTypesWithExtensions,
             createFileType = createFileType,
             scope = scope,
             context = context
         )
     }
+
+    OnChange(nonMediaFileTypesWithExtensions) {
+        i { "Updating nonMediaFileTypesWithExtensions to $nonMediaFileTypesWithExtensions" }
+        editor.updateNonMediaFileTypesWithExtensions(it)
+    }
+
+    return editor
 }

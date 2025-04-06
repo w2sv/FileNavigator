@@ -37,7 +37,7 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
                 fileType(ordinal, proto) to FileTypeConfigMapper.toExternal(fileTypeConfigProto)
             },
             extensionConfigurableFileTypeToExcludedExtensions = proto.extensionConfigurableFileTypeToExcludedExtensionsMap.map { (fileTypeOrdinal, extensionsString) ->
-                (fileType(fileTypeOrdinal, proto) as ExtensionConfigurableFileType) to extensionsString.split(EXTENSION_DELIMITER)
+                (fileType(fileTypeOrdinal, proto) as ExtensionConfigurableFileType) to extensionsString.split(EXTENSION_DELIMITER).toSet()
             },
             showBatchMoveNotification = proto.showBatchMoveNotification,
             disableOnLowBattery = proto.disableOnLowBattery,
