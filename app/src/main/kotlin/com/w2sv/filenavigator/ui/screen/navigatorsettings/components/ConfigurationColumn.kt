@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.sp
 import com.w2sv.common.util.logIdentifier
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.NonMediaFileType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig

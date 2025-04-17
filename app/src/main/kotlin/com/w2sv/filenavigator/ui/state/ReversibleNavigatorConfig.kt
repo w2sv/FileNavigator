@@ -3,10 +3,8 @@ package com.w2sv.filenavigator.ui.state
 import androidx.compose.runtime.Stable
 import com.w2sv.common.util.mutate
 import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.ExtensionConfigurableFileType
-import com.w2sv.domain.model.ExtensionSetFileType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.PresetWrappingFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
@@ -120,22 +118,22 @@ class ReversibleNavigatorConfig(
     }
 
     /**
-     * @param fileType Must be either [CustomFileType] or [PresetFileType.NonMedia.ExtensionConfigurable]
+     * @param fileType Must be either [CustomFileType] or [PresetWrappingFileType.ExtensionConfigurable]
      * TODO: test
      */
-    fun excludeFileExtension(extension: String, fileType: FileType) {
+    fun excludeFileExtension(fileType: FileType, extension: String) {
         when (fileType) {
             is CustomFileType -> update {
                 it.editFileType(fileType) {
-                    fileType.copy(fileExtensions = fileType.fileExtensions.mutate { remove(extension) })
+                    fileType.copy(fileExtensions = it.fileExtensions.mutate { remove(extension) })
                 }
             }
 
-            is ExtensionConfigurableFileType -> update {
-                it.editFileType(fileType) { fileType.copy(excludedExtensions = fileType.excludedExtensions + extension) }
+            is PresetWrappingFileType.ExtensionConfigurable -> update {
+                it.editFileType(fileType) { it.copy(excludedExtensions = it.excludedExtensions + extension) }
             }
 
-            is ExtensionSetFileType -> error("ExtensionSetFileType should not be passed, yet received $fileType ")
+            is PresetWrappingFileType.ExtensionSet -> error("ExtensionSetFileType should not be passed, yet received $fileType ")
         }
     }
 

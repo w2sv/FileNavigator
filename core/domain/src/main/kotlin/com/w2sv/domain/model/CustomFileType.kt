@@ -7,9 +7,9 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.VisibleForTesting
 import com.w2sv.core.domain.R
+import kotlin.random.Random
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import kotlin.random.Random
 
 @Parcelize
 data class CustomFileType(
@@ -17,7 +17,7 @@ data class CustomFileType(
     override val fileExtensions: List<String>,
     @ColorInt override val colorInt: Int,
     override val ordinal: Int
-) : NonMediaFileType,
+) : StaticFileType.NonMedia,
     FileType,
     Parcelable {
 

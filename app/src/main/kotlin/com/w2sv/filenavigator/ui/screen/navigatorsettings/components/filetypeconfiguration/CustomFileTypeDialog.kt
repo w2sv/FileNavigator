@@ -37,12 +37,14 @@ import com.w2sv.filenavigator.ui.util.ClearFocusOnFlowEmissionOrKeyboardHidden
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
+typealias ExcludeExtension = (FileType, String) -> Unit
+
 @Composable
 fun CustomFileTypeCreationDialog(
     fileTypes: ImmutableSet<FileType>,
     onDismissRequest: () -> Unit,
     createFileType: (CustomFileType) -> Unit,
-    excludeExtensionFromFileType: (String, FileType) -> Unit,
+    excludeFileExtension: ExcludeExtension,
     modifier: Modifier = Modifier
 ) {
     ColorPickerDialogOverlaidCustomFileTypeConfigurationDialog(
@@ -50,7 +52,7 @@ fun CustomFileTypeCreationDialog(
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.create),
         customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, createFileType),
         onDismissRequest = onDismissRequest,
-        excludeExtensionFromFileType = excludeExtensionFromFileType,
+        excludeFileExtension = excludeFileExtension,
         modifier = modifier
     )
 }
@@ -61,7 +63,7 @@ fun CustomFileTypeConfigurationDialog(
     fileTypes: ImmutableSet<FileType>,
     onDismissRequest: () -> Unit,
     saveFileType: (CustomFileType) -> Unit,
-    excludeExtensionFromFileType: (String, FileType) -> Unit,
+    excludeFileExtension: ExcludeExtension,
     modifier: Modifier = Modifier
 ) {
     ColorPickerDialogOverlaidCustomFileTypeConfigurationDialog(
@@ -69,7 +71,7 @@ fun CustomFileTypeConfigurationDialog(
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.save),
         customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, saveFileType, fileType),
         onDismissRequest = onDismissRequest,
-        excludeExtensionFromFileType = excludeExtensionFromFileType,
+        excludeFileExtension = excludeFileExtension,
         modifier = modifier
     )
 }
@@ -80,7 +82,7 @@ private fun ColorPickerDialogOverlaidCustomFileTypeConfigurationDialog(
     confirmButtonText: String,
     customFileTypeEditor: CustomFileTypeEditor,
     onDismissRequest: () -> Unit,
-    excludeExtensionFromFileType: (String, FileType) -> Unit,
+    excludeFileExtension: ExcludeExtension,
     modifier: Modifier = Modifier
 ) {
     ColorPickerDialogOverlaidFileTypeConfigurationDialog(
@@ -93,7 +95,7 @@ private fun ColorPickerDialogOverlaidCustomFileTypeConfigurationDialog(
             customFileTypeEditor = customFileTypeEditor,
             onDismissRequest = onDismissRequest,
             onConfigureColorButtonPress = openColorPickerDialog,
-            excludeExtensionFromFileType = excludeExtensionFromFileType,
+            excludeFileExtension = excludeFileExtension,
             modifier = modifier
         )
     }
@@ -106,7 +108,7 @@ private fun StatelessCustomFileTypeConfigurationDialog(
     customFileTypeEditor: CustomFileTypeEditor,
     onDismissRequest: () -> Unit,
     onConfigureColorButtonPress: () -> Unit,
-    excludeExtensionFromFileType: (String, FileType) -> Unit,
+    excludeFileExtension: ExcludeExtension,
     modifier: Modifier = Modifier
 ) {
     FileTypeConfigurationDialog(
@@ -148,9 +150,9 @@ private fun StatelessCustomFileTypeConfigurationDialog(
                             {
                                 FilledTonalButton(
                                     onClick = {
-                                        excludeExtensionFromFileType(
-                                            excludableFileTypeExtension.fileExtension,
-                                            excludableFileTypeExtension.fileType
+                                        excludeFileExtension(
+                                            excludableFileTypeExtension.fileType,
+                                            excludableFileTypeExtension.fileExtension
                                         )
                                     }
                                 ) { Text("Exclude from ${excludableFileTypeExtension.fileType.stringResource()}") }
@@ -227,7 +229,7 @@ private fun StatelessCustomFileTypeConfigurationDialogPrev() {
                 .apply { extensionEditor.update("json") },
             onDismissRequest = {},
             onConfigureColorButtonPress = {},
-            excludeExtensionFromFileType = { _, _ -> }
+            excludeFileExtension = { _, _ -> }
         )
     }
 }

@@ -71,7 +71,7 @@ data class NavigatorConfig(
             }
         )
 
-    fun editFileType(current: FileType, mutate: (FileType) -> FileType): NavigatorConfig {
+    fun <FT : FileType> editFileType(current: FT, mutate: (FT) -> FT): NavigatorConfig {
         return copy(
             fileTypeConfigMap = fileTypeConfigMap.copy {
                 val fileTypeConfig = requireNotNull(remove(current))
@@ -122,16 +122,6 @@ data class NavigatorConfig(
     ) = updateSourceConfig(fileType, sourceType) {
         it.copy(autoMoveConfig = modifyAutoMoveConfig(it.autoMoveConfig))
     }
-
-//    fun excludeFileExtension(fileType: ExtensionConfigurableFileType, fileExtension: String): NavigatorConfig =
-//        updateExtensionConfigurableFileTypeToExcludedExtensions {
-//            update(fileType) { excludedFileExtensions -> excludedFileExtensions + fileExtension }
-//        }
-//
-//    fun setExcludedFileExtensions(fileType: ExtensionConfigurableFileType, excludedFileExtensions: Set<String>): NavigatorConfig =
-//        updateExtensionConfigurableFileTypeToExcludedExtensions {
-//            put(fileType, excludedFileExtensions)
-//        }
 
     companion object {
         val default by lazy {

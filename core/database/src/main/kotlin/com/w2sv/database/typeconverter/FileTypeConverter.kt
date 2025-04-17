@@ -4,14 +4,14 @@ import androidx.room.TypeConverter
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.PresetWrapper
+import com.w2sv.domain.model.PresetWrappingFileType
 
 internal object FileTypeConverter {
 
     @TypeConverter
     fun fromFileType(fileType: FileType): String =
         when (fileType) {
-            is PresetWrapper<*> -> {
+            is PresetWrappingFileType<*> -> {
                 when (fileType.presetFileType) {
                     PresetFileType.Image -> "Image"
                     PresetFileType.Audio -> "Audio"
@@ -29,7 +29,7 @@ internal object FileTypeConverter {
 
     @TypeConverter
     fun toFileType(string: String): FileType =
-        when (string) {  // TODO: colors must be updated afterwards
+        when (string) { // TODO: colors must be updated afterwards
             "Image" -> PresetFileType.Image.toFileType()
             "Audio" -> PresetFileType.Audio.toFileType()
             "Video" -> PresetFileType.Video.toFileType()

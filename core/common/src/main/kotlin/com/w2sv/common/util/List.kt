@@ -8,5 +8,6 @@ fun <T> List<T>.replaceLast(replacement: T): List<T> {
     }
 }
 
-fun <T> List<T>.mutate(block: MutableList<T>.() -> Unit): List<T> =  // TODO: kotlinutils
+// TODO: kotlinutils
+fun <T> List<T>.mutate(block: MutableList<T>.() -> Unit): List<T> =
     toMutableList().apply { block() }

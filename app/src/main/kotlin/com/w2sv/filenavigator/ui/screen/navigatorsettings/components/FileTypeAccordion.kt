@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.NonMediaFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
@@ -131,7 +130,7 @@ private fun FileTypeRow(
         setSourceAutoMoveConfigs?.let {
             MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = it)
         }
-        if (fileType is NonMediaFileType) {
+        if (!fileType.isMediaType) {
             IconButton(onClick = { showFileTypeConfigurationDialog(fileType) }) {
                 Icon(Icons.Default.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             }

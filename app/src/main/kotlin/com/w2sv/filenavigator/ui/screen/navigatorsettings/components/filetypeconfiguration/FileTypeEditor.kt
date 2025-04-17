@@ -22,9 +22,8 @@ import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.common.util.mutate
 import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.ExtensionConfigurableFileType
-import com.w2sv.domain.model.ExtensionSetFileType
 import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetWrappingFileType
 import com.w2sv.filenavigator.ui.util.InputInvalidityReason
 import com.w2sv.filenavigator.ui.util.ProxyTextEditor
 import com.w2sv.filenavigator.ui.util.StatefulTextEditor
@@ -68,13 +67,13 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
                     .find { fileExtension in it.fileExtensions }
                     ?.let { fileType ->
                         when (fileType) {
-                            is CustomFileType, is ExtensionConfigurableFileType -> if (fileType.fileExtensions.size == 1) {
+                            is CustomFileType, is PresetWrappingFileType.ExtensionConfigurable -> if (fileType.fileExtensions.size == 1) {
                                 IsNonExcludableFileTypeExtension(fileExtension, fileType)
                             } else {
                                 IsExcludableFileTypeExtension(fileExtension, fileType)
                             }
 
-                            is ExtensionSetFileType -> IsNonExcludableFileTypeExtension(fileExtension, fileType)
+                            is PresetWrappingFileType.ExtensionSet -> IsNonExcludableFileTypeExtension(fileExtension, fileType)
                         }
                     }
         }

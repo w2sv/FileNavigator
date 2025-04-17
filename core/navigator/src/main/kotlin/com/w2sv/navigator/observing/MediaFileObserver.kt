@@ -8,7 +8,6 @@ import com.w2sv.common.util.filterKeysByValueToSet
 import com.w2sv.common.util.logIdentifier
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.SourceTypeConfigMap
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType

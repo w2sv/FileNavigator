@@ -16,10 +16,9 @@ import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.datastore.proto.ProtoMapper
 import com.w2sv.datastore.sourceConfigProto
 import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.ExtensionConfigurableFileType
-import com.w2sv.domain.model.ExtensionSetFileType
-import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.PresetWrappingFileType
+import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
@@ -51,13 +50,14 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
                     put(
                         when (proto) {
                             is ExtensionPresetFileTypeProto -> (PresetFileType[ordinal] as PresetFileType.ExtensionSet).toFileType(
-                                proto.color
+                                color = proto.color
                             )
 
-                            is ExtensionConfigurableFileTypeProto -> (PresetFileType[ordinal] as PresetFileType.ExtensionConfigurable).toFileType(
-                                proto.color,
-                                proto.excludedExtensionsList.toSet()
-                            )
+                            is ExtensionConfigurableFileTypeProto ->
+                                (PresetFileType[ordinal] as PresetFileType.ExtensionConfigurable).toFileType(
+                                    color = proto.color,
+                                    excludedExtensions = proto.excludedExtensionsList.toSet()
+                                )
 
                             is CustomFileTypeProto -> CustomFileTypeMapper.toExternal(proto)
                             else -> error("Invalid proto type $proto")
@@ -74,12 +74,12 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
         navigatorConfigProto {
             external.fileTypeConfigMap.forEach { (fileType, fileTypeConfig) ->
                 when (fileType) {
-                    is ExtensionSetFileType -> this.extensionPresetFileTypes.put(
+                    is PresetWrappingFileType.ExtensionSet -> this.extensionPresetFileTypes.put(
                         fileType.ordinal,
                         extensionPresetFileTypeProto { color = fileType.colorInt }
                     )
 
-                    is ExtensionConfigurableFileType -> this.extensionConfigurableFileTypes.put(
+                    is PresetWrappingFileType.ExtensionConfigurable -> this.extensionConfigurableFileTypes.put(
                         fileType.ordinal,
                         extensionConfigurableFileTypeProto {
                             color = fileType.colorInt

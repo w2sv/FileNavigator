@@ -47,7 +47,7 @@ internal class NavigatorPreferencesToProtoMigration(
                 fileTypeConfigMap = defaultConfig.fileTypeConfigMap.mapValues { (fileType, fileTypeConfig) ->
                     i { "Migrating $fileType" }
                     if (fileType !is PresetFileType) {
-                        return@mapValues fileTypeConfig  // Should not happen
+                        return@mapValues fileTypeConfig // Should not happen
                     }
 
                     fileTypeConfig.copy(

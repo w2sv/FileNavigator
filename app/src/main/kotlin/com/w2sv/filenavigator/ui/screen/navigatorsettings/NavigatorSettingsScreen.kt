@@ -51,9 +51,8 @@ import com.w2sv.composed.OnChange
 import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
+import com.w2sv.domain.model.AnyPresetWrappingFileType
 import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetWrapper
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -67,7 +66,7 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AutoMoveInt
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeCreationDialog
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.PresetNonMediaFileTypeConfigurationDialog
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.PresetFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
@@ -93,7 +92,7 @@ private sealed interface FileTypeConfigurationDialog : Parcelable {
 
     @Parcelize
     @JvmInline
-    value class ConfigurePresetType(val fileType: FileType) : FileTypeConfigurationDialog
+    value class ConfigurePresetType(val fileType: AnyPresetWrappingFileType) : FileTypeConfigurationDialog
 }
 
 @Destination<RootGraph>(style = NavigationTransitions::class)
@@ -186,7 +185,7 @@ fun NavigatorSettingsScreen(
             showAddFileTypesBottomSheet = remember { { showAddFileTypesBottomSheet = true } },
             showFileTypeConfigurationDialog = { fileType ->
                 fileTypeConfigurationDialog = when (fileType) {
-                    is PresetWrapper<*> -> FileTypeConfigurationDialog.ConfigurePresetType(fileType)
+                    is AnyPresetWrappingFileType -> FileTypeConfigurationDialog.ConfigurePresetType(fileType)
                     is CustomFileType -> FileTypeConfigurationDialog.ConfigureCustomType(fileType)
                 }
             },
@@ -221,7 +220,7 @@ fun NavigatorSettingsScreen(
                     fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
                     onDismissRequest = closeDialog,
                     createFileType = navigatorVM.reversibleConfig::createCustomFileType,
-                    excludeExtensionFromFileType = navigatorVM.reversibleConfig::excludeFileExtension
+                    excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension
                 )
 
                 is FileTypeConfigurationDialog.ConfigureCustomType -> CustomFileTypeConfigurationDialog(
@@ -229,10 +228,10 @@ fun NavigatorSettingsScreen(
                     fileTypes = remember { (navigatorConfig.fileTypes - dialog.fileType).toImmutableSet() },
                     onDismissRequest = closeDialog,
                     saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
-                    excludeExtensionFromFileType = navigatorVM.reversibleConfig::excludeFileExtension
+                    excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension
                 )
 
-                is FileTypeConfigurationDialog.ConfigurePresetType -> PresetNonMediaFileTypeConfigurationDialog(
+                is FileTypeConfigurationDialog.ConfigurePresetType -> PresetFileTypeConfigurationDialog(
                     fileType = dialog.fileType,
                     saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
                     onDismissRequest = closeDialog

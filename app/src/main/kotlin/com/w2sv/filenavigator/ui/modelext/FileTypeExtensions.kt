@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetWrapper
+import com.w2sv.domain.model.PresetWrappingFileType
 
 /**
  * @return previously cached Color.
@@ -22,6 +22,6 @@ private val colorCache = mutableMapOf<Int, Color>()
 @ReadOnlyComposable
 fun FileType.stringResource(): String =
     when (this) {
-        is PresetWrapper<*> -> stringResource(presetFileType.labelRes)
+        is PresetWrappingFileType<*> -> stringResource(presetFileType.labelRes)
         is CustomFileType -> name
     }

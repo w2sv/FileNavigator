@@ -22,11 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.colonSuffixed
 import com.w2sv.composed.OnChange
-import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.ExtensionConfigurableFileType
-import com.w2sv.domain.model.ExtensionSetFileType
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.AnyPresetWrappingFileType
 import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.PresetWrappingFileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
@@ -35,14 +33,14 @@ import com.w2sv.filenavigator.ui.theme.dialogSectionLabel
 import kotlinx.coroutines.delay
 
 @Composable
-fun PresetNonMediaFileTypeConfigurationDialog(
-    fileType: FileType,
-    saveFileType: (FileType) -> Unit,
+fun PresetFileTypeConfigurationDialog(
+    fileType: AnyPresetWrappingFileType,
+    saveFileType: (AnyPresetWrappingFileType) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var excludedExtensions = rememberSaveable(fileType) {
-        (fileType as? ExtensionConfigurableFileType)?.excludedExtensions?.toMutableStateList() ?: mutableStateListOf()
+        (fileType as? PresetWrappingFileType.ExtensionConfigurable)?.excludedExtensions?.toMutableStateList() ?: mutableStateListOf()
     }
     var color by rememberSaveable(fileType.color) { mutableStateOf(fileType.color) }
 
@@ -70,15 +68,15 @@ fun PresetNonMediaFileTypeConfigurationDialog(
 
                 val availableExtensions = remember {
                     when (fileType) {
-                        is ExtensionConfigurableFileType -> fileType.defaultFileExtensions
-                        is ExtensionSetFileType, is CustomFileType -> fileType.fileExtensions
+                        is PresetWrappingFileType.ExtensionConfigurable -> fileType.defaultFileExtensions
+                        is PresetWrappingFileType.ExtensionSet -> fileType.fileExtensions
                     }
                 }
 
                 var showLeaveAtLeastOneExtensionEnabledWarning by rememberSaveable { mutableStateOf(false) }
                 OnChange(showLeaveAtLeastOneExtensionEnabledWarning) {
                     if (it) {
-                        delay(4000L)  // Equals SnackbarDuration.Short ms
+                        delay(4000L) // Equals SnackbarDuration.Short ms
                         showLeaveAtLeastOneExtensionEnabledWarning = false
                     }
                 }
@@ -120,7 +118,7 @@ fun PresetNonMediaFileTypeConfigurationDialog(
 @Preview
 @Composable
 private fun PresetNonMediaFileTypeConfigurationDialogPrev() {
-    PresetNonMediaFileTypeConfigurationDialog(
+    PresetFileTypeConfigurationDialog(
         fileType = PresetFileType.Text.toFileType(),
         saveFileType = {},
         onDismissRequest = {}

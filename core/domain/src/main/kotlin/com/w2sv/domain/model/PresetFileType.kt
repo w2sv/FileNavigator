@@ -20,9 +20,9 @@ sealed interface PresetFileType : StaticFileType {
     override fun label(context: Context): String =
         context.getString(labelRes)
 
-    sealed interface ExtensionSet: PresetFileType, StaticFileType.ExtensionSet {
-        fun toFileType(@ColorInt color: Int = EMPTY_COLOR_INT): ExtensionSetFileType =
-            ExtensionSetFileType(
+    sealed interface ExtensionSet : PresetFileType, StaticFileType.ExtensionSet {
+        fun toFileType(@ColorInt color: Int = EMPTY_COLOR_INT): PresetWrappingFileType.ExtensionSet =
+            PresetWrappingFileType.ExtensionSet(
                 presetFileType = this,
                 colorInt = selectColor(
                     storedColor = color,
@@ -30,12 +30,12 @@ sealed interface PresetFileType : StaticFileType {
                 )
             )
     }
-    sealed interface ExtensionConfigurable: PresetFileType, StaticFileType.ExtensionConfigurable {
+    sealed interface ExtensionConfigurable : PresetFileType, StaticFileType.ExtensionConfigurable {
         fun toFileType(
             @ColorInt color: Int = EMPTY_COLOR_INT,
             excludedExtensions: Set<String> = emptySet()
-        ): ExtensionConfigurableFileType =
-            ExtensionConfigurableFileType(
+        ): PresetWrappingFileType.ExtensionConfigurable =
+            PresetWrappingFileType.ExtensionConfigurable(
                 presetFileType = this,
                 colorInt = selectColor(
                     storedColor = color,
@@ -60,7 +60,7 @@ sealed interface PresetFileType : StaticFileType {
         }
     }
 
-    sealed interface NonMedia : PresetFileType, NonMediaFileType {
+    sealed interface NonMedia : PresetFileType, StaticFileType.NonMedia {
 
         sealed class ExtensionSet(
             @StringRes override val labelRes: Int,
