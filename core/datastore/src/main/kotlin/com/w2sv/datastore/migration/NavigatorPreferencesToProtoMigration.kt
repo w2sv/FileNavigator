@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.w2sv.common.util.log
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.proto.navigatorconfig.toProto
+import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import kotlinx.coroutines.flow.first
@@ -45,6 +46,9 @@ internal class NavigatorPreferencesToProtoMigration(
             defaultConfig.copy(
                 fileTypeConfigMap = defaultConfig.fileTypeConfigMap.mapValues { (fileType, fileTypeConfig) ->
                     i { "Migrating $fileType" }
+                    if (fileType !is PresetFileType) {
+                        return@mapValues fileTypeConfig  // Should not happen
+                    }
 
                     fileTypeConfig.copy(
                         enabled = preferences.getOrDefault(
@@ -57,8 +61,8 @@ internal class NavigatorPreferencesToProtoMigration(
                             sourceConfig.copy(
                                 enabled = preferences.getOrDefault(
                                     PreMigrationNavigatorPreferencesKey.sourceTypeEnabled(
-                                        fileType,
-                                        sourceType
+                                        fileType = fileType,
+                                        sourceType = sourceType
                                     ),
                                     sourceConfig.enabled
                                 ),

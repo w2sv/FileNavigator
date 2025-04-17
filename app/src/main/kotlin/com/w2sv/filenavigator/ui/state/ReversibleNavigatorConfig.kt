@@ -4,8 +4,8 @@ import androidx.compose.runtime.Stable
 import com.w2sv.common.util.mutate
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.ExtensionConfigurableFileType
+import com.w2sv.domain.model.ExtensionSetFileType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.NonMediaFileType
 import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import slimber.log.i
 
@@ -46,11 +45,10 @@ class ReversibleNavigatorConfig(
             scope = scope,
             appliedStateFlow = navigatorConfigDataSource.navigatorConfig.stateIn(
                 scope = scope,
-                started = SharingStarted.WhileSubscribed(),
-                initialValue = NavigatorConfig.default
+                started = SharingStarted.WhileSubscribed()
             ),
             syncState = {
-                navigatorConfigDataSource.saveNavigatorConfig(it)
+                navigatorConfigDataSource.navigatorConfig.save(it)
                 onStateSynced()
             }
         ),
@@ -113,8 +111,8 @@ class ReversibleNavigatorConfig(
         i { "Emitted $type on selectFileType" }
     }
 
-    fun editCustomFileType(editedType: CustomFileType) {
-        update { it.editCustomFileType(editedType) }
+    fun <T : FileType> editFileType(current: T, edited: T) {
+        update { it.editFileType(current) { edited } }
     }
 
     fun deleteCustomFileType(type: CustomFileType) {
@@ -125,17 +123,20 @@ class ReversibleNavigatorConfig(
      * @param fileType Must be either [CustomFileType] or [PresetFileType.NonMedia.ExtensionConfigurable]
      * TODO: test
      */
-    fun excludeFileExtension(extension: String, fileType: NonMediaFileType) {
+    fun excludeFileExtension(extension: String, fileType: FileType) {
         when (fileType) {
-            is CustomFileType -> editCustomFileType(fileType.copy(fileExtensions = fileType.fileExtensions.mutate { remove(extension) }))
-            is PresetFileType.NonMedia.ExtensionConfigurable -> update { it.excludeFileExtension(fileType, extension) }
-            is PresetFileType.NonMedia.ExtensionConfigured -> excludeFileExtension(extension, fileType.extensionConfigurableFileType)
-            is PresetFileType.NonMedia.ExtensionPreset -> error("$fileType must not be of type ExtensionPreset") // TODO
-        }
-    }
+            is CustomFileType -> update {
+                it.editFileType(fileType) {
+                    fileType.copy(fileExtensions = fileType.fileExtensions.mutate { remove(extension) })
+                }
+            }
 
-    fun setExcludedFileExtensions(fileType: ExtensionConfigurableFileType, excludedExtensions: Set<String>) {
-        update { it.setExcludedFileExtensions(fileType, excludedExtensions) }
+            is ExtensionConfigurableFileType -> update {
+                it.editFileType(fileType) { fileType.copy(excludedExtensions = fileType.excludedExtensions + extension) }
+            }
+
+            is ExtensionSetFileType -> error("ExtensionSetFileType should not be passed, yet received $fileType ")
+        }
     }
 
     private inline fun updateOrEmitSnackbar(

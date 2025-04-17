@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="EmulatorDisplays">
+    <option name="displayStateByAvdFolder">
+      <map>
+        <entry key="$USER_HOME$/.android/avd/Audi-33-audi-android-automotive-v20231206_01-x86_64.avd">
+          <value>
+            <MultiDisplayState>
+              <option name="displayDescriptors">
+                <list>
+                  <DisplayDescriptor>
+                    <option name="height" value="1920" />
+                    <option name="width" value="816" />
+                  </DisplayDescriptor>
+                  <DisplayDescriptor>
+                    <option name="displayId" value="3" />
+                    <option name="height" value="720" />
+                    <option name="width" value="1920" />
+                  </DisplayDescriptor>
+                </list>
+              </option>
+              <option name="panelState">
+                <PanelState>
+                  <option name="splitPanel">
+                    <SplitPanelState>
+                      <option name="proportion" value="0.7272727489471436" />
+                      <option name="splitType" value="VERTICAL" />
+                      <option name="firstComponent">
+                        <PanelState>
+                          <option name="displayId" value="0" />
+                        </PanelState>
+                      </option>
+                      <option name="secondComponent">
+                        <PanelState>
+                          <option name="displayId" value="3" />
+                        </PanelState>
+                      </option>
+                    </SplitPanelState>
+                  </option>
+                </PanelState>
+              </option>
+            </MultiDisplayState>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

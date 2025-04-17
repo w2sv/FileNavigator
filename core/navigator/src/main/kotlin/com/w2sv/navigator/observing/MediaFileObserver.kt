@@ -7,6 +7,7 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.util.filterKeysByValueToSet
 import com.w2sv.common.util.logIdentifier
 import com.w2sv.domain.model.FileAndSourceType
+import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.SourceTypeConfigMap
@@ -23,8 +24,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
-internal class MediaFileTypeObserver @AssistedInject constructor(
-    @Assisted private val fileType: PresetFileType.Media,
+internal class MediaFileObserver @AssistedInject constructor(
+    @Assisted private val fileType: FileType,
     @Assisted private val sourceTypeConfigMapStateFlow: StateFlow<SourceTypeConfigMap>,
     @Assisted handler: Handler,
     moveFileNotificationManager: MoveFileNotificationManager,
@@ -33,7 +34,7 @@ internal class MediaFileTypeObserver @AssistedInject constructor(
     blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>,
     @GlobalScope(AppDispatcher.IO) scope: CoroutineScope
 ) :
-    FileTypeObserver(
+    FileObserver(
         mediaType = fileType.mediaType,
         context = context,
         moveFileNotificationManager = moveFileNotificationManager,
@@ -47,14 +48,14 @@ internal class MediaFileTypeObserver @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         operator fun invoke(
-            fileType: PresetFileType.Media,
+            fileType: FileType,
             sourceTypeConfigMapStateFlow: StateFlow<SourceTypeConfigMap>,
             handler: Handler
-        ): MediaFileTypeObserver
+        ): MediaFileObserver
     }
 
     /**
-     * [FileTypeObserver]s will be relaunched when the user makes a change about the en-/disabled [SourceType]s,
+     * [FileObserver]s will be relaunched when the user makes a change about the en-/disabled [SourceType]s,
      * therefore we don't need a [StateFlow] here to react to changes.
      */
     private val enabledSourceTypes: Set<SourceType> =

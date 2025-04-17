@@ -11,7 +11,7 @@ import com.w2sv.navigator.moving.MoveResultListener
 import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
 import com.w2sv.navigator.notifications.appnotifications.FileNavigatorIsRunningNotificationManager
 import com.w2sv.navigator.observing.FileObserverFactory
-import com.w2sv.navigator.observing.FileTypeObserver
+import com.w2sv.navigator.observing.FileObserver
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -58,7 +58,7 @@ class FileNavigator : UnboundService() {
 
             Action.REREGISTER_MEDIA_OBSERVERS -> {
                 unregisterFileObservers()
-                activeFileTypeObservers = getRegisteredFileObservers()
+                activeFileObservers = getRegisteredFileObservers()
             }
 
             else -> try {
@@ -81,7 +81,7 @@ class FileNavigator : UnboundService() {
         )
 
         i { "Registering file observers" }
-        activeFileTypeObservers = getRegisteredFileObservers()
+        activeFileObservers = getRegisteredFileObservers()
         moveResultChannel
             .consumeAsFlow()
             .collectOn(scope = scope, collector = moveResultListener::onMoveResult)
@@ -89,9 +89,9 @@ class FileNavigator : UnboundService() {
         isRunning.setState(true)
     }
 
-    private var activeFileTypeObservers: List<FileTypeObserver>? = null
+    private var activeFileObservers: List<FileObserver>? = null
 
-    private fun getRegisteredFileObservers(): List<FileTypeObserver> {
+    private fun getRegisteredFileObservers(): List<FileObserver> {
         return fileObserverFactory.invoke()
             .onEach { observer ->
                 contentResolver.registerContentObserver(
@@ -112,7 +112,7 @@ class FileNavigator : UnboundService() {
     }
 
     private fun unregisterFileObservers() {
-        activeFileTypeObservers
+        activeFileObservers
             ?.forEach {
                 contentResolver.unregisterContentObserver(it)
             }

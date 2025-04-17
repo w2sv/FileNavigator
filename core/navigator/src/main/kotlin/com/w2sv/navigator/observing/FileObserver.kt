@@ -50,7 +50,7 @@ private enum class FileChangeOperation(private val flag: Int?) {
     }
 }
 
-internal abstract class FileTypeObserver(
+internal abstract class FileObserver(
     val mediaType: MediaType,
     private val context: Context,
     private val moveFileNotificationManager: MoveFileNotificationManager,
@@ -168,7 +168,7 @@ internal abstract class FileTypeObserver(
     }
 
     /**
-     * Determines the enabled [FileAndSourceType] combination, being subject of this [FileTypeObserver] and corresponding to the [mediaStoreFileData], or `null` if there is none.
+     * Determines the enabled [FileAndSourceType] combination, being subject of this [FileObserver] and corresponding to the [mediaStoreFileData], or `null` if there is none.
      * This method determines whether the observer will fire for the observed file corresponding to [mediaStoreFileData] or not.
      */
     protected abstract fun determineMatchingEnabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType?

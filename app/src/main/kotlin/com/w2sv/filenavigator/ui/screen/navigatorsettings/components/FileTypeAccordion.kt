@@ -51,7 +51,7 @@ fun FileTypeAccordion(
     sourceTypeConfigMap: ImmutableMap<SourceType, SourceConfig>,
     onSourceCheckedChange: (SourceType, Boolean) -> Unit,
     setSourceAutoMoveConfig: (SourceType, AutoMoveConfig) -> Unit,
-    showFileTypeConfigurationDialog: (NonMediaFileType) -> Unit,
+    showFileTypeConfigurationDialog: (FileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -75,7 +75,7 @@ private fun Header(
     fileType: FileType,
     excludeFileType: () -> Unit,
     setSourceAutoMoveConfigs: ((AutoMoveConfig) -> Unit)?,
-    showFileTypeConfigurationDialog: (NonMediaFileType) -> Unit,
+    showFileTypeConfigurationDialog: (FileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val selectAutoMoveDestination = setSourceAutoMoveConfigs?.let { nonNullSetSourceAutoMoveConfigs ->
@@ -107,7 +107,7 @@ private fun FileTypeRow(
     fileType: FileType,
     excludeFileType: () -> Unit,
     setSourceAutoMoveConfigs: (() -> Unit)?,
-    showFileTypeConfigurationDialog: (NonMediaFileType) -> Unit,
+    showFileTypeConfigurationDialog: (FileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(

@@ -26,8 +26,6 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.core.domain.R
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.NonMediaFileType
-import com.w2sv.domain.model.PresetFileType
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.OutlinedTextField
 import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
@@ -36,24 +34,21 @@ import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.ClearFocusOnFlowEmissionOrKeyboardHidden
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun CustomFileTypeCreationDialog(
     fileTypes: ImmutableSet<FileType>,
-    nonMediaFileTypesWithExtensions: ImmutableList<NonMediaFileType.WithExtensions>,
     onDismissRequest: () -> Unit,
     createFileType: (CustomFileType) -> Unit,
-    excludeExtensionFromFileType: (String, NonMediaFileType) -> Unit,
+    excludeExtensionFromFileType: (String, FileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ColorPickerDialogOverlaidCustomFileTypeConfigurationDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.create_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.create),
-        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, nonMediaFileTypesWithExtensions, createFileType),
+        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, createFileType),
         onDismissRequest = onDismissRequest,
         excludeExtensionFromFileType = excludeExtensionFromFileType,
         modifier = modifier
@@ -64,16 +59,15 @@ fun CustomFileTypeCreationDialog(
 fun CustomFileTypeConfigurationDialog(
     fileType: CustomFileType,
     fileTypes: ImmutableSet<FileType>,
-    nonMediaFileTypesWithExtensions: ImmutableList<NonMediaFileType.WithExtensions>,
     onDismissRequest: () -> Unit,
-    createFileType: (CustomFileType) -> Unit,
-    excludeExtensionFromFileType: (String, NonMediaFileType) -> Unit,
+    saveFileType: (CustomFileType) -> Unit,
+    excludeExtensionFromFileType: (String, FileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ColorPickerDialogOverlaidCustomFileTypeConfigurationDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_dialog_title),
         confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.save),
-        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, nonMediaFileTypesWithExtensions, createFileType, fileType),
+        customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, saveFileType, fileType),
         onDismissRequest = onDismissRequest,
         excludeExtensionFromFileType = excludeExtensionFromFileType,
         modifier = modifier
@@ -86,7 +80,7 @@ private fun ColorPickerDialogOverlaidCustomFileTypeConfigurationDialog(
     confirmButtonText: String,
     customFileTypeEditor: CustomFileTypeEditor,
     onDismissRequest: () -> Unit,
-    excludeExtensionFromFileType: (String, NonMediaFileType) -> Unit,
+    excludeExtensionFromFileType: (String, FileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ColorPickerDialogOverlaidFileTypeConfigurationDialog(
@@ -112,7 +106,7 @@ private fun StatelessCustomFileTypeConfigurationDialog(
     customFileTypeEditor: CustomFileTypeEditor,
     onDismissRequest: () -> Unit,
     onConfigureColorButtonPress: () -> Unit,
-    excludeExtensionFromFileType: (String, NonMediaFileType) -> Unit,
+    excludeExtensionFromFileType: (String, FileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     FileTypeConfigurationDialog(
@@ -227,13 +221,7 @@ private fun StatelessCustomFileTypeConfigurationDialogPrev() {
             confirmButtonText = "Apply",
             customFileTypeEditor = rememberCustomFileTypeEditor(
                 existingFileTypes = persistentSetOf(),
-                nonMediaFileTypesWithExtensions = PresetFileType.NonMedia.ExtensionConfigurable.values.map {
-                    PresetFileType.NonMedia.ExtensionConfigured(
-                        it,
-                        emptySet()
-                    )
-                }.toImmutableList(),
-                createFileType = {},
+                saveFileType = {},
                 initialFileType = CustomFileType("Html", listOf("html", "htm"), Color.Magenta.toArgb(), -1)
             )
                 .apply { extensionEditor.update("json") },

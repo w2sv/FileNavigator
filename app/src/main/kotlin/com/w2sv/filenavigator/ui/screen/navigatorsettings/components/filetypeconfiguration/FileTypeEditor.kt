@@ -22,18 +22,14 @@ import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.common.util.mutate
 import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.FileExtensionsHolder
+import com.w2sv.domain.model.ExtensionConfigurableFileType
+import com.w2sv.domain.model.ExtensionSetFileType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.NonMediaFileType
-import com.w2sv.domain.model.PresetFileType
 import com.w2sv.filenavigator.ui.util.InputInvalidityReason
 import com.w2sv.filenavigator.ui.util.ProxyTextEditor
 import com.w2sv.filenavigator.ui.util.StatefulTextEditor
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
-import kotlin.collections.forEach
-import kotlin.getValue
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -56,9 +52,9 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
     data object AlreadyAmongstAddedExtensions :
         FileExtensionInvalidityReason(com.w2sv.filenavigator.R.string.already_amongst_added_extensions)
 
-    sealed class IsExistingFileExtension<FT : FileType>(@StringRes errorMessageRes: Int) : FileExtensionInvalidityReason(errorMessageRes) {
+    sealed class IsExistingFileExtension(@StringRes errorMessageRes: Int) : FileExtensionInvalidityReason(errorMessageRes) {
         abstract val fileExtension: String
-        abstract val fileType: FT
+        abstract val fileType: FileType
 
         @Composable
         @ReadOnlyComposable
@@ -67,48 +63,45 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
 
         companion object {
             // TODO: test
-            fun get(fileExtension: String, nonMediaFileTypes: Collection<NonMediaFileType.WithExtensions>): IsExistingFileExtension<*>? =
-                PresetFileType.Media.values
-                    .findMatching(fileExtension)
-                    ?.let { mediaFileType -> IsNonExcludableFileTypeExtension(fileExtension, mediaFileType) }
-                    ?: nonMediaFileTypes
-                        .findMatching(fileExtension)
-                        ?.let { fileType ->
-                            if (fileType.fileExtensions.size == 1) {
+            fun get(fileExtension: String, fileTypes: Collection<FileType>): IsExistingFileExtension? =
+                fileTypes
+                    .find { fileExtension in it.fileExtensions }
+                    ?.let { fileType ->
+                        when (fileType) {
+                            is CustomFileType, is ExtensionConfigurableFileType -> if (fileType.fileExtensions.size == 1) {
                                 IsNonExcludableFileTypeExtension(fileExtension, fileType)
                             } else {
                                 IsExcludableFileTypeExtension(fileExtension, fileType)
                             }
+
+                            is ExtensionSetFileType -> IsNonExcludableFileTypeExtension(fileExtension, fileType)
                         }
+                    }
         }
     }
 
     data class IsNonExcludableFileTypeExtension(override val fileExtension: String, override val fileType: FileType) :
-        IsExistingFileExtension<FileType>(com.w2sv.filenavigator.R.string.is_media_file_type_extension_invalidity_reason)
+        IsExistingFileExtension(com.w2sv.filenavigator.R.string.is_media_file_type_extension_invalidity_reason)
 
     data class IsExcludableFileTypeExtension(
         override val fileExtension: String,
-        override val fileType: NonMediaFileType.WithExtensions
+        override val fileType: FileType
     ) :
-        IsExistingFileExtension<NonMediaFileType.WithExtensions>(
+        IsExistingFileExtension(
             com.w2sv.filenavigator.R.string.is_other_non_media_file_type_extension_invalidity_reason
         )
 }
 
-private fun <T : FileExtensionsHolder> Collection<T>.findMatching(fileExtension: String): T?? =
-    find { fileExtension in it.fileExtensions }
-
 @Stable
 class CustomFileTypeEditor(
     initialFileType: CustomFileType,
-    private val existingFileTypes: Collection<FileType>,
-    initialNonMediaFileTypesWithExtensions: Collection<NonMediaFileType.WithExtensions>,
+    otherFileTypes: Collection<FileType>,
     private val createFileType: (CustomFileType) -> Unit,
     private val scope: CoroutineScope,
     private val context: Context
 ) {
-    private val existingFileTypeNames by threadUnsafeLazy {
-        buildSet { existingFileTypes.forEach { add(it.label(context)) } }
+    private val otherFileTypeNames by threadUnsafeLazy {
+        buildSet { otherFileTypes.forEach { add(it.label(context)) } }
     }
 
     var fileType by mutableStateOf(initialFileType)
@@ -129,7 +122,7 @@ class CustomFileTypeEditor(
         findInvalidityReason = { input ->
             when {
                 input.containsSpecialCharacter() -> FileTypeNameInvalidityReason.ContainsSpecialCharacter
-                input in existingFileTypeNames -> FileTypeNameInvalidityReason.AlreadyExists
+                input in otherFileTypeNames -> FileTypeNameInvalidityReason.AlreadyExists
                 else -> null
             }
         }
@@ -143,10 +136,10 @@ class CustomFileTypeEditor(
         updateFileType { it.copy(fileExtensions = it.fileExtensions.mutate { removeAt(index) }) }
     }
 
-    private var nonMediaFileTypesWithExtensions by mutableStateOf(initialNonMediaFileTypesWithExtensions)
+    private var otherFileTypes by mutableStateOf(otherFileTypes)
 
-    fun updateNonMediaFileTypesWithExtensions(nonMediaFileTypesWithExtensions: Collection<NonMediaFileType.WithExtensions>) {
-        this.nonMediaFileTypesWithExtensions = nonMediaFileTypesWithExtensions
+    fun updateOtherFileTypes(nonMediaFileTypesWithExtensions: Collection<FileType>) {
+        this.otherFileTypes = nonMediaFileTypesWithExtensions
     }
 
     val extensionEditor = StatefulTextEditor(
@@ -155,7 +148,7 @@ class CustomFileTypeEditor(
             when {
                 input.containsSpecialCharacter() -> FileExtensionInvalidityReason.ContainsSpecialCharacter
                 input in fileType.fileExtensions -> FileExtensionInvalidityReason.AlreadyAmongstAddedExtensions
-                else -> FileExtensionInvalidityReason.IsExistingFileExtension.get(input, nonMediaFileTypesWithExtensions)
+                else -> FileExtensionInvalidityReason.IsExistingFileExtension.get(input, this@CustomFileTypeEditor.otherFileTypes)
             }
         }
     )
@@ -196,7 +189,6 @@ class CustomFileTypeEditor(
     companion object {
         fun saver(
             existingFileTypes: Collection<FileType>,
-            nonMediaFileTypesWithExtensions: ImmutableList<NonMediaFileType.WithExtensions>,
             createFileType: (CustomFileType) -> Unit,
             scope: CoroutineScope,
             context: Context
@@ -208,8 +200,7 @@ class CustomFileTypeEditor(
                 override fun restore(value: Pair<CustomFileType, String>): CustomFileTypeEditor =
                     CustomFileTypeEditor(
                         initialFileType = value.first,
-                        existingFileTypes = existingFileTypes,
-                        initialNonMediaFileTypesWithExtensions = nonMediaFileTypesWithExtensions,
+                        otherFileTypes = existingFileTypes,
                         createFileType = createFileType,
                         scope = scope,
                         context = context
@@ -223,8 +214,7 @@ class CustomFileTypeEditor(
 @Composable
 fun rememberCustomFileTypeEditor(
     existingFileTypes: ImmutableSet<FileType>,
-    nonMediaFileTypesWithExtensions: ImmutableList<NonMediaFileType.WithExtensions>,
-    createFileType: (CustomFileType) -> Unit,
+    saveFileType: (CustomFileType) -> Unit,
     initialFileType: CustomFileType? = null,
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current
@@ -232,21 +222,20 @@ fun rememberCustomFileTypeEditor(
     val editor = rememberSaveable(
         initialFileType,
         existingFileTypes,
-        saver = CustomFileTypeEditor.saver(existingFileTypes, nonMediaFileTypesWithExtensions, createFileType, scope, context)
+        saver = CustomFileTypeEditor.saver(existingFileTypes, saveFileType, scope, context)
     ) {
         CustomFileTypeEditor(
             initialFileType = initialFileType ?: CustomFileType.newEmpty(existingFileTypes),
-            existingFileTypes = existingFileTypes,
-            initialNonMediaFileTypesWithExtensions = nonMediaFileTypesWithExtensions,
-            createFileType = createFileType,
+            otherFileTypes = existingFileTypes,
+            createFileType = saveFileType,
             scope = scope,
             context = context
         )
     }
 
-    OnChange(nonMediaFileTypesWithExtensions) {
-        i { "Updating nonMediaFileTypesWithExtensions to $nonMediaFileTypesWithExtensions" }
-        editor.updateNonMediaFileTypesWithExtensions(it)
+    OnChange(existingFileTypes) {
+        i { "Updating existingFileTypes to $existingFileTypes" }
+        editor.updateOtherFileTypes(it)
     }
 
     return editor

@@ -6,8 +6,9 @@ import com.anggrayudi.storage.media.MediaType
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.NonMediaFileType
+import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.navigatorconfig.FileTypeConfigMap
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
@@ -22,11 +23,11 @@ import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
 /**
- * @param enabledNonMediaFileTypesWithExtensions [FileTypeObserver]s will be relaunched when the user makes a change about the en-/disabled FileTypes,
+ * @param enabledNonMediaFileTypes [FileObserver]s will be relaunched when the user makes a change about the en-/disabled FileTypes,
  * therefore we don't need a [StateFlow] here to react to changes.
  */
 internal class NonMediaFileObserver @AssistedInject constructor(
-    @Assisted private val enabledNonMediaFileTypesWithExtensions: Collection<NonMediaFileType.WithExtensions>,
+    @Assisted private val enabledNonMediaFileTypes: Collection<FileType>,
     @Assisted fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
     @Assisted handler: Handler,
     moveFileNotificationManager: MoveFileNotificationManager,
@@ -35,7 +36,7 @@ internal class NonMediaFileObserver @AssistedInject constructor(
     blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>,
     @GlobalScope(AppDispatcher.IO) scope: CoroutineScope
 ) :
-    FileTypeObserver(
+    FileObserver(
         mediaType = MediaType.DOWNLOADS,
         context = context,
         moveFileNotificationManager = moveFileNotificationManager,
@@ -56,7 +57,7 @@ internal class NonMediaFileObserver @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         operator fun invoke(
-            enabledNonMediaFileTypesWithExtensions: Collection<NonMediaFileType.WithExtensions>,
+            enabledNonMediaFileTypesWithExtensions: Collection<FileType>,
             fileTypeConfigMapStateFlow: StateFlow<FileTypeConfigMap>,
             handler: Handler
         ): NonMediaFileObserver
@@ -66,11 +67,11 @@ internal class NonMediaFileObserver @AssistedInject constructor(
         get() = this.javaClass.simpleName
 
     init {
-        i { "Initialized NonMediaFileObserver with fileTypes: $enabledNonMediaFileTypesWithExtensions" }
+        i { "Initialized NonMediaFileObserver with fileTypes: $enabledNonMediaFileTypes" }
     }
 
     override fun determineMatchingEnabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType? =
-        enabledNonMediaFileTypesWithExtensions
+        enabledNonMediaFileTypes
             .firstOrNull { it.fileExtensions.contains(mediaStoreFileData.extension) }
             ?.let { fileType -> FileAndSourceType(fileType, SourceType.Download) }
 }

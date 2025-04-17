@@ -3,7 +3,6 @@ package com.w2sv.datastore.migration
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 
@@ -40,15 +39,15 @@ internal object PreMigrationNavigatorPreferencesKey {
             }
         }
 
-    fun fileTypeEnabled(fileType: FileType): Preferences.Key<Boolean> =
+    fun fileTypeEnabled(fileType: PresetFileType): Preferences.Key<Boolean> =
         booleanPreferencesKey(fileType.preferencesKeyNameIdentifier)
 
-    fun sourceTypeEnabled(fileType: FileType, sourceType: SourceType): Preferences.Key<Boolean> =
+    fun sourceTypeEnabled(fileType: PresetFileType, sourceType: SourceType): Preferences.Key<Boolean> =
         booleanPreferencesKey("${fileType.preferencesKeyNameIdentifier}.${sourceType.name}.IS_ENABLED")
 
-    fun lastMoveDestination(fileType: FileType, sourceType: SourceType): Preferences.Key<String> =
+    fun lastMoveDestination(fileType: PresetFileType, sourceType: SourceType): Preferences.Key<String> =
         stringPreferencesKey("${fileType.preferencesKeyNameIdentifier}.${sourceType.name}.LAST_MOVE_DESTINATION")
 
-    private val FileType.preferencesKeyNameIdentifier: String
+    private val PresetFileType.preferencesKeyNameIdentifier: String
         get() = this::class.java.simpleName
 }

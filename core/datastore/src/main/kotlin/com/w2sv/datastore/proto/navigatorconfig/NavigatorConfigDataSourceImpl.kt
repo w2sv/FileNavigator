@@ -3,26 +3,29 @@ package com.w2sv.datastore.proto.navigatorconfig
 import androidx.annotation.VisibleForTesting
 import androidx.datastore.core.DataStore
 import com.w2sv.datastore.NavigatorConfigProto
+import com.w2sv.datastoreutils.datastoreflow.DataStoreFlow
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.kotlinutils.copy
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 internal class NavigatorConfigDataSourceImpl @Inject constructor(
     private val navigatorConfigProtoDataStore: DataStore<NavigatorConfigProto>
 ) :
     NavigatorConfigDataSource {
 
-    override val navigatorConfig: Flow<NavigatorConfig> =
-        navigatorConfigProtoDataStore.data.map { it.toExternal() }
+    override val navigatorConfig: DataStoreFlow<NavigatorConfig> = DataStoreFlow(
+        navigatorConfigProtoDataStore.data.map { it.toExternal() },
+        { NavigatorConfig.default },
+        ::saveNavigatorConfig
+    )
 
-    override suspend fun saveNavigatorConfig(config: NavigatorConfig) {
+    private suspend fun saveNavigatorConfig(config: NavigatorConfig) {
         updateData { config }
     }
 

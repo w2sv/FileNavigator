@@ -52,7 +52,8 @@ import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
 import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.PresetWrapper
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -72,7 +73,6 @@ import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
@@ -93,7 +93,7 @@ private sealed interface FileTypeConfigurationDialog : Parcelable {
 
     @Parcelize
     @JvmInline
-    value class ConfigurePresetNonMediaType(val fileType: PresetFileType.NonMedia) : FileTypeConfigurationDialog
+    value class ConfigurePresetType(val fileType: FileType) : FileTypeConfigurationDialog
 }
 
 @Destination<RootGraph>(style = NavigationTransitions::class)
@@ -186,7 +186,7 @@ fun NavigatorSettingsScreen(
             showAddFileTypesBottomSheet = remember { { showAddFileTypesBottomSheet = true } },
             showFileTypeConfigurationDialog = { fileType ->
                 fileTypeConfigurationDialog = when (fileType) {
-                    is PresetFileType.NonMedia -> FileTypeConfigurationDialog.ConfigurePresetNonMediaType(fileType)
+                    is PresetWrapper<*> -> FileTypeConfigurationDialog.ConfigurePresetType(fileType)
                     is CustomFileType -> FileTypeConfigurationDialog.ConfigureCustomType(fileType)
                 }
             },
@@ -213,31 +213,28 @@ fun NavigatorSettingsScreen(
             )
         }
 
-        fileTypeConfigurationDialog?.let {
+        fileTypeConfigurationDialog?.let { dialog ->
             val closeDialog = remember { { fileTypeConfigurationDialog = null } }
 
-            when (it) {
+            when (dialog) {
                 FileTypeConfigurationDialog.CreateType -> CustomFileTypeCreationDialog(
                     fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
-                    nonMediaFileTypesWithExtensions = navigatorConfig.nonMediaFileTypesWithExtensions.toImmutableList(),
                     onDismissRequest = closeDialog,
                     createFileType = navigatorVM.reversibleConfig::createCustomFileType,
                     excludeExtensionFromFileType = navigatorVM.reversibleConfig::excludeFileExtension
                 )
 
                 is FileTypeConfigurationDialog.ConfigureCustomType -> CustomFileTypeConfigurationDialog(
-                    fileType = it.fileType,
-                    fileTypes = remember { (navigatorConfig.fileTypes - it.fileType).toImmutableSet() },
-                    nonMediaFileTypesWithExtensions = navigatorConfig.nonMediaFileTypesWithExtensions.toImmutableList(),
+                    fileType = dialog.fileType,
+                    fileTypes = remember { (navigatorConfig.fileTypes - dialog.fileType).toImmutableSet() },
                     onDismissRequest = closeDialog,
-                    createFileType = navigatorVM.reversibleConfig::editCustomFileType,
+                    saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
                     excludeExtensionFromFileType = navigatorVM.reversibleConfig::excludeFileExtension
                 )
 
-                is FileTypeConfigurationDialog.ConfigurePresetNonMediaType -> PresetNonMediaFileTypeConfigurationDialog(
-                    fileType = it.fileType,
-                    excludedExtensions = navigatorConfig.excludedPresetNonMediaTypeFileExtensions(it.fileType).toImmutableList(),
-                    setExcludedFileExtensions = navigatorVM.reversibleConfig::setExcludedFileExtensions,
+                is FileTypeConfigurationDialog.ConfigurePresetType -> PresetNonMediaFileTypeConfigurationDialog(
+                    fileType = dialog.fileType,
+                    saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
                     onDismissRequest = closeDialog
                 )
             }

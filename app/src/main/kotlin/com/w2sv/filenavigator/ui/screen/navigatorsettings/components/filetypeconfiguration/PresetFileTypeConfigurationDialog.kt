@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -21,62 +22,56 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.colonSuffixed
 import com.w2sv.composed.OnChange
+import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.ExtensionConfigurableFileType
-import com.w2sv.domain.model.NonMediaFileType
+import com.w2sv.domain.model.ExtensionSetFileType
+import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.PresetFileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.theme.dialogSectionLabel
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 
 @Composable
 fun PresetNonMediaFileTypeConfigurationDialog(
-    fileType: PresetFileType.NonMedia,
-    excludedExtensions: ImmutableList<String>,
-    setExcludedFileExtensions: (ExtensionConfigurableFileType, Set<String>) -> Unit,
+    fileType: FileType,
+    saveFileType: (FileType) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var mutableExcludedExtensions = remember { excludedExtensions.toMutableStateList() }
+    var excludedExtensions = rememberSaveable(fileType) {
+        (fileType as? ExtensionConfigurableFileType)?.excludedExtensions?.toMutableStateList() ?: mutableStateListOf()
+    }
+    var color by rememberSaveable(fileType.color) { mutableStateOf(fileType.color) }
+
     val context = LocalContext.current
 
     ColorPickerDialogOverlaidFileTypeConfigurationDialog(
-        fileTypeColor = fileType.color,
-        applyColor = {}
+        fileTypeColor = color,
+        applyColor = { color = it }
     ) { openColorPickerDialog ->
         FileTypeConfigurationDialog(
             icon = fileType.iconRes,
-            title = stringResource(
-                R.string.preset_non_media_file_type_configuration_dialog_title,
-                fileType.label(context)
-            ),
+            title = stringResource(R.string.preset_non_media_file_type_configuration_dialog_title, fileType.label(context)),
             onDismissRequest = onDismissRequest,
             modifier = modifier,
             onConfigureColorButtonPress = openColorPickerDialog,
-            fileTypeColor = fileType.color,
-            onConfirmButtonPress = {
-                setExcludedFileExtensions(
-                    fileType as ExtensionConfigurableFileType, // TODO: unsafe cast
-                    mutableExcludedExtensions.toSet()
-                )
-            }
+            fileTypeColor = color,
+            onConfirmButtonPress = { saveFileType(fileType) }
         ) {
             Column { // To prevent spacing in between text and chip flow row introduced by FileTypeConfigurationDialog
                 Text(
-                    stringResource(R.string.file_extensions).colonSuffixed(),
+                    text = stringResource(R.string.file_extensions).colonSuffixed(),
                     style = MaterialTheme.typography.dialogSectionLabel,
                     modifier = Modifier.padding(bottom = 6.dp)
                 )
 
                 val availableExtensions = remember {
                     when (fileType) {
-                        is NonMediaFileType.WithExtensions -> fileType.fileExtensions
                         is ExtensionConfigurableFileType -> fileType.defaultFileExtensions
-                        else -> error("Shouldn't happen") // TODO
+                        is ExtensionSetFileType, is CustomFileType -> fileType.fileExtensions
                     }
                 }
 
@@ -90,17 +85,17 @@ fun PresetNonMediaFileTypeConfigurationDialog(
 
                 FileExtensionsChipFlowRow {
                     availableExtensions.forEach { extension ->
-                        val isExcluded by remember { derivedStateOf { extension in mutableExcludedExtensions } }
+                        val isExcluded by remember { derivedStateOf { extension in excludedExtensions } }
                         FileExtensionChip(
                             extension = extension,
                             onClick = {
                                 when {
-                                    availableExtensions.size - mutableExcludedExtensions.size == 1 ->
+                                    availableExtensions.size - excludedExtensions.size == 1 ->
                                         showLeaveAtLeastOneExtensionEnabledWarning =
                                             true
 
-                                    isExcluded -> mutableExcludedExtensions.remove(extension)
-                                    else -> mutableExcludedExtensions.add(extension)
+                                    isExcluded -> excludedExtensions.remove(extension)
+                                    else -> excludedExtensions.add(extension)
                                 }
                             },
                             selected = !isExcluded
@@ -126,9 +121,8 @@ fun PresetNonMediaFileTypeConfigurationDialog(
 @Composable
 private fun PresetNonMediaFileTypeConfigurationDialogPrev() {
     PresetNonMediaFileTypeConfigurationDialog(
-        fileType = PresetFileType.Text,
-        excludedExtensions = persistentListOf(),
-        setExcludedFileExtensions = { _, _ -> },
+        fileType = PresetFileType.Text.toFileType(),
+        saveFileType = {},
         onDismissRequest = {}
     )
 }

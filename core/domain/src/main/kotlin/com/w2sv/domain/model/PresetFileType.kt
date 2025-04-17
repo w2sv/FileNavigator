@@ -1,21 +1,17 @@
 package com.w2sv.domain.model
 
 import android.content.Context
-import android.os.Parcel
-import android.os.Parcelable
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.os.ParcelCompat
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.core.domain.R
-import com.w2sv.domain.model.PresetFileType.Media
-import com.w2sv.domain.model.PresetFileType.NonMedia
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
-sealed interface PresetFileType : FileType {
+sealed interface PresetFileType : StaticFileType {
     val labelRes: Int
+    val defaultColorInt: Int
 
     @IgnoredOnParcel
     override val ordinal: Int
@@ -24,14 +20,39 @@ sealed interface PresetFileType : FileType {
     override fun label(context: Context): String =
         context.getString(labelRes)
 
+    sealed interface ExtensionSet: PresetFileType, StaticFileType.ExtensionSet {
+        fun toFileType(@ColorInt color: Int = EMPTY_COLOR_INT): ExtensionSetFileType =
+            ExtensionSetFileType(
+                presetFileType = this,
+                colorInt = selectColor(
+                    storedColor = color,
+                    defaultColor = defaultColorInt
+                )
+            )
+    }
+    sealed interface ExtensionConfigurable: PresetFileType, StaticFileType.ExtensionConfigurable {
+        fun toFileType(
+            @ColorInt color: Int = EMPTY_COLOR_INT,
+            excludedExtensions: Set<String> = emptySet()
+        ): ExtensionConfigurableFileType =
+            ExtensionConfigurableFileType(
+                presetFileType = this,
+                colorInt = selectColor(
+                    storedColor = color,
+                    defaultColor = defaultColorInt
+                ),
+                excludedExtensions = excludedExtensions
+            )
+    }
+
     sealed class Media(
         @StringRes override val labelRes: Int,
         @DrawableRes override val iconRes: Int,
-        @ColorInt override val colorInt: Int,
+        @ColorInt override val defaultColorInt: Int,
         override val mediaType: MediaType,
         override val sourceTypes: List<SourceType>,
         override val fileExtensions: Collection<String>
-    ) : PresetFileType, FileExtensionsHolder {
+    ) : ExtensionSet {
         companion object {
             @JvmStatic
             val values: List<Media>
@@ -41,56 +62,24 @@ sealed interface PresetFileType : FileType {
 
     sealed interface NonMedia : PresetFileType, NonMediaFileType {
 
-        sealed class ExtensionPreset(
+        sealed class ExtensionSet(
             @StringRes override val labelRes: Int,
             @DrawableRes override val iconRes: Int,
-            @ColorInt override val colorInt: Int,
+            @ColorInt override val defaultColorInt: Int,
             override val fileExtensions: Collection<String>
-        ) : NonMedia, NonMediaFileType.WithExtensions
+        ) : NonMedia, PresetFileType.ExtensionSet
 
         sealed class ExtensionConfigurable(
             @StringRes override val labelRes: Int,
             @DrawableRes override val iconRes: Int,
-            @ColorInt override val colorInt: Int,
+            @ColorInt override val defaultColorInt: Int,
             override val defaultFileExtensions: Set<String>
-        ) : NonMedia, ExtensionConfigurableFileType {
+        ) : NonMedia, PresetFileType.ExtensionConfigurable {
 
             companion object {
                 @JvmStatic
                 val values: List<ExtensionConfigurable>
                     get() = listOf(Text, Archive, EBook)
-            }
-        }
-
-        data class ExtensionConfigured(val extensionConfigurableFileType: ExtensionConfigurable, val excludedExtensions: Set<String>) :
-            NonMedia by extensionConfigurableFileType,
-            NonMediaFileType.WithExtensions {
-
-            @IgnoredOnParcel
-            override val fileExtensions: Set<String> = extensionConfigurableFileType.defaultFileExtensions - excludedExtensions
-
-            // TODO: maybe refactor such that this class is not Parcelable anymore, as it does not actually need to be
-            override fun writeToParcel(parcel: Parcel, flags: Int) {
-                parcel.writeParcelable(extensionConfigurableFileType, flags) // Manually write fileType
-                parcel.writeStringList(excludedExtensions.toList()) // Convert Set to List
-            }
-
-            override fun describeContents(): Int =
-                0
-
-            companion object CREATOR : Parcelable.Creator<ExtensionConfigured> {
-                override fun createFromParcel(parcel: Parcel): ExtensionConfigured {
-                    val fileType: ExtensionConfigurable = ParcelCompat.readParcelable(
-                        parcel,
-                        ExtensionConfigurable::class.java.classLoader,
-                        ExtensionConfigurable::class.java
-                    )!!
-                    val excludedExtensions = parcel.createStringArrayList()?.toSet() ?: emptySet()
-                    return ExtensionConfigured(fileType, excludedExtensions)
-                }
-
-                override fun newArray(size: Int): Array<ExtensionConfigured?> =
-                    arrayOfNulls(size)
             }
         }
 
@@ -101,22 +90,11 @@ sealed interface PresetFileType : FileType {
         }
     }
 
-    companion object {
-        @JvmStatic
-        val values: List<PresetFileType>
-            get() = Media.values + NonMedia.values
-
-        operator fun get(ordinal: Int): PresetFileType =
-            values[ordinal]
-
-        private val ordinalsMap by lazy { values.withIndex().associate { it.value to it.index } }
-    }
-
     @Parcelize
     data object Image : Media(
         labelRes = R.string.image,
         iconRes = R.drawable.ic_image_24,
-        colorInt = -4253137,
+        defaultColorInt = -4253137,
         mediaType = MediaType.IMAGE,
         sourceTypes = listOf(
             SourceType.Camera,
@@ -135,7 +113,7 @@ sealed interface PresetFileType : FileType {
     data object Video : Media(
         labelRes = R.string.video,
         iconRes = R.drawable.ic_video_file_24,
-        colorInt = -13449,
+        defaultColorInt = -13449,
         mediaType = MediaType.VIDEO,
         sourceTypes = listOf(SourceType.Camera, SourceType.OtherApp, SourceType.Download),
         fileExtensions = setOf(
@@ -149,7 +127,7 @@ sealed interface PresetFileType : FileType {
     data object Audio : Media(
         labelRes = R.string.audio,
         iconRes = R.drawable.ic_audio_file_24,
-        colorInt = -891856,
+        defaultColorInt = -891856,
         mediaType = MediaType.AUDIO,
         sourceTypes = listOf(SourceType.Recording, SourceType.OtherApp, SourceType.Download),
         fileExtensions = setOf(
@@ -160,7 +138,7 @@ sealed interface PresetFileType : FileType {
     )
 
     @Parcelize
-    data object PDF : NonMedia.ExtensionPreset(
+    data object PDF : NonMedia.ExtensionSet(
         R.string.pdf,
         R.drawable.ic_pdf_24,
         -14941188,
@@ -190,7 +168,7 @@ sealed interface PresetFileType : FileType {
     )
 
     @Parcelize
-    data object APK : NonMedia.ExtensionPreset(
+    data object APK : NonMedia.ExtensionSet(
         R.string.apk,
         R.drawable.ic_apk_file_24,
         -15410306,
@@ -208,4 +186,21 @@ sealed interface PresetFileType : FileType {
             "bpnueb", "pef", "vbk", "fkb", "bkk"
         )
     )
+
+    companion object {
+        @JvmStatic
+        val values: List<PresetFileType>
+            get() = Media.values + NonMedia.values
+
+        operator fun get(ordinal: Int): PresetFileType =
+            values[ordinal]
+
+        private val ordinalsMap by lazy { values.withIndex().associate { it.value to it.index } }
+    }
 }
+
+private const val EMPTY_COLOR_INT = 0
+
+@ColorInt
+private fun selectColor(@ColorInt storedColor: Int, @ColorInt defaultColor: Int): Int =
+    if (storedColor != EMPTY_COLOR_INT) storedColor else defaultColor
