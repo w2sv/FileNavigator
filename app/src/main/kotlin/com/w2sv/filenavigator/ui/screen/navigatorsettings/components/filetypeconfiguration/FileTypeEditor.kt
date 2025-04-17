@@ -22,10 +22,9 @@ import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.common.util.mutate
 import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.FileExtensionsHolder
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.NonMediaFileType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.StaticPresetFileType
 import com.w2sv.filenavigator.ui.util.InputInvalidityReason
 import com.w2sv.filenavigator.ui.util.ProxyTextEditor
 import com.w2sv.filenavigator.ui.util.StatefulTextEditor
@@ -68,7 +67,7 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
         companion object {
             // TODO: test
             fun get(fileExtension: String, nonMediaFileTypes: Collection<NonMediaFileType.WithExtensions>): IsExistingFileExtension<*>? =
-                PresetFileType.Media.values
+                StaticPresetFileType.Media.values
                     .findMatching(fileExtension)
                     ?.let { mediaFileType -> IsNonExcludableFileTypeExtension(fileExtension, mediaFileType) }
                     ?: nonMediaFileTypes

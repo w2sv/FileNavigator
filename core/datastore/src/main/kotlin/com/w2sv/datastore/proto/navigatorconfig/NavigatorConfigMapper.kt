@@ -12,14 +12,14 @@ import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.datastore.proto.ProtoMapper
 import com.w2sv.datastore.sourceConfigProto
 import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.ExtensionConfigurableFileType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.StaticPresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
+import com.w2sv.domain.model.navigatorconfig.FileTypeConfigMap
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.kotlinutils.map
@@ -36,19 +36,21 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
             fileTypeConfigMap = proto.fileTypeToConfigMap.map { (ordinal, fileTypeConfigProto) ->
                 fileType(ordinal, proto) to FileTypeConfigMapper.toExternal(fileTypeConfigProto)
             },
-            extensionConfigurableFileTypeToExcludedExtensions = proto.extensionConfigurableFileTypeToExcludedExtensionsMap
-                .map { (fileTypeOrdinal, extensionsString) ->
-                    (fileType(fileTypeOrdinal, proto) as ExtensionConfigurableFileType) to extensionsString.split(EXTENSION_DELIMITER)
-                        .toSet()
-                },
             showBatchMoveNotification = proto.showBatchMoveNotification,
             disableOnLowBattery = proto.disableOnLowBattery,
             startOnBoot = proto.startOnBoot
         )
 
+    private fun NavigatorConfigProto.fileTypeConfigMap(): FileTypeConfigMap =
+        buildMap {
+            extensionPresetFileTypesMap.forEach { (ordinal, extensionPresetFileTypeProto) ->
+
+            }
+        }
+
     private fun fileType(ordinal: Int, proto: NavigatorConfigProto): FileType =
         try {
-            PresetFileType[ordinal]
+            StaticPresetFileType[ordinal]
         } catch (_: IndexOutOfBoundsException) {
             CustomFileTypeMapper.toExternal(proto.customFileTypesList.first { it.ordinal == ordinal })
         }
@@ -64,11 +66,6 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
                         this.customFileTypes.add(CustomFileTypeMapper.toProto(customFileType))
                     }
                     fileType.ordinal to FileTypeConfigMapper.toProto(fileTypeConfig)
-                }
-            )
-            this.extensionConfigurableFileTypeToExcludedExtensions.putAll(
-                external.extensionConfigurableFileTypeToExcludedExtensions.map { (fileType, fileExtensions) ->
-                    fileType.ordinal to fileExtensions.joinToString(EXTENSION_DELIMITER)
                 }
             )
             this.showBatchMoveNotification = external.showBatchMoveNotification

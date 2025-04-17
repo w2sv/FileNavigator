@@ -52,7 +52,7 @@ import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
 import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.StaticPresetFileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
@@ -93,7 +93,7 @@ private sealed interface FileTypeConfigurationDialog : Parcelable {
 
     @Parcelize
     @JvmInline
-    value class ConfigurePresetNonMediaType(val fileType: PresetFileType.NonMedia) : FileTypeConfigurationDialog
+    value class ConfigurePresetNonMediaType(val fileType: StaticPresetFileType.NonMedia) : FileTypeConfigurationDialog
 }
 
 @Destination<RootGraph>(style = NavigationTransitions::class)
@@ -186,7 +186,7 @@ fun NavigatorSettingsScreen(
             showAddFileTypesBottomSheet = remember { { showAddFileTypesBottomSheet = true } },
             showFileTypeConfigurationDialog = { fileType ->
                 fileTypeConfigurationDialog = when (fileType) {
-                    is PresetFileType.NonMedia -> FileTypeConfigurationDialog.ConfigurePresetNonMediaType(fileType)
+                    is StaticPresetFileType.NonMedia -> FileTypeConfigurationDialog.ConfigurePresetNonMediaType(fileType)
                     is CustomFileType -> FileTypeConfigurationDialog.ConfigureCustomType(fileType)
                 }
             },

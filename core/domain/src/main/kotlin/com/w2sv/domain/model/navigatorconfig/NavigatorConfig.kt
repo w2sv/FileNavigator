@@ -2,19 +2,17 @@ package com.w2sv.domain.model.navigatorconfig
 
 import com.w2sv.common.util.filterKeysByValueToSet
 import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.ExtensionConfigurableFileType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.NonMediaFileType
-import com.w2sv.domain.model.PresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.defaultConfig
 import com.w2sv.kotlinutils.copy
 import com.w2sv.kotlinutils.map
 import com.w2sv.kotlinutils.update
 
+typealias FileTypeConfigMap = Map<FileType, FileTypeConfig>
+
 data class NavigatorConfig(
-    val fileTypeConfigMap: Map<FileType, FileTypeConfig>,
-    val extensionConfigurableFileTypeToExcludedExtensions: Map<ExtensionConfigurableFileType, Set<String>>,
+    val fileTypeConfigMap: FileTypeConfigMap,
     val showBatchMoveNotification: Boolean,
     val disableOnLowBattery: Boolean,
     val startOnBoot: Boolean
@@ -34,39 +32,6 @@ data class NavigatorConfig(
     val sortedDisabledFileTypes: List<FileType> by lazy {
         disabledFileTypes.sortedByOrdinal()
     }
-
-    val enabledNonMediaFileTypesWithExtensions: List<NonMediaFileType.WithExtensions> by lazy {
-        enabledFileTypes.filterIsInstance<NonMediaFileType>().withExtensions()
-    }
-
-    val nonMediaFileTypesWithExtensions: List<NonMediaFileType.WithExtensions> by lazy {
-        fileTypeConfigMap.keys.filterIsInstance<NonMediaFileType>().withExtensions()
-    }
-
-    fun excludedPresetNonMediaTypeFileExtensions(fileType: PresetFileType.NonMedia): Set<String> =
-        when (fileType) {
-            is PresetFileType.NonMedia.ExtensionPreset -> emptySet()
-            is PresetFileType.NonMedia.ExtensionConfigurable -> extensionConfigurableFileTypeToExcludedExtensions.getOrDefault(
-                fileType,
-                emptySet()
-            )
-            else -> error("Shouldn't happen") // TODO
-        }
-
-    private fun Collection<NonMediaFileType>.withExtensions(): List<NonMediaFileType.WithExtensions> =
-        map { nonMediaFileType ->
-            when (nonMediaFileType) {
-                is NonMediaFileType.WithExtensions -> nonMediaFileType
-                is PresetFileType.NonMedia.ExtensionConfigurable -> PresetFileType.NonMedia.ExtensionConfigured(
-                    extensionConfigurableFileType = nonMediaFileType,
-                    excludedExtensions = extensionConfigurableFileTypeToExcludedExtensions.getOrDefault(nonMediaFileType, emptySet())
-                )
-
-                is PresetFileType.NonMedia.ExtensionConfigured -> error(
-                    "fileTypeConfigMap should not contain file types of type PresetFileType.NonMedia.ExtensionConfigured"
-                ) // TODO: refactor so that impossible
-            }
-        }
 
     /**
      * @return A [Set] of all [FileType]s included in the config
@@ -163,26 +128,20 @@ data class NavigatorConfig(
         it.copy(autoMoveConfig = modifyAutoMoveConfig(it.autoMoveConfig))
     }
 
-    fun excludeFileExtension(fileType: ExtensionConfigurableFileType, fileExtension: String): NavigatorConfig =
-        updateExtensionConfigurableFileTypeToExcludedExtensions {
-            update(fileType) { excludedFileExtensions -> excludedFileExtensions + fileExtension }
-        }
-
-    fun setExcludedFileExtensions(fileType: ExtensionConfigurableFileType, excludedFileExtensions: Set<String>): NavigatorConfig =
-        updateExtensionConfigurableFileTypeToExcludedExtensions {
-            put(fileType, excludedFileExtensions)
-        }
-
-    fun updateExtensionConfigurableFileTypeToExcludedExtensions(
-        block: MutableMap<ExtensionConfigurableFileType, Set<String>>.() -> Unit
-    ): NavigatorConfig =
-        copy(extensionConfigurableFileTypeToExcludedExtensions = extensionConfigurableFileTypeToExcludedExtensions.copy(block))
+//    fun excludeFileExtension(fileType: ExtensionConfigurableFileType, fileExtension: String): NavigatorConfig =
+//        updateExtensionConfigurableFileTypeToExcludedExtensions {
+//            update(fileType) { excludedFileExtensions -> excludedFileExtensions + fileExtension }
+//        }
+//
+//    fun setExcludedFileExtensions(fileType: ExtensionConfigurableFileType, excludedFileExtensions: Set<String>): NavigatorConfig =
+//        updateExtensionConfigurableFileTypeToExcludedExtensions {
+//            put(fileType, excludedFileExtensions)
+//        }
 
     companion object {
         val default by lazy {
             NavigatorConfig(
-                fileTypeConfigMap = PresetFileType.values.associateWith { fileType -> fileType.defaultConfig() },
-                extensionConfigurableFileTypeToExcludedExtensions = emptyMap(),
+                fileTypeConfigMap = emptyMap(),  // PresetFileType.values.associateWith { fileType -> fileType.defaultConfig() },
                 showBatchMoveNotification = true,
                 disableOnLowBattery = false,
                 startOnBoot = false

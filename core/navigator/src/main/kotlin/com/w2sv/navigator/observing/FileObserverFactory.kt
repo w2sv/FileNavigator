@@ -4,18 +4,15 @@ import android.os.Handler
 import android.os.HandlerThread
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
+import com.w2sv.domain.model.StaticPresetFileType
+import com.w2sv.domain.model.navigatorconfig.FileTypeConfigMap
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.flow.mapState
 import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
-
-typealias FileTypeConfigMap = Map<FileType, FileTypeConfig>
+import javax.inject.Inject
 
 internal class FileObserverFactory @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
@@ -46,7 +43,7 @@ internal class FileObserverFactory @Inject constructor(
     }
 
     private fun mediaFileTypeObservers(handler: Handler): List<MediaFileTypeObserver> =
-        PresetFileType.Media.values
+        StaticPresetFileType.Media.values
             .filter { it in navigatorConfig.enabledFileTypes }
             .map { mediaFileType ->
                 mediaFileTypeObserverFactory.invoke(

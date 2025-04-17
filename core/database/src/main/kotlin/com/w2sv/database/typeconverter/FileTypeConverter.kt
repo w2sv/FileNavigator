@@ -3,21 +3,21 @@ package com.w2sv.database.typeconverter
 import androidx.room.TypeConverter
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.StaticPresetFileType
 
 internal object FileTypeConverter {
 
     @TypeConverter
     fun fromFileType(fileType: FileType): String =
         when (fileType) {
-            PresetFileType.Image -> "Image"
-            PresetFileType.Audio -> "Audio"
-            PresetFileType.Video -> "Video"
-            PresetFileType.PDF -> "PDF"
-            PresetFileType.APK -> "APK"
-            PresetFileType.Text -> "Text"
-            PresetFileType.Archive -> "Archive"
-            PresetFileType.EBook -> "EBook"
+            StaticPresetFileType.Image -> "Image"
+            StaticPresetFileType.Audio -> "Audio"
+            StaticPresetFileType.Video -> "Video"
+            StaticPresetFileType.PDF -> "PDF"
+            StaticPresetFileType.APK -> "APK"
+            StaticPresetFileType.Text -> "Text"
+            StaticPresetFileType.Archive -> "Archive"
+            StaticPresetFileType.EBook -> "EBook"
             is CustomFileType -> fileType.serialized()
             else -> error("Should not happen") // TODO
         }
@@ -25,14 +25,14 @@ internal object FileTypeConverter {
     @TypeConverter
     fun toFileType(string: String): FileType =
         when (string) {
-            "Image" -> PresetFileType.Image
-            "Audio" -> PresetFileType.Audio
-            "Video" -> PresetFileType.Video
-            "PDF" -> PresetFileType.PDF
-            "APK" -> PresetFileType.APK
-            "Text" -> PresetFileType.Text
-            "Archive" -> PresetFileType.Archive
-            "EBook" -> PresetFileType.EBook
+            "Image" -> StaticPresetFileType.Image
+            "Audio" -> StaticPresetFileType.Audio
+            "Video" -> StaticPresetFileType.Video
+            "PDF" -> StaticPresetFileType.PDF
+            "APK" -> StaticPresetFileType.APK
+            "Text" -> StaticPresetFileType.Text
+            "Archive" -> StaticPresetFileType.Archive
+            "EBook" -> StaticPresetFileType.EBook
             else -> CustomFileType.deserialized(string)
         }
 }

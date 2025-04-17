@@ -27,7 +27,7 @@ import com.w2sv.core.domain.R
 import com.w2sv.domain.model.CustomFileType
 import com.w2sv.domain.model.FileType
 import com.w2sv.domain.model.NonMediaFileType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.StaticPresetFileType
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.OutlinedTextField
 import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
@@ -227,8 +227,8 @@ private fun StatelessCustomFileTypeConfigurationDialogPrev() {
             confirmButtonText = "Apply",
             customFileTypeEditor = rememberCustomFileTypeEditor(
                 existingFileTypes = persistentSetOf(),
-                nonMediaFileTypesWithExtensions = PresetFileType.NonMedia.ExtensionConfigurable.values.map {
-                    PresetFileType.NonMedia.ExtensionConfigured(
+                nonMediaFileTypesWithExtensions = StaticPresetFileType.NonMedia.ExtensionConfigurable.values.map {
+                    StaticPresetFileType.NonMedia.ExtensionConfigured(
                         it,
                         emptySet()
                     )

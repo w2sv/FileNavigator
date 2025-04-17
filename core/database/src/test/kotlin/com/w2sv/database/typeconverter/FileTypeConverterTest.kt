@@ -1,7 +1,7 @@
 package com.w2sv.database.typeconverter
 
 import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.StaticPresetFileType
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
@@ -9,7 +9,7 @@ internal class FileTypeConverterTest {
 
     @Test
     fun testBackAndForthPresetFileTypeConversion() {
-        PresetFileType.values.forEach {
+        StaticPresetFileType.values.forEach {
             assertEquals(it, FileTypeConverter.toFileType(FileTypeConverter.fromFileType(it)))
         }
     }

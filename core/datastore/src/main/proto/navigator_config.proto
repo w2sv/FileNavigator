@@ -5,12 +5,22 @@ option java_multiple_files = true;
 
 message NavigatorConfigProto {
     map<int32, FileTypeConfigProto> file_type_to_config = 1;
-    map<int32, string> extension_configurable_file_type_to_excluded_extensions = 7;
-    repeated CustomFileTypeProto custom_file_types = 6;
+    map<int32, ExtensionPresetFileTypeProto> extension_preset_file_types = 6;
+    map<int32, ExtensionConfigurableFileTypeProto> extension_configurable_file_types = 7;
+    map<int32, CustomFileTypeProto> custom_file_types = 8;
     bool disable_on_low_battery = 2;
     bool start_on_boot = 3;
     bool has_been_migrated = 4;
     bool show_batch_move_notification = 5;
+}
+
+message ExtensionPresetFileTypeProto {
+    int32 color = 1;
+}
+
+message ExtensionConfigurableFileTypeProto {
+    int32 color = 1;
+    repeated string excluded_extensions = 2;
 }
 
 message CustomFileTypeProto {

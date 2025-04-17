@@ -20,7 +20,7 @@ import com.w2sv.common.util.removeSlashSuffix
 import com.w2sv.common.util.slashPrefixed
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.StaticPresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
@@ -271,11 +271,11 @@ private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
 
 private fun MoveFile.largeNotificationIcon(context: Context): Bitmap? =
     when (fileType) {
-        PresetFileType.Image -> context.contentResolver.loadBitmapWithFileNotFoundHandling(
+        StaticPresetFileType.Image -> context.contentResolver.loadBitmapWithFileNotFoundHandling(
             mediaUri.uri
         )
 
-        PresetFileType.Video -> {
+        StaticPresetFileType.Video -> {
             try {
                 context.contentResolver.loadThumbnail(
                     mediaUri.uri,
@@ -322,8 +322,8 @@ private fun MoveFile.notificationLabel(context: Context): String =
 
                 SourceType.Camera -> context.getString(
                     when (fileType) {
-                        PresetFileType.Image -> com.w2sv.core.domain.R.string.photo
-                        PresetFileType.Video -> com.w2sv.core.domain.R.string.video
+                        StaticPresetFileType.Image -> com.w2sv.core.domain.R.string.photo
+                        StaticPresetFileType.Video -> com.w2sv.core.domain.R.string.video
                         else -> throw IllegalArgumentException()
                     }
                 )

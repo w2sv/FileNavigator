@@ -30,7 +30,7 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
     fun label(context: Context, isGif: Boolean): String =
         when {
             isGif -> context.getString(R.string.gif)
-            fileType is PresetFileType.Image && sourceType == SourceType.Camera -> context.getString(R.string.photo)
+            fileType is StaticPresetFileType.Image && sourceType == SourceType.Camera -> context.getString(R.string.photo)
             sourceType == SourceType.Screenshot || sourceType == SourceType.Recording -> context.getString(
                 sourceType.labelRes
             )
@@ -39,9 +39,9 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
 
             sourceType == SourceType.Download -> context.getString(
                 R.string.file_type_download,
-                context.getString((fileType as PresetFileType).labelRes)
+                context.getString((fileType as StaticPresetFileType).labelRes)
             )
 
-            else -> context.getString((fileType as PresetFileType).labelRes)
+            else -> context.getString((fileType as StaticPresetFileType).labelRes)
         }
 }

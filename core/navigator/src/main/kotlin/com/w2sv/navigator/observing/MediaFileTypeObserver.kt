@@ -7,7 +7,7 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.util.filterKeysByValueToSet
 import com.w2sv.common.util.logIdentifier
 import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.StaticPresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.navigatorconfig.SourceTypeConfigMap
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import slimber.log.i
 
 internal class MediaFileTypeObserver @AssistedInject constructor(
-    @Assisted private val fileType: PresetFileType.Media,
+    @Assisted private val fileType: StaticPresetFileType.Media,
     @Assisted private val sourceTypeConfigMapStateFlow: StateFlow<SourceTypeConfigMap>,
     @Assisted handler: Handler,
     moveFileNotificationManager: MoveFileNotificationManager,
@@ -47,7 +47,7 @@ internal class MediaFileTypeObserver @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         operator fun invoke(
-            fileType: PresetFileType.Media,
+            fileType: StaticPresetFileType.Media,
             sourceTypeConfigMapStateFlow: StateFlow<SourceTypeConfigMap>,
             handler: Handler
         ): MediaFileTypeObserver

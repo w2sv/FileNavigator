@@ -1,6 +1,6 @@
 package com.w2sv.datastore.proto.navigatorconfig
 
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.StaticPresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
@@ -22,22 +22,22 @@ internal class NavigatorConfigMapperTest {
     fun testNonDefaultMapping() {
         val nonDefaultConfig = NavigatorConfig.default
             .copy(disableOnLowBattery = true, startOnBoot = true)
-            .updateFileTypeConfig(PresetFileType.Video) {
+            .updateFileTypeConfig(StaticPresetFileType.Video) {
                 it.copy(enabled = false)
             }
-            .updateAutoMoveConfig(PresetFileType.APK, SourceType.Download) {
+            .updateAutoMoveConfig(StaticPresetFileType.APK, SourceType.Download) {
                 AutoMoveConfig(
                     enabled = true,
                     destination = LocalDestination.parse("some/move/destination")
                 )
             }
-            .updateAutoMoveConfig(PresetFileType.Image, SourceType.Download) {
+            .updateAutoMoveConfig(StaticPresetFileType.Image, SourceType.Download) {
                 AutoMoveConfig(
                     enabled = true,
                     destination = LocalDestination.parse("some/other/move/destination")
                 )
             }
-            .updateSourceConfig(PresetFileType.Audio, SourceType.Recording) {
+            .updateSourceConfig(StaticPresetFileType.Audio, SourceType.Recording) {
                 it.copy(
                     enabled = false,
                     quickMoveDestinations = listOf(

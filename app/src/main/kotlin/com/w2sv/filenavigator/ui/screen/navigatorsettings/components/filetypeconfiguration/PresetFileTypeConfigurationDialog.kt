@@ -21,9 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.colonSuffixed
 import com.w2sv.composed.OnChange
-import com.w2sv.domain.model.ExtensionConfigurableFileType
+import com.w2sv.domain.model.ExtensionConfigurableStaticFileType
 import com.w2sv.domain.model.NonMediaFileType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.StaticPresetFileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
@@ -35,9 +35,9 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun PresetNonMediaFileTypeConfigurationDialog(
-    fileType: PresetFileType.NonMedia,
+    fileType: StaticPresetFileType.NonMedia,
     excludedExtensions: ImmutableList<String>,
-    setExcludedFileExtensions: (ExtensionConfigurableFileType, Set<String>) -> Unit,
+    setExcludedFileExtensions: (ExtensionConfigurableStaticFileType, Set<String>) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -60,7 +60,7 @@ fun PresetNonMediaFileTypeConfigurationDialog(
             fileTypeColor = fileType.color,
             onConfirmButtonPress = {
                 setExcludedFileExtensions(
-                    fileType as ExtensionConfigurableFileType, // TODO: unsafe cast
+                    fileType as ExtensionConfigurableStaticFileType, // TODO: unsafe cast
                     mutableExcludedExtensions.toSet()
                 )
             }
@@ -75,7 +75,7 @@ fun PresetNonMediaFileTypeConfigurationDialog(
                 val availableExtensions = remember {
                     when (fileType) {
                         is NonMediaFileType.WithExtensions -> fileType.fileExtensions
-                        is ExtensionConfigurableFileType -> fileType.defaultFileExtensions
+                        is ExtensionConfigurableStaticFileType -> fileType.defaultFileExtensions
                         else -> error("Shouldn't happen") // TODO
                     }
                 }
@@ -126,7 +126,7 @@ fun PresetNonMediaFileTypeConfigurationDialog(
 @Composable
 private fun PresetNonMediaFileTypeConfigurationDialogPrev() {
     PresetNonMediaFileTypeConfigurationDialog(
-        fileType = PresetFileType.Text,
+        fileType = StaticPresetFileType.Text,
         excludedExtensions = persistentListOf(),
         setExcludedFileExtensions = { _, _ -> },
         onDismissRequest = {}

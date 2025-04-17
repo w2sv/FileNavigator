@@ -9,7 +9,7 @@ import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.util.MediaUri
 import com.w2sv.domain.model.FileAndSourceType
 import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.StaticPresetFileType
 import com.w2sv.domain.model.SourceType
 import com.w2sv.navigator.observing.model.MediaStoreFileData
 import kotlinx.parcelize.IgnoredOnParcel
@@ -37,7 +37,7 @@ internal data class MoveFile(
 
     @IgnoredOnParcel
     val isGif: Boolean
-        get() = fileType is PresetFileType.Image && mediaStoreFileData.extension.lowercase() == "gif"
+        get() = fileType is StaticPresetFileType.Image && mediaStoreFileData.extension.lowercase() == "gif"
 
     companion object {
         const val EXTRA = "com.w2sv.filenavigator.extra.MoveFile"
