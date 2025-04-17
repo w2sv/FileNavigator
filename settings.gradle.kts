@@ -22,6 +22,7 @@ rootProject.name = "FileNavigator"
 include(":app")
 include(":benchmarking")
 include(":flatteningparcelize")
+include(":flatteningparcelize-test")
 include(":core:datastore")
 include(":core:database")
 include(":core:domain")

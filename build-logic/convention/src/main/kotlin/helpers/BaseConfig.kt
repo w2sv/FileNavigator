@@ -25,7 +25,10 @@ internal fun Project.applyBaseConfig(namespace: Namespace = Namespace.Auto) {
         }
         configure<BaseExtension> {
             this.namespace = when (namespace) {
-                is Namespace.Auto -> "com.w2sv." + path.removePrefix(":").replace(':', '.')  // Sets namespace to "com.w2sv.<module-name>"
+                is Namespace.Auto -> "com.w2sv." + path  // Sets namespace to "com.w2sv.<module-name>"
+                    .removePrefix(":")
+                    .replace(':', '.')
+                    .replace('-', '.')
                 is Namespace.Manual -> namespace.namespace
             }
 
