@@ -6,7 +6,7 @@ import android.content.Context
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.core.navigator.R
-import com.w2sv.domain.model.FileAndSourceType
+import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination
 import com.w2sv.navigator.notifications.NotificationResources

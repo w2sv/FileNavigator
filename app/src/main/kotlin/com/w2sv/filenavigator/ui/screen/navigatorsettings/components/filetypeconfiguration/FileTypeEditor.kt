@@ -21,9 +21,9 @@ import androidx.compose.ui.res.stringResource
 import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.common.util.mutate
 import com.w2sv.composed.OnChange
-import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetWrappingFileType
+import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.filetype.PresetWrappingFileType
 import com.w2sv.filenavigator.ui.util.InputInvalidityReason
 import com.w2sv.filenavigator.ui.util.ProxyTextEditor
 import com.w2sv.filenavigator.ui.util.StatefulTextEditor

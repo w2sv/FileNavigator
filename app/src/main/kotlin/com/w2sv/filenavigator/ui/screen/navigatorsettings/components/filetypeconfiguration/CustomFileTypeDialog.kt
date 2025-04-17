@@ -24,8 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.core.domain.R
-import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.OutlinedTextField
 import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState

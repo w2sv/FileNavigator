@@ -1,7 +1,7 @@
 package com.w2sv.domain.model.navigatorconfig
 
-import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.kotlinutils.copy
 import com.w2sv.kotlinutils.update

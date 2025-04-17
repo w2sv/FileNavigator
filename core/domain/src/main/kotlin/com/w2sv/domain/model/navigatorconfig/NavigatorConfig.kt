@@ -1,10 +1,10 @@
 package com.w2sv.domain.model.navigatorconfig
 
 import com.w2sv.common.util.filterKeysByValueToSet
-import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.kotlinutils.copy
 import com.w2sv.kotlinutils.map
 import com.w2sv.kotlinutils.update
@@ -62,7 +62,7 @@ data class NavigatorConfig(
 
     /**
      * Adds [type] to the configuration with a default [FileTypeConfig], with [FileTypeConfig.enabled] set to [enabled].
-     * @see com.w2sv.domain.model.StaticFileType.defaultConfig
+     * @see com.w2sv.domain.model.filetype.StaticFileType.defaultConfig
      */
     fun addCustomFileType(type: CustomFileType, enabled: Boolean = false): NavigatorConfig =
         copy(

@@ -1,9 +1,9 @@
 package util
 
 import com.w2sv.common.util.MediaUri
-import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.FileAndSourceType
+import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.observing.model.MediaStoreFileData
 

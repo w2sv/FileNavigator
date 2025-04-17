@@ -1,10 +1,10 @@
 package com.w2sv.database.typeconverter
 
 import androidx.room.TypeConverter
-import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.PresetWrappingFileType
+import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.domain.model.filetype.PresetWrappingFileType
 
 internal object FileTypeConverter {
 

@@ -7,10 +7,10 @@ import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.util.MediaUri
-import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.FileAndSourceType
+import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.navigator.observing.model.MediaStoreFileData
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize

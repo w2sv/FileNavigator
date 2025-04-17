@@ -47,8 +47,8 @@ import androidx.compose.ui.unit.sp
 import com.w2sv.composed.CollectFromFlow
 import com.w2sv.composed.extensions.thenIf
 import com.w2sv.composed.extensions.toMutableStateMap
-import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.FileType
+import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.DialogButton

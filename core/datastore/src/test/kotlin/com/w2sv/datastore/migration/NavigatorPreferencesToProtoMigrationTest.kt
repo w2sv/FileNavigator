@@ -5,8 +5,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.preferencesOf
 import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.datastore.proto.navigatorconfig.toExternal
-import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking

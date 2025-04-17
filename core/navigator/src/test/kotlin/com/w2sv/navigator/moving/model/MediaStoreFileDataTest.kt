@@ -1,6 +1,6 @@
 package com.w2sv.navigator.moving.model
 
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.test.testParceling
 import junit.framework.TestCase.assertEquals
 import org.junit.Test

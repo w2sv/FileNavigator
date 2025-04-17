@@ -1,4 +1,4 @@
-package com.w2sv.domain.model
+package com.w2sv.domain.model.filetype
 
 import android.content.Context
 import android.os.Parcelable
@@ -30,7 +30,9 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
     fun label(context: Context, isGif: Boolean): String =
         when {
             isGif -> context.getString(R.string.gif)
-            fileType.wrappedPresetType is PresetFileType.Image && sourceType == SourceType.Camera -> context.getString(R.string.photo)
+            fileType.wrappedPresetType is PresetFileType.Image && sourceType == SourceType.Camera -> context.getString(
+                R.string.photo
+            )
             sourceType == SourceType.Screenshot || sourceType == SourceType.Recording -> context.getString(
                 sourceType.labelRes
             )

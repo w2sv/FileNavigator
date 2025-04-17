@@ -51,8 +51,8 @@ import com.w2sv.composed.OnChange
 import com.w2sv.composed.OnDispose
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.composed.isLandscapeModeActive
-import com.w2sv.domain.model.AnyPresetWrappingFileType
-import com.w2sv.domain.model.CustomFileType
+import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
+import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals

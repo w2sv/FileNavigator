@@ -15,10 +15,10 @@ import com.w2sv.datastore.fileTypeConfigProto
 import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.datastore.proto.ProtoMapper
 import com.w2sv.datastore.sourceConfigProto
-import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.PresetWrappingFileType
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.domain.model.filetype.PresetWrappingFileType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig

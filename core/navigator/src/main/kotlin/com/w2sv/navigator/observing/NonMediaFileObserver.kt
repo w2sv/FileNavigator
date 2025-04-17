@@ -5,9 +5,9 @@ import android.os.Handler
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.FileAndSourceType
+import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfigMap
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager

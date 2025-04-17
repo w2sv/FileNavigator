@@ -10,9 +10,9 @@ import com.google.common.collect.EvictingQueue
 import com.w2sv.common.util.MediaId
 import com.w2sv.common.util.log
 import com.w2sv.common.util.mediaUri
-import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.FileAndSourceType
+import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.kotlinutils.coroutines.launchDelayed

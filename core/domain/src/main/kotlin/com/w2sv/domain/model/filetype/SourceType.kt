@@ -1,4 +1,4 @@
-package com.w2sv.domain.model
+package com.w2sv.domain.model.filetype
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes

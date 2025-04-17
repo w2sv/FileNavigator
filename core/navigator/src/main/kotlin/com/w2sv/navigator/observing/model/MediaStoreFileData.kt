@@ -11,7 +11,7 @@ import com.w2sv.androidutils.database.getStringOrThrow
 import com.w2sv.androidutils.database.query
 import com.w2sv.common.util.MediaUri
 import com.w2sv.common.util.log
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.navigator.shared.emitDiscardedLog
 import java.io.File
 import kotlinx.parcelize.IgnoredOnParcel

@@ -22,9 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.colonSuffixed
 import com.w2sv.composed.OnChange
-import com.w2sv.domain.model.AnyPresetWrappingFileType
-import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.PresetWrappingFileType
+import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
+import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.domain.model.filetype.PresetWrappingFileType
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind

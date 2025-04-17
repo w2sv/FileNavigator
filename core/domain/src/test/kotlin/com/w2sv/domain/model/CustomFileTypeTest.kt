@@ -1,5 +1,6 @@
 package com.w2sv.domain.model
 
+import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.test.testParceling
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
@@ -17,7 +18,19 @@ class CustomFileTypeTest {
     @Test
     fun testNewEmpty() {
         fun testOrdinal(existingOrdinals: List<Int>, expectedOrdinal: Int) {
-            assertEquals(expectedOrdinal, CustomFileType.newEmpty(existingOrdinals.map { CustomFileType("", emptyList(), -1, it) }).ordinal)
+            assertEquals(
+                expectedOrdinal,
+                CustomFileType.newEmpty(
+                    existingOrdinals.map {
+                        CustomFileType(
+                            "",
+                            emptyList(),
+                            -1,
+                            it
+                        )
+                    }
+                ).ordinal
+            )
         }
 
         testOrdinal(listOf(34, 0, 1, 3, 1003, 1007), 1008)

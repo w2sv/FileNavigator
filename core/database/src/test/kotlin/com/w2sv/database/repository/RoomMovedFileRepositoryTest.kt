@@ -7,8 +7,8 @@ import com.w2sv.common.util.DocumentUri
 import com.w2sv.common.util.MediaUri
 import com.w2sv.database.AppDatabase
 import com.w2sv.domain.model.MovedFile
-import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.ExternalDestination
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.repository.MovedFileRepository

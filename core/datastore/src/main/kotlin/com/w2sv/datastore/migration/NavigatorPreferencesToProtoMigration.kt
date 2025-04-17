@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.w2sv.common.util.log
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.proto.navigatorconfig.toProto
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import kotlinx.coroutines.flow.first

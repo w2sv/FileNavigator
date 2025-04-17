@@ -5,9 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.FileType
-import com.w2sv.domain.model.PresetWrappingFileType
+import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.filetype.PresetWrappingFileType
 
 /**
  * @return previously cached Color.

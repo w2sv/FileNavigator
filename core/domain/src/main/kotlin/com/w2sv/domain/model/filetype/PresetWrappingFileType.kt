@@ -1,4 +1,4 @@
-package com.w2sv.domain.model
+package com.w2sv.domain.model.filetype
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -24,7 +24,7 @@ sealed interface PresetWrappingFileType<T : PresetFileType> : FileType {
             override fun createFromParcel(parcel: Parcel): ExtensionSet {
                 val fileTypeOrdinal = parcel.readInt()
                 val colorInt = parcel.readInt()
-                return ExtensionSet(PresetFileType[fileTypeOrdinal] as PresetFileType.ExtensionSet, colorInt)
+                return ExtensionSet(PresetFileType.Companion[fileTypeOrdinal] as PresetFileType.ExtensionSet, colorInt)
             }
 
             override fun newArray(size: Int): Array<ExtensionSet?> =
@@ -58,7 +58,7 @@ sealed interface PresetWrappingFileType<T : PresetFileType> : FileType {
                 val excludedExtensions = emptyList<String>()
                 parcel.readStringList(excludedExtensions)
                 return ExtensionConfigurable(
-                    presetFileType = PresetFileType[fileTypeOrdinal] as PresetFileType.ExtensionConfigurable,
+                    presetFileType = PresetFileType.Companion[fileTypeOrdinal] as PresetFileType.ExtensionConfigurable,
                     colorInt = colorInt,
                     excludedExtensions = excludedExtensions.toSet()
                 )

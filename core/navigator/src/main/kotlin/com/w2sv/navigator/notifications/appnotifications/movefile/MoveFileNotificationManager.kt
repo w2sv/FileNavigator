@@ -19,9 +19,9 @@ import com.w2sv.common.util.log
 import com.w2sv.common.util.removeSlashSuffix
 import com.w2sv.common.util.slashPrefixed
 import com.w2sv.core.navigator.R
-import com.w2sv.domain.model.FileAndSourceType
-import com.w2sv.domain.model.PresetFileType
-import com.w2sv.domain.model.SourceType
+import com.w2sv.domain.model.filetype.FileAndSourceType
+import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
 import com.w2sv.navigator.moving.api.activity.AbstractDestinationPickerActivity

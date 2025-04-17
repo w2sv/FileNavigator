@@ -1,4 +1,4 @@
-package com.w2sv.domain.model
+package com.w2sv.domain.model.filetype
 
 import android.content.Context
 import android.graphics.Color
@@ -48,7 +48,7 @@ data class CustomFileType(
 @ColorInt
 private fun randomColor(): Int =
     Color.rgb(
-        Random.nextInt(256),
-        Random.nextInt(256),
-        Random.nextInt(256)
+        Random.Default.nextInt(256),
+        Random.Default.nextInt(256),
+        Random.Default.nextInt(256)
     )

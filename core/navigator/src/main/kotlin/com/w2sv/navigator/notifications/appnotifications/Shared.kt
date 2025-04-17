@@ -6,7 +6,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
-import com.w2sv.domain.model.FileAndSourceType
+import com.w2sv.domain.model.filetype.FileAndSourceType
 
 internal fun FileAndSourceType.iconBitmap(context: Context, colored: Boolean = false): Bitmap? =
     context.drawableBitmap(

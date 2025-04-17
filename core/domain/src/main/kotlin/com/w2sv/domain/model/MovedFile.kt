@@ -2,6 +2,9 @@ package com.w2sv.domain.model
 
 import com.w2sv.common.util.DocumentUri
 import com.w2sv.common.util.MediaUri
+import com.w2sv.domain.model.filetype.FileAndSourceType
+import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.ExternalDestinationApi
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.movedestination.MoveDestinationApi

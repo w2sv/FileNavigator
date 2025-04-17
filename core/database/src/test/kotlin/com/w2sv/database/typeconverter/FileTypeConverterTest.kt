@@ -1,7 +1,7 @@
 package com.w2sv.database.typeconverter
 
-import com.w2sv.domain.model.CustomFileType
-import com.w2sv.domain.model.PresetFileType
+import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.PresetFileType
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
