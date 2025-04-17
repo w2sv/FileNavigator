@@ -87,6 +87,8 @@ w2sv-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:pre
 w2sv-kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "kotlinutils" }
 w2sv-reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.6-rc2"
 w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.0.2.2-rc1"
+squareup-kotlinpoet-ksp = "com.squareup:kotlinpoet-ksp:2.1.0"
+google-devtools-ksp-symbolProcessingApi = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 
 [bundles]
 instrumentationTest = [
