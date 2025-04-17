@@ -1,8 +1,9 @@
 package com.w2sv.domain.model.filetype
 
+import android.os.Parcelable
 import kotlinx.parcelize.IgnoredOnParcel
 
-sealed interface FileType : StaticFileType.ExtensionSet {
+sealed interface FileType : StaticFileType.ExtensionSet, Parcelable {
     val colorInt: Int
 
     @IgnoredOnParcel

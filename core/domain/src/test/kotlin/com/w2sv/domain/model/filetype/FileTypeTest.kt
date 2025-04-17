@@ -1,6 +1,5 @@
-package com.w2sv.domain.model
+package com.w2sv.domain.model.filetype
 
-import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.test.testParceling
 import org.junit.Test
 import org.junit.runner.RunWith

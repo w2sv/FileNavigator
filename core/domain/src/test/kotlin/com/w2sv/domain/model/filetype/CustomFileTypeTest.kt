@@ -1,6 +1,5 @@
-package com.w2sv.domain.model
+package com.w2sv.domain.model.filetype
 
-import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.test.testParceling
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
@@ -23,10 +22,10 @@ class CustomFileTypeTest {
                 CustomFileType.newEmpty(
                     existingOrdinals.map {
                         CustomFileType(
-                            "",
-                            emptyList(),
-                            -1,
-                            it
+                            name = "",
+                            fileExtensions = emptyList(),
+                            colorInt = -1,
+                            ordinal = it
                         )
                     }
                 ).ordinal

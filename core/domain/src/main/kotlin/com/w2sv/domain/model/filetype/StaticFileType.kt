@@ -6,7 +6,7 @@ import com.anggrayudi.storage.media.MediaType
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 
-interface StaticFileType : Parcelable {
+interface StaticFileType {
     val mediaType: MediaType
     val sourceTypes: List<SourceType>
     val ordinal: Int

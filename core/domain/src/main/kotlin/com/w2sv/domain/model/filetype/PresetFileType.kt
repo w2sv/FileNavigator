@@ -7,7 +7,6 @@ import androidx.annotation.StringRes
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.core.domain.R
 import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
 sealed interface PresetFileType : StaticFileType {
     val labelRes: Int
@@ -90,7 +89,6 @@ sealed interface PresetFileType : StaticFileType {
         }
     }
 
-    @Parcelize
     data object Image : Media(
         labelRes = R.string.image,
         iconRes = R.drawable.ic_image_24,
@@ -109,7 +107,6 @@ sealed interface PresetFileType : StaticFileType {
         )
     )
 
-    @Parcelize
     data object Video : Media(
         labelRes = R.string.video,
         iconRes = R.drawable.ic_video_file_24,
@@ -123,7 +120,6 @@ sealed interface PresetFileType : StaticFileType {
         )
     )
 
-    @Parcelize
     data object Audio : Media(
         labelRes = R.string.audio,
         iconRes = R.drawable.ic_audio_file_24,
@@ -137,7 +133,6 @@ sealed interface PresetFileType : StaticFileType {
         )
     )
 
-    @Parcelize
     data object PDF : NonMedia.ExtensionSet(
         R.string.pdf,
         R.drawable.ic_pdf_24,
@@ -145,7 +140,6 @@ sealed interface PresetFileType : StaticFileType {
         setOf("pdf")
     )
 
-    @Parcelize
     data object Text : NonMedia.ExtensionConfigurable(
         R.string.text,
         R.drawable.ic_text_file_24,
@@ -156,7 +150,6 @@ sealed interface PresetFileType : StaticFileType {
         )
     )
 
-    @Parcelize
     data object Archive : NonMedia.ExtensionConfigurable(
         R.string.archive,
         R.drawable.ic_folder_zip_24,
@@ -167,7 +160,6 @@ sealed interface PresetFileType : StaticFileType {
         )
     )
 
-    @Parcelize
     data object APK : NonMedia.ExtensionSet(
         R.string.apk,
         R.drawable.ic_apk_file_24,
@@ -175,7 +167,6 @@ sealed interface PresetFileType : StaticFileType {
         setOf("apk")
     )
 
-    @Parcelize
     data object EBook : NonMedia.ExtensionConfigurable(
         R.string.ebook,
         R.drawable.ic_book_24,
