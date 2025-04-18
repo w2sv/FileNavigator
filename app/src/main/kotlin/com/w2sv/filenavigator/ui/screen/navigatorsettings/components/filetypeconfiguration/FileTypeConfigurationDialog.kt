@@ -126,10 +126,10 @@ fun FileExtensionsChipFlowRow(modifier: Modifier = Modifier, content: @Composabl
 @Composable
 fun FileExtensionChip(
     extension: String,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     selected: Boolean = true,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    onClick: () -> Unit = {}
 ) {
     InputChip(
         selected = selected,

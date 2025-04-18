@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -60,14 +62,13 @@ import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.HighlightedDialogButton
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
 import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.kotlinutils.toggle
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import slimber.log.i
 
 @Composable
 fun EnabledFileTypesBottomSheet(
@@ -77,8 +78,7 @@ fun EnabledFileTypesBottomSheet(
     showFileTypeCreationDialog: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-    scope: CoroutineScope = rememberCoroutineScope()
+    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
     val mutableFileTypeEnablementMap = remember { fileTypeEnablementMap.toMutableStateMap() }  // TODO: rememberSavable
     val sortedFileTypes by remember { derivedStateOf { mutableFileTypeEnablementMap.keys.sortedByOrdinal() } }
@@ -126,6 +126,7 @@ fun EnabledFileTypesBottomSheet(
                 horizontalArrangement = Arrangement.Center
             )
         }
+        val scope = rememberCoroutineScope()
         LazyVerticalGrid(
             columns = GridCells.FixedSize(92.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
@@ -167,7 +168,8 @@ fun EnabledFileTypesBottomSheet(
 
 @Composable
 private fun DeleteCustomFileTypeTooltipBox(deleteCustomFileType: () -> Unit, content: @Composable () -> Unit) {
-    val tooltipState = rememberExtendedTooltipState()
+    val tooltipState = rememberTooltipState()
+
     TooltipBox(
         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
         tooltip = {

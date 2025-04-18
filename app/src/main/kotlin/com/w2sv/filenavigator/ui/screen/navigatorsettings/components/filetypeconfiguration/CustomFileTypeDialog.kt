@@ -1,9 +1,11 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -15,7 +17,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -28,7 +32,6 @@ import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.OutlinedTextField
-import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.theme.AppColor
@@ -36,6 +39,7 @@ import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.ClearFocusOnFlowEmissionOrKeyboardHidden
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.launch
 
 typealias ExcludeExtension = (FileType, String) -> Unit
 
@@ -179,13 +183,14 @@ private fun StatelessCustomFileTypeConfigurationDialog(
 private fun ValidityIndicatingArea(
     isValid: Boolean,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable BoxScope.() -> Unit
 ) {
     Box(
         modifier = modifier
             .border(1.dp, if (isValid) AppColor.success else AppColor.error, shape = MaterialTheme.shapes.extraSmall)
-            .padding(12.dp)
-    ) { content() }
+            .padding(12.dp),
+        content = content
+    )
 }
 
 @Composable
@@ -194,7 +199,8 @@ private fun FileExtensionChipWithTooltip(
     deleteExtension: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tooltipState = rememberExtendedTooltipState()
+    val tooltipState = rememberTooltipState()
+    val scope = rememberCoroutineScope()
 
     TooltipBox(
         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
@@ -210,7 +216,7 @@ private fun FileExtensionChipWithTooltip(
         state = tooltipState,
         modifier = modifier
     ) {
-        FileExtensionChip(extension, onClick = tooltipState.showTooltip)
+        FileExtensionChip(extension, onClick = { scope.launch { tooltipState.show(MutatePriority.UserInput) } })
     }
 }
 
