@@ -30,7 +30,7 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
     fun label(context: Context, isGif: Boolean): String =
         when {
             isGif -> context.getString(R.string.gif)
-            fileType.wrappedPresetType is PresetFileType.Image && sourceType == SourceType.Camera -> context.getString(
+            fileType.wrappedPresetTypeOrNull is PresetFileType.Image && sourceType == SourceType.Camera -> context.getString(
                 R.string.photo
             )
             sourceType == SourceType.Screenshot || sourceType == SourceType.Recording -> context.getString(

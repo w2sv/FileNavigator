@@ -15,48 +15,41 @@ internal class NavigatorConfigTest {
 
     @Test
     fun `enabledFileTypes and disabledFileTypes`() {
-        val config = NavigatorConfig.default.run {
-            copy(
-                fileTypeConfigMap = fileTypeConfigMap.copy {
-                    PresetFileType.Media.values.forEach { mediaFileType ->
-                        update(mediaFileType) { fileTypeConfig ->
-                            fileTypeConfig.copy(enabled = false)
-                        }
-                    }
-                }
-            )
+        val config = PresetFileType.Media.values.fold(NavigatorConfig.default) { acc, mediaFileType ->
+            acc.updateFileTypeConfig(mediaFileType.toFileType()) { fileTypeConfig ->
+                fileTypeConfig.copy(enabled = false)
+            }
         }
-        assertEquals(PresetFileType.NonMedia.values.toSet(), config.enabledFileTypes)
-        assertEquals(PresetFileType.Media.values.toSet(), config.disabledFileTypes)
+        assertEquals(PresetFileType.NonMedia.values.toSet(), config.enabledFileTypes.map { it.wrappedPresetTypeOrNull }.toSet())
+        assertEquals(PresetFileType.Media.values.toSet(), config.disabledFileTypes.map { it.wrappedPresetTypeOrNull }.toSet())
     }
 
     @Test
     fun testUpdateFileTypeConfig() {
-        val config =
-            NavigatorConfig.default.updateFileTypeConfig(PresetFileType.Image) { fileTypeConfig ->
-                fileTypeConfig.copy(
-                    enabled = false,
-                    sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.copy {
-                        update(SourceType.Screenshot) {
-                            it.copy(
-                                enabled = false,
-                                quickMoveDestinations = listOf(LocalDestination.parse("path/to/destination")),
-                                autoMoveConfig = AutoMoveConfig(
-                                    enabled = true,
-                                    destination = LocalDestination.parse("path/to/auto/move/dest")
-                                )
+        val updatedConfig = NavigatorConfig.default.updateFileTypeConfig(PresetFileType.Image.toFileType()) { fileTypeConfig ->
+            fileTypeConfig.copy(
+                enabled = false,
+                sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.copy {
+                    update(SourceType.Screenshot) { sourceConfig ->
+                        sourceConfig.copy(
+                            enabled = false,
+                            quickMoveDestinations = listOf(LocalDestination.parse("path/to/destination")),
+                            autoMoveConfig = AutoMoveConfig(
+                                enabled = true,
+                                destination = LocalDestination.parse("path/to/auto/move/dest")
                             )
-                        }
-                        update(SourceType.Camera) {
-                            it.copy(enabled = false)
-                        }
+                        )
                     }
-                )
-            }
+                    update(SourceType.Camera) { sourceConfig ->
+                        sourceConfig.copy(enabled = false)
+                    }
+                }
+            )
+        }
 
         val expected = NavigatorConfig(
             fileTypeConfigMap = mapOf(
-                PresetFileType.Image to FileTypeConfig(
+                PresetFileType.Image.toFileType() to FileTypeConfig(
                     enabled = false,
                     sourceTypeConfigMap = mapOf(
                         SourceType.Camera to SourceConfig(
@@ -76,29 +69,14 @@ internal class NavigatorConfigTest {
                         SourceType.Download to SourceConfig()
                     )
                 ),
-                PresetFileType.Video to FileTypeConfig(
-                    enabled = true,
-                    sourceTypeConfigMap = mapOf(
-                        SourceType.Camera to SourceConfig(),
-                        SourceType.OtherApp to SourceConfig(),
-                        SourceType.Download to SourceConfig()
-                    )
-                ),
-                PresetFileType.Audio to FileTypeConfig(
-                    enabled = true,
-                    sourceTypeConfigMap = mapOf(
-                        SourceType.Recording to SourceConfig(),
-                        SourceType.OtherApp to SourceConfig(),
-                        SourceType.Download to SourceConfig()
-                    )
-                ),
-                PresetFileType.PDF to nonMediaFileTypeConfig(),
-                PresetFileType.Text to nonMediaFileTypeConfig(),
-                PresetFileType.Archive to nonMediaFileTypeConfig(),
-                PresetFileType.APK to nonMediaFileTypeConfig(),
-                PresetFileType.EBook to nonMediaFileTypeConfig()
+                PresetFileType.Video.toFileType() to PresetFileType.Video.defaultConfig(),
+                PresetFileType.Audio.toFileType() to PresetFileType.Audio.defaultConfig(),
+                PresetFileType.PDF.toFileType() to nonMediaFileTypeConfig(),
+                PresetFileType.Text.toFileType() to nonMediaFileTypeConfig(),
+                PresetFileType.Archive.toFileType() to nonMediaFileTypeConfig(),
+                PresetFileType.APK.toFileType() to nonMediaFileTypeConfig(),
+                PresetFileType.EBook.toFileType() to nonMediaFileTypeConfig()
             ),
-            extensionConfigurableFileTypeToExcludedExtensions = emptyMap(),
             showBatchMoveNotification = true,
             disableOnLowBattery = false,
             startOnBoot = false
@@ -106,7 +84,7 @@ internal class NavigatorConfigTest {
 
         assertEquals(
             expected,
-            config
+            updatedConfig
         )
     }
 }

@@ -4,15 +4,14 @@ import android.content.Context
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.core.domain.R
-import kotlinx.parcelize.IgnoredOnParcel
 
 sealed interface PresetFileType : StaticFileType {
     val labelRes: Int
     val defaultColorInt: Int
 
-    @IgnoredOnParcel
     override val ordinal: Int
         get() = ordinalsMap.getValue(this)
 
@@ -73,14 +72,7 @@ sealed interface PresetFileType : StaticFileType {
             @DrawableRes override val iconRes: Int,
             @ColorInt override val defaultColorInt: Int,
             override val defaultFileExtensions: Set<String>
-        ) : NonMedia, PresetFileType.ExtensionConfigurable {
-
-            companion object {
-                @JvmStatic
-                val values: List<ExtensionConfigurable>
-                    get() = listOf(Text, Archive, EBook)
-            }
-        }
+        ) : NonMedia, PresetFileType.ExtensionConfigurable
 
         companion object {
             @JvmStatic
@@ -186,7 +178,8 @@ sealed interface PresetFileType : StaticFileType {
         operator fun get(ordinal: Int): PresetFileType =
             values[ordinal]
 
-        private val ordinalsMap by lazy { values.withIndex().associate { it.value to it.index } }
+        @VisibleForTesting
+        val ordinalsMap by lazy { values.withIndex().associate { it.value to it.index } }
     }
 }
 

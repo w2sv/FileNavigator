@@ -55,7 +55,7 @@ sealed interface PresetWrappingFileType<T : PresetFileType> : FileType {
             override fun createFromParcel(parcel: Parcel): ExtensionConfigurable {
                 val fileTypeOrdinal = parcel.readInt()
                 val colorInt = parcel.readInt()
-                val excludedExtensions = emptyList<String>()
+                val excludedExtensions = mutableListOf<String>()
                 parcel.readStringList(excludedExtensions)
                 return ExtensionConfigurable(
                     presetFileType = PresetFileType.Companion[fileTypeOrdinal] as PresetFileType.ExtensionConfigurable,

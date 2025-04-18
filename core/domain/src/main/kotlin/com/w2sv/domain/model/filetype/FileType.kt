@@ -11,10 +11,10 @@ sealed interface FileType : StaticFileType.ExtensionSet, Parcelable {
         get() = this as? CustomFileType
 
     @IgnoredOnParcel
-    val wrappedPresetType: PresetFileType?
+    val wrappedPresetTypeOrNull: PresetFileType?
         get() = (this as? PresetWrappingFileType<*>)?.presetFileType
 
     @IgnoredOnParcel
     val isMediaType: Boolean
-        get() = wrappedPresetType is PresetFileType.Media
+        get() = wrappedPresetTypeOrNull is PresetFileType.Media
 }

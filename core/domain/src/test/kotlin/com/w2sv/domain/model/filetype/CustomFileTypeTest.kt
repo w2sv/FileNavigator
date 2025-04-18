@@ -11,12 +11,18 @@ class CustomFileTypeTest {
 
     @Test
     fun testParceling() {
-        CustomFileType("Html", listOf("html"), 2134124, 1004).testParceling()
+        CustomFileType(
+            name = "Html",
+            fileExtensions = listOf("html"),
+            colorInt = 2134124,
+            ordinal = 1004
+        )
+            .testParceling()
     }
 
     @Test
     fun testNewEmpty() {
-        fun testOrdinal(existingOrdinals: List<Int>, expectedOrdinal: Int) {
+        fun test(existingOrdinals: List<Int>, expectedOrdinal: Int) {
             assertEquals(
                 expectedOrdinal,
                 CustomFileType.newEmpty(
@@ -32,7 +38,7 @@ class CustomFileTypeTest {
             )
         }
 
-        testOrdinal(listOf(34, 0, 1, 3, 1003, 1007), 1008)
-        testOrdinal(listOf(0, 1, 3), CustomFileType.MIN_ORDINAL)
+        test(listOf(34, 0, 1, 3, 1003, 1007), 1008)
+        test(listOf(0, 1, 3), CustomFileType.MIN_ORDINAL)
     }
 }
