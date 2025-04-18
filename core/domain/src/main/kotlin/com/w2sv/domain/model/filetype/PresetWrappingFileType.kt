@@ -38,7 +38,7 @@ sealed interface PresetWrappingFileType<T : PresetFileType> : FileType {
         val excludedExtensions: Set<String>
     ) : StaticFileType.ExtensionConfigurable by presetFileType, FileType, PresetWrappingFileType<PresetFileType.ExtensionConfigurable> {
 
-        override val fileExtensions: Collection<String> by lazy {
+        override val fileExtensions by lazy {
             defaultFileExtensions - excludedExtensions
         }
 

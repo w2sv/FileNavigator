@@ -16,12 +16,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.colonSuffixed
 import com.w2sv.composed.OnChange
+import com.w2sv.composed.colorSaver
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.PresetWrappingFileType
@@ -30,6 +32,7 @@ import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.theme.dialogSectionLabel
+import com.w2sv.filenavigator.ui.util.snapshotStateListSaver
 import kotlinx.coroutines.delay
 
 @Composable
@@ -39,10 +42,10 @@ fun PresetFileTypeConfigurationDialog(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var excludedExtensions = rememberSaveable(fileType) {
-        (fileType as? PresetWrappingFileType.ExtensionConfigurable)?.excludedExtensions?.toMutableStateList() ?: mutableStateListOf()
+    var excludedExtensions = rememberSaveable(saver = snapshotStateListSaver<String>()) {
+        fileType.asExtensionConfigurableTypeOrNull?.excludedExtensions?.toMutableStateList() ?: mutableStateListOf()
     }
-    var color by rememberSaveable(fileType.color) { mutableStateOf(fileType.color) }
+    var color by rememberSaveable(fileType.color, stateSaver = colorSaver()) { mutableStateOf(fileType.color) }
 
     val context = LocalContext.current
 
@@ -57,7 +60,18 @@ fun PresetFileTypeConfigurationDialog(
             modifier = modifier,
             onConfigureColorButtonPress = openColorPickerDialog,
             fileTypeColor = color,
-            onConfirmButtonPress = { saveFileType(fileType) }
+            onConfirmButtonPress = {
+                saveFileType(
+                    when (fileType) {
+                        is PresetWrappingFileType.ExtensionConfigurable -> fileType.copy(
+                            excludedExtensions = excludedExtensions.toSet(),
+                            colorInt = color.toArgb()
+                        )
+
+                        is PresetWrappingFileType.ExtensionSet -> fileType.copy(colorInt = color.toArgb())
+                    }
+                )
+            }
         ) {
             Column { // To prevent spacing in between text and chip flow row introduced by FileTypeConfigurationDialog
                 Text(
@@ -88,11 +102,10 @@ fun PresetFileTypeConfigurationDialog(
                             extension = extension,
                             onClick = {
                                 when {
-                                    availableExtensions.size - excludedExtensions.size == 1 ->
-                                        showLeaveAtLeastOneExtensionEnabledWarning =
-                                            true
-
                                     isExcluded -> excludedExtensions.remove(extension)
+                                    availableExtensions.size - excludedExtensions.size == 1 ->
+                                        showLeaveAtLeastOneExtensionEnabledWarning = true
+
                                     else -> excludedExtensions.add(extension)
                                 }
                             },
