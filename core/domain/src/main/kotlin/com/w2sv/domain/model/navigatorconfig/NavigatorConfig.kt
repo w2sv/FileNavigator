@@ -29,10 +29,6 @@ data class NavigatorConfig(
         fileTypeConfigMap.keys - enabledFileTypes
     }
 
-    val sortedDisabledFileTypes: List<FileType> by lazy {
-        disabledFileTypes.sortedByOrdinal()
-    }
-
     /**
      * @return A [Set] of all [FileType]s included in the config
      */
@@ -59,6 +55,15 @@ data class NavigatorConfig(
     // ================
     // Copying with modifications
     // ================
+
+    fun applyFileTypeEnablementMap(map: Map<FileType, Boolean>): NavigatorConfig =
+        copy(
+            fileTypeConfigMap = fileTypeConfigMap.copy {
+                map.forEach { (fileType, enabled) ->
+                    update(fileType) { it.copy(enabled = enabled) }
+                }
+            }
+        )
 
     /**
      * Adds [type] to the configuration with a default [FileTypeConfig], with [FileTypeConfig.enabled] set to [enabled].
@@ -140,5 +145,5 @@ data class NavigatorConfig(
     }
 }
 
-private fun Collection<FileType>.sortedByOrdinal(): List<FileType> =
+fun Collection<FileType>.sortedByOrdinal(): List<FileType> =
     sortedBy { fileType -> fileType.ordinal }

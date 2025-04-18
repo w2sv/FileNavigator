@@ -46,12 +46,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.w2sv.composed.CollectFromFlow
+import com.w2sv.common.util.syncMapKeys
+import com.w2sv.composed.OnChange
 import com.w2sv.composed.extensions.thenIf
 import com.w2sv.composed.extensions.toMutableStateMap
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
+import com.w2sv.domain.model.navigatorconfig.sortedByOrdinal
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
@@ -65,15 +67,13 @@ import com.w2sv.kotlinutils.toggle
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 
 @Composable
 fun EnabledFileTypesBottomSheet(
     fileTypeEnablementMap: ImmutableMap<FileType, Boolean>,
     applyFileTypeEnablementMap: (Map<FileType, Boolean>) -> Unit,
-    newFileType: Flow<CustomFileType>,
+    deleteCustomFileType: (CustomFileType) -> Unit,
     showFileTypeCreationDialog: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
@@ -81,11 +81,17 @@ fun EnabledFileTypesBottomSheet(
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     val mutableFileTypeEnablementMap = remember { fileTypeEnablementMap.toMutableStateMap() }  // TODO: rememberSavable
-    val sortedFileTypes by remember { derivedStateOf { mutableFileTypeEnablementMap.keys.sortedBy { it.ordinal } } }
-    val enablementMapsUnequal by remember { derivedStateOf { mutableFileTypeEnablementMap.toMap() != fileTypeEnablementMap } }
+    val sortedFileTypes by remember { derivedStateOf { mutableFileTypeEnablementMap.keys.sortedByOrdinal() } }
+    val enablementMapsUnequal by remember(fileTypeEnablementMap) { derivedStateOf { mutableFileTypeEnablementMap.toMap() != fileTypeEnablementMap } }
     val allFileTypesUnselected by remember { derivedStateOf { mutableFileTypeEnablementMap.values.all { !it } } }
 
-    CollectFromFlow(newFileType) { mutableFileTypeEnablementMap.put(it, true) }
+    OnChange(fileTypeEnablementMap) {
+        syncMapKeys(
+            source = fileTypeEnablementMap,
+            target = mutableFileTypeEnablementMap,
+            valueOnAddedKeys = true
+        )
+    }
 
     val fileTypeCard: @Composable LazyGridItemScope.(FileType) -> Unit = remember {
         { fileType ->
@@ -126,7 +132,7 @@ fun EnabledFileTypesBottomSheet(
         ) {
             items(sortedFileTypes, key = { it.ordinal }) { fileType ->
                 if (fileType is CustomFileType) {
-                    DeleteCustomFileTypeTooltipBox(deleteCustomFileType = { mutableFileTypeEnablementMap.remove(fileType) }) {
+                    DeleteCustomFileTypeTooltipBox(deleteCustomFileType = { deleteCustomFileType(fileType) }) {
                         fileTypeCard(fileType)
                     }
                 } else {
@@ -243,7 +249,7 @@ private fun UsedFileTypesBottomSheetPrev() {
         EnabledFileTypesBottomSheet(
             fileTypeEnablementMap = NavigatorConfig.default.fileTypeConfigMap.mapValues { it.value.enabled }.toImmutableMap(),
             applyFileTypeEnablementMap = {},
-            newFileType = emptyFlow(),
+            deleteCustomFileType = {},
             showFileTypeCreationDialog = {},
             onDismissRequest = {},
             sheetState = SheetState(initialValue = SheetValue.Expanded, skipPartiallyExpanded = true, density = LocalDensity.current)
