@@ -17,7 +17,7 @@ fun DialogButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     contentColor: Color = MaterialTheme.colorScheme.secondary,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
     enabled: Boolean = true
 ) {
     ElevatedButton(

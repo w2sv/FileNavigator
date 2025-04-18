@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
-import slimber.log.i
 
 @Stable
 class ReversibleNavigatorConfig(
@@ -53,26 +52,6 @@ class ReversibleNavigatorConfig(
         makeSnackbarVisuals = makeSnackbarVisuals
     )
 
-    fun onFileTypeCheckedChange(fileType: FileType, checkedNew: Boolean) {
-        updateOrEmitSnackbar(
-            checkedNew = checkedNew,
-            checkedCount = value.enabledFileTypes.size,
-            update = {
-                update { config ->
-                    config.updateFileTypeConfig(fileType) { it.copy(enabled = checkedNew) }
-                }
-            },
-            makeSnackbarVisuals = {
-                AppSnackbarVisuals(
-                    message = it.getString(
-                        R.string.leave_at_least_one_file_type_enabled
-                    ),
-                    kind = SnackbarKind.Error
-                )
-            }
-        )
-    }
-
     fun onFileSourceCheckedChange(
         fileType: FileType,
         sourceType: SourceType,
@@ -100,17 +79,16 @@ class ReversibleNavigatorConfig(
         )
     }
 
-    val selectFileType: SharedFlow<FileType> get() = _selectFileType.asSharedFlow()
-    private val _selectFileType = MutableSharedFlow<FileType>()
+    fun <T : FileType> editFileType(current: T, edited: T) {
+        update { it.editFileType(current) { edited } }
+    }
+
+    val newFileType: SharedFlow<CustomFileType> get() = _newFileType.asSharedFlow()
+    private val _newFileType = MutableSharedFlow<CustomFileType>()
 
     fun createCustomFileType(type: CustomFileType) {
         update { it.addCustomFileType(type) }
-        _selectFileType.emit(type, scope)
-        i { "Emitted $type on selectFileType" }
-    }
-
-    fun <T : FileType> editFileType(current: T, edited: T) {
-        update { it.editFileType(current) { edited } }
+        _newFileType.emit(type, scope)
     }
 
     fun deleteCustomFileType(type: CustomFileType) {

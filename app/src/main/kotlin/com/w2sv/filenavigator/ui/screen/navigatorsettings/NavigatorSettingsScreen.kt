@@ -61,8 +61,8 @@ import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AddFileTypesBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AutoMoveIntroductionDialogIfNotYetShown
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.EnabledFileTypesBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeCreationDialog
@@ -72,8 +72,8 @@ import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
@@ -126,8 +126,8 @@ fun NavigatorSettingsScreen(
 
     AutoMoveIntroductionDialogIfNotYetShown()
 
-    var showAddFileTypesBottomSheet by rememberSaveable {
-        mutableStateOf(false)
+    var showUsedFileTypesBottomSheet by rememberSaveable {
+        mutableStateOf(true)
     }
     var fileTypeConfigurationDialog by rememberSaveable {
         mutableStateOf<FileTypeConfigurationDialog?>(null)
@@ -182,7 +182,7 @@ fun NavigatorSettingsScreen(
         NavigatorConfigurationColumn(
             config = navigatorConfig,
             reversibleConfig = navigatorVM.reversibleConfig,
-            showAddFileTypesBottomSheet = remember { { showAddFileTypesBottomSheet = true } },
+            showUsedFileTypesBottomSheet = remember { { showUsedFileTypesBottomSheet = true } },
             showFileTypeConfigurationDialog = { fileType ->
                 fileTypeConfigurationDialog = when (fileType) {
                     is AnyPresetWrappingFileType -> FileTypeConfigurationDialog.ConfigurePresetType(fileType)
@@ -195,20 +195,18 @@ fun NavigatorSettingsScreen(
                 .fillMaxSize()
         )
 
-        if (showAddFileTypesBottomSheet) {
-            AddFileTypesBottomSheet(
-                disabledFileTypes = navigatorConfig.sortedDisabledFileTypes.toPersistentList(),
-                addFileTypes = remember {
-                    {
-                        it.forEach { fileType ->
-                            navigatorVM.reversibleConfig.onFileTypeCheckedChange(fileType, true)
-                        }
-                    }
+        if (showUsedFileTypesBottomSheet) {
+            EnabledFileTypesBottomSheet(
+                fileTypeEnablementMap = remember(navigatorConfig) {
+                    navigatorConfig
+                        .fileTypeConfigMap
+                        .mapValues { it.value.enabled }
+                        .toImmutableMap()
                 },
-                deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
-                onDismissRequest = remember { { showAddFileTypesBottomSheet = false } },
-                onCreateFileTypeCardClick = remember { { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType } },
-                selectFileType = navigatorVM.reversibleConfig.selectFileType
+                applyFileTypeEnablementMap = {},
+                onDismissRequest = remember { { showUsedFileTypesBottomSheet = false } },
+                newFileType = navigatorVM.reversibleConfig.newFileType,
+                showFileTypeCreationDialog = remember { { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType } },
             )
         }
 

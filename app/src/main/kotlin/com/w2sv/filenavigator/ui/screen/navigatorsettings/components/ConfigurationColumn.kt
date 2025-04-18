@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -130,7 +130,7 @@ fun rememberSelectAutoMoveDestination(onDestinationSelected: (LocalDestinationAp
 fun NavigatorConfigurationColumn(
     config: NavigatorConfig,
     reversibleConfig: ReversibleNavigatorConfig,
-    showAddFileTypesBottomSheet: () -> Unit,
+    showUsedFileTypesBottomSheet: () -> Unit,
     showFileTypeConfigurationDialog: (FileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -144,10 +144,10 @@ fun NavigatorConfigurationColumn(
                 SectionHeader(
                     text = stringResource(id = R.string.file_types)
                 )
-                FilledTonalIconButton(onClick = showAddFileTypesBottomSheet) {
+                FilledTonalIconButton(onClick = showUsedFileTypesBottomSheet) {
                     Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(R.string.add_a_file_type)
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.configure_the_used_file_types)
                     )
                 }
             }

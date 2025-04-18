@@ -1,6 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -37,7 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,57 +51,48 @@ import com.w2sv.composed.extensions.thenIf
 import com.w2sv.composed.extensions.toMutableStateMap
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.filenavigator.R
+import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
-import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
+import com.w2sv.filenavigator.ui.designsystem.HighlightedDialogButton
+import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.designsystem.rememberExtendedTooltipState
 import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.kotlinutils.toggle
-import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
-import slimber.log.i
 
 @Composable
-fun AddFileTypesBottomSheet(
-    disabledFileTypes: ImmutableList<FileType>,
-    addFileTypes: (List<FileType>) -> Unit,
-    deleteCustomFileType: (CustomFileType) -> Unit,
+fun EnabledFileTypesBottomSheet(
+    fileTypeEnablementMap: ImmutableMap<FileType, Boolean>,
+    applyFileTypeEnablementMap: (Map<FileType, Boolean>) -> Unit,
+    newFileType: Flow<CustomFileType>,
+    showFileTypeCreationDialog: () -> Unit,
     onDismissRequest: () -> Unit,
-    onCreateFileTypeCardClick: () -> Unit,
-    selectFileType: Flow<FileType>,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val selectionMap = remember {
-        disabledFileTypes
-            .associateWith { false }
-            .toMutableStateMap()
-    }
-    val selectedTypes by remember {
-        derivedStateOf {
-            selectionMap.keys.filter { selectionMap.getValue(it) }
-        }
-    }
+    val mutableFileTypeEnablementMap = remember { fileTypeEnablementMap.toMutableStateMap() }  // TODO: rememberSavable
+    val sortedFileTypes by remember { derivedStateOf { mutableFileTypeEnablementMap.keys.sortedBy { it.ordinal } } }
+    val enablementMapsUnequal by remember { derivedStateOf { mutableFileTypeEnablementMap.toMap() != fileTypeEnablementMap } }
+    val allFileTypesUnselected by remember { derivedStateOf { mutableFileTypeEnablementMap.values.all { !it } } }
 
-    CollectFromFlow(selectFileType) { fileType ->
-        i { "Putting $fileType=true" }
-        selectionMap.put(fileType, true)
-    }
+    CollectFromFlow(newFileType) { mutableFileTypeEnablementMap.put(it, true) }
 
     val fileTypeCard: @Composable LazyGridItemScope.(FileType) -> Unit = remember {
         { fileType ->
             FileTypeCard(
                 fileType = fileType,
-                isSelected = selectionMap.getValue(fileType),
-                onClick = { selectionMap.toggle(fileType) },
-                modifier = Modifier
-                    .padding(bottom = 12.dp)
-                    .animateItem()
+                isSelected = mutableFileTypeEnablementMap.getValue(fileType),
+                onClick = { mutableFileTypeEnablementMap.toggle(fileType) }
             )
         }
     }
@@ -110,20 +103,30 @@ fun AddFileTypesBottomSheet(
         modifier = modifier
     ) {
         Text(
-            text = stringResource(R.string.add_file_types),
+            text = stringResource(R.string.enabled_file_types),
             fontSize = 22.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier
                 .padding(bottom = 20.dp)
                 .align(Alignment.CenterHorizontally)
         )
+        AnimatedVisibility(allFileTypesUnselected) {
+            AppSnackbarContent(
+                snackbarKind = SnackbarKind.Error,
+                message = stringResource(R.string.select_at_least_one_file_type),
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            )
+        }
         LazyVerticalGrid(
             columns = GridCells.FixedSize(92.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
         ) {
-            items(disabledFileTypes, key = { it.ordinal }) { fileType ->
+            items(sortedFileTypes, key = { it.ordinal }) { fileType ->
                 if (fileType is CustomFileType) {
-                    DeleteCustomFileTypeTooltipBox(deleteCustomFileType = { deleteCustomFileType(fileType) }) {
+                    DeleteCustomFileTypeTooltipBox(deleteCustomFileType = { mutableFileTypeEnablementMap.remove(fileType) }) {
                         fileTypeCard(fileType)
                     }
                 } else {
@@ -131,32 +134,23 @@ fun AddFileTypesBottomSheet(
                 }
             }
             item {
-                CreateFileTypeCard(
-                    onClick = onCreateFileTypeCardClick,
-                    modifier = Modifier
-                        .padding(bottom = 12.dp)
-                        .animateItem()
-                )
+                CreateFileTypeCard(onClick = showFileTypeCreationDialog)
             }
         }
-        DialogButton(
-            text = pluralStringResource(
-                id = R.plurals.add_file_types_button,
-                count = selectedTypes.size
-            ),
+        HighlightedDialogButton(
+            text = stringResource(R.string.apply),
             onClick = remember {
                 {
-                    addFileTypes(selectedTypes)
+                    applyFileTypeEnablementMap(mutableFileTypeEnablementMap)
                     scope.launch {
                         sheetState.hide()
                         onDismissRequest()
                     }
                 }
             },
-            enabled = selectedTypes.isNotEmpty(),
+            enabled = enablementMapsUnequal && !allFileTypesUnselected,
             modifier = Modifier
                 .padding(end = 16.dp)
-                .animateContentSize()
                 .padding(horizontal = 8.dp)
                 .align(Alignment.End)
                 .padding(bottom = 12.dp) // To prevent elevation shadow cutoff
@@ -185,7 +179,7 @@ private fun DeleteCustomFileTypeTooltipBox(deleteCustomFileType: () -> Unit, con
 }
 
 @Composable
-private fun FileTypeCard(
+private fun LazyGridItemScope.FileTypeCard(
     fileType: FileType,
     isSelected: Boolean,
     onClick: () -> Unit,
@@ -199,27 +193,19 @@ private fun FileTypeCard(
 }
 
 @Composable
-private fun CreateFileTypeCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun LazyGridItemScope.CreateFileTypeCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
     GridCard(isSelected = false, onClick = onClick, modifier = modifier) {
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = null,
             modifier = Modifier.size(32.dp)
         )
-        Text("Create a file type", textAlign = TextAlign.Center)
-    }
-}
-
-@Preview
-@Composable
-private fun CreateFileTypeCardPrev() {
-    AppTheme {
-        CreateFileTypeCard({})
+        Text(stringResource(R.string.create_file_type_card_label), textAlign = TextAlign.Center)
     }
 }
 
 @Composable
-private fun GridCard(
+private fun LazyGridItemScope.GridCard(
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -227,6 +213,8 @@ private fun GridCard(
 ) {
     ElevatedCard(
         modifier = modifier
+            .padding(bottom = 12.dp)
+            .animateItem()
             .thenIf(isSelected) {
                 border(
                     color = MaterialTheme.colorScheme.primary,
@@ -244,6 +232,21 @@ private fun GridCard(
                 .clickable { onClick() }
                 .padding(12.dp),
             content = content
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun UsedFileTypesBottomSheetPrev() {
+    AppTheme {
+        EnabledFileTypesBottomSheet(
+            fileTypeEnablementMap = NavigatorConfig.default.fileTypeConfigMap.mapValues { it.value.enabled }.toImmutableMap(),
+            applyFileTypeEnablementMap = {},
+            newFileType = emptyFlow(),
+            showFileTypeCreationDialog = {},
+            onDismissRequest = {},
+            sheetState = SheetState(initialValue = SheetValue.Expanded, skipPartiallyExpanded = true, density = LocalDensity.current)
         )
     }
 }

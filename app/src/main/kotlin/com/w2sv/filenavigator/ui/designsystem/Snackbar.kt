@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.designsystem
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
@@ -79,9 +80,10 @@ fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
 fun AppSnackbarContent(
     snackbarKind: SnackbarKind?,
     message: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier, horizontalArrangement = horizontalArrangement) {
         snackbarKind?.let {
             Icon(imageVector = it.icon, contentDescription = null, tint = it.iconTint)
             Spacer(modifier = Modifier.width(10.dp))
