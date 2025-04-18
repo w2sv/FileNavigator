@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,7 +67,6 @@ import com.w2sv.kotlinutils.toggle
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.launch
-import slimber.log.i
 
 @Composable
 fun EnabledFileTypesBottomSheet(
@@ -80,9 +78,11 @@ fun EnabledFileTypesBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
-    val mutableFileTypeEnablementMap = remember { fileTypeEnablementMap.toMutableStateMap() }  // TODO: rememberSavable
+    val mutableFileTypeEnablementMap = remember { fileTypeEnablementMap.toMutableStateMap() } // TODO: rememberSavable
     val sortedFileTypes by remember { derivedStateOf { mutableFileTypeEnablementMap.keys.sortedByOrdinal() } }
-    val enablementMapsUnequal by remember(fileTypeEnablementMap) { derivedStateOf { mutableFileTypeEnablementMap.toMap() != fileTypeEnablementMap } }
+    val enablementMapsUnequal by remember(fileTypeEnablementMap) {
+        derivedStateOf { mutableFileTypeEnablementMap.toMap() != fileTypeEnablementMap }
+    }
     val allFileTypesUnselected by remember { derivedStateOf { mutableFileTypeEnablementMap.values.all { !it } } }
 
     OnChange(fileTypeEnablementMap) {
@@ -109,7 +109,7 @@ fun EnabledFileTypesBottomSheet(
         modifier = modifier
     ) {
         Text(
-            text = stringResource(R.string.enabled_file_types),
+            text = stringResource(R.string.set_enabled_file_types),
             fontSize = 22.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier

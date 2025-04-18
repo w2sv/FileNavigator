@@ -206,7 +206,7 @@ fun NavigatorSettingsScreen(
                 applyFileTypeEnablementMap = navigatorVM.reversibleConfig::applyFileTypeEnablementMap,
                 onDismissRequest = remember { { showUsedFileTypesBottomSheet = false } },
                 deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
-                showFileTypeCreationDialog = remember { { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType } },
+                showFileTypeCreationDialog = remember { { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType } }
             )
         }
 

@@ -125,7 +125,10 @@ private fun FileTypeRow(
                     .offset((-2).dp, 10.dp)
                     .size(32.dp)
             ) {
-                Icon(imageVector = Icons.Default.Settings, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = stringResource(R.string.open_the_file_type_configuration_dialog)
+                )
             }
         }
         Text(
@@ -148,7 +151,7 @@ private fun MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs: () -> Unit,
         IconButton(onClick = { expanded = !expanded }, modifier = Modifier.size(36.dp)) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_more_vert_24),
-                contentDescription = null
+                contentDescription = stringResource(R.string.open_the_dropdown_menu)
             )
         }
         DropdownMenu(

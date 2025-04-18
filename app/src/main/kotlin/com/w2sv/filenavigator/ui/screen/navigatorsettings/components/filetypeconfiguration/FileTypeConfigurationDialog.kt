@@ -2,7 +2,6 @@ package com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeco
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -26,8 +25,10 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableChipColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -129,6 +130,7 @@ fun FileExtensionChip(
     modifier: Modifier = Modifier,
     selected: Boolean = true,
     enabled: Boolean = true,
+    colors: SelectableChipColors = InputChipDefaults.inputChipColors(),
     onClick: () -> Unit = {}
 ) {
     InputChip(
@@ -143,7 +145,7 @@ fun FileExtensionChip(
                 style = MaterialTheme.typography.bodyLarge
             )
         },
-        border = BorderStroke(Dp.Hairline, MaterialTheme.colorScheme.primary)
+        colors = colors
     )
 }
 

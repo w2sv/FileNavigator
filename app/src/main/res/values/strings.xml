@@ -7,7 +7,7 @@
     <string name="apply">Apply</string>
     <string name="disable_navigator_on_low_battery">Disable navigator on low battery</string>
     <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">Leave at least one file source selected or disable the entire file type.</string>
-    <string name="file_types">File Types</string>
+    <string name="set_enabled_file_types">Set Enabled File Types</string>
     <string name="_default">Default</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
@@ -92,7 +92,7 @@
     <string name="edit_file_type_name_field_placeholder">Enter a name</string>
     <string name="edit_file_type_name_field_label">Name</string>
     <string name="edit_file_type_dialog_title">Edit file type</string>
-    <string name="preset_non_media_file_type_configuration_dialog_title">Edit %1$s file type</string>
+    <string name="preset_non_media_file_type_configuration_dialog_title">Edit %1$s File Type</string>
     <string name="save">Save</string>
     <string name="create_file_type_dialog_title">Create a file type</string>
     <string name="create">Create</string>
@@ -103,6 +103,9 @@
     <string name="file_extensions">File Extensions</string>
     <string name="leave_at_least_one_file_extension_enabled">Leave at least one file extension enabled.</string>
     <string name="create_file_type_card_label">Create a file type</string>
+    <string name="media_file_type_extensions_can_t_be_modified">Media file type extensions can\'t be modified.</string>
+    <string name="open_the_dropdown_menu">Open the dropdown menu.</string>
+    <string name="open_the_file_type_configuration_dialog">Open the file type configuration dialog.</string>
     <plurals name="add_file_types_button">
         <item quantity="one">Add File Type</item>
         <item quantity="other">Add File Types</item>

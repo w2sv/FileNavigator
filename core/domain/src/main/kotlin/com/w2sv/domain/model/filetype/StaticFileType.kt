@@ -1,7 +1,6 @@
 package com.w2sv.domain.model.filetype
 
 import android.content.Context
-import android.os.Parcelable
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig

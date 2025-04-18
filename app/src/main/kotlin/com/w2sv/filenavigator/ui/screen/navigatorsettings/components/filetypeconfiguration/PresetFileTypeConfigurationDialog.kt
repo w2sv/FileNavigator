@@ -2,8 +2,14 @@ package com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeco
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -79,6 +86,19 @@ fun PresetFileTypeConfigurationDialog(
                     style = MaterialTheme.typography.dialogSectionLabel,
                     modifier = Modifier.padding(bottom = 6.dp)
                 )
+                if (fileType.isMediaType) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    ) {
+                        Icon(Icons.Outlined.Info, contentDescription = null)
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            stringResource(R.string.media_file_type_extensions_can_t_be_modified),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
 
                 val availableExtensions = remember {
                     when (fileType) {
@@ -100,7 +120,6 @@ fun PresetFileTypeConfigurationDialog(
                         val isExcluded by remember { derivedStateOf { extension in excludedExtensions } }
                         FileExtensionChip(
                             extension = extension,
-                            enabled = fileType.isExtensionConfigurable,
                             onClick = {
                                 when {
                                     isExcluded -> excludedExtensions.remove(extension)
@@ -110,7 +129,8 @@ fun PresetFileTypeConfigurationDialog(
                                     else -> excludedExtensions.add(extension)
                                 }
                             },
-                            selected = !isExcluded
+                            selected = !isExcluded,
+                            enabled = !fileType.isMediaType
                         )
                     }
                 }

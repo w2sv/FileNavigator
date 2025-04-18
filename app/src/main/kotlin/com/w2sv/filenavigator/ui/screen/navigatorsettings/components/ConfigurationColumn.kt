@@ -141,9 +141,7 @@ fun NavigatorConfigurationColumn(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                SectionHeader(
-                    text = stringResource(id = R.string.file_types)
-                )
+                SectionHeader(text = stringResource(id = R.string.enabled_file_types))
                 FilledTonalIconButton(onClick = showUsedFileTypesBottomSheet) {
                     Icon(
                         imageVector = Icons.Default.Edit,
