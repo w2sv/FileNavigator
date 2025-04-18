@@ -137,7 +137,7 @@ private fun FileTypeRow(
         )
         Spacer(modifier = Modifier.weight(1f))
         setSourceAutoMoveConfigs?.let {
-            MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = it)
+            MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = it, modifier = Modifier.padding(end = 6.dp))
         }
     }
 }

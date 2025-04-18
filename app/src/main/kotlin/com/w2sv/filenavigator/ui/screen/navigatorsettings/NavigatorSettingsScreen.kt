@@ -127,7 +127,7 @@ fun NavigatorSettingsScreen(
     AutoMoveIntroductionDialogIfNotYetShown()
 
     var showUsedFileTypesBottomSheet by rememberSaveable {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     var fileTypeConfigurationDialog by rememberSaveable {
         mutableStateOf<FileTypeConfigurationDialog?>(null)
