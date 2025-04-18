@@ -157,14 +157,6 @@ fun NavigatorConfigurationColumn(
 
             FileTypeAccordion(
                 fileType = fileType,
-                excludeFileType = remember(fileType) {
-                    {
-                        reversibleConfig.onFileTypeCheckedChange(
-                            fileType = fileType,
-                            checkedNew = false
-                        )
-                    }
-                },
                 setSourceAutoMoveConfigs = remember(fileType) {
                     if (fileType.isMediaType) {
                         { autoMoveConfig ->

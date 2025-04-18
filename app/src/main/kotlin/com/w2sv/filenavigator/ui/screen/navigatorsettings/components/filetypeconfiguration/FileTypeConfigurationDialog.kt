@@ -128,10 +128,12 @@ fun FileExtensionChip(
     extension: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    selected: Boolean = true
+    selected: Boolean = true,
+    enabled: Boolean = true
 ) {
     InputChip(
         selected = selected,
+        enabled = enabled,
         onClick = onClick,
         modifier = modifier,
         label = {

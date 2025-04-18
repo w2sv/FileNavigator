@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-03-02T20:03:48.207055645Z">
+        <DropdownSelection timestamp="2025-04-18T10:30:49.772770529Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/home/jaza5177/.android/avd/Medium_Phone_API_35.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/home/jaza5177/.android/avd/AudiDev-33-audi-android-automotive-v20241025_01-x86_64.avd" />
             </handle>
           </Target>
         </DropdownSelection>

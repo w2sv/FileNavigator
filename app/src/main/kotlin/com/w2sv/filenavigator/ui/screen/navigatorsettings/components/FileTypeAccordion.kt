@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +25,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -45,7 +43,6 @@ import kotlinx.collections.immutable.ImmutableMap
 @Composable
 fun FileTypeAccordion(
     fileType: FileType,
-    excludeFileType: () -> Unit,
     setSourceAutoMoveConfigs: ((AutoMoveConfig) -> Unit)?,
     sourceTypeConfigMap: ImmutableMap<SourceType, SourceConfig>,
     onSourceCheckedChange: (SourceType, Boolean) -> Unit,
@@ -56,7 +53,6 @@ fun FileTypeAccordion(
     Column(modifier = modifier) {
         Header(
             fileType = fileType,
-            excludeFileType = excludeFileType,
             setSourceAutoMoveConfigs = setSourceAutoMoveConfigs,
             showFileTypeConfigurationDialog = showFileTypeConfigurationDialog
         )
@@ -72,7 +68,6 @@ fun FileTypeAccordion(
 @Composable
 private fun Header(
     fileType: FileType,
-    excludeFileType: () -> Unit,
     setSourceAutoMoveConfigs: ((AutoMoveConfig) -> Unit)?,
     showFileTypeConfigurationDialog: (FileType) -> Unit,
     modifier: Modifier = Modifier
@@ -94,7 +89,6 @@ private fun Header(
     ) {
         FileTypeRow(
             fileType = fileType,
-            excludeFileType = excludeFileType,
             setSourceAutoMoveConfigs = selectAutoMoveDestination?.let { { it.launch(null) } },
             showFileTypeConfigurationDialog = showFileTypeConfigurationDialog
         )
@@ -104,7 +98,6 @@ private fun Header(
 @Composable
 private fun FileTypeRow(
     fileType: FileType,
-    excludeFileType: () -> Unit,
     setSourceAutoMoveConfigs: (() -> Unit)?,
     showFileTypeConfigurationDialog: (FileType) -> Unit,
     modifier: Modifier = Modifier
@@ -130,21 +123,9 @@ private fun FileTypeRow(
         setSourceAutoMoveConfigs?.let {
             MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = it)
         }
-        if (!fileType.isMediaType) {
-            IconButton(onClick = { showFileTypeConfigurationDialog(fileType) }) {
-                Icon(Icons.Default.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-            }
+        IconButton(onClick = { showFileTypeConfigurationDialog(fileType) }) {
+            Icon(imageVector = Icons.Default.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         }
-        Text(
-            text = stringResource(R.string.exclude),
-            modifier = Modifier
-                .padding(end = 6.dp)
-                .clip(MaterialTheme.shapes.small)
-                .clickable { excludeFileType() }
-                .padding(horizontal = 6.dp, vertical = 2.dp),
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }
 

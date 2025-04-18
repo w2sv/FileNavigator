@@ -9,6 +9,9 @@ typealias AnyPresetWrappingFileType = PresetWrappingFileType<*>
 sealed interface PresetWrappingFileType<T : PresetFileType> : FileType {
     val presetFileType: T
 
+    val isExtensionConfigurable: Boolean
+        get() = this is ExtensionConfigurable
+
     data class ExtensionSet(override val presetFileType: PresetFileType.ExtensionSet, @ColorInt override val colorInt: Int) :
         StaticFileType.ExtensionSet by presetFileType, FileType, PresetWrappingFileType<PresetFileType.ExtensionSet> {
 

@@ -90,7 +90,7 @@ fun PresetFileTypeConfigurationDialog(
                 var showLeaveAtLeastOneExtensionEnabledWarning by rememberSaveable { mutableStateOf(false) }
                 OnChange(showLeaveAtLeastOneExtensionEnabledWarning) {
                     if (it) {
-                        delay(4000L) // Equals SnackbarDuration.Short ms
+                        delay(4000L) // Equals duration of SnackbarDuration.Short
                         showLeaveAtLeastOneExtensionEnabledWarning = false
                     }
                 }
@@ -100,6 +100,7 @@ fun PresetFileTypeConfigurationDialog(
                         val isExcluded by remember { derivedStateOf { extension in excludedExtensions } }
                         FileExtensionChip(
                             extension = extension,
+                            enabled = fileType.isExtensionConfigurable,
                             onClick = {
                                 when {
                                     isExcluded -> excludedExtensions.remove(extension)
