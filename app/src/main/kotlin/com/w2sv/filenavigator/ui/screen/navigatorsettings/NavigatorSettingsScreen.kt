@@ -95,7 +95,7 @@ private sealed interface FileTypeConfigurationDialog : Parcelable {
     value class ConfigurePresetType(val fileType: AnyPresetWrappingFileType) : FileTypeConfigurationDialog
 }
 
-@Destination<RootGraph>(style = NavigationTransitions::class)
+@Destination<RootGraph>(style = NavigationTransitions::class, start = true)
 @Composable
 fun NavigatorSettingsScreen(
     navigator: DestinationsNavigator,

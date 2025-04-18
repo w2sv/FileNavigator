@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -27,10 +28,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
@@ -38,6 +41,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.modelext.stringResource
+import com.w2sv.filenavigator.ui.theme.AppTheme
 import kotlinx.collections.immutable.ImmutableMap
 
 @Composable
@@ -106,7 +110,7 @@ private fun FileTypeRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        Box {
+        Box(contentAlignment = Alignment.Center) {
             FileTypeIcon(
                 fileType = fileType,
                 tint = fileType.color,
@@ -114,6 +118,15 @@ private fun FileTypeRow(
                     .padding(horizontal = 12.dp)
                     .size(34.dp)
             )
+            IconButton(
+                onClick = { showFileTypeConfigurationDialog(fileType) },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset((-2).dp, 10.dp)
+                    .size(32.dp)
+            ) {
+                Icon(imageVector = Icons.Default.Settings, contentDescription = null)
+            }
         }
         Text(
             text = fileType.stringResource(),
@@ -122,9 +135,6 @@ private fun FileTypeRow(
         Spacer(modifier = Modifier.weight(1f))
         setSourceAutoMoveConfigs?.let {
             MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = it)
-        }
-        IconButton(onClick = { showFileTypeConfigurationDialog(fileType) }) {
-            Icon(imageVector = Icons.Default.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         }
     }
 }
@@ -138,8 +148,7 @@ private fun MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs: () -> Unit,
         IconButton(onClick = { expanded = !expanded }, modifier = Modifier.size(36.dp)) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_more_vert_24),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                contentDescription = null
             )
         }
         DropdownMenu(
@@ -162,6 +171,14 @@ private fun MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs: () -> Unit,
                 }
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun HeaderPrev() {
+    AppTheme {
+        Header(PresetFileType.Image.toFileType(), {}, {})
     }
 }
 
