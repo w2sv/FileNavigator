@@ -47,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.common.util.syncMapKeys
+import com.w2sv.composed.CollectFromFlow
 import com.w2sv.composed.OnChange
 import com.w2sv.composed.extensions.thenIf
 import com.w2sv.composed.extensions.toMutableStateMap
@@ -67,13 +68,15 @@ import com.w2sv.kotlinutils.toggle
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 
 @Composable
 fun EnabledFileTypesBottomSheet(
     fileTypeEnablementMap: ImmutableMap<FileType, Boolean>,
+    newFileType: Flow<CustomFileType>,
     applyFileTypeEnablementMap: (Map<FileType, Boolean>) -> Unit,
-    deleteCustomFileType: (CustomFileType) -> Unit,
     showFileTypeCreationDialog: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
@@ -85,13 +88,7 @@ fun EnabledFileTypesBottomSheet(
     val enablementMapsUnequal by remember(fileTypeEnablementMap) { derivedStateOf { mutableFileTypeEnablementMap.toMap() != fileTypeEnablementMap } }
     val allFileTypesUnselected by remember { derivedStateOf { mutableFileTypeEnablementMap.values.all { !it } } }
 
-    OnChange(fileTypeEnablementMap) {
-        syncMapKeys(
-            source = fileTypeEnablementMap,
-            target = mutableFileTypeEnablementMap,
-            valueOnAddedKeys = true
-        )
-    }
+    CollectFromFlow(newFileType) { mutableFileTypeEnablementMap.put(it, true) }
 
     val fileTypeCard: @Composable LazyGridItemScope.(FileType) -> Unit = remember {
         { fileType ->
@@ -132,7 +129,7 @@ fun EnabledFileTypesBottomSheet(
         ) {
             items(sortedFileTypes, key = { it.ordinal }) { fileType ->
                 if (fileType is CustomFileType) {
-                    DeleteCustomFileTypeTooltipBox(deleteCustomFileType = { deleteCustomFileType(fileType) }) {
+                    DeleteCustomFileTypeTooltipBox(deleteCustomFileType = { mutableFileTypeEnablementMap.remove(fileType) }) {
                         fileTypeCard(fileType)
                     }
                 } else {
@@ -249,7 +246,7 @@ private fun UsedFileTypesBottomSheetPrev() {
         EnabledFileTypesBottomSheet(
             fileTypeEnablementMap = NavigatorConfig.default.fileTypeConfigMap.mapValues { it.value.enabled }.toImmutableMap(),
             applyFileTypeEnablementMap = {},
-            deleteCustomFileType = {},
+            newFileType = emptyFlow(),
             showFileTypeCreationDialog = {},
             onDismissRequest = {},
             sheetState = SheetState(initialValue = SheetValue.Expanded, skipPartiallyExpanded = true, density = LocalDensity.current)

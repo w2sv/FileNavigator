@@ -12,15 +12,20 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.viewmodel.MakeSnackbarVisuals
+import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.reversiblestate.ReversibleState
 import com.w2sv.reversiblestate.ReversibleStateFlow
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 
 @Stable
 class ReversibleNavigatorConfig(
+    private val scope: CoroutineScope,
     reversibleStateFlow: ReversibleStateFlow<NavigatorConfig>,
     private val makeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit
 ) : ReversibleState by reversibleStateFlow,
@@ -32,6 +37,7 @@ class ReversibleNavigatorConfig(
         makeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
         onStateSynced: () -> Unit
     ) : this(
+        scope = scope,
         reversibleStateFlow = ReversibleStateFlow(
             scope = scope,
             appliedStateFlow = navigatorConfigDataSource.navigatorConfig.stateIn(
@@ -81,12 +87,11 @@ class ReversibleNavigatorConfig(
         update { it.editFileType(current) { edited } }
     }
 
-    fun createCustomFileType(type: CustomFileType) {
-        update { it.addCustomFileType(type) }
-    }
+    val newFileType: SharedFlow<CustomFileType> get() = _newFileType.asSharedFlow()
+    private val _newFileType = MutableSharedFlow<CustomFileType>()
 
-    fun deleteCustomFileType(type: CustomFileType) {
-        update { it.deleteCustomFileType(type) }
+    fun emitNewFileType(value: CustomFileType) {
+        _newFileType.emit(value, scope)
     }
 
     /**

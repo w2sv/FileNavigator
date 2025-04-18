@@ -1,7 +1,6 @@
 package com.w2sv.domain.model.navigatorconfig
 
 import com.w2sv.common.util.filterKeysByValueToSet
-import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
@@ -60,19 +59,16 @@ data class NavigatorConfig(
         copy(
             fileTypeConfigMap = fileTypeConfigMap.copy {
                 map.forEach { (fileType, enabled) ->
-                    update(fileType) { it.copy(enabled = enabled) }
+                    try {
+                        update(fileType) { it.copy(enabled = enabled) }
+                    } catch (_: NoSuchElementException) {
+                        put(fileType, fileType.defaultConfig(enabled = enabled))
+                    }
                 }
-            }
-        )
 
-    /**
-     * Adds [type] to the configuration with a default [FileTypeConfig], with [FileTypeConfig.enabled] set to [enabled].
-     * @see com.w2sv.domain.model.filetype.StaticFileType.defaultConfig
-     */
-    fun addCustomFileType(type: CustomFileType, enabled: Boolean = false): NavigatorConfig =
-        copy(
-            fileTypeConfigMap = fileTypeConfigMap.copy {
-                put(type, type.defaultConfig(enabled = enabled))
+                (fileTypeConfigMap.keys - map.keys).forEach { removedFileType ->
+                    remove(removedFileType)
+                }
             }
         )
 
@@ -84,9 +80,6 @@ data class NavigatorConfig(
             }
         )
     }
-
-    fun deleteCustomFileType(type: CustomFileType): NavigatorConfig =
-        copy(fileTypeConfigMap = fileTypeConfigMap.copy { remove(type) })
 
     fun updateFileTypeConfig(fileType: FileType, update: (FileTypeConfig) -> FileTypeConfig): NavigatorConfig =
         copy(

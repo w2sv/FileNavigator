@@ -203,9 +203,9 @@ fun NavigatorSettingsScreen(
                         .mapValues { it.value.enabled }
                         .toImmutableMap()
                 },
+                newFileType = navigatorVM.reversibleConfig.newFileType,
                 applyFileTypeEnablementMap = navigatorVM.reversibleConfig::applyFileTypeEnablementMap,
                 onDismissRequest = remember { { showUsedFileTypesBottomSheet = false } },
-                deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
                 showFileTypeCreationDialog = remember { { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType } },
             )
         }
@@ -217,7 +217,7 @@ fun NavigatorSettingsScreen(
                 FileTypeConfigurationDialog.CreateType -> CustomFileTypeCreationDialog(
                     fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
                     onDismissRequest = closeDialog,
-                    createFileType = navigatorVM.reversibleConfig::createCustomFileType,
+                    createFileType = navigatorVM.reversibleConfig::emitNewFileType,
                     excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension
                 )
 
