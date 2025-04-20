@@ -38,6 +38,11 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.mapSaver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -78,7 +83,9 @@ fun EnabledFileTypesBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
-    val mutableFileTypeEnablementMap = remember { fileTypeEnablementMap.toMutableStateMap() } // TODO: rememberSavable
+    val mutableFileTypeEnablementMap = rememberSaveable(saver = fileTypeEnablementMapSaver(fileTypeEnablementMap.keys)) {
+        fileTypeEnablementMap.toMutableStateMap()
+    }
     val sortedFileTypes by remember { derivedStateOf { mutableFileTypeEnablementMap.keys.sortedByOrdinal() } }
     val enablementMapsUnequal by remember(fileTypeEnablementMap) {
         derivedStateOf { mutableFileTypeEnablementMap.toMap() != fileTypeEnablementMap }
@@ -165,6 +172,19 @@ fun EnabledFileTypesBottomSheet(
         Spacer(modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility))
     }
 }
+
+private fun fileTypeEnablementMapSaver(fileTypes: Set<FileType>): Saver<SnapshotStateMap<FileType, Boolean>, Any> =
+    mapSaver(
+        save = { map -> map.mapKeys { it.key.ordinal.toString() } },
+        restore = { restored ->
+            restored
+                .map { (ordinalString, isEnabled) ->
+                    val ordinal = ordinalString.toInt()
+                    fileTypes.first { it.ordinal == ordinal } to isEnabled as Boolean
+                }
+                .toMutableStateMap()
+        }
+    )
 
 @Composable
 private fun DeleteCustomFileTypeTooltipBox(deleteCustomFileType: () -> Unit, content: @Composable () -> Unit) {
