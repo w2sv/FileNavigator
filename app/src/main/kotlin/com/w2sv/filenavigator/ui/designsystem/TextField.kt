@@ -2,7 +2,7 @@ package com.w2sv.filenavigator.ui.designsystem
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.ui.theme.AppColor
+import com.w2sv.filenavigator.ui.util.CharSequenceText
 import com.w2sv.filenavigator.ui.util.TextEditor
 
 /**
@@ -34,7 +35,7 @@ fun OutlinedTextField(
     modifier: Modifier = Modifier,
     labelText: String? = null,
     applyIconImageVector: ImageVector = Icons.Outlined.Check,
-    errorColor: Color = AppColor.error,
+    errorColor: Color = MaterialTheme.colorScheme.error,
     showApplyIconOnlyWhenFocused: Boolean = true,
     showDisabledApplyButtonWhenEmpty: Boolean = false,
     enabled: Boolean = true,
@@ -79,8 +80,8 @@ fun OutlinedTextField(
         isError = editor.invalidityReason != null,
         supportingText = editor.invalidityReason?.let { invalidityReason ->
             {
-                FlowRow {
-                    Text(
+                Column {
+                    CharSequenceText(
                         text = invalidityReason.text(),
                         color = errorColor
                     )

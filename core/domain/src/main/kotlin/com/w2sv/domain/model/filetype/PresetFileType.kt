@@ -72,7 +72,13 @@ sealed interface PresetFileType : StaticFileType {
             @DrawableRes override val iconRes: Int,
             @ColorInt override val defaultColorInt: Int,
             override val defaultFileExtensions: Set<String>
-        ) : NonMedia, PresetFileType.ExtensionConfigurable
+        ) : NonMedia, PresetFileType.ExtensionConfigurable {
+            companion object {
+                @JvmStatic
+                val values: List<ExtensionConfigurable>
+                    get() = listOf(Text, Archive, EBook)
+            }
+        }
 
         companion object {
             @JvmStatic

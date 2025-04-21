@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.annotation.IntRange
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -17,10 +16,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.common.util.mutate
 import com.w2sv.composed.OnChange
+import com.w2sv.composed.rememberStyledTextResource
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetWrappingFileType
@@ -56,9 +55,8 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
         abstract val fileType: FileType
 
         @Composable
-        @ReadOnlyComposable
-        override fun text(): String =
-            stringResource(errorMessageRes, fileExtension, fileType.label(LocalContext.current))
+        override fun text(): CharSequence =
+            rememberStyledTextResource(errorMessageRes, fileExtension, fileType.label(LocalContext.current))
 
         companion object {
             // TODO: test
@@ -135,10 +133,10 @@ class CustomFileTypeEditor(
         updateFileType { it.copy(fileExtensions = it.fileExtensions.mutate { removeAt(index) }) }
     }
 
-    private var otherFileTypes by mutableStateOf(otherFileTypes)
+    private var otherFileTypesMutable by mutableStateOf(otherFileTypes)
 
     fun updateOtherFileTypes(nonMediaFileTypesWithExtensions: Collection<FileType>) {
-        this.otherFileTypes = nonMediaFileTypesWithExtensions
+        this.otherFileTypesMutable = nonMediaFileTypesWithExtensions
     }
 
     val extensionEditor = StatefulTextEditor(
@@ -147,7 +145,7 @@ class CustomFileTypeEditor(
             when {
                 input.containsSpecialCharacter() -> FileExtensionInvalidityReason.ContainsSpecialCharacter
                 input in fileType.fileExtensions -> FileExtensionInvalidityReason.AlreadyAmongstAddedExtensions
-                else -> FileExtensionInvalidityReason.IsExistingFileExtension.get(input, this@CustomFileTypeEditor.otherFileTypes)
+                else -> FileExtensionInvalidityReason.IsExistingFileExtension.get(input, otherFileTypesMutable)
             }
         }
     )
@@ -220,7 +218,6 @@ fun rememberCustomFileTypeEditor(
 ): CustomFileTypeEditor {
     val editor = rememberSaveable(
         initialFileType,
-        existingFileTypes,
         saver = CustomFileTypeEditor.saver(existingFileTypes, saveFileType, scope, context)
     ) {
         CustomFileTypeEditor(
