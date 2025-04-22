@@ -232,6 +232,9 @@ fun NavigatorSettingsScreen(
                 is FileTypeConfigurationDialog.ConfigurePresetType -> PresetFileTypeConfigurationDialog(
                     fileType = dialog.fileType,
                     saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
+                    customFileTypes = navigatorConfig.fileTypes.filterIsInstance<CustomFileType>().toImmutableSet(),
+                    excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension,
+                    deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
                     onDismissRequest = closeDialog
                 )
             }

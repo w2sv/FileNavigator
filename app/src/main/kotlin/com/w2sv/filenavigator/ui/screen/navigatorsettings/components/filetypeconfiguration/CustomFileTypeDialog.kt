@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.TooltipBox
@@ -130,16 +131,16 @@ private fun StatelessCustomFileTypeConfigurationDialog(
         Column {
             OutlinedTextField(
                 editor = customFileTypeEditor.extensionEditor,
-                placeholderText = stringResource(com.w2sv.filenavigator.R.string.add_file_extension_field_placeholder),
-                labelText = stringResource(com.w2sv.filenavigator.R.string.file_extension),
+                labelText = stringResource(com.w2sv.filenavigator.R.string.add_a_file_extension),
                 onApply = customFileTypeEditor::addExtension,
                 applyIconImageVector = Icons.Outlined.Add,
                 showApplyIconOnlyWhenFocused = false,
                 showDisabledApplyButtonWhenEmpty = true,
-                actionButton = customFileTypeEditor.extensionEditor.invalidityReason?.isExcludableFileTypeExtensionOrNull
+                actionButton = customFileTypeEditor.extensionEditor.invalidityReason?.isExcludableExtensionOrNull
                     ?.let { excludableFileTypeExtension ->
                         {
                             RemoveExtensionFromFileTypeButtonRow(
+                                modifier = Modifier.padding(top = 4.dp),
                                 text = rememberStyledTextResource(
                                     com.w2sv.filenavigator.R.string.exclude_from,
                                     excludableFileTypeExtension.fileExtension,

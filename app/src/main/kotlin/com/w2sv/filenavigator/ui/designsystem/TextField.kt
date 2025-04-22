@@ -30,9 +30,9 @@ import com.w2sv.filenavigator.ui.util.TextEditor
 @Composable
 fun OutlinedTextField(
     editor: TextEditor<*>,
-    placeholderText: String,
     onApply: () -> Unit,
     modifier: Modifier = Modifier,
+    placeholderText: String? = null,
     labelText: String? = null,
     applyIconImageVector: ImageVector = Icons.Outlined.Check,
     errorColor: Color = MaterialTheme.colorScheme.error,
@@ -48,7 +48,7 @@ fun OutlinedTextField(
         value = editor.getValue(),
         onValueChange = { editor.update(it) },
         textStyle = MaterialTheme.typography.bodyLarge,
-        placeholder = { Text(placeholderText, maxLines = 1) },
+        placeholder = placeholderText?.let { { Text(it, maxLines = 1) } },
         label = labelText?.let { { Text(labelText, maxLines = 1) } },
         singleLine = true,
         enabled = enabled,

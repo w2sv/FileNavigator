@@ -198,7 +198,7 @@ private fun DeleteCustomFileTypeTooltipBox(deleteCustomFileType: () -> Unit, con
                     deleteCustomFileType()
                     tooltipState.dismiss()
                 },
-                contentDescription = stringResource(R.string.delete_file_type)
+                contentDescription = stringResource(R.string.delete_the_file_type)
             )
         },
         state = tooltipState,

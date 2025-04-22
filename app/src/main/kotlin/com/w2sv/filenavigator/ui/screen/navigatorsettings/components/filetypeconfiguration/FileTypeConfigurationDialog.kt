@@ -208,15 +208,25 @@ fun RemoveExtensionFromFileTypeButtonRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
-        Button(
-            colors = ButtonDefaults.filledTonalButtonColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer
-            ),
-            onClick = onClick,
-            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp)
-        ) {
-            CharSequenceText(text)
-        }
+        RemoveExtensionFromFileTypeButton(text, onClick)
+    }
+}
+
+@Composable
+fun RemoveExtensionFromFileTypeButton(
+    text: CharSequence,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        colors = ButtonDefaults.filledTonalButtonColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer
+        ),
+        onClick = onClick,
+        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+        modifier = modifier
+    ) {
+        CharSequenceText(text)
     }
 }

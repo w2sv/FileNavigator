@@ -20,6 +20,7 @@ import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.common.util.mutate
 import com.w2sv.composed.OnChange
 import com.w2sv.composed.rememberStyledTextResource
+import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetWrappingFileType
@@ -41,8 +42,8 @@ enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageRes:
 
 sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageRes: Int) : InputInvalidityReason {
 
-    val isExcludableFileTypeExtensionOrNull
-        get() = this as? IsExcludableFileTypeExtension
+    val isExcludableExtensionOrNull
+        get() = this as? IsExcludableExtension
 
     data object ContainsSpecialCharacter :
         FileExtensionInvalidityReason(com.w2sv.filenavigator.R.string.extension_must_not_contain_special_characters)
@@ -50,7 +51,7 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
     data object AlreadyAmongstAddedExtensions :
         FileExtensionInvalidityReason(com.w2sv.filenavigator.R.string.already_amongst_added_extensions)
 
-    sealed class IsExistingFileExtension(@StringRes errorMessageRes: Int) : FileExtensionInvalidityReason(errorMessageRes) {
+    sealed class IsExistingFileTypeExtension(@StringRes errorMessageRes: Int) : FileExtensionInvalidityReason(errorMessageRes) {
         abstract val fileExtension: String
         abstract val fileType: FileType
 
@@ -60,33 +61,34 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
 
         companion object {
             // TODO: test
-            fun get(fileExtension: String, fileTypes: Collection<FileType>): IsExistingFileExtension? =
+            fun get(fileExtension: String, fileTypes: Collection<FileType>): IsExistingFileTypeExtension? =
                 fileTypes
                     .find { fileExtension in it.fileExtensions }
                     ?.let { fileType ->
                         when (fileType) {
-                            is CustomFileType, is PresetWrappingFileType.ExtensionConfigurable -> if (fileType.fileExtensions.size == 1) {
-                                IsNonExcludableFileTypeExtension(fileExtension, fileType)
-                            } else {
-                                IsExcludableFileTypeExtension(fileExtension, fileType)
-                            }
+                            is CustomFileType, is PresetWrappingFileType.ExtensionConfigurable ->
+                                if (fileType.fileExtensions.size == 1)
+                                    IsOnlyFileTypeExtension(
+                                        fileExtension,
+                                        fileType
+                                    )
+                                else
+                                    IsExcludableExtension(fileExtension, fileType)
 
-                            is PresetWrappingFileType.ExtensionSet -> IsNonExcludableFileTypeExtension(fileExtension, fileType)
+                            is PresetWrappingFileType.ExtensionSet -> IsNonExcludableExtension(fileExtension, fileType)
                         }
                     }
         }
     }
 
-    data class IsNonExcludableFileTypeExtension(override val fileExtension: String, override val fileType: FileType) :
-        IsExistingFileExtension(com.w2sv.filenavigator.R.string.is_media_file_type_extension_invalidity_reason)
+    data class IsNonExcludableExtension(override val fileExtension: String, override val fileType: AnyPresetWrappingFileType) :
+        IsExistingFileTypeExtension(com.w2sv.filenavigator.R.string.is_file_type_extension_and_must_not_be_readded)
 
-    data class IsExcludableFileTypeExtension(
-        override val fileExtension: String,
-        override val fileType: FileType
-    ) :
-        IsExistingFileExtension(
-            com.w2sv.filenavigator.R.string.is_other_non_media_file_type_extension_invalidity_reason
-        )
+    data class IsOnlyFileTypeExtension(override val fileExtension: String, override val fileType: FileType) :
+        IsExistingFileTypeExtension(com.w2sv.filenavigator.R.string.is_only_file_type_extension_and_must_not_be_readded)
+
+    data class IsExcludableExtension(override val fileExtension: String, override val fileType: FileType) :
+        IsExistingFileTypeExtension(com.w2sv.filenavigator.R.string.is_other_file_type_extension)
 }
 
 @Stable
@@ -145,7 +147,7 @@ class CustomFileTypeEditor(
             when {
                 input.containsSpecialCharacter() -> FileExtensionInvalidityReason.ContainsSpecialCharacter
                 input in fileType.fileExtensions -> FileExtensionInvalidityReason.AlreadyAmongstAddedExtensions
-                else -> FileExtensionInvalidityReason.IsExistingFileExtension.get(input, otherFileTypesMutable)
+                else -> FileExtensionInvalidityReason.IsExistingFileTypeExtension.get(input, otherFileTypesMutable)
             }
         }
     )

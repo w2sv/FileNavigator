@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.ui.theme.AppColor
+import com.w2sv.filenavigator.ui.util.CharSequenceText
 
 val LocalSnackbarHostState = compositionLocalOf { SnackbarHostState() }
 
@@ -79,7 +80,7 @@ fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
 @Composable
 fun AppSnackbarContent(
     snackbarKind: SnackbarKind?,
-    message: String,
+    message: CharSequence,
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
 ) {
@@ -88,6 +89,6 @@ fun AppSnackbarContent(
             Icon(imageVector = it.icon, contentDescription = null, tint = it.iconTint)
             Spacer(modifier = Modifier.width(10.dp))
         }
-        Text(text = message)
+        CharSequenceText(text = message)
     }
 }
