@@ -104,6 +104,19 @@ fun PresetFileTypeConfigurationDialog(
     }
     var color by rememberSaveable(fileType.color, stateSaver = colorSaver()) { mutableStateOf(fileType.color) }
 
+    val editedFileType by remember {
+        derivedStateOf {
+            when (fileType) {
+                is PresetWrappingFileType.ExtensionConfigurable -> fileType.copy(
+                    excludedExtensions = excludedExtensions.toSet(),
+                    colorInt = color.toArgb()
+                )
+
+                is PresetWrappingFileType.ExtensionSet -> fileType.copy(colorInt = color.toArgb())
+            }
+        }
+    }
+
     val context = LocalContext.current
 
     ColorPickerDialogOverlaidFileTypeConfigurationDialog(
@@ -117,18 +130,9 @@ fun PresetFileTypeConfigurationDialog(
             modifier = modifier,
             onConfigureColorButtonPress = openColorPickerDialog,
             fileTypeColor = color,
-            onConfirmButtonPress = {
-                saveFileType(
-                    when (fileType) {
-                        is PresetWrappingFileType.ExtensionConfigurable -> fileType.copy(
-                            excludedExtensions = excludedExtensions.toSet(),
-                            colorInt = color.toArgb()
-                        )
-
-                        is PresetWrappingFileType.ExtensionSet -> fileType.copy(colorInt = color.toArgb())
-                    }
-                )
-            }
+            confirmButtonText = stringResource(R.string.apply),
+            confirmButtonEnabled = remember { derivedStateOf { editedFileType != fileType } }.value,
+            onConfirmButtonPress = { saveFileType(editedFileType) }
         ) {
             Column { // To prevent spacing in between text and chip flow row introduced by FileTypeConfigurationDialog
                 Text(
