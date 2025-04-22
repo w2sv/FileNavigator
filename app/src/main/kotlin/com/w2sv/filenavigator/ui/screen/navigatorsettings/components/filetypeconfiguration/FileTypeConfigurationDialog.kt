@@ -85,7 +85,7 @@ fun FileTypeConfigurationDialog(
     modifier: Modifier = Modifier,
     iconTint: Color = LocalContentColor.current,
     confirmButtonEnabled: Boolean = true,
-    confirmButtonText: String = stringResource(com.w2sv.filenavigator.R.string.save),
+    confirmButtonText: String = stringResource(com.w2sv.filenavigator.R.string.apply),
     content: @Composable ColumnScope.() -> Unit
 ) {
     AlertDialog(

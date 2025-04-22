@@ -130,7 +130,6 @@ fun PresetFileTypeConfigurationDialog(
             modifier = modifier,
             onConfigureColorButtonPress = openColorPickerDialog,
             fileTypeColor = color,
-            confirmButtonText = stringResource(R.string.apply),
             confirmButtonEnabled = remember { derivedStateOf { editedFileType != fileType } }.value,
             onConfirmButtonPress = { saveFileType(editedFileType) }
         ) {
@@ -172,9 +171,9 @@ fun PresetFileTypeConfigurationDialog(
 
                 OnChange(customFileTypes) {
                     inputWarning?.asConflictingCustomFileTypeOrNull?.let { conflictingCustomFileType ->
-                        if (customFileTypes.firstOrNull { it.ordinal == conflictingCustomFileType.fileType.ordinal }?.fileExtensions?.contains(
-                                conflictingCustomFileType.extension
-                            ) != true
+                        if (customFileTypes
+                                .firstOrNull { it.ordinal == conflictingCustomFileType.fileType.ordinal }
+                                ?.fileExtensions?.contains(conflictingCustomFileType.extension) != true
                         ) {
                             excludedExtensions.remove(conflictingCustomFileType.extension)
                             inputWarning = null
@@ -200,8 +199,9 @@ fun PresetFileTypeConfigurationDialog(
                                             ?: excludedExtensions.remove(extension)
                                     }
 
-                                    availableExtensions.size - excludedExtensions.size == 1 -> inputWarning =
-                                        LeaveAtLeastOneExtensionEnabled
+                                    availableExtensions.size - excludedExtensions.size == 1 ->
+                                        inputWarning =
+                                            LeaveAtLeastOneExtensionEnabled
 
                                     else -> excludedExtensions.add(extension)
                                 }
@@ -216,7 +216,7 @@ fun PresetFileTypeConfigurationDialog(
                     when (it) {
                         is LeaveAtLeastOneExtensionEnabled -> AppSnackbarContent(
                             snackbarKind = SnackbarKind.Error,
-                            message = stringResource(R.string.leave_at_least_one_file_extension_enabled),
+                            message = stringResource(R.string.leave_at_least_one_file_extension_enabled)
                         )
 
                         is ConflictingCustomFileType -> {

@@ -66,7 +66,7 @@ fun CustomFileTypeConfigurationDialog(
 ) {
     ColorPickerDialogOverlaidCustomFileTypeConfigurationDialog(
         title = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_dialog_title),
-        confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.save),
+        confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.apply),
         customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, saveFileType, fileType),
         onDismissRequest = onDismissRequest,
         excludeFileExtension = excludeFileExtension,
@@ -131,6 +131,7 @@ private fun StatelessCustomFileTypeConfigurationDialog(
         Column {
             OutlinedTextField(
                 editor = customFileTypeEditor.extensionEditor,
+                placeholderText = stringResource(com.w2sv.filenavigator.R.string.enter_a_file_extension),
                 labelText = stringResource(com.w2sv.filenavigator.R.string.add_a_file_extension),
                 onApply = customFileTypeEditor::addExtension,
                 applyIconImageVector = Icons.Outlined.Add,

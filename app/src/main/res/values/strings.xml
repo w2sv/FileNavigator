@@ -110,6 +110,7 @@
     <string name="exclude_from">Exclude <b>%1$s</b> from <b>%2$s</b></string>
     <string name="remove_from">Remove <b>%1$s</b> from <b>%2$s</b></string>
     <string name="delete_file_type">Delete <b>%1$s</b> type</string>
+    <string name="enter_a_file_extension">Enter a file extension</string>
     <plurals name="add_file_types_button">
         <item quantity="one">Add File Type</item>
         <item quantity="other">Add File Types</item>

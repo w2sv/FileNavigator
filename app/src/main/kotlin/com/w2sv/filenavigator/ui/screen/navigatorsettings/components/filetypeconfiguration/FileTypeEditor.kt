@@ -67,13 +67,14 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
                     ?.let { fileType ->
                         when (fileType) {
                             is CustomFileType, is PresetWrappingFileType.ExtensionConfigurable ->
-                                if (fileType.fileExtensions.size == 1)
+                                if (fileType.fileExtensions.size == 1) {
                                     IsOnlyFileTypeExtension(
                                         fileExtension,
                                         fileType
                                     )
-                                else
+                                } else {
                                     IsExcludableExtension(fileExtension, fileType)
+                                }
 
                             is PresetWrappingFileType.ExtensionSet -> IsNonExcludableExtension(fileExtension, fileType)
                         }
@@ -172,7 +173,7 @@ class CustomFileTypeEditor(
         createFileType(fileType)
     }
 
-    val canBeCreated by derivedStateOf { nameEditor.isValid && fileType.fileExtensions.isNotEmpty() }
+    val canBeCreated by derivedStateOf { nameEditor.isValid && fileType.fileExtensions.isNotEmpty() && fileType != initialFileType }
 
     // ===================
     // Focus
