@@ -107,7 +107,7 @@
     <string name="media_file_type_extensions_can_t_be_modified">Media file type extensions can\'t be modified.</string>
     <string name="open_the_dropdown_menu">Open the dropdown menu.</string>
     <string name="open_the_file_type_configuration_dialog">Open the file type configuration dialog.</string>
-    <string name="exclude_from">Exclude <b>%1$s</b> from <b>%2$s</b></string>
+    <string name="exclude_from">Exclude <b>%1$s</b> from <b>%2$s</b> type</string>
     <string name="remove_from">Remove <b>%1$s</b> from <b>%2$s</b></string>
     <string name="delete_file_type">Delete <b>%1$s</b> type</string>
     <string name="enter_a_file_extension">Enter a file extension</string>

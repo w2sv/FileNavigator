@@ -29,7 +29,7 @@ internal object FileTypeConverter {
 
     @TypeConverter
     fun toFileType(string: String): FileType =
-        when (string) { // TODO: colors must be updated afterwards
+        when (string) {
             "Image" -> PresetFileType.Image.toFileType()
             "Audio" -> PresetFileType.Audio.toFileType()
             "Video" -> PresetFileType.Video.toFileType()
@@ -43,15 +43,15 @@ internal object FileTypeConverter {
 }
 
 private fun CustomFileType.serialized(): String =
-    "$name$DELIMITER_CHAR$colorInt"
+    listOf(name, ordinal, colorInt).joinToString(DELIMITER_CHAR)
 
 private fun CustomFileType.Companion.deserialized(string: String): CustomFileType {
-    val (name, colorInt) = string.split(DELIMITER_CHAR)
+    val (name, ordinal, colorInt) = string.split(DELIMITER_CHAR)
     return CustomFileType(
         name = name,
         fileExtensions = emptyList(),
         colorInt = colorInt.toInt(),
-        ordinal = -1
+        ordinal = ordinal.toInt()
     )
 }
 

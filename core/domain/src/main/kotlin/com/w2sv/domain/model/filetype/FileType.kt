@@ -7,10 +7,6 @@ sealed interface FileType : StaticFileType.ExtensionSet, Parcelable {
     val colorInt: Int
 
     @IgnoredOnParcel
-    val asCustomTypeOrNull: CustomFileType?
-        get() = this as? CustomFileType
-
-    @IgnoredOnParcel
     val asExtensionConfigurableTypeOrNull: PresetWrappingFileType.ExtensionConfigurable?
         get() = this as? PresetWrappingFileType.ExtensionConfigurable
 

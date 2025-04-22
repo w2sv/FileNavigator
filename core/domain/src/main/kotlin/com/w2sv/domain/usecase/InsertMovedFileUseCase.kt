@@ -6,9 +6,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class InsertMovedFileUseCase @Inject constructor(
-    private val movedFileRepository: MovedFileRepository
-) {
+class InsertMovedFileUseCase @Inject constructor(private val movedFileRepository: MovedFileRepository) {
     suspend operator fun invoke(movedFile: MovedFile) {
         withContext(Dispatchers.IO) {
             movedFileRepository.insert(movedFile)

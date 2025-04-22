@@ -35,7 +35,7 @@ import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Destination<RootGraph>(style = NavigationTransitions::class)
+@Destination<RootGraph>(style = NavigationTransitions::class, start = true)
 @Composable
 fun HomeScreen(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
