@@ -12,7 +12,6 @@ import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.navigator.observing.model.MediaStoreFileData
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -35,9 +34,8 @@ internal data class MoveFile(
     val sourceType: SourceType
         get() = fileAndSourceType.sourceType
 
-    @IgnoredOnParcel
     val isGif: Boolean
-        get() = fileType is PresetFileType.Image && mediaStoreFileData.extension.lowercase() == "gif"
+        get() = fileType.wrappedPresetTypeOrNull is PresetFileType.Image && mediaStoreFileData.extension.lowercase() == "gif"
 
     companion object {
         const val EXTRA = "com.w2sv.filenavigator.extra.MoveFile"

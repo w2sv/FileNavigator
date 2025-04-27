@@ -76,14 +76,13 @@ data class NavigatorConfig(
             }
         )
 
-    fun <FT : FileType> editFileType(current: FT, mutate: (FT) -> FT): NavigatorConfig {
-        return copy(
+    fun <FT : FileType> editFileType(current: FT, mutate: (FT) -> FT): NavigatorConfig =
+        copy(
             fileTypeConfigMap = fileTypeConfigMap.copy {
                 val fileTypeConfig = requireNotNull(remove(current))
                 put(mutate(current), fileTypeConfig)
             }
         )
-    }
 
     fun deleteCustomFileType(type: CustomFileType): NavigatorConfig =
         copy(fileTypeConfigMap = fileTypeConfigMap.copy { remove(type) })
@@ -132,10 +131,7 @@ data class NavigatorConfig(
         val default by lazy {
             NavigatorConfig(
                 fileTypeConfigMap = PresetFileType.values.associate { presetFileType ->
-                    when (presetFileType) {
-                        is PresetFileType.ExtensionSet -> presetFileType.toFileType()
-                        is PresetFileType.ExtensionConfigurable -> presetFileType.toFileType()
-                    } to presetFileType.defaultConfig()
+                    presetFileType.toDefaultFileType() to presetFileType.defaultConfig()
                 },
                 showBatchMoveNotification = true,
                 disableOnLowBattery = false,

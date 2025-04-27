@@ -16,7 +16,7 @@ internal class NavigatorConfigTest {
     @Test
     fun `enabledFileTypes and disabledFileTypes`() {
         val config = PresetFileType.Media.values.fold(NavigatorConfig.default) { acc, mediaFileType ->
-            acc.updateFileTypeConfig(mediaFileType.toFileType()) { fileTypeConfig ->
+            acc.updateFileTypeConfig(mediaFileType.toDefaultFileType()) { fileTypeConfig ->
                 fileTypeConfig.copy(enabled = false)
             }
         }
@@ -26,7 +26,7 @@ internal class NavigatorConfigTest {
 
     @Test
     fun testUpdateFileTypeConfig() {
-        val updatedConfig = NavigatorConfig.default.updateFileTypeConfig(PresetFileType.Image.toFileType()) { fileTypeConfig ->
+        val updatedConfig = NavigatorConfig.default.updateFileTypeConfig(PresetFileType.Image.toDefaultFileType()) { fileTypeConfig ->
             fileTypeConfig.copy(
                 enabled = false,
                 sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.copy {
@@ -49,7 +49,7 @@ internal class NavigatorConfigTest {
 
         val expected = NavigatorConfig(
             fileTypeConfigMap = mapOf(
-                PresetFileType.Image.toFileType() to FileTypeConfig(
+                PresetFileType.Image.toDefaultFileType() to FileTypeConfig(
                     enabled = false,
                     sourceTypeConfigMap = mapOf(
                         SourceType.Camera to SourceConfig(
@@ -69,13 +69,13 @@ internal class NavigatorConfigTest {
                         SourceType.Download to SourceConfig()
                     )
                 ),
-                PresetFileType.Video.toFileType() to PresetFileType.Video.defaultConfig(),
-                PresetFileType.Audio.toFileType() to PresetFileType.Audio.defaultConfig(),
-                PresetFileType.PDF.toFileType() to nonMediaFileTypeConfig(),
-                PresetFileType.Text.toFileType() to nonMediaFileTypeConfig(),
-                PresetFileType.Archive.toFileType() to nonMediaFileTypeConfig(),
-                PresetFileType.APK.toFileType() to nonMediaFileTypeConfig(),
-                PresetFileType.EBook.toFileType() to nonMediaFileTypeConfig()
+                PresetFileType.Video.toDefaultFileType() to PresetFileType.Video.defaultConfig(),
+                PresetFileType.Audio.toDefaultFileType() to PresetFileType.Audio.defaultConfig(),
+                PresetFileType.PDF.toDefaultFileType() to nonMediaFileTypeConfig(),
+                PresetFileType.Text.toDefaultFileType() to nonMediaFileTypeConfig(),
+                PresetFileType.Archive.toDefaultFileType() to nonMediaFileTypeConfig(),
+                PresetFileType.APK.toDefaultFileType() to nonMediaFileTypeConfig(),
+                PresetFileType.EBook.toDefaultFileType() to nonMediaFileTypeConfig()
             ),
             showBatchMoveNotification = true,
             disableOnLowBattery = false,

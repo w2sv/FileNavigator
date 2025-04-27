@@ -153,7 +153,7 @@ fun PresetFileTypeConfigurationDialog(
                     }
                 }
 
-                val availableExtensions = remember {
+                val availableExtensions: Collection<String> = remember {
                     when (fileType) {
                         is PresetWrappingFileType.ExtensionConfigurable -> fileType.defaultFileExtensions
                         is PresetWrappingFileType.ExtensionSet -> fileType.fileExtensions
@@ -253,7 +253,7 @@ fun PresetFileTypeConfigurationDialog(
 @Composable
 private fun PresetNonMediaFileTypeConfigurationDialogPrev() {
     PresetFileTypeConfigurationDialog(
-        fileType = PresetFileType.Text.toFileType(),
+        fileType = PresetFileType.Text.toDefaultFileType(),
         saveFileType = {},
         onDismissRequest = {},
         customFileTypes = persistentSetOf(),

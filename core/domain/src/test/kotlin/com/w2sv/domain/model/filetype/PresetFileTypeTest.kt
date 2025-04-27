@@ -23,7 +23,7 @@ class PresetFileTypeTest {
     fun testExtensionSetToFileType() {
         assertEquals(
             PresetWrappingFileType.ExtensionSet(PresetFileType.Image, PresetFileType.Image.defaultColorInt),
-            PresetFileType.Image.toFileType()
+            PresetFileType.Image.toDefaultFileType()
         )
 
         assertEquals(
@@ -40,7 +40,7 @@ class PresetFileTypeTest {
                 colorInt = PresetFileType.Archive.defaultColorInt,
                 excludedExtensions = emptySet()
             ),
-            PresetFileType.Archive.toFileType()
+            PresetFileType.Archive.toDefaultFileType()
         )
 
         assertEquals(

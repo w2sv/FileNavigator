@@ -89,8 +89,7 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
             }
 
             is NavigatorMoveDestination.Directory -> {
-                val movedFileDocumentUri =
-                    destination.documentUri.childDocumentUri(fileName = file.mediaStoreFileData.name)
+                val movedFileDocumentUri = destination.documentUri.childDocumentUri(fileName = file.mediaStoreFileData.name)
                 MovedFile.Local(
                     documentUri = movedFileDocumentUri,
                     mediaUri = movedFileDocumentUri.mediaUri(context)!!,
@@ -103,8 +102,6 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
                     autoMoved = destinationSelectionManner.isAuto
                 )
             }
-
-            else -> throw IllegalArgumentException() // I have no clue why this is necessary here
         }
     }
 

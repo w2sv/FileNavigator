@@ -208,7 +208,7 @@ private fun StatelessCustomFileTypeConfigurationDialogPrev() {
             title = "Create a file type",
             confirmButtonText = "Apply",
             customFileTypeEditor = rememberCustomFileTypeEditor(
-                existingFileTypes = PresetFileType.NonMedia.ExtensionConfigurable.values.map { it.toFileType() }.toImmutableSet(),
+                existingFileTypes = PresetFileType.NonMedia.ExtensionConfigurable.values.map { it.toDefaultFileType() }.toImmutableSet(),
                 saveFileType = {},
                 initialFileType = CustomFileType("Html", listOf("html", "htm"), Color.Magenta.toArgb(), -1)
             )

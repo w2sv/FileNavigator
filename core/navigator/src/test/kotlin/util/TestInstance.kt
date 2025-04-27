@@ -39,7 +39,7 @@ internal object TestInstance {
         mediaUri: MediaUri = MediaUri.parse("content://media/external/images/media/1000012597"),
         mediaStoreFileData: MediaStoreFileData = this.mediaStoreFileData,
         fileAndSourceType: FileAndSourceType = FileAndSourceType(
-            fileType = PresetFileType.Image,
+            fileType = PresetFileType.Image.toFileType(),
             sourceType = SourceType.Screenshot
         )
     ): MoveFile =

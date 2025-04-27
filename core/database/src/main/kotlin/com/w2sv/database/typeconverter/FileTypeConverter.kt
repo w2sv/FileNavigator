@@ -30,14 +30,14 @@ internal object FileTypeConverter {
     @TypeConverter
     fun toFileType(string: String): FileType =
         when (string) {
-            "Image" -> PresetFileType.Image.toFileType()
-            "Audio" -> PresetFileType.Audio.toFileType()
-            "Video" -> PresetFileType.Video.toFileType()
-            "PDF" -> PresetFileType.PDF.toFileType()
-            "APK" -> PresetFileType.APK.toFileType()
-            "Text" -> PresetFileType.Text.toFileType()
-            "Archive" -> PresetFileType.Archive.toFileType()
-            "EBook" -> PresetFileType.EBook.toFileType()
+            "Image" -> PresetFileType.Image.toDefaultFileType()
+            "Audio" -> PresetFileType.Audio.toDefaultFileType()
+            "Video" -> PresetFileType.Video.toDefaultFileType()
+            "PDF" -> PresetFileType.PDF.toDefaultFileType()
+            "APK" -> PresetFileType.APK.toDefaultFileType()
+            "Text" -> PresetFileType.Text.toDefaultFileType()
+            "Archive" -> PresetFileType.Archive.toDefaultFileType()
+            "EBook" -> PresetFileType.EBook.toDefaultFileType()
             else -> CustomFileType.deserialized(string)
         }
 }

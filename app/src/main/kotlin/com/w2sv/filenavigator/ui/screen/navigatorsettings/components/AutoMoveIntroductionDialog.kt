@@ -8,6 +8,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,7 +26,8 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun AutoMoveIntroductionDialogIfNotYetShown(appVM: AppViewModel = activityViewModel()) {
-    val showDialog by appVM.showAutoMoveIntroduction.onEach { if (true) delay(1_000) }.collectAsStateWithLifecycle(false)
+    val delayingFlow = remember { appVM.showAutoMoveIntroduction.onEach { delay(1_000) } }
+    val showDialog by delayingFlow.collectAsStateWithLifecycle(false)
 
     if (showDialog) {
         AutoMoveIntroductionDialog(onDismissRequest = { appVM.saveShowAutoMoveIntroduction(false) })

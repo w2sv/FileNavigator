@@ -87,16 +87,16 @@ internal class NavigatorPreferencesToProtoMigrationTest {
                 NavigatorConfig
                     .default
                     .copy(disableOnLowBattery = true)
-                    .updateFileTypeConfig(PresetFileType.Image.toFileType()) {
+                    .updateFileTypeConfig(PresetFileType.Image.toDefaultFileType()) {
                         it.copy(enabled = false)
                     }
-                    .updateFileTypeConfig(PresetFileType.Video.toFileType()) {
+                    .updateFileTypeConfig(PresetFileType.Video.toDefaultFileType()) {
                         it.copy(enabled = false)
                     }
-                    .updateFileTypeConfig(PresetFileType.PDF.toFileType()) {
+                    .updateFileTypeConfig(PresetFileType.PDF.toDefaultFileType()) {
                         it.copy(enabled = false)
                     }
-                    .updateSourceConfig(PresetFileType.Audio.toFileType(), SourceType.Recording) {
+                    .updateSourceConfig(PresetFileType.Audio.toDefaultFileType(), SourceType.Recording) {
                         it.copy(
                             enabled = false,
                             quickMoveDestinations = listOf(LocalDestination.parse("someDestination"))

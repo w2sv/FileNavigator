@@ -181,7 +181,7 @@ private fun MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs: () -> Unit,
 @Composable
 private fun HeaderPrev() {
     AppTheme {
-        Header(PresetFileType.Image.toFileType(), {}, {})
+        Header(PresetFileType.Image.toDefaultFileType(), {}, {})
     }
 }
 

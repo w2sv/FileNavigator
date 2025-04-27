@@ -29,15 +29,12 @@ data class CustomFileType(
         name
 
     companion object {
-        /**
-         * @param existingFileTypes Must not be empty.
-         */
         fun newEmpty(existingFileTypes: Collection<FileType>): CustomFileType =
             CustomFileType(
                 name = "",
                 fileExtensions = emptyList(),
                 colorInt = randomColor(),
-                ordinal = maxOf(MIN_ORDINAL, existingFileTypes.maxOf { it.ordinal } + 1)
+                ordinal = maxOf(MIN_ORDINAL, existingFileTypes.maxOfOrNull { it.ordinal }?.let { it + 1 } ?: MIN_ORDINAL)
             )
 
         @VisibleForTesting

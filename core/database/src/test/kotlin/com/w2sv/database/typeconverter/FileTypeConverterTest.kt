@@ -1,6 +1,7 @@
 package com.w2sv.database.typeconverter
 
 import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
@@ -10,18 +11,23 @@ internal class FileTypeConverterTest {
     @Test
     fun testBackAndForthPresetFileTypeConversion() {
         PresetFileType.values.forEach {
-            assertEquals(it, FileTypeConverter.toFileType(FileTypeConverter.fromFileType(it)))
+            assertEquals(
+                it,
+                it.toDefaultFileType().backAndForthConverted().wrappedPresetTypeOrNull
+            )
         }
     }
 
     @Test
     fun testBackAndForthCustomFileTypeConversion() {
-        fun test(customFileType: CustomFileType) {
-            val recreatedFileType = FileTypeConverter.toFileType(FileTypeConverter.fromFileType(customFileType)) as CustomFileType
-            assertEquals(customFileType.name, recreatedFileType.name)
-            assertEquals(customFileType.colorInt, recreatedFileType.colorInt)
-        }
+        val customFileType = CustomFileType("Html", emptyList(), 342523, 1006)
+        val recreatedFileType = customFileType.backAndForthConverted() as CustomFileType
 
-        test(CustomFileType("Html", emptyList(), 342523, -1))
+        assertEquals(customFileType.name, recreatedFileType.name)
+        assertEquals(customFileType.colorInt, recreatedFileType.colorInt)
+        assertEquals(customFileType.ordinal, recreatedFileType.ordinal)
     }
 }
+
+private fun FileType.backAndForthConverted(): FileType =
+    FileTypeConverter.toFileType(FileTypeConverter.fromFileType(this))

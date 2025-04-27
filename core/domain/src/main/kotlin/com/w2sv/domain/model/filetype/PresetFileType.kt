@@ -18,6 +18,12 @@ sealed interface PresetFileType : StaticFileType {
     override fun label(context: Context): String =
         context.getString(labelRes)
 
+    fun toDefaultFileType(): AnyPresetWrappingFileType =
+        when (this) {
+            is ExtensionSet -> toFileType()
+            is ExtensionConfigurable -> toFileType()
+        }
+
     sealed interface ExtensionSet : PresetFileType, StaticFileType.ExtensionSet {
         fun toFileType(@ColorInt color: Int = EMPTY_COLOR_INT): PresetWrappingFileType.ExtensionSet =
             PresetWrappingFileType.ExtensionSet(
@@ -28,6 +34,7 @@ sealed interface PresetFileType : StaticFileType {
                 )
             )
     }
+
     sealed interface ExtensionConfigurable : PresetFileType, StaticFileType.ExtensionConfigurable {
         fun toFileType(
             @ColorInt color: Int = EMPTY_COLOR_INT,
