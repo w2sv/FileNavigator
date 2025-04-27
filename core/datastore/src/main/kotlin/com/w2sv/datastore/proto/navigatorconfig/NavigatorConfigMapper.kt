@@ -28,10 +28,10 @@ import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.kotlinutils.map
 
-fun NavigatorConfig.toProto(hasBeenMigrated: Boolean): NavigatorConfigProto =
+internal fun NavigatorConfig.toProto(hasBeenMigrated: Boolean): NavigatorConfigProto =
     NavigatorConfigMapper.toProto(this, hasBeenMigrated)
 
-fun NavigatorConfigProto.toExternal(): NavigatorConfig =
+internal fun NavigatorConfigProto.toExternal(): NavigatorConfig =
     NavigatorConfigMapper.toExternal(this)
 
 private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, NavigatorConfig> {

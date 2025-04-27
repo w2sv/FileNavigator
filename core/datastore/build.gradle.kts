@@ -62,5 +62,5 @@ dependencies {
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.slimber)
 
-    testImplementation(libs.bundles.unitTest)
+    testImplementation(projects.core.test)
 }

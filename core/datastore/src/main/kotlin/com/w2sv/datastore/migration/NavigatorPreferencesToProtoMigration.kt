@@ -6,15 +6,14 @@ import androidx.datastore.preferences.core.Preferences
 import com.w2sv.common.util.log
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.proto.navigatorconfig.toProto
-import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import kotlinx.coroutines.flow.first
 import slimber.log.i
 
-internal class NavigatorPreferencesToProtoMigration(
-    private val preferencesDataStore: DataStore<Preferences>
-) : DataMigration<NavigatorConfigProto> {
+internal class NavigatorPreferencesToProtoMigration(private val preferencesDataStore: DataStore<Preferences>) :
+    DataMigration<NavigatorConfigProto> {
 
     override suspend fun shouldMigrate(currentData: NavigatorConfigProto): Boolean =
         !currentData.hasBeenMigrated.log { "hasBeenMigrated=$it" }
@@ -26,7 +25,8 @@ internal class NavigatorPreferencesToProtoMigration(
 
         val preferences = preferencesDataStore.data.first()
 
-        presentPreMigrationKeys = PreMigrationNavigatorPreferencesKey.keys()
+        presentPreMigrationKeys = PreMigrationNavigatorPreferencesKey
+            .keys()
             .filter { key -> preferences.contains(key) }
             .toList()
             .log { "presentPreMigrationKeys: $it" }
@@ -45,39 +45,32 @@ internal class NavigatorPreferencesToProtoMigration(
         NavigatorConfig.default.let { defaultConfig ->
             defaultConfig.copy(
                 fileTypeConfigMap = defaultConfig.fileTypeConfigMap.mapValues { (fileType, fileTypeConfig) ->
-                    i { "Migrating $fileType" }
-                    if (fileType !is PresetFileType) {
-                        return@mapValues fileTypeConfig // Should not happen
-                    }
+                    // default config contains only AnyPresetWrappingFileTypes
+                    fileType as AnyPresetWrappingFileType
+                    val presetFileType = fileType.presetFileType
 
                     fileTypeConfig.copy(
                         enabled = preferences.getOrDefault(
-                            PreMigrationNavigatorPreferencesKey.fileTypeEnabled(fileType),
+                            PreMigrationNavigatorPreferencesKey.fileTypeEnabled(presetFileType),
                             fileTypeConfig.enabled
                         ),
                         sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.mapValues { (sourceType, sourceConfig) ->
-                            i { "Migrating $fileType.$sourceType" }
-
                             sourceConfig.copy(
                                 enabled = preferences.getOrDefault(
                                     PreMigrationNavigatorPreferencesKey.sourceTypeEnabled(
-                                        fileType = fileType,
+                                        fileType = presetFileType,
                                         sourceType = sourceType
                                     ),
                                     sourceConfig.enabled
                                 ),
                                 quickMoveDestinations = preferences[
                                     PreMigrationNavigatorPreferencesKey.lastMoveDestination(
-                                        fileType = fileType,
+                                        fileType = presetFileType,
                                         sourceType = sourceType
                                     )
-                                ]?.let { lastMoveDestination ->
-                                    listOf(
-                                        LocalDestination.parse(
-                                            lastMoveDestination
-                                        )
-                                    )
-                                } ?: emptyList()
+                                ]
+                                    ?.let { lastMoveDestination -> listOf(LocalDestination.parse(lastMoveDestination)) }
+                                    ?: emptyList()
                             )
                         }
                     )
@@ -89,15 +82,13 @@ internal class NavigatorPreferencesToProtoMigration(
             )
         }
             .log { "Migrated: $it" }
-            .toProto(true)
+            .toProto(hasBeenMigrated = true)
 
     override suspend fun cleanUp() {
         preferencesDataStore.updateData {
             it
                 .toMutablePreferences()
-                .apply {
-                    presentPreMigrationKeys.forEach { key -> remove(key) }
-                }
+                .apply { presentPreMigrationKeys.forEach { key -> remove(key) } }
         }
 
         i { "Preferences post cleanUp: ${preferencesDataStore.data.first().asMap()}" }

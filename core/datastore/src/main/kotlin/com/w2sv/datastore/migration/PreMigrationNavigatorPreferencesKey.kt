@@ -10,20 +10,20 @@ internal object PreMigrationNavigatorPreferencesKey {
 
     val disableOnLowBattery = booleanPreferencesKey("disableNavigatorOnLowBattery")
 
+    /**
+     * @return All historically used [Preferences.Key]s related to the navigator configuration.
+     */
     fun keys(): Sequence<Preferences.Key<*>> =
         sequence {
             yield(disableOnLowBattery)
-            yieldAll(
-                PresetFileType.values
-                    .flatMap { it.associatedPreMigrationKeys() }
-            )
+            yieldAll(PresetFileType.values.flatMap { it.associatedPreMigrationKeys() })
         }
 
     private fun PresetFileType.associatedPreMigrationKeys(): Sequence<Preferences.Key<*>> =
         sequence {
             yield(fileTypeEnabled(this@associatedPreMigrationKeys))
 
-            this@associatedPreMigrationKeys.sourceTypes.forEach { sourceType ->
+            sourceTypes.forEach { sourceType ->
                 yield(
                     sourceTypeEnabled(
                         this@associatedPreMigrationKeys,
