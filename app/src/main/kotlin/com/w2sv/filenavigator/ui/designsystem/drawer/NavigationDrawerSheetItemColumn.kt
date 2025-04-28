@@ -139,7 +139,7 @@ internal fun NavigationDrawerSheetItemColumn(
                 ),
                 NavigationDrawerSheetElement.Item(
                     iconRes = R.drawable.ic_donate_24,
-                    labelRes = R.string.support_development,
+                    labelRes = R.string.support_the_development,
                     explanationRes = R.string.buy_me_a_coffee_as_a_sign_of_gratitude,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
                         context.openUrl(AppUrl.DONATE)
@@ -150,7 +150,7 @@ internal fun NavigationDrawerSheetItemColumn(
                 ),
                 NavigationDrawerSheetElement.Item(
                     iconRes = R.drawable.ic_developer_24,
-                    labelRes = R.string.developer,
+                    labelRes = R.string.about_the_developer,
                     explanationRes = R.string.check_out_my_other_apps,
                     type = NavigationDrawerSheetElement.Item.Type.Clickable {
                         context.openUrl(AppUrl.GOOGLE_PLAY_DEVELOPER_PAGE)
