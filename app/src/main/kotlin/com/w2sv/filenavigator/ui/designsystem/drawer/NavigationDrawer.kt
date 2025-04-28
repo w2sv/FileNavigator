@@ -55,8 +55,7 @@ private fun NavigationDrawerSheet(closeDrawer: suspend () -> Unit, modifier: Mod
         windowInsets = emptyWindowInsets
     ) {
         SystemBarsIgnoringVisibilityPaddedColumn(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Header(

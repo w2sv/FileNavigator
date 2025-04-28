@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
 import android.provider.MediaStore
-import kotlinx.parcelize.Parcelize
 import androidx.core.net.toUri
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @JvmInline

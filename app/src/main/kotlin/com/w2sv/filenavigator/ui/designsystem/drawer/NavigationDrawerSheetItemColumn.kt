@@ -2,17 +2,16 @@ package com.w2sv.filenavigator.ui.designsystem.drawer
 
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -36,12 +35,10 @@ import com.w2sv.androidutils.packagePlayStoreUrl
 import com.w2sv.androidutils.startActivity
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.AppUrl
-import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
 import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults
-import com.w2sv.filenavigator.ui.designsystem.RightAligned
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -64,7 +61,7 @@ internal fun NavigationDrawerSheetItemColumn(
                 NavigationDrawerSheetElement.Item(
                     iconRes = R.drawable.ic_smartphone_24,
                     labelRes = R.string.app_settings,
-                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
+                    onClick = {
                         scope.launch {
                             closeDrawer()
                             destinationsNavigator.navigate(AppSettingsScreenDestination)
@@ -74,7 +71,7 @@ internal fun NavigationDrawerSheetItemColumn(
                 NavigationDrawerSheetElement.Item(
                     iconRes = com.w2sv.core.common.R.drawable.ic_app_logo_24,
                     labelRes = R.string.navigator_settings,
-                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
+                    onClick = {
                         scope.launch {
                             closeDrawer()
                             destinationsNavigator.navigate(NavigatorSettingsScreenDestination)
@@ -87,16 +84,12 @@ internal fun NavigationDrawerSheetItemColumn(
                 NavigationDrawerSheetElement.Item(
                     iconRes = R.drawable.ic_policy_24,
                     labelRes = R.string.privacy_policy,
-                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrl(AppUrl.PRIVACY_POLICY)
-                    }
+                    onClick = { context.openUrl(AppUrl.PRIVACY_POLICY) }
                 ),
                 NavigationDrawerSheetElement.Item(
                     iconRes = R.drawable.ic_copyright_24,
                     labelRes = R.string.license,
-                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrl(AppUrl.LICENSE)
-                    }
+                    onClick = { context.openUrl(AppUrl.LICENSE) }
                 ),
                 NavigationDrawerSheetElement.Header(
                     titleRes = R.string.support_the_app
@@ -105,7 +98,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     iconRes = R.drawable.ic_star_rate_24,
                     labelRes = R.string.rate,
                     explanationRes = R.string.rate_the_app_in_the_playstore,
-                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
+                    onClick = {
                         context.startActivity(
                             intent = Intent(
                                 Intent.ACTION_VIEW,
@@ -122,7 +115,7 @@ internal fun NavigationDrawerSheetItemColumn(
                     iconRes = R.drawable.ic_share_24,
                     labelRes = R.string.share,
                     explanationRes = R.string.share_action_explanation,
-                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
+                    onClick = {
                         ShareCompat.IntentBuilder(context)
                             .setType("text/plain")
                             .setText(context.getString(R.string.share_action_text, AppUrl.PLAYSTORE_LISTING))
@@ -133,17 +126,13 @@ internal fun NavigationDrawerSheetItemColumn(
                     iconRes = R.drawable.ic_bug_report_24,
                     explanationRes = R.string.report_a_bug_request_a_feature_explanation,
                     labelRes = R.string.report_a_bug_request_a_feature,
-                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrl(AppUrl.CREATE_ISSUE)
-                    }
+                    onClick = { context.openUrl(AppUrl.CREATE_ISSUE) }
                 ),
                 NavigationDrawerSheetElement.Item(
                     iconRes = R.drawable.ic_donate_24,
                     labelRes = R.string.support_the_development,
                     explanationRes = R.string.buy_me_a_coffee_as_a_sign_of_gratitude,
-                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrl(AppUrl.DONATE)
-                    }
+                    onClick = { context.openUrl(AppUrl.DONATE) }
                 ),
                 NavigationDrawerSheetElement.Header(
                     titleRes = R.string.more
@@ -152,31 +141,27 @@ internal fun NavigationDrawerSheetItemColumn(
                     iconRes = R.drawable.ic_developer_24,
                     labelRes = R.string.about_the_developer,
                     explanationRes = R.string.check_out_my_other_apps,
-                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrl(AppUrl.GOOGLE_PLAY_DEVELOPER_PAGE)
-                    }
+                    onClick = { context.openUrl(AppUrl.GOOGLE_PLAY_DEVELOPER_PAGE) }
                 ),
                 NavigationDrawerSheetElement.Item(
                     iconRes = R.drawable.ic_github_24,
                     labelRes = R.string.source,
                     explanationRes = R.string.examine_the_app_s_source_code_on_github,
-                    type = NavigationDrawerSheetElement.Item.Type.Clickable {
-                        context.openUrl(AppUrl.GITHUB_REPOSITORY)
-                    }
+                    onClick = { context.openUrl(AppUrl.GITHUB_REPOSITORY) }
                 )
             )
         }
             .forEach { element ->
                 when (element) {
                     is NavigationDrawerSheetElement.Item -> {
-                        Item(
+                        DrawerSheetItem(
                             item = element,
                             modifier = element.modifier
                         )
                     }
 
                     is NavigationDrawerSheetElement.Header -> {
-                        SubHeader(
+                        DrawerSheetSubHeader(
                             titleRes = element.titleRes,
                             modifier = element.modifier
                         )
@@ -199,39 +184,18 @@ private sealed interface NavigationDrawerSheetElement {
 
     @Immutable
     data class Item(
-        val iconRes: Int,
-        val labelRes: Int,
-        val explanationRes: Int? = null,
-        override val modifier: Modifier = DefaultModifier,
-        val type: Type
-    ) : NavigationDrawerSheetElement {
-
-        companion object {
-            val DefaultModifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp)
-        }
-
-        @Immutable
-        sealed interface Type {
-            @Immutable
-            @JvmInline
-            value class Clickable(val onClick: () -> Unit) : Type
-
-            @Immutable
-            data class Switch(
-                val checked: () -> Boolean,
-                val onCheckedChange: (Boolean) -> Unit
-            ) : Type
-
-            @Immutable
-            data class Custom(val content: @Composable RowScope.() -> Unit) : Type
-        }
-    }
+        @DrawableRes val iconRes: Int,
+        @StringRes val labelRes: Int,
+        @StringRes val explanationRes: Int? = null,
+        override val modifier: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        val onClick: () -> Unit
+    ) : NavigationDrawerSheetElement
 }
 
 @Composable
-private fun SubHeader(@StringRes titleRes: Int, modifier: Modifier = Modifier) {
+private fun DrawerSheetSubHeader(@StringRes titleRes: Int, modifier: Modifier = Modifier) {
     Text(
         text = stringResource(id = titleRes),
         modifier = modifier,
@@ -241,16 +205,25 @@ private fun SubHeader(@StringRes titleRes: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun Item(item: NavigationDrawerSheetElement.Item, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .thenIfNotNull(item.type as? NavigationDrawerSheetElement.Item.Type.Clickable) {
-                clickable {
-                    it.onClick()
-                }
-            }
-    ) {
-        MainItemRow(item = item, modifier = Modifier.fillMaxWidth())
+private fun DrawerSheetItem(item: NavigationDrawerSheetElement.Item, modifier: Modifier = Modifier) {
+    Column(modifier = modifier.clickable(onClick = item.onClick)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                modifier = Modifier.size(size = IconSize.Big),
+                painter = painterResource(id = item.iconRes),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = stringResource(id = item.labelRes),
+                modifier = Modifier.padding(start = ItemRowDefaults.IconTextSpacing),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
         item.explanationRes?.let {
             Text(
                 text = stringResource(id = it),
@@ -258,43 +231,6 @@ private fun Item(item: NavigationDrawerSheetElement.Item, modifier: Modifier = M
                 modifier = Modifier.padding(start = IconSize.Big + ItemRowDefaults.IconTextSpacing),
                 fontSize = 14.sp
             )
-        }
-    }
-}
-
-@Composable
-private fun MainItemRow(item: NavigationDrawerSheetElement.Item, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            modifier = Modifier
-                .size(size = IconSize.Big),
-            painter = painterResource(id = item.iconRes),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
-        )
-
-        Text(
-            text = stringResource(id = item.labelRes),
-            modifier = Modifier.padding(start = ItemRowDefaults.IconTextSpacing),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
-        )
-
-        when (val type = item.type) {
-            is NavigationDrawerSheetElement.Item.Type.Custom -> {
-                type.content(this)
-            }
-
-            is NavigationDrawerSheetElement.Item.Type.Switch -> {
-                RightAligned {
-                    Switch(checked = type.checked(), onCheckedChange = type.onCheckedChange)
-                }
-            }
-
-            else -> Unit
         }
     }
 }

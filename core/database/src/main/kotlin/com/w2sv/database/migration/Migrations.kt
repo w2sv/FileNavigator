@@ -4,8 +4,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.net.Uri
 import android.provider.MediaStore
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -13,7 +13,6 @@ import com.anggrayudi.storage.file.child
 import com.w2sv.androidutils.database.getStringOrThrow
 import com.w2sv.common.util.log
 import slimber.log.i
-import androidx.core.net.toUri
 
 private const val PRE_VERSION_5_TABLE_NAME = "MoveEntryEntity"
 private const val VERSION_5_TABLE_NAME = "MovedFileEntity"
