@@ -13,6 +13,7 @@ import com.anggrayudi.storage.file.child
 import com.w2sv.androidutils.database.getStringOrThrow
 import com.w2sv.common.util.log
 import slimber.log.i
+import androidx.core.net.toUri
 
 private const val PRE_VERSION_5_TABLE_NAME = "MoveEntryEntity"
 private const val VERSION_5_TABLE_NAME = "MovedFileEntity"
@@ -47,7 +48,7 @@ internal object Migrations {
             val fileName =
                 cursor.getStringOrThrow("fileName")
             val destinationDocumentUri =
-                Uri.parse(cursor.getStringOrThrow("destinationDocumentUri"))
+                cursor.getStringOrThrow("destinationDocumentUri").toUri()
 
             val documentFile = try {
                 DocumentFile
@@ -123,9 +124,9 @@ internal object Migrations {
 
                 // Copy the data from the old table (MoveEntryEntity) to the new one (MovedFileEntity)
                 execSQL(
-                    """INSERT INTO $VERSION_5_TABLE_NAME 
-                        (documentUri, name, type, sourceType, moveDateTime, autoMoved, local_mediaUri, local_moveDestination) 
-                        SELECT 
+                    """INSERT INTO $VERSION_5_TABLE_NAME
+                        (documentUri, name, type, sourceType, moveDateTime, autoMoved, local_mediaUri, local_moveDestination)
+                        SELECT
                             movedFileDocumentUri AS documentUri,
                             fileName AS name,
                             fileType AS type,
@@ -133,7 +134,7 @@ internal object Migrations {
                             dateTime AS moveDateTime,
                             autoMoved AS autoMoved,
                             movedFileMediaUri AS local_mediaUri,
-                            destinationDocumentUri AS local_moveDestination 
+                            destinationDocumentUri AS local_moveDestination
                         FROM MoveEntryEntity"""
                         .trimIndent()
                 )

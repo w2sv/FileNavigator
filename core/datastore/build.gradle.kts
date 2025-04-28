@@ -1,4 +1,3 @@
-import com.google.protobuf.gradle.GenerateProtoTask
 import com.google.protobuf.gradle.id
 
 plugins {
@@ -31,29 +30,11 @@ protobuf {
     }
 }
 
-// https://github.com/google/ksp/issues/1590
-androidComponents {
-    onVariants(selector().all()) { variant ->
-        afterEvaluate {
-            val protoTask =
-                project.tasks.getByName("generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto") as GenerateProtoTask
-
-            project.tasks.getByName("ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin") {
-                dependsOn(protoTask)
-                (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*>).setSource(
-                    protoTask.outputBaseDir
-                )
-            }
-        }
-    }
-}
-
 dependencies {
     implementation(projects.core.common)
     implementation(projects.core.domain)
 
     implementation(libs.androidx.core)
-    implementation(libs.androidx.datastore.preferences)
     implementation(libs.protobuf.kotlin.lite)
 
     implementation(libs.w2sv.kotlinutils)

@@ -25,7 +25,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    testOptions.managedDevices.devices {
+    testOptions.managedDevices.allDevices {
         @Suppress("UnstableApiUsage")
         create<ManagedVirtualDevice>(mvdName) {
             device = "Pixel 6"

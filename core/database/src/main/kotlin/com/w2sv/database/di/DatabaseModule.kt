@@ -30,7 +30,7 @@ internal object DatabaseModule {
                 Migrations.Migration3to4,
                 Migrations.Migration4to5
             )
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(true)
             .build()
 
     @Provides

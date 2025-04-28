@@ -1,35 +1,34 @@
 [versions]
-agp = "8.8.1"
-androidxActivity = "1.10.0"
-baselineprofile = "1.3.3"
-benchmarkMacroJunit4 = "1.3.3"
+agp = "8.9.2"
+androidxActivity = "1.10.1"
+baselineprofile = "1.3.4"
+benchmarkMacroJunit4 = "1.3.4"
 # @keep
 compileSdk = "35"
-# @pin
-compose-destinations = "2.1.0-beta16"
+compose-destinations = "2.1.0"
 compose-lint-checks = "1.4.2"
-compose-material3 = "1.3.1"
-compose-tooling = "1.7.8"
-composed = "0.0.6-rc1"
-datastoreutils = "0.0.6-rc2"
-hilt = "2.55"
+compose-material3 = "1.3.2"
+compose-tooling = "1.8.0"
+hilt = "2.56.2"
 hiltNavigationCompose = "1.2.0"
 junit = "4.13.2"
-kotlin = "2.1.10"
-kotlinutils = "0.1.7-rc2"
+kotlin = "2.1.20"
 kotlinxCollectionsImmutable = "0.3.8"
-kotlinxCoroutines = "1.10.1"
-ksp = "2.1.10-1.0.29"
-ktlint = "12.1.2"
+kotlinxCoroutines = "1.10.2"
+ksp = "2.1.20-2.0.0"
+ktlint = "12.2.0"
 lifecycle = "2.8.7"
 # @keep
 minSdk = "30"
-protobuf = "4.29.3"
-protobuf-plugin = "0.9.4"
-room = "2.6.1"
+protobuf = "4.30.2"
+protobuf-plugin = "0.9.5"
+room = "2.7.1"
 triplet-play = "3.12.1"
-versionCatalogUpdate = "0.8.5"
+versionCatalogUpdate = "1.0.0"
 versions = "0.52.0"
+w2sv-composed = "0.0.6-rc1"
+w2sv-datastoreutils = "0.0.7-rc2"
+w2sv-kotlinutils = "0.1.7-rc2"
 
 [libraries]
 # @keep
@@ -46,8 +45,7 @@ androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", vers
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-tooling" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-tooling" }
 androidx-compose-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
-androidx-core = "androidx.core:core-ktx:1.15.0"
-androidx-datastore-preferences = "androidx.datastore:datastore-preferences:1.1.2"
+androidx-core = "androidx.core:core-ktx:1.16.0"
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
@@ -62,7 +60,7 @@ androidx-test-runner = "androidx.test:runner:1.6.2"
 compose-destinations = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "compose-destinations" }
 compose-destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "compose-destinations" }
 compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "compose-lint-checks" }
-google-guava = "com.google.guava:guava:33.4.0-jre"
+google-guava = "com.google.guava:guava:33.4.8-jre"
 google-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 google-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -80,11 +78,11 @@ slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
 textflow = "io.github.oleksandrbalan:textflow-material3:1.2.1"
 w2sv-androidutils-core = "com.github.w2sv.AndroidUtils:core:0.4.5-rc1"
 w2sv-colorpicker = "com.github.w2sv:Compose-Color-Picker-Bundle:1.0.0-rc9"
-w2sv-composed = { module = "com.github.w2sv.Composed:composed", version.ref = "composed" }
-w2sv-composed-permissions = { module = "com.github.w2sv.Composed:permissions", version.ref = "composed" }
-w2sv-datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:datastoreflow", version.ref = "datastoreutils" }
-w2sv-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:preferences", version.ref = "datastoreutils" }
-w2sv-kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "kotlinutils" }
+w2sv-composed = { module = "com.github.w2sv.Composed:composed", version.ref = "w2sv-composed" }
+w2sv-composed-permissions = { module = "com.github.w2sv.Composed:permissions", version.ref = "w2sv-composed" }
+w2sv-datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:datastoreflow", version.ref = "w2sv-datastoreutils" }
+w2sv-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:preferences", version.ref = "w2sv-datastoreutils" }
+w2sv-kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "w2sv-kotlinutils" }
 w2sv-reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.6-rc2"
 w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.0.2.2-rc1"
 

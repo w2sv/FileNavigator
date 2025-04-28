@@ -2,7 +2,6 @@ package com.w2sv.filenavigator.ui.designsystem.drawer
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -28,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
+import androidx.core.net.toUri
 import com.ramcosta.composedestinations.generated.destinations.AppSettingsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -109,7 +109,7 @@ internal fun NavigationDrawerSheetItemColumn(
                         context.startActivity(
                             intent = Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse(context.packagePlayStoreUrl)
+                                context.packagePlayStoreUrl.toUri()
                             )
                                 .setPackage("com.android.vending"),
                             onActivityNotFoundException = {

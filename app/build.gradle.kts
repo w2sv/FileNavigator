@@ -118,7 +118,6 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.splashscreen)
-    implementation(libs.androidx.datastore.preferences)
 
     // .Compose
     implementation(libs.androidx.compose.material3)

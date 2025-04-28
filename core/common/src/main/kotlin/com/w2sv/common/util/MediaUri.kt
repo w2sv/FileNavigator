@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Parcelable
 import android.provider.MediaStore
 import kotlinx.parcelize.Parcelize
+import androidx.core.net.toUri
 
 @Parcelize
 @JvmInline
@@ -25,7 +26,7 @@ value class MediaUri(val uri: Uri) : Parcelable {
                 ?.mediaUri
 
         fun parse(uriString: String): MediaUri =
-            Uri.parse(uriString).mediaUri
+            uriString.toUri().mediaUri
     }
 }
 
