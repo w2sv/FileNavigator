@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,16 +18,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.domain.model.filetype.FileType
@@ -39,6 +31,7 @@ import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
+import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.theme.AppTheme
@@ -137,42 +130,18 @@ private fun FileTypeRow(
         )
         Spacer(modifier = Modifier.weight(1f))
         setSourceAutoMoveConfigs?.let {
-            MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs = it, modifier = Modifier.padding(end = 6.dp))
-        }
-    }
-}
-
-@Composable
-private fun MoreIconButtonWithDropdownMenu(setSourceAutoMoveConfigs: () -> Unit, modifier: Modifier = Modifier) {
-    var expanded by rememberSaveable {
-        mutableStateOf(false)
-    }
-    Box(modifier = modifier) {
-        IconButton(onClick = { expanded = !expanded }, modifier = Modifier.size(36.dp)) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_more_vert_24),
-                contentDescription = stringResource(R.string.open_the_dropdown_menu)
-            )
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.border(
-                width = Dp.Hairline,
-                color = MaterialTheme.colorScheme.secondary,
-                shape = MaterialTheme.shapes.extraSmall
-            )
-        ) {
-            DropdownMenuItem(
-                text = { Text(text = stringResource(R.string.set_auto_move_destination_for_all_sources)) },
-                onClick = {
-                    expanded = false
-                    setSourceAutoMoveConfigs()
-                },
-                leadingIcon = {
-                    SubDirectoryIcon()
-                }
-            )
+            MoreIconButtonWithDropdownMenu(modifier = Modifier.padding(end = 6.dp)) {
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.set_auto_move_destination_for_all_sources)) },
+                    onClick = {
+                        collapseMenu()
+                        setSourceAutoMoveConfigs()
+                    },
+                    leadingIcon = {
+                        SubDirectoryIcon()
+                    }
+                )
+            }
         }
     }
 }

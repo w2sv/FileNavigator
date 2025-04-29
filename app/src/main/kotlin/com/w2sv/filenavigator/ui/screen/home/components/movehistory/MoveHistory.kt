@@ -62,9 +62,7 @@ fun MoveHistory(
 ) {
     val dateRepresentationList = rememberFirstDateRepresentations(history)
 
-    LazyColumn(
-        modifier = modifier
-    ) {
+    LazyColumn(modifier = modifier) {
         itemsIndexed(history, key = { _, moveEntry -> moveEntry.moveDateTime }) { i, moveEntry ->
             dateRepresentationList[i]?.let { dateRepresentation ->
                 Text(

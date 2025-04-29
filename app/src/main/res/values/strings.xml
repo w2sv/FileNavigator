@@ -33,7 +33,8 @@
     <string name="navigator_status">Navigator Status:</string>
     <string name="active">Active</string>
     <string name="inactive">Inactive</string>
-    <string name="delete_move_history">Delete move history?</string>
+    <string name="delete_move_history_dropdown_menu_item_label">Delete move history</string>
+    <string name="move_history_deletion_dialog_message">Do you want to irretrievably delete your move history?</string>
     <string name="move_history_placeholder">Moved files will appear here</string>
     <string name="return_to_main_screen">Return to main screen</string>
     <string name="discard">Discard</string>

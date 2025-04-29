@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
@@ -40,6 +39,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
+import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
@@ -68,10 +68,8 @@ fun MoveHistoryCard(modifier: Modifier = Modifier, moveHistoryVM: MoveHistoryVie
 
     HomeScreenCard(modifier) {
         Row(
-            verticalAlignment = Alignment.Top,
-            modifier = Modifier
-                .weight(0.12f)
-                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
@@ -80,14 +78,19 @@ fun MoveHistoryCard(modifier: Modifier = Modifier, moveHistoryVM: MoveHistoryVie
             )
 
             AnimatedVisibility(visible = !moveHistoryIsEmpty) {
-                IconButton(
-                    onClick = { showHistoryDeletionDialog = true },
-                    modifier = Modifier.size(38.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_delete_history_24),
-                        contentDescription = stringResource(R.string.delete_move_history),
-                        tint = MaterialTheme.colorScheme.secondary
+                MoreIconButtonWithDropdownMenu {
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_delete_history_24),
+                                contentDescription = null
+                            )
+                        },
+                        text = { Text(stringResource(R.string.delete_move_history_dropdown_menu_item_label)) },
+                        onClick = {
+                            collapseMenu()
+                            showHistoryDeletionDialog = true
+                        }
                     )
                 }
             }
@@ -159,15 +162,8 @@ private fun HistoryDeletionDialog(closeDialog: () -> Unit, onConfirmed: () -> Un
                 }
             )
         },
-        dismissButton = {
-            DialogButton(text = stringResource(id = R.string.no), onClick = closeDialog)
-        },
-        text = {
-            Text(
-                text = stringResource(R.string.delete_move_history),
-                textAlign = TextAlign.Center
-            )
-        },
+        dismissButton = { DialogButton(text = stringResource(id = R.string.no), onClick = closeDialog) },
+        text = { Text(text = stringResource(R.string.move_history_deletion_dialog_message)) },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_delete_history_24),
