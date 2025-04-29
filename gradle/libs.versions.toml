@@ -28,7 +28,7 @@ versionCatalogUpdate = "1.0.0"
 versions = "0.52.0"
 w2sv-composed = "0.0.6-rc1"
 w2sv-datastoreutils = "0.0.7-rc2"
-w2sv-kotlinutils = "0.1.7-rc2"
+w2sv-kotlinutils = "0.1.8-rc1"
 
 [libraries]
 # @keep

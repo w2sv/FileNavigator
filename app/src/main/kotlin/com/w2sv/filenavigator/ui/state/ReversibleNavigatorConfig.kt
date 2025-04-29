@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.state
 
 import androidx.compose.runtime.Stable
-import com.w2sv.common.util.mutate
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetWrappingFileType
@@ -12,6 +11,7 @@ import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.viewmodel.MakeSnackbarVisuals
+import com.w2sv.kotlinutils.copy
 import com.w2sv.reversiblestate.ReversibleState
 import com.w2sv.reversiblestate.ReversibleStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -97,7 +97,7 @@ class ReversibleNavigatorConfig(
         when (fileType) {
             is CustomFileType -> update {
                 it.editFileType(fileType) {
-                    fileType.copy(fileExtensions = it.fileExtensions.mutate { remove(extension) })
+                    fileType.copy(fileExtensions = it.fileExtensions.copy { remove(extension) })
                 }
             }
 

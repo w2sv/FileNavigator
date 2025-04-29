@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import com.w2sv.common.util.containsSpecialCharacter
-import com.w2sv.common.util.mutate
 import com.w2sv.composed.OnChange
 import com.w2sv.composed.rememberStyledTextResource
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
@@ -27,6 +26,7 @@ import com.w2sv.domain.model.filetype.PresetWrappingFileType
 import com.w2sv.filenavigator.ui.util.InputInvalidityReason
 import com.w2sv.filenavigator.ui.util.ProxyTextEditor
 import com.w2sv.filenavigator.ui.util.StatefulTextEditor
+import com.w2sv.kotlinutils.copy
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import kotlinx.collections.immutable.ImmutableSet
@@ -133,7 +133,7 @@ class CustomFileTypeEditor(
     // ===================
 
     fun deleteExtension(@IntRange(from = 0L) index: Int) {
-        updateFileType { it.copy(fileExtensions = it.fileExtensions.mutate { removeAt(index) }) }
+        updateFileType { it.copy(fileExtensions = it.fileExtensions.copy { removeAt(index) }) }
     }
 
     private var otherFileTypesMutable by mutableStateOf(otherFileTypes)

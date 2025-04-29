@@ -3,8 +3,10 @@ package com.w2sv.common.util
 import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.getSimplePath
+import com.w2sv.kotlinutils.copyWithReplacedLast
 import java.io.File
 import kotlinx.parcelize.Parcelize
 
@@ -66,7 +68,7 @@ value class DocumentUri(val uri: Uri) : Parcelable {
                                 .let { parentPath ->
                                     parse(
                                         colonSplitSegments
-                                            .replaceLast(parentPath.ifEmpty { PATH_SLASH_ENCODING })
+                                            .copyWithReplacedLast(parentPath.ifEmpty { PATH_SLASH_ENCODING })
                                             .joinToString(PATH_COLON_ENCODING)
                                     )
                                 }
@@ -76,7 +78,7 @@ value class DocumentUri(val uri: Uri) : Parcelable {
 
     companion object {
         fun parse(uriString: String): DocumentUri =
-            Uri.parse(uriString).documentUri
+            uriString.toUri().documentUri
 
         fun fromDocumentFile(documentFile: DocumentFile): DocumentUri =
             documentFile.uri.documentUri
