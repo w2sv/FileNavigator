@@ -151,7 +151,7 @@ sealed interface PresetFileType : StaticFileType {
         -1046887,
         setOf(
             "txt", "text", "asc", "csv", "xml", "json", "md", "doc", "docx", "odt",
-            "wpd", "cfg", "log", "ini", "properties"
+            "wpd", "cfg", "log", "ini", "properties", "html"
         )
     )
 
