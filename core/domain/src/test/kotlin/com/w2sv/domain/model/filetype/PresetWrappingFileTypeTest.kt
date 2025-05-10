@@ -41,7 +41,7 @@ class PresetWrappingFileTypeTest {
             expected = setOf("txt"),
             excludedExtensions = setOf(
                 "text", "asc", "csv", "xml", "json", "md", "doc", "docx", "odt",
-                "wpd", "cfg", "log", "ini", "properties"
+                "wpd", "cfg", "log", "ini", "properties", "html"
             ),
             fileType = PresetFileType.Text
         )
@@ -49,7 +49,7 @@ class PresetWrappingFileTypeTest {
         test(
             expected = setOf(
                 "text", "asc", "csv", "xml", "json", "md", "doc", "docx", "odt",
-                "wpd", "cfg", "log", "ini", "properties"
+                "wpd", "cfg", "log", "ini", "properties", "html"
             ),
             excludedExtensions = setOf("txt"),
             fileType = PresetFileType.Text
