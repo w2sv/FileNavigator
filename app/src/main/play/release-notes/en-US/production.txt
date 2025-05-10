@@ -1,3 +1,6 @@
-- Fix file destination selection
-- Fix in-app license link
-- Slight performance improvements
+- Enable creation of custom file types
+- Enable configuration of file type colors, as well as the exclusion of file extensions for non-media types
+- Add 'html' to Text file type extensions
+- Enabling and disabling of file types may now be done via a single, cohesive bottom sheet
+- UI polishments
+- Performance improvements
