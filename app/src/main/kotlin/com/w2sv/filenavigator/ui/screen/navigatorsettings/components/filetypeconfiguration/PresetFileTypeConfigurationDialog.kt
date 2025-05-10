@@ -59,7 +59,7 @@ private sealed interface PresetFileTypeConfigurationDialogInputWarning : Parcela
 }
 
 @Parcelize
-private data object LeaveAtLeastOneExtensionEnabled : PresetFileTypeConfigurationDialogInputWarning
+private data object LastEnabledExtension : PresetFileTypeConfigurationDialogInputWarning
 
 @Parcelize
 @Stable
@@ -163,7 +163,7 @@ fun PresetFileTypeConfigurationDialog(
                 var inputWarning by rememberSaveable { mutableStateOf<PresetFileTypeConfigurationDialogInputWarning?>(null) }
 
                 OnChange(inputWarning) {
-                    if (it is LeaveAtLeastOneExtensionEnabled) {
+                    if (it is LastEnabledExtension) {
                         delay(4000L) // Equals duration of SnackbarDuration.Short
                         inputWarning = null
                     }
@@ -201,7 +201,7 @@ fun PresetFileTypeConfigurationDialog(
 
                                     availableExtensions.size - excludedExtensions.size == 1 ->
                                         inputWarning =
-                                            LeaveAtLeastOneExtensionEnabled
+                                            LastEnabledExtension
 
                                     else -> excludedExtensions.add(extension)
                                 }
@@ -214,9 +214,15 @@ fun PresetFileTypeConfigurationDialog(
 
                 AnimatedContent(inputWarning, modifier = Modifier.padding(top = 4.dp)) {
                     when (it) {
-                        is LeaveAtLeastOneExtensionEnabled -> AppSnackbarContent(
+                        is LastEnabledExtension -> AppSnackbarContent(
                             snackbarKind = SnackbarKind.Error,
-                            message = stringResource(R.string.leave_at_least_one_file_extension_enabled)
+                            message = stringResource(
+                                if (availableExtensions.size == 1) {
+                                    R.string.extension_is_the_only_file_type_extension_and_must_not_be_disabled
+                                } else {
+                                    R.string.leave_at_least_one_file_extension_enabled
+                                }
+                            )
                         )
 
                         is ConflictingCustomFileType -> {

@@ -22,15 +22,12 @@ import androidx.compose.ui.unit.Dp
 import com.w2sv.filenavigator.R
 
 @Stable
-interface DropdownMenuScope: ColumnScope {
+interface DropdownMenuScope : ColumnScope {
     fun collapseMenu()
 }
 
 @Composable
-fun MoreIconButtonWithDropdownMenu(
-    modifier: Modifier = Modifier,
-    dropdownMenuContent: @Composable (DropdownMenuScope.() -> Unit)
-) {
+fun MoreIconButtonWithDropdownMenu(modifier: Modifier = Modifier, dropdownMenuContent: @Composable (DropdownMenuScope.() -> Unit)) {
     var menuIsExpanded by rememberSaveable {
         mutableStateOf(false)
     }

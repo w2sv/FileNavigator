@@ -64,13 +64,13 @@ fun SourcesSurface(
                     sourceType = sourceType,
                     sourceConfig = sourceConfig,
                     onCheckedChange = { onSourceCheckedChange(sourceType, it) },
-                    onAutoMoveEnabledCheckedChange = { checkedNew ->
-                        if (checkedNew && autoMoveConfig.destination == null) {
+                    enableAutoMove = { enable ->
+                        if (enable && autoMoveConfig.destination == null) {
                             selectAutoMoveDestination.launch(null)
                         } else {
                             setSourceAutoMoveConfig(
                                 sourceType,
-                                autoMoveConfig.copy(checkedNew)
+                                autoMoveConfig.copy(enable)
                             )
                         }
                     },
@@ -99,7 +99,7 @@ private fun SourceRow(
     sourceType: SourceType,
     sourceConfig: SourceConfig,
     onCheckedChange: (Boolean) -> Unit,
-    onAutoMoveEnabledCheckedChange: (Boolean) -> Unit,
+    enableAutoMove: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -125,13 +125,13 @@ private fun SourceRow(
                 SingleChoiceSegmentedButtonRow {
                     SegmentedMoveModeButton(
                         selected = !sourceConfig.autoMoveConfig.enabled,
-                        onClick = { onAutoMoveEnabledCheckedChange(false) },
+                        onClick = { enableAutoMove(false) },
                         shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
                         text = stringResource(R.string.notify)
                     )
                     SegmentedMoveModeButton(
                         selected = sourceConfig.autoMoveConfig.enabled,
-                        onClick = { onAutoMoveEnabledCheckedChange(true) },
+                        onClick = { enableAutoMove(true) },
                         shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
                         text = stringResource(id = R.string.auto)
                     )
