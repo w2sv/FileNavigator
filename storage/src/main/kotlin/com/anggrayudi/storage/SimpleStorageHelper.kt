@@ -28,6 +28,7 @@ import com.anggrayudi.storage.permission.PermissionCallback
 import com.anggrayudi.storage.permission.PermissionReport
 import com.anggrayudi.storage.permission.PermissionRequest
 import com.anggrayudi.storage.permission.PermissionResult
+import androidx.core.net.toUri
 
 /**
  * Helper class to ease you using file & folder picker.
@@ -479,7 +480,7 @@ class SimpleStorageHelper {
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     val intentSetting = Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.parse("package:${context.packageName}")
+                        "package:${context.packageName}".toUri()
                     )
                         .addCategory(Intent.CATEGORY_DEFAULT)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
