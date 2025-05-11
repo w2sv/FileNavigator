@@ -14,7 +14,8 @@ value class MediaUri(val uri: Uri) : Parcelable {
     fun documentUri(context: Context): DocumentUri? =
         MediaStore.getDocumentUri(context, uri)?.documentUri
 
-    fun id(): MediaId? = MediaId.fromUri(uri)
+    fun id(): MediaId? =
+        MediaId.fromUri(uri)
 
     companion object {
         fun fromDocumentUri(context: Context, documentUri: DocumentUri): MediaUri? =

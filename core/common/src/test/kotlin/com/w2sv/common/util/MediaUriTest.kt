@@ -18,6 +18,6 @@ internal class MediaUriTest {
 
     @Test
     fun testId() {
-        assertEquals(MediaId(value = 1000012597), mediaUri.id)
+        assertEquals(MediaId(value = 1000012597), mediaUri.id())
     }
 }
