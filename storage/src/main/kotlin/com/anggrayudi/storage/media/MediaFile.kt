@@ -220,53 +220,51 @@ class MediaFile @JvmOverloads constructor(
                 }
             }
 
-    val absolutePath: String
-        get() {
-            val file = file()
-            return when {
-                file != null -> file.path
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.Q -> {
-                    try {
-                        context.contentResolver.query(
-                            uri,
-                            arrayOf(MediaStore.MediaColumns.DATA),
-                            null,
-                            null,
-                            null
-                        )?.use { cursor ->
-                            if (cursor.moveToFirst()) {
-                                cursor.getString(MediaStore.MediaColumns.DATA)
-                            } else {
-                                ""
-                            }
-                        }.orEmpty()
-                    } catch (_: Exception) {
-                        ""
-                    }
-                }
-
-                else -> {
-                    val projection = arrayOf(
-                        MediaStore.MediaColumns.RELATIVE_PATH,
-                        MediaStore.MediaColumns.DISPLAY_NAME
-                    )
-                    context.contentResolver.query(uri, projection, null, null, null)
-                        ?.use { cursor ->
-                            if (cursor.moveToFirst()) {
-                                val relativePath =
-                                    cursor.getString(MediaStore.MediaColumns.RELATIVE_PATH)
-                                        ?: return ""
-                                val name = cursor.getString(MediaStore.MediaColumns.DISPLAY_NAME)
-                                "${SimpleStorage.externalStoragePath}/$relativePath/$name".trimEnd(
-                                    '/'
-                                ).replaceCompletely("//", "/")
-                            } else {
-                                ""
-                            }
-                        }.orEmpty()
+    val absolutePath: String by lazy {
+        val file = file()
+        when {
+            file != null -> file.path
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.Q -> {
+                try {
+                    context.contentResolver.query(
+                        uri,
+                        arrayOf(MediaStore.MediaColumns.DATA),
+                        null,
+                        null,
+                        null
+                    )?.use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            cursor.getString(MediaStore.MediaColumns.DATA)
+                        } else {
+                            ""
+                        }
+                    }.orEmpty()
+                } catch (_: Exception) {
+                    ""
                 }
             }
+
+            else -> {
+                val projection = arrayOf(
+                    MediaStore.MediaColumns.RELATIVE_PATH,
+                    MediaStore.MediaColumns.DISPLAY_NAME
+                )
+                context.contentResolver.query(uri, projection, null, null, null)
+                    ?.use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            val relativePath =
+                                cursor.getString(MediaStore.MediaColumns.RELATIVE_PATH)
+                                    ?: return@lazy ""
+                            val name = cursor.getString(MediaStore.MediaColumns.DISPLAY_NAME)
+                            "${SimpleStorage.externalStoragePath}/$relativePath/$name".trimEnd('/')
+                                .replaceCompletely("//", "/")
+                        } else {
+                            ""
+                        }
+                    }.orEmpty()
+            }
         }
+    }
 
     val basePath: String
         get() = absolutePath.substringAfter(SimpleStorage.externalStoragePath).trimFileSeparator()
