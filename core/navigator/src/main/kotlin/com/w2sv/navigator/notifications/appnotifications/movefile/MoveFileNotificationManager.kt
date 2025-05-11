@@ -38,15 +38,15 @@ import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
 import com.w2sv.navigator.notifications.appnotifications.batchmove.BatchMoveNotificationManager
 import com.w2sv.navigator.notifications.appnotifications.iconBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.io.IOException
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import slimber.log.i
+import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 internal class MoveFileNotificationManager @Inject constructor(
@@ -256,13 +256,7 @@ private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
                         fileType = fileAndSourceType.fileType,
                         sourceType = fileAndSourceType.sourceType
                     )
-                    .map {
-                        it.map { localDestinationApi ->
-                            NavigatorMoveDestination.Directory(
-                                localDestinationApi
-                            )
-                        }
-                    }
+                    .map { it.map { localDestinationApi -> NavigatorMoveDestination.Directory(localDestinationApi) } }
                     .stateInWithBlockingInitial(scope)
             }
         )
@@ -270,7 +264,7 @@ private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
 }
 
 private fun MoveFile.largeNotificationIcon(context: Context): Bitmap? =
-    when (fileType) {
+    when (fileType.wrappedPresetTypeOrNull) {
         PresetFileType.Image -> context.contentResolver.loadBitmapWithFileNotFoundHandling(
             mediaUri.uri
         )
@@ -295,14 +289,13 @@ private fun MoveFile.notificationContentText(context: Context): SpannedString =
         append(mediaStoreFileData.name.lineBreakSuffixed())
         bold { append(context.getString(R.string.directory).lineBreakSuffixed()) }
         append(
-            mediaStoreFileData.volumeRelativeDirPath.removeSlashSuffix()
+            mediaStoreFileData.volumeRelativeDirPath
+                .removeSlashSuffix()
                 .slashPrefixed()
                 .lineBreakSuffixed()
         )
         bold { append(context.getString(R.string.size).lineBreakSuffixed()) }
-        append(
-            formattedFileSize(mediaStoreFileData.size)
-        )
+        append(formattedFileSize(mediaStoreFileData.size))
     }
 
 private fun MoveFile.notificationTitle(context: Context): String =
