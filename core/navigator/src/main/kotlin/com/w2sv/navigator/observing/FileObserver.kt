@@ -62,7 +62,7 @@ internal abstract class FileObserver(
 ) :
     ContentObserver(handler) {
 
-    private val mediaUriBlacklist = EvictingQueue.create<MediaId>(3)
+    private val mediaIdBlacklist = EvictingQueue.create<MediaId>(3)
     private var moveFileWithProcedureJob: MoveFileWithProcedureJob? = null
 
     init {
@@ -71,8 +71,8 @@ internal abstract class FileObserver(
             .map { it.mediaId }
             .collectOn(scope) { mediaId ->
                 i { "Collected $mediaId" }
-                mediaUriBlacklist.add(mediaId)
-                if (moveFileWithProcedureJob?.moveFile?.mediaUri?.id == mediaId) {
+                mediaIdBlacklist.add(mediaId)
+                if (moveFileWithProcedureJob?.moveFile?.mediaUri?.id() == mediaId) {
                     cancelAndResetMoveFileProcedureJob()
                 }
             }
@@ -106,15 +106,20 @@ internal abstract class FileObserver(
     }
 
     private fun emitOnChangeLog(uri: Uri?, fileChangeOperation: FileChangeOperation) {
-        i { "$logIdentifier ${fileChangeOperation.name} $uri | Blacklist: $mediaUriBlacklist" }
+        i { "$logIdentifier ${fileChangeOperation.name} $uri | Blacklist: $mediaIdBlacklist" }
     }
 
     private fun onChangeCore(uri: Uri?) {
         val mediaUri = uri?.mediaUri ?: return
 
+        val mediaId = mediaUri.id()
+        if (mediaId == null) {
+            i { "mediaId null; discarding" }
+            return
+        }
         // Exit if in mediaUriBlacklist
-        if (mediaUriBlacklist.contains(mediaUri.id)) {
-            i { "Found $mediaUri in blacklist; discarding" }
+        if (mediaIdBlacklist.contains(mediaId)) {
+            i { "Found $mediaId in blacklist; discarding" }
             return
         }
 

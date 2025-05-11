@@ -93,7 +93,7 @@ internal class FileDestinationPickerActivity : AbstractDestinationPickerActivity
                 it.localOrNull?.let { localFileDestination ->
                     blacklistedMediaUris.emit(
                         value = MediaIdWithMediaType(
-                            mediaId = localFileDestination.mediaUri.id!!,
+                            mediaId = localFileDestination.mediaUri.id()!!,
                             mediaType = args.moveFile.fileType.mediaType
                         )
                             .log { "Emitting $it" },
