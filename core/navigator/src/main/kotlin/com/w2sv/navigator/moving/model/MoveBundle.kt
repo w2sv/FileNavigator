@@ -89,10 +89,10 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
             }
 
             is NavigatorMoveDestination.Directory -> {
-                val movedFileDocumentUri = destination.documentUri.childDocumentUri(fileName = file.mediaStoreFileData.name)
+//                val movedFileDocumentUri = destination.documentUri.childDocumentUri(fileName = file.mediaStoreFileData.name)
                 MovedFile.Local(
-                    documentUri = movedFileDocumentUri,
-                    mediaUri = movedFileDocumentUri.mediaUri(context)!!,
+                    documentUri = destination.documentUri,
+                    mediaUri = destination.documentUri.mediaUri(context)!!,
                     name = file.mediaStoreFileData.name,
                     originalName = null,
                     fileType = file.fileType,
