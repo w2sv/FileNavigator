@@ -1,5 +1,6 @@
 package com.w2sv.datastore.proto.navigatorconfig
 
+import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
@@ -58,6 +59,21 @@ internal class NavigatorConfigMapperTest {
                 )
             }
         assertEquals(nonDefaultConfig, nonDefaultConfig.backAndForthMapped())
+    }
+
+    /**
+     * Empty file type maps occur when updating app from 0.2.5 to 0.3.0 due to inherent navigator proto config changes.
+     */
+    @Test
+    fun `default preset file types are used when proto file type maps are empty`() {
+        val protoConfigWithEmptyFileTypeMaps = NavigatorConfigProto.newBuilder()
+            .mergeFrom(NavigatorConfig.default.toProto(true)) // clone from default
+            .clearExtensionPresetFileTypes()
+            .clearExtensionConfigurableFileTypes()
+            .clearCustomFileTypes()
+            .build()
+
+        assertEquals(NavigatorConfig.default, protoConfigWithEmptyFileTypeMaps.toExternal())
     }
 }
 

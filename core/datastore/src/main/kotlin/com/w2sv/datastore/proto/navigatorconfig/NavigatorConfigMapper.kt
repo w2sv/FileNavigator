@@ -27,6 +27,7 @@ import com.w2sv.domain.model.navigatorconfig.FileTypeConfigMap
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.kotlinutils.map
+import slimber.log.i
 
 internal fun NavigatorConfig.toProto(hasBeenMigrated: Boolean): NavigatorConfigProto =
     NavigatorConfigMapper.toProto(this, hasBeenMigrated)
@@ -46,6 +47,15 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
     private fun NavigatorConfigProto.fileTypeConfigMap(): FileTypeConfigMap =
         buildMap {
             (extensionPresetFileTypesMap + extensionConfigurableFileTypesMap + customFileTypesMap)
+                .ifEmpty {
+                    // This scope will be entered when a user updates from version 0.2.5 to 0.3.0, which introduces storing of file types (color, extensions),
+                    // while previously all that data was static and therefore not stored.
+                    // As previously configuration of the default values was impossible, we proceed with the defaults.
+                    // Once the user saves any new configuration of the navigator config, the proto file type maps
+                    // (extensionPresetFileTypesMap, extensionConfigurableFileTypesMap, customFileTypesMap) won't be empty anymore.
+                    i { "proto file type maps empty; using default ones" }
+                    NavigatorConfig.default.toProto(true).run { extensionPresetFileTypesMap + extensionConfigurableFileTypesMap }
+                }
                 .forEach { (ordinal, proto) ->
                     put(
                         when (proto) {
