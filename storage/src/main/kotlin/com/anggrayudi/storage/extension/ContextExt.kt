@@ -41,16 +41,9 @@ fun Context.unregisterReceiverSafely(receiver: BroadcastReceiver?) {
     }
 }
 
-fun Context.fromTreeUri(fileUri: Uri) =
+fun Context.documentFileFromTreeUri(fileUri: Uri): DocumentFile? =
     try {
         DocumentFile.fromTreeUri(this, fileUri)
-    } catch (e: Exception) {
-        null
-    }
-
-fun Context.fromSingleUri(fileUri: Uri) =
-    try {
-        DocumentFile.fromSingleUri(this, fileUri)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         null
     }
