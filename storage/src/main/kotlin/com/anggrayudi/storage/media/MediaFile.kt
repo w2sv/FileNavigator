@@ -250,7 +250,7 @@ class MediaFile @JvmOverloads constructor(
                                 ""
                             }
                         }.orEmpty()
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         ""
                     }
                 }
@@ -317,7 +317,7 @@ class MediaFile @JvmOverloads constructor(
                                 ""
                             }
                         }.orEmpty()
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         ""
                     }
                 }
@@ -426,7 +426,7 @@ class MediaFile @JvmOverloads constructor(
             } else {
                 context.contentResolver.openOutputStream(uri, if (append) "wa" else "w")
             }
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             null
         }
     }
@@ -441,7 +441,7 @@ class MediaFile @JvmOverloads constructor(
             } else {
                 context.contentResolver.openInputStream(uri)
             }
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             null
         }
     }
@@ -575,7 +575,7 @@ class MediaFile @JvmOverloads constructor(
             } else {
                 targetFolder.makeFolder(
                     context = context,
-                    name = fileDescription?.subFolder.orEmpty(),
+                    name = fileDescription.subFolder,
                     mode = CreateMode.REUSE
                 )
                     .also {
