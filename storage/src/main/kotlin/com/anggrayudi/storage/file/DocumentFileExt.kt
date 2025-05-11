@@ -341,8 +341,7 @@ val DocumentFile.mimeTypeByFileName: String?
         null
     } else {
         val extension = MimeType.getExtensionFromFileName(name)
-        val mimeType = MimeType.getMimeTypeFromExtension(extension)
-        if (mimeType == MimeType.UNKNOWN) type else mimeType
+        MimeType.getMimeTypeFromExtension(extension).takeIf { it != MimeType.UNKNOWN } ?: type
     }
 
 /**
@@ -894,6 +893,14 @@ fun DocumentFile.makeFile(
         return null
     }
 
+//    val targetFile = this.toRawFile(context)!!.child(name)
+//    targetFile.createNewFile().let { successfullyCreated ->
+//        println(if (successfullyCreated) "Successfully created target file ${targetFile.absolutePath}" else "Could not create target file ${targetFile.absolutePath}")
+//        if (successfullyCreated) {
+//            return DocumentFile.fromFile(targetFile)
+//        }
+//    }
+
     val cleanName = name.removeForbiddenCharsFromFilename().trimFileSeparator()
     val subFolder = cleanName.substringBeforeLast('/', "")
     val parent = if (subFolder.isEmpty()) {
@@ -939,14 +946,14 @@ fun DocumentFile.makeFile(
 
     if (isRawFile) {
         // RawDocumentFile does not avoid duplicate file name, but TreeDocumentFile does.
-        return DocumentFile.fromFile(
-            toRawFile(context)?.makeFile(
+        return toRawFile(context)
+            ?.makeFile(
                 context,
                 cleanName,
                 mimeType,
                 createMode
-            ) ?: return null
-        )
+            )
+            ?.let { DocumentFile.fromFile(it) }
     }
 
     val correctMimeType = MimeType.getMimeTypeFromExtension(extension).let {
@@ -1000,6 +1007,7 @@ fun DocumentFile.makeFolder(
         folderLevel1 == null || mode == CreateMode.CREATE_NEW -> {
             currentDirectory.createDirectory(folderNameLevel1) ?: return null
         }
+
         mode == CreateMode.REPLACE -> {
             folderLevel1.forceDelete(context, true)
             if (folderLevel1.isDirectory) {
@@ -1010,9 +1018,11 @@ fun DocumentFile.makeFolder(
                 ) ?: return null
             }
         }
+
         mode != CreateMode.SKIP_IF_EXISTS && folderLevel1.isDirectory && folderLevel1.canRead() -> {
             folderLevel1
         }
+
         else -> {
             return null
         }
@@ -1026,9 +1036,11 @@ fun DocumentFile.makeFolder(
                 directory == null -> {
                     currentDirectory.createDirectory(folder) ?: return null
                 }
+
                 directory.isDirectory && directory.canRead() -> {
                     directory
                 }
+
                 else -> {
                     return null
                 }
@@ -1083,17 +1095,14 @@ fun DocumentFile.toWritableDownloadsDocumentFile(context: Context): DocumentFile
                     // e.g. content://com.android.providers.downloads.documents/tree/downloads/document/msd%3A271
                     path.matches(Regex("/tree/downloads/document/ms[f,d]:\\d+"))
                 ) ||
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && (
                 // If comes from SAF folder picker ACTION_OPEN_DOCUMENT_TREE,
                 // e.g. content://com.android.providers.downloads.documents/tree/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FDenai/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FDenai
                 path.startsWith("/tree/raw:") ||
-                    // If comes from findFile() or fromPublicFolder(),
-                    // e.g. content://com.android.providers.downloads.documents/tree/downloads/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FDenai
-                    path.startsWith("/tree/downloads/document/raw:") ||
-                    // API 26 - 27 => content://com.android.providers.downloads.documents/document/22
-                    path.matches(Regex("/document/\\d+"))
-                )
-                -> takeIf { it.isWritable(context) }
+                // If comes from findFile() or fromPublicFolder(),
+                // e.g. content://com.android.providers.downloads.documents/tree/downloads/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FDenai
+                path.startsWith("/tree/downloads/document/raw:") ||
+                // API 26 - 27 => content://com.android.providers.downloads.documents/document/22
+                path.matches(Regex("/document/\\d+")) -> takeIf { it.isWritable(context) }
 
             else -> null
         }
@@ -2921,7 +2930,7 @@ fun DocumentFile.copyToFolder(
             )
         } else {
             val targetDirectory =
-                targetFolder.makeFolder(context, fileDescription?.subFolder.orEmpty(), CreateMode.REUSE)
+                targetFolder.makeFolder(context, fileDescription.subFolder, CreateMode.REUSE)
                     .also {
                         if (it == null) {
                             send(SingleFileResult.Error(SingleFileError.TargetNotWritable))
@@ -2975,17 +2984,17 @@ private fun DocumentFile.copyToFolder(
             .also { if (it == SingleFileConflictCallback.ConflictResolution.SKIP) return }
 
     try {
-        val targetFile = createTargetFile(
+        val targetFile = writableTargetFolder.makeFile(
             context = context,
-            targetFolder = writableTargetFolder,
-            newFilenameInTargetPath = cleanFileName,
+            name = cleanFileName,
             mimeType = fileDescription?.mimeType ?: mimeTypeByFileName,
-            mode = fileConflictResolution.toCreateMode(),
-            scope = scope
-        ) ?: return
+            mode = fileConflictResolution.toCreateMode()
+        ) ?: run {
+            scope.trySend(SingleFileResult.Error(SingleFileError.TargetNotWritable))
+            return
+        }
         copyFileStream(
-            ioStreams = IOStreams.get(this, FileWrapper.Document(targetFile), context, scope)
-                ?: return,
+            ioStreams = IOStreams(this, FileWrapper.Document(targetFile), context, scope) ?: return,
             targetFile = FileWrapper.Document(targetFile),
             updateInterval = updateInterval,
             deleteSourceFileWhenComplete = false,
@@ -3004,33 +3013,23 @@ internal data class IOStreams(val input: InputStream, val output: OutputStream) 
     }
 
     companion object {
-        fun get(
+        operator fun invoke(
             source: DocumentFile,
             target: FileWrapper,
             context: Context,
             scope: ProducerScope<SingleFileResult>
         ): IOStreams? {
-            val outputStream = target.openOutputStream(context)
-                .also {
-                    if (it == null) {
-                        scope.trySend(SingleFileResult.Error(SingleFileError.TargetNotFound))
-                    }
-                }
-            val inputStream = source.openInputStream(context)
-                .also {
-                    if (it == null) {
-                        outputStream.closeQuietly()
-                        scope.trySend(SingleFileResult.Error(SingleFileError.SourceNotFound))
-                    }
-                }
-            return if (outputStream == null || inputStream == null) {
-                null
-            } else {
-                IOStreams(
-                    inputStream,
-                    outputStream
-                )
+            val outputStream = target.openOutputStream(context) ?: run {
+                scope.trySend(SingleFileResult.Error(SingleFileError.TargetNotFound))
+                return null
             }
+            val inputStream = source.openInputStream(context) ?: run {
+                outputStream.closeQuietly()
+                scope.trySend(SingleFileResult.Error(SingleFileError.SourceNotFound))
+                return null
+            }
+
+            return IOStreams(inputStream, outputStream)
         }
     }
 }
@@ -3055,8 +3054,7 @@ fun DocumentFile.copyToFile(
 
     try {
         copyFileStream(
-            ioStreams = IOStreams.get(this, FileWrapper.Document(targetFile), context, scope)
-                ?: return,
+            ioStreams = IOStreams(this, FileWrapper.Document(targetFile), context, scope) ?: return,
             targetFile = FileWrapper.Document(targetFile),
             updateInterval = updateInterval,
             deleteSourceFileWhenComplete = deleteSourceFileOnSuccess,
@@ -3152,21 +3150,6 @@ private fun DocumentFile.isCopyable(
                 scope.trySend(SingleFileResult.Error(SingleFileError.TargetNotWritable))
             }
         }
-}
-
-private fun createTargetFile(
-    context: Context,
-    targetFolder: DocumentFile,
-    newFilenameInTargetPath: String,
-    mimeType: String?,
-    mode: CreateMode,
-    scope: ProducerScope<SingleFileResult>
-): DocumentFile? {
-    val targetFile = targetFolder.makeFile(context, newFilenameInTargetPath, mimeType, mode)
-    if (targetFile == null) {
-        scope.trySend(SingleFileResult.Error(SingleFileError.TargetNotWritable))
-    }
-    return targetFile
 }
 
 private fun DocumentFile.copyFileStream(
@@ -3314,7 +3297,7 @@ fun DocumentFile.moveFileTo(
                         onConflict = onConflict
                     )
                 }
-                ?: send(SingleFileResult.Error(SingleFileError.TargetNotWritable))
+                ?: run { send(SingleFileResult.Error(SingleFileError.TargetNotWritable)) }
         }
         close()
     }
@@ -3336,8 +3319,8 @@ private fun DocumentFile.moveFileTo(
     scope.trySend(SingleFileResult.Preparing)
 
     val cleanFileName = MimeType.getFullFileName(
-        newFilenameInTargetPath ?: name.orEmpty(),
-        newMimeTypeInTargetPath ?: mimeTypeByFileName
+        name = newFilenameInTargetPath ?: name.orEmpty(),
+        mimeType = newMimeTypeInTargetPath ?: mimeTypeByFileName
     )
         .removeForbiddenCharsFromFilename().trimFileSeparator()
     val fileConflictResolution =
@@ -3347,29 +3330,28 @@ private fun DocumentFile.moveFileTo(
     }
 
     if (inInternalStorage(context)) {
-        println("inInternalStorage")
-        toRawFile(context)?.moveTo(
-            context,
-            writableTargetFolder.getAbsolutePath(context).also { println("target path: $it") },
-            cleanFileName,
-            fileConflictResolution
-        )?.let {
-            scope.trySend(SingleFileResult.Completed(FileWrapper.Document.fromFile(it)))
-            return
-        }
+        toRawFile(context)
+            ?.moveTo(
+                context,
+                writableTargetFolder.getAbsolutePath(context).also { println("target path: $it") },
+                cleanFileName,
+                fileConflictResolution
+            )?.let {
+                scope.trySend(SingleFileResult.Completed(FileWrapper.Document.fromFile(it)))
+                return
+            }
     }
 
-    println("after inInternalStorage")
+    val sourceAndTargetHaveSameStorageId by lazy { getStorageId(context) == writableTargetFolder.getStorageId(context) }
 
-    val targetStorageId = writableTargetFolder.getStorageId(context)
-    if (isExternalStorageManager(context) && getStorageId(context) == targetStorageId) {
-        val sourceFile = toRawFile(context)
-        if (sourceFile == null) {
+    if (isExternalStorageManager(context) && sourceAndTargetHaveSameStorageId) {
+        val sourceFile = toRawFile(context) ?: run {
             scope.trySend(SingleFileResult.Error(SingleFileError.SourceNotReadable))
             return
         }
         writableTargetFolder.toRawFile(context)?.let { destinationFolder ->
-            sourceFile.moveTo(context, destinationFolder, cleanFileName, fileConflictResolution)
+            sourceFile
+                .moveTo(context, destinationFolder, cleanFileName, fileConflictResolution)
                 ?.let {
                     scope.trySend(SingleFileResult.Completed(FileWrapper.Document.fromFile(it)))
                     return
@@ -3378,10 +3360,7 @@ private fun DocumentFile.moveFileTo(
     }
 
     try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !isRawFile && writableTargetFolder.isTreeDocumentFile && getStorageId(
-                context
-            ) == targetStorageId
-        ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !isRawFile && writableTargetFolder.isTreeDocumentFile && sourceAndTargetHaveSameStorageId) {
             val movedFileUri = parentFile?.uri?.let {
                 DocumentsContract.moveDocument(
                     context.contentResolver,
@@ -3416,27 +3395,27 @@ private fun DocumentFile.moveFileTo(
     try {
         println("Creating target file")
 
-        val targetFile = createTargetFile(
-            context,
-            writableTargetFolder,
-            cleanFileName,
-            newMimeTypeInTargetPath ?: mimeTypeByFileName,
-            fileConflictResolution.toCreateMode(),
-            scope
-        ) ?: return
+        val targetFile = writableTargetFolder.makeFile(
+            context = context,
+            name = cleanFileName,
+            mimeType = newMimeTypeInTargetPath ?: mimeTypeByFileName,
+            mode = fileConflictResolution.toCreateMode()
+        ) ?: run {
+            scope.trySend(SingleFileResult.Error(SingleFileError.TargetNotWritable))
+            return
+        }
 
         println("Copying file stream")
 
+        val wrappedTargetFile = FileWrapper.Document(targetFile)
         copyFileStream(
-            ioStreams = IOStreams.get(this, FileWrapper.Document(targetFile), context, scope)
-                ?: return,
-            targetFile = FileWrapper.Document(targetFile),
+            ioStreams = IOStreams(this, wrappedTargetFile, context, scope) ?: return,
+            targetFile = wrappedTargetFile,
             updateInterval = updateInterval,
             deleteSourceFileWhenComplete = true,
             scope = scope
         )
     } catch (e: Exception) {
-        println("Sending exception")
         scope.trySend(e.toSingleFileError())
     }
 }
@@ -3701,8 +3680,7 @@ private fun DocumentFile.copyToFolder(
 
     try {
         copyFileStream(
-            ioStreams = IOStreams.get(this, FileWrapper.Media(targetFile), context, scope)
-                ?: return,
+            ioStreams = IOStreams(this, FileWrapper.Media(targetFile), context, scope) ?: return,
             targetFile = FileWrapper.Media(targetFile),
             updateInterval = updateInterval,
             deleteSourceFileWhenComplete = deleteSourceFileWhenComplete,

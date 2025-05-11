@@ -29,7 +29,7 @@ import java.io.IOException
  * ID of this storage. For external storage, it will return [PRIMARY],
  * otherwise it is a SD Card and will return integers like `6881-2249`.
  */
-fun File.getStorageId(context: Context) =
+fun File.getStorageId(context: Context): String =
     when {
         path.startsWith(SimpleStorage.externalStoragePath) -> PRIMARY
         path.startsWith(context.dataDirectory.path) -> DATA
@@ -52,7 +52,7 @@ fun File.inSameMountPointWith(context: Context, file: File): Boolean {
     return storageId1 == storageId2 || (storageId1 == PRIMARY || storageId1 == DATA) && (storageId2 == PRIMARY || storageId2 == DATA)
 }
 
-fun File.getStorageType(context: Context) =
+fun File.getStorageType(context: Context): StorageType =
     when {
         inPrimaryStorage -> StorageType.EXTERNAL
         inDataStorage(context) -> StorageType.DATA
@@ -394,6 +394,7 @@ fun File.moveTo(
         return if (renameTo(dest)) dest else null
     }
     if (!inSameMountPointWith(context, targetFolder)) {
+        println("File and target dir are not in the same mount point")
         return null
     }
     if (dest.exists()) {
