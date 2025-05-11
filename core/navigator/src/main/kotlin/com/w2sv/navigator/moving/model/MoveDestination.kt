@@ -20,12 +20,12 @@ import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
 
-internal sealed interface NavigatorMoveDestination : Parcelable, MoveDestinationApi {
+internal sealed interface MoveDestination : Parcelable, MoveDestinationApi {
 
     @Parcelize
     @TypeParceler<LocalDestinationApi, LocalDestinationApiParceler>()
     data class Directory(private val localDestination: LocalDestinationApi) :
-        NavigatorMoveDestination,
+        MoveDestination,
         LocalDestinationApi by localDestination {
 
         constructor(documentUri: DocumentUri) : this(LocalDestination(documentUri))
@@ -42,7 +42,7 @@ internal sealed interface NavigatorMoveDestination : Parcelable, MoveDestination
             documentFile(context).name != null
     }
 
-    sealed interface File : NavigatorMoveDestination {
+    sealed interface File : MoveDestination {
 
         val localOrNull: Local?
             get() = this as? Local

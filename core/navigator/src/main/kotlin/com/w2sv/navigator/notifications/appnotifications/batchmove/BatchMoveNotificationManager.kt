@@ -12,7 +12,7 @@ import com.w2sv.navigator.moving.api.activity.AbstractDestinationPickerActivity
 import com.w2sv.navigator.moving.batch.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.notifications.api.SingleInstanceNotificationManager
 import com.w2sv.navigator.notifications.appnotifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.appnotifications.AppNotificationId
@@ -107,7 +107,7 @@ internal class BatchMoveNotificationManager @Inject constructor(
             }
 
             private fun getQuickMoveAction(
-                destination: NavigatorMoveDestination.Directory,
+                destination: MoveDestination.Directory,
                 destinationDirectoryName: String,
                 requestCode: Int
             ): NotificationCompat.Action =

@@ -11,7 +11,7 @@ import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.common.util.log
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
+import com.w2sv.navigator.moving.model.MoveDestination
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import slimber.log.e
@@ -51,7 +51,7 @@ internal sealed interface PreCheckResult {
 }
 
 internal suspend fun MoveFile.moveTo(
-    destination: NavigatorMoveDestination,
+    destination: MoveDestination,
     context: Context,
     destinationDocumentFile: DocumentFile = destination.documentFile(context),
     onResult: (MoveResult) -> Unit
@@ -60,20 +60,20 @@ internal suspend fun MoveFile.moveTo(
         val preCheckResult = PreCheckResult.get(
             moveFile = this,
             context = context,
-            destinationDirectory = if (destination is NavigatorMoveDestination.File) null else destinationDocumentFile
+            destinationDirectory = if (destination is MoveDestination.File) null else destinationDocumentFile
         )
     ) {
         is PreCheckResult.Success -> {
             when (destination) {
-                is NavigatorMoveDestination.File -> {
+                is MoveDestination.File -> {
                     preCheckResult.moveMediaFile.copyToFileDestinationAndDelete(
                         fileDestination = destinationDocumentFile,
-                        isCloudDestination = destination is NavigatorMoveDestination.File.External,
+                        isCloudDestination = destination is MoveDestination.File.External,
                         onResult = onResult
                     )
                 }
 
-                is NavigatorMoveDestination.Directory -> {
+                is MoveDestination.Directory -> {
                     preCheckResult.moveMediaFile.moveTo(
                         folderDestination = destinationDocumentFile,
                         onResult = onResult

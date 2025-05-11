@@ -20,7 +20,7 @@ import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.notifications.NotificationResources
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -86,7 +86,7 @@ internal class FileDestinationPickerActivity : AbstractDestinationPickerActivity
 
         contentResolver.takePersistableReadAndWriteUriPermission(contentUri) // TODO: necessary?
 
-        val destination = NavigatorMoveDestination.File.get(contentUri.documentUri, this)
+        val destination = MoveDestination.File.get(contentUri.documentUri, this)
             .also {
                 // In case of local file, emit MediaIdWithMediaType on blacklistedMediaUris to
                 // prevent notification emission for created move destination file

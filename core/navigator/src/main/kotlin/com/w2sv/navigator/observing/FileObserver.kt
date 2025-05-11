@@ -21,7 +21,7 @@ import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import com.w2sv.navigator.observing.model.MediaStoreFileData
@@ -179,5 +179,5 @@ internal abstract class FileObserver(
     protected abstract fun determineMatchingEnabledFileAndSourceTypeOrNull(mediaStoreFileData: MediaStoreFileData): FileAndSourceType?
 }
 
-private val AutoMoveConfig.enabledDestinationOrNull: NavigatorMoveDestination.Directory?
-    get() = if (enabled && destination != null) NavigatorMoveDestination.Directory(destination!!) else null
+private val AutoMoveConfig.enabledDestinationOrNull: MoveDestination.Directory?
+    get() = if (enabled && destination != null) MoveDestination.Directory(destination!!) else null

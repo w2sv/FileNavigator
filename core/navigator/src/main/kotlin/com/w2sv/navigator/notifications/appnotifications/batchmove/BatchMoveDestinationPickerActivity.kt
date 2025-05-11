@@ -14,7 +14,7 @@ import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.notifications.NotificationResources
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
@@ -51,7 +51,7 @@ internal class BatchMoveDestinationPickerActivity : AbstractDestinationPickerAct
 
         // Build moveDestination, exit if unsuccessful
         val moveDestination =
-            NavigatorMoveDestination.Directory.fromTreeUri(this, treeUri)
+            MoveDestination.Directory.fromTreeUri(this, treeUri)
                 ?: return sendMoveResultBundleAndFinishAndRemoveTask(MoveResult.InternalError)
 
         BatchMoveBroadcastReceiver.Companion.sendBroadcast(
