@@ -34,7 +34,7 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.domain)
 
-    implementation(libs.androidx.core)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.protobuf.kotlin.lite)
 
     implementation(libs.w2sv.kotlinutils)

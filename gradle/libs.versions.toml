@@ -24,13 +24,45 @@ protobuf = "4.30.2"
 protobuf-plugin = "0.9.5"
 room = "2.7.1"
 triplet-play = "3.12.1"
-versionCatalogUpdate = "1.0.0"
-versions = "0.52.0"
 w2sv-composed = "0.0.6-rc1"
 w2sv-datastoreutils = "0.0.7-rc2"
 w2sv-kotlinutils = "0.1.8-rc1"
+activity = "1.10.1"
+android-gradle-plugin = "8.10.0"
+appcompat = "1.7.0"
+core-ktx = "1.16.0"
+coroutines = "1.10.2"
+documentfile = "1.1.0"
+# @keep
+dokka = "1.9.20"
+fragment = "1.8.6"
+lifecycle-viewmodel-ktx = "2.9.0"
+# @keep
+maven-publish-plugin = "0.28.0"
+mockito-all = "1.10.19"
+mockito-core = "5.17.0"
+mockito-inline = "5.2.0"
+mockito-kotlin = "2.2.0"
+mockk = "1.14.2"
+powermock-api-mockito2 = "2.0.9"
+powermock-module-junit4 = "2.0.9"
+robolectric = "4.14.1"
+versionCatalogUpdate = "1.0.0"
+versions = "0.52.0"
 
 [libraries]
+androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "documentfile" }
+androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "fragment" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle-viewmodel-ktx" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+mockito-all = { module = "org.mockito:mockito-all", version.ref = "mockito-all" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito-core" }
+mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito-inline" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+powermock-api-mockito2 = { module = "org.powermock:powermock-api-mockito2", version.ref = "powermock-api-mockito2" }
+powermock-module-junit4 = { module = "org.powermock:powermock-module-junit4", version.ref = "powermock-module-junit4" }
+
 # @keep
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidxActivity" }
@@ -45,7 +77,7 @@ androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", vers
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-tooling" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-tooling" }
 androidx-compose-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
-androidx-core = "androidx.core:core-ktx:1.16.0"
+androidx-core-ktx = "androidx.core:core-ktx:1.16.0"
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
@@ -73,7 +105,7 @@ ksp-gradlePlugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.g
 mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:5.4.0"
 protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
-roboelectric = "org.robolectric:robolectric:4.14.1"
+robolectric = "org.robolectric:robolectric:4.14.1"
 slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
 textflow = "io.github.oleksandrbalan:textflow-material3:1.2.1"
 w2sv-androidutils-core = "com.github.w2sv.AndroidUtils:core:0.4.5-rc1"
@@ -84,7 +116,6 @@ w2sv-datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:d
 w2sv-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:preferences", version.ref = "w2sv-datastoreutils" }
 w2sv-kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "w2sv-kotlinutils" }
 w2sv-reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.6-rc2"
-w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.0.2.2-rc1"
 
 [bundles]
 instrumentationTest = [
@@ -97,7 +128,7 @@ unitTest = [
     "junit",
     "kotlinx-coroutines-test",
     "mockito-kotlin",
-    "roboelectric",
+    "robolectric",
 ]
 
 [plugins]

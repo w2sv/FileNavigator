@@ -114,7 +114,7 @@ dependencies {
     implementation(libs.w2sv.colorpicker)
 
     // Androidx
-    implementation(libs.androidx.core)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.splashscreen)
@@ -136,7 +136,7 @@ dependencies {
     // Other
     implementation(libs.slimber)
     implementation(libs.google.guava)
-    implementation(libs.w2sv.simplestorage)
+    implementation(projects.storage)
     implementation(libs.kotlinx.collections.immutable)
     lintChecks(libs.compose.lint.checks)
     implementation(libs.textflow)
