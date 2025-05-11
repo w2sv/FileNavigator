@@ -28,7 +28,7 @@ import com.w2sv.navigator.moving.api.activity.AbstractDestinationPickerActivity
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.moving.quick.QuickMoveDestinationAccessPermissionQueryActivity
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.api.MultiInstanceNotificationManager
@@ -63,7 +63,7 @@ internal class MoveFileNotificationManager @Inject constructor(
 ) {
     data class Args(
         val moveFile: MoveFile,
-        val quickMoveDestinations: List<NavigatorMoveDestination.Directory>,
+        val quickMoveDestinations: List<MoveDestination.Directory>,
         override val notificationResources: NotificationResources
     ) : MultiInstanceNotificationManager.Args
 
@@ -191,7 +191,7 @@ internal class MoveFileNotificationManager @Inject constructor(
 
             private fun getQuickMoveAction(
                 requestCode: Int,
-                destination: NavigatorMoveDestination.Directory,
+                destination: MoveDestination.Directory,
                 directoryName: String
             ): NotificationCompat.Action =
                 NotificationCompat.Action(
@@ -244,10 +244,10 @@ internal class MoveFileNotificationManager @Inject constructor(
 private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val scope: CoroutineScope,
-    private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<NavigatorMoveDestination.Directory>>> = mutableMapOf()
-) : Map<FileAndSourceType, StateFlow<List<NavigatorMoveDestination.Directory>>> by mutableMap {
+    private val mutableMap: MutableMap<FileAndSourceType, StateFlow<List<MoveDestination.Directory>>> = mutableMapOf()
+) : Map<FileAndSourceType, StateFlow<List<MoveDestination.Directory>>> by mutableMap {
 
-    fun quickMoveDestinations(fileAndSourceType: FileAndSourceType): List<NavigatorMoveDestination.Directory> =
+    fun quickMoveDestinations(fileAndSourceType: FileAndSourceType): List<MoveDestination.Directory> =
         mutableMap.getOrPut(
             key = fileAndSourceType,
             defaultValue = {
@@ -256,7 +256,7 @@ private class FileAndSourceTypeToQuickMoveDestinationStateFlow(
                         fileType = fileAndSourceType.fileType,
                         sourceType = fileAndSourceType.sourceType
                     )
-                    .map { it.map { localDestinationApi -> NavigatorMoveDestination.Directory(localDestinationApi) } }
+                    .map { it.map { localDestinationApi -> MoveDestination.Directory(localDestinationApi) } }
                     .stateInWithBlockingInitial(scope)
             }
         )

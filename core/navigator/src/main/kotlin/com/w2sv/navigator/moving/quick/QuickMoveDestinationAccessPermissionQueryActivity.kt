@@ -16,7 +16,7 @@ import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.shared.DialogHostingActivity
 import com.w2sv.navigator.shared.roundedCornersAlertDialogBuilder
 import com.w2sv.navigator.shared.setIconHeader
@@ -97,7 +97,7 @@ internal class QuickMoveDestinationAccessPermissionQueryActivity : DialogHosting
 
         // Build moveDestination, exit if unsuccessful
         val moveDestination =
-            NavigatorMoveDestination.Directory.fromTreeUri(this, treeUri)
+            MoveDestination.Directory.fromTreeUri(this, treeUri)
                 ?: return sendMoveResultBundleAndFinishAndRemoveTask(MoveResult.InternalError)
 
         // If user selected different destination, save as quick move destination

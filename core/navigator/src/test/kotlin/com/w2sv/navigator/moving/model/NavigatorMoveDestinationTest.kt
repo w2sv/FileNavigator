@@ -14,14 +14,14 @@ internal class NavigatorMoveDestinationTest {
 
     @Test
     fun `directory destination parceling`() {
-        NavigatorMoveDestination.Directory
+        MoveDestination.Directory
             .parse("content://com.android.externalstorage.documents/document/primary%3AMoved%2FGIFs")
             .testParceling()
     }
 
     @Test
     fun `local file parceling`() {
-        NavigatorMoveDestination.File.Local(
+        MoveDestination.File.Local(
             DocumentUri.parse("content://com.android.externalstorage.documents/document/primary%3AMoved%2FGIFs%2Fsomefile.gif"),
             MediaUri.parse("content://media/external/images/media/1000012597")
         )
@@ -30,7 +30,7 @@ internal class NavigatorMoveDestinationTest {
 
     @Test
     fun `external file parceling`() {
-        NavigatorMoveDestination.File.External(
+        MoveDestination.File.External(
             DocumentUri.parse("content://com.android.externalstorage.documents/document/primary%3AMoved%2FGIFs%2Fsomefile.gif"),
             "some.package.name",
             "Drive"
@@ -40,11 +40,11 @@ internal class NavigatorMoveDestinationTest {
 
     @Test
     fun `Directory equals working correctly`() {
-        val directory = NavigatorMoveDestination.Directory
+        val directory = MoveDestination.Directory
             .parse("content://com.android.externalstorage.documents/document/primary%3AMoved%2FGIFs")
-        val equalDirectory = NavigatorMoveDestination.Directory
+        val equalDirectory = MoveDestination.Directory
             .parse("content://com.android.externalstorage.documents/document/primary%3AMoved%2FGIFs")
-        val differentDirectory = NavigatorMoveDestination.Directory
+        val differentDirectory = MoveDestination.Directory
             .parse("content://com.android.externalstorage.documents/document/primary%3AMoved%2FScreenshots")
 
         assertTrue(directory == equalDirectory)

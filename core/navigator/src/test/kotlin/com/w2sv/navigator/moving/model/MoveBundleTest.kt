@@ -14,7 +14,7 @@ internal class MoveBundleTest {
     fun testParceling() {
         MoveBundle.DirectoryDestinationPicked(
             file = TestInstance.moveFile(),
-            destination = NavigatorMoveDestination.Directory.parse("lkasjdflkajhlk"),
+            destination = MoveDestination.Directory.parse("lkasjdflkajhlk"),
             destinationSelectionManner = DestinationSelectionManner.Picked(
                 NotificationResources(
                     7,

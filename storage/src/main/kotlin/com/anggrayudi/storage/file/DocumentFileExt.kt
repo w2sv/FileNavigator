@@ -913,13 +913,13 @@ fun DocumentFile.makeFile(
         return null
     }
 
-//    val targetFile = this.toRawFile(context)!!.child(name)
-//    targetFile.createNewFile().let { successfullyCreated ->
-//        println(if (successfullyCreated) "Successfully created target file ${targetFile.absolutePath}" else "Could not create target file ${targetFile.absolutePath}")
-//        if (successfullyCreated) {
-//            return DocumentFile.fromFile(targetFile)
-//        }
-//    }
+    val targetFile = file(context)!!.child(name)
+    targetFile.createNewFile().let { successfullyCreated ->
+        println(if (successfullyCreated) "Successfully created target file ${targetFile.absolutePath}" else "Could not create target file ${targetFile.absolutePath}")
+        if (successfullyCreated) {
+            return DocumentFile.fromFile(targetFile)
+        }
+    }
 
     val cleanName = name.removeForbiddenCharsFromFilename().trimFileSeparator()
     val subFolder = cleanName.substringBeforeLast('/', "")
@@ -3469,8 +3469,6 @@ private fun DocumentFile.moveFileTo(
             scope.trySend(SingleFileResult.Error(SingleFileError.TargetNotWritable))
             return
         }
-
-        println("Copying file stream")
 
         val wrappedTargetFile = FileWrapper.Document(targetFile)
         copyFileStream(

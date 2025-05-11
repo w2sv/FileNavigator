@@ -10,7 +10,7 @@ import com.w2sv.common.util.LoggingBroadcastReceiver
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
 import com.w2sv.navigator.moving.model.MoveResult
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.moving.moveTo
 import com.w2sv.navigator.notifications.appnotifications.batchmove.BatchMoveProgressNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -93,7 +93,7 @@ internal class BatchMoveBroadcastReceiver : LoggingBroadcastReceiver() {
         val batchMoveBundles: List<MoveBundle.Batchable<*>>
     ) : Parcelable {
 
-        val destination: NavigatorMoveDestination.Directory
+        val destination: MoveDestination.Directory
             get() = batchMoveBundles.first().destination
 
         companion object {

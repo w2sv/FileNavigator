@@ -8,7 +8,7 @@ import androidx.core.text.buildSpannedString
 import com.w2sv.core.navigator.R
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
-import com.w2sv.navigator.moving.model.NavigatorMoveDestination
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.api.AppNotificationManager
 import com.w2sv.navigator.notifications.api.MultiInstanceNotificationManager
@@ -29,11 +29,11 @@ internal class AutoMoveDestinationInvalidNotificationManager @Inject constructor
 ) {
     data class Args(
         val fileAndSourceType: FileAndSourceType,
-        val autoMoveDestination: NavigatorMoveDestination.Directory,
+        val autoMoveDestination: MoveDestination.Directory,
         override val notificationResources: NotificationResources
     ) : MultiInstanceNotificationManager.Args
 
-    fun buildAndPostNotification(fileAndSourceType: FileAndSourceType, autoMoveDestination: NavigatorMoveDestination.Directory) {
+    fun buildAndPostNotification(fileAndSourceType: FileAndSourceType, autoMoveDestination: MoveDestination.Directory) {
         buildNotification(
             Args(
                 fileAndSourceType = fileAndSourceType,

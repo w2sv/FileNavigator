@@ -877,8 +877,7 @@ object DocumentFileCompat {
     }
 
     internal fun String.removeForbiddenCharsFromFilename(): String =
-        replace(":", "_")
-            .replaceCompletely("//", "/")
+        replace(":", "_").replaceCompletely("//", "/")
 
     private fun exploreFile(
         context: Context,

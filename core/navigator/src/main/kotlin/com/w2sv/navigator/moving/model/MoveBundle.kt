@@ -4,16 +4,19 @@ import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
+import com.w2sv.common.util.MediaUri
+import com.w2sv.common.util.log
 import com.w2sv.domain.model.MovedFile
-import java.time.LocalDateTime
 import kotlinx.parcelize.Parcelize
+import slimber.log.i
+import java.time.LocalDateTime
 
 internal typealias AnyMoveBundle = MoveBundle<*, *>
 
 /**
  * Bundle of all the data required for the move operation and all downstream actions.
  */
-internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : DestinationSelectionManner> :
+internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSelectionManner> :
     Parcelable {
 
     val file: MoveFile
@@ -21,10 +24,10 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
     val destinationSelectionManner: DSM
 
     sealed interface Batchable<Mode : DestinationSelectionManner.NotificationBased> :
-        MoveBundle<NavigatorMoveDestination.Directory, Mode> {
+        MoveBundle<MoveDestination.Directory, Mode> {
 
         /**
-         * Whether MoveBundle is part of a batch move operation.
+         * Whether this MoveBundle is part of a batch move operation.
          */
         val batched: Boolean
     }
@@ -32,14 +35,14 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
     @Parcelize
     data class FileDestinationPicked(
         override val file: MoveFile,
-        override val destination: NavigatorMoveDestination.File,
+        override val destination: MoveDestination.File,
         override val destinationSelectionManner: DestinationSelectionManner.Picked
-    ) : MoveBundle<NavigatorMoveDestination.File, DestinationSelectionManner.Picked>
+    ) : MoveBundle<MoveDestination.File, DestinationSelectionManner.Picked>
 
     @Parcelize
     data class DirectoryDestinationPicked(
         override val file: MoveFile,
-        override val destination: NavigatorMoveDestination.Directory,
+        override val destination: MoveDestination.Directory,
         override val destinationSelectionManner: DestinationSelectionManner.Picked,
         override val batched: Boolean = true
     ) : Batchable<DestinationSelectionManner.Picked>
@@ -47,7 +50,7 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
     @Parcelize
     data class QuickMove(
         override val file: MoveFile,
-        override val destination: NavigatorMoveDestination.Directory,
+        override val destination: MoveDestination.Directory,
         override val destinationSelectionManner: DestinationSelectionManner.Quick,
         override val batched: Boolean
     ) : Batchable<DestinationSelectionManner.Quick>
@@ -55,15 +58,15 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
     @Parcelize
     data class AutoMove(
         override val file: MoveFile,
-        override val destination: NavigatorMoveDestination.Directory,
+        override val destination: MoveDestination.Directory,
         override val destinationSelectionManner: DestinationSelectionManner.Auto
-    ) : MoveBundle<NavigatorMoveDestination.Directory, DestinationSelectionManner.Auto>
+    ) : MoveBundle<MoveDestination.Directory, DestinationSelectionManner.Auto>
 
     fun movedFileEntry(context: Context, dateTime: LocalDateTime): MovedFile {
         val name = destination.fileName(context)
-        val originalName = if (name != file.mediaStoreFileData.name) file.mediaStoreFileData.name else null
+        val originalName = file.mediaStoreFileData.name.takeIf { it != name }
         return when (val capturedDestination = destination) {
-            is NavigatorMoveDestination.File.Local -> {
+            is MoveDestination.File.Local -> {
                 MovedFile.Local(
                     documentUri = capturedDestination.documentUri,
                     mediaUri = capturedDestination.mediaUri,
@@ -77,7 +80,7 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
                 )
             }
 
-            is NavigatorMoveDestination.File.External -> {
+            is MoveDestination.File.External -> {
                 MovedFile.External(
                     moveDestination = capturedDestination,
                     name = name,
@@ -88,11 +91,15 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
                 )
             }
 
-            is NavigatorMoveDestination.Directory -> {
-//                val movedFileDocumentUri = destination.documentUri.childDocumentUri(fileName = file.mediaStoreFileData.name)
+            is MoveDestination.Directory -> {
+                i { "Destination=$destination" }
+                val movedFileDocumentUri = destination.documentUri.childDocumentUri(fileName = file.mediaStoreFileData.name)
+                i { "movedFileDocumentUri=$movedFileDocumentUri" }
+                i { "moved file exists=${movedFileDocumentUri.documentFile(context).exists()}" }
+
                 MovedFile.Local(
-                    documentUri = destination.documentUri,
-                    mediaUri = destination.documentUri.mediaUri(context)!!,
+                    documentUri = movedFileDocumentUri,
+                    mediaUri = MediaUri.parse("kjh"),
                     name = file.mediaStoreFileData.name,
                     originalName = null,
                     fileType = file.fileType,
@@ -103,6 +110,7 @@ internal sealed interface MoveBundle<MD : NavigatorMoveDestination, DSM : Destin
                 )
             }
         }
+            .log { "Created move bundle: $it" }
     }
 
     companion object {
