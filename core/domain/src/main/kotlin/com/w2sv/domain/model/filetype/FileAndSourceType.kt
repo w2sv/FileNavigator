@@ -41,9 +41,9 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
 
             sourceType == SourceType.Download -> context.getString(
                 R.string.file_type_download,
-                context.getString((fileType as PresetFileType).labelRes)
+                context.getString((fileType as AnyPresetWrappingFileType).presetFileType.labelRes)
             )
 
-            else -> context.getString((fileType as PresetFileType).labelRes)
+            else -> context.getString((fileType as AnyPresetWrappingFileType).presetFileType.labelRes)
         }
 }
