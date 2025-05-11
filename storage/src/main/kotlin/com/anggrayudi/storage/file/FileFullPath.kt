@@ -6,7 +6,7 @@ import android.os.storage.StorageManager
 import androidx.annotation.RequiresApi
 import androidx.annotation.RestrictTo
 import com.anggrayudi.storage.SimpleStorage
-import com.anggrayudi.storage.extension.fromTreeUri
+import com.anggrayudi.storage.extension.documentFileFromTreeUri
 import com.anggrayudi.storage.extension.trimFileSeparator
 import java.io.File
 
@@ -134,7 +134,7 @@ class FileFullPath {
         }
 
     fun toDocumentUri(context: Context): Uri? {
-        return context.fromTreeUri(uri ?: return null)?.uri
+        return context.documentFileFromTreeUri(uri ?: return null)?.uri
     }
 
     val storageType: StorageType

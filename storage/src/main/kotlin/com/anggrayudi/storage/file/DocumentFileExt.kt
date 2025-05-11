@@ -26,7 +26,7 @@ import com.anggrayudi.storage.extension.awaitUiResultWithPending
 import com.anggrayudi.storage.extension.childOf
 import com.anggrayudi.storage.extension.closeEntryQuietly
 import com.anggrayudi.storage.extension.closeQuietly
-import com.anggrayudi.storage.extension.fromTreeUri
+import com.anggrayudi.storage.extension.documentFileFromTreeUri
 import com.anggrayudi.storage.extension.getStorageId
 import com.anggrayudi.storage.extension.hasParent
 import com.anggrayudi.storage.extension.isDocumentsDocument
@@ -513,7 +513,7 @@ fun DocumentFile.quickFindTreeFile(
                         DocumentsContract.buildDocumentUriUsingTree(uri, it.getString(0))
                     resolver.query(documentUri, columnName, null, null, null)?.use { childCursor ->
                         if (childCursor.moveToFirst() && name == childCursor.getString(0)) {
-                            return context.fromTreeUri(documentUri)
+                            return context.documentFileFromTreeUri(documentUri)
                         }
                     }
                 } catch (e: Exception) {
@@ -2397,7 +2397,7 @@ private fun DocumentFile.tryMoveFolderByRenamingPath(
                     )
                 }
                 if (movedFileUri != null) {
-                    val newFile = context.fromTreeUri(movedFileUri)
+                    val newFile = context.documentFileFromTreeUri(movedFileUri)
                     return if (newFile != null && newFile.isDirectory) {
                         if (newFolderNameInTargetPath != null) {
                             newFile.renameTo(
@@ -3370,7 +3370,7 @@ private fun DocumentFile.moveFileTo(
                 )
             }
             if (movedFileUri != null) {
-                val newFile = context.fromTreeUri(movedFileUri)
+                val newFile = context.documentFileFromTreeUri(movedFileUri)
                 if (newFile != null && newFile.isFile) {
                     if (newFilenameInTargetPath != null) newFile.renameTo(cleanFileName)
                     scope.trySend(SingleFileResult.Completed(FileWrapper.Document(newFile)))

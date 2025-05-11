@@ -10,11 +10,11 @@ import android.system.Os
 import androidx.annotation.RestrictTo
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.FileWrapper
 import com.anggrayudi.storage.SimpleStorage
-import com.anggrayudi.storage.extension.fromSingleUri
-import com.anggrayudi.storage.extension.fromTreeUri
+import com.anggrayudi.storage.extension.documentFileFromTreeUri
 import com.anggrayudi.storage.extension.getStorageId
 import com.anggrayudi.storage.extension.hasParent
 import com.anggrayudi.storage.extension.isDocumentsDocument
@@ -24,6 +24,11 @@ import com.anggrayudi.storage.extension.isRawFile
 import com.anggrayudi.storage.extension.isTreeDocumentFile
 import com.anggrayudi.storage.extension.replaceCompletely
 import com.anggrayudi.storage.extension.trimFileSeparator
+import com.anggrayudi.storage.file.DocumentFileCompat.buildAbsolutePath
+import com.anggrayudi.storage.file.DocumentFileCompat.buildSimplePath
+import com.anggrayudi.storage.file.DocumentFileCompat.getAccessibleAbsolutePaths
+import com.anggrayudi.storage.file.DocumentFileCompat.getAccessibleUris
+import com.anggrayudi.storage.file.DocumentFileCompat.getRootRawFile
 import com.anggrayudi.storage.file.StorageId.DATA
 import com.anggrayudi.storage.file.StorageId.HOME
 import com.anggrayudi.storage.file.StorageId.PRIMARY
@@ -32,7 +37,6 @@ import com.anggrayudi.storage.media.MediaStoreCompat
 import java.io.File
 import java.io.IOException
 import java.net.URLDecoder
-import androidx.core.net.toUri
 
 /**
  * Created on 16/08/20
@@ -137,10 +141,10 @@ object DocumentFileCompat {
                 uri.path ?: return null
             ).run { if (canRead()) DocumentFile.fromFile(this) else null }
 
-            uri.isTreeDocumentFile -> context.fromTreeUri(uri)
+            uri.isTreeDocumentFile -> context.documentFileFromTreeUri(uri)
                 ?.run { if (isDownloadsDocument) toWritableDownloadsDocumentFile(context) else this }
 
-            else -> context.fromSingleUri(uri)
+            else -> DocumentFile.fromSingleUri(context, uri)
         }
     }
 
@@ -175,7 +179,7 @@ object DocumentFileCompat {
             )
             if (file == null && storageId == PRIMARY && basePath.hasParent(Environment.DIRECTORY_DOWNLOADS)) {
                 val downloads =
-                    context.fromTreeUri(DOWNLOADS_TREE_URI.toUri())?.takeIf { it.canRead() }
+                    context.documentFileFromTreeUri(DOWNLOADS_TREE_URI.toUri())?.takeIf { it.canRead() }
                         ?: return null
                 downloads.child(context, basePath.substringAfter('/', ""))?.takeIf {
                     documentType == DocumentFileType.ANY ||
@@ -290,7 +294,7 @@ object DocumentFileCompat {
         }
 
         val fileFromUriOrAbsolutePath: (String) -> DocumentFile? = { treeRootUri ->
-            val downloadFolder = context.fromTreeUri(treeRootUri.toUri())
+            val downloadFolder = context.documentFileFromTreeUri(treeRootUri.toUri())
             if (downloadFolder?.canRead() == true) {
                 downloadFolder.child(context, subFile, requiresWriteAccess)
             } else {
@@ -342,7 +346,7 @@ object DocumentFileCompat {
         }
         val file = if (storageId == HOME) {
             if (Build.VERSION.SDK_INT == 29) {
-                context.fromTreeUri(createDocumentUri(PRIMARY))
+                context.documentFileFromTreeUri(createDocumentUri(PRIMARY))
             } else {
                 DocumentFile.fromFile(Environment.getExternalStorageDirectory())
             }
@@ -352,9 +356,9 @@ object DocumentFileCompat {
                 storageId,
                 requiresWriteAccess
             )?.let { DocumentFile.fromFile(it) }
-                ?: context.fromTreeUri(createDocumentUri(storageId))
+                ?: context.documentFileFromTreeUri(createDocumentUri(storageId))
         } else {
-            context.fromTreeUri(createDocumentUri(storageId))
+            context.documentFileFromTreeUri(createDocumentUri(storageId))
         }
         return file?.takeIf { it.canRead() && (requiresWriteAccess && it.isWritable(context) || !requiresWriteAccess) }
     }
@@ -394,11 +398,11 @@ object DocumentFileCompat {
                 .forEach {
                     if (Build.VERSION.SDK_INT < 30) {
                         if (it.uri.isDownloadsDocument && fullPath.hasParent(PublicDirectory.DOWNLOADS.absolutePath)) {
-                            return context.fromTreeUri(DOWNLOADS_TREE_URI.toUri())
+                            return context.documentFileFromTreeUri(DOWNLOADS_TREE_URI.toUri())
                         }
 
                         if (it.uri.isDocumentsDocument && fullPath.hasParent(PublicDirectory.DOCUMENTS.absolutePath)) {
-                            return context.fromTreeUri(DOCUMENTS_TREE_URI.toUri())
+                            return context.documentFileFromTreeUri(DOCUMENTS_TREE_URI.toUri())
                         }
                     }
 
@@ -412,7 +416,7 @@ object DocumentFileCompat {
                                 )
                                 )
                         ) {
-                            return context.fromTreeUri(it.uri)
+                            return context.documentFileFromTreeUri(it.uri)
                         }
                     }
                 }
@@ -911,7 +915,7 @@ object DocumentFileCompat {
                     requiresWriteAccess,
                     considerRawFile
                 )?.child(context, basePath)
-                    ?: context.fromTreeUri(DOCUMENTS_TREE_URI.toUri())
+                    ?: context.documentFileFromTreeUri(DOCUMENTS_TREE_URI.toUri())
                         ?.child(context, basePath.substringAfter(Environment.DIRECTORY_DOCUMENTS))
                     ?: return null
             } else if (Build.VERSION.SDK_INT < 30) {
@@ -931,7 +935,7 @@ object DocumentFileCompat {
                     parentTree.add(directorySequence.removeFirstCompat())
                     val folderTree = parentTree.joinToString(separator = "/")
                     try {
-                        grantedFile = context.fromTreeUri(createDocumentUri(storageId, folderTree))
+                        grantedFile = context.documentFileFromTreeUri(createDocumentUri(storageId, folderTree))
                         if (grantedFile?.canRead() == true) break
                     } catch (_: SecurityException) {
                         // ignore
@@ -941,7 +945,7 @@ object DocumentFileCompat {
                     grantedFile
                 } else {
                     val fileTree = directorySequence.joinToString(prefix = "/", separator = "/")
-                    context.fromTreeUri((grantedFile.uri.toString() + Uri.encode(fileTree)).toUri())
+                    context.documentFileFromTreeUri((grantedFile.uri.toString() + Uri.encode(fileTree)).toUri())
                 }
             }
         return file?.takeIf {
