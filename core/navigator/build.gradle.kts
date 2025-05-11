@@ -14,7 +14,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.common)
 
-    implementation(libs.androidx.core)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.appcompat)
 
@@ -24,7 +24,7 @@ dependencies {
 
     implementation(libs.google.guava)
 
-    implementation(libs.w2sv.simplestorage)
+    implementation(projects.storage)
 
     // ==============
     // Test

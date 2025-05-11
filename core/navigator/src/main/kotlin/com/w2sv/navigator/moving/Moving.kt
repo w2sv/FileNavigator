@@ -170,6 +170,6 @@ private val SingleFileResult.Error.debugString: String
     get() = buildString {
         append("${this@debugString.javaClass.simpleName}: $errorCode")
         message?.let {
-            append("- $it")
+            append(" - $it")
         }
     }

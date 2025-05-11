@@ -15,10 +15,10 @@ android {
 dependencies {
     implementation(projects.core.common)
     implementation(projects.core.domain)
-    implementation(libs.androidx.core)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.slimber)
-    implementation(libs.w2sv.simplestorage)
+    implementation(projects.storage)
 
     testImplementation(libs.bundles.unitTest)
 

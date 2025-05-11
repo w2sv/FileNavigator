@@ -7,10 +7,10 @@ plugins {
 dependencies {
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.w2sv.kotlinutils)
-    implementation(libs.w2sv.simplestorage)
+    implementation(projects.storage)
     implementation(libs.slimber)
 
-    implementation(libs.androidx.core)
+    implementation(libs.androidx.core.ktx)
 
     // Unit tests
     testImplementation(projects.core.test)
