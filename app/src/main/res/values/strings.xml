@@ -7,7 +7,7 @@
     <string name="apply">Apply</string>
     <string name="disable_navigator_on_low_battery">Disable navigator on low battery</string>
     <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">Leave at least one file source selected or disable the entire file type.</string>
-    <string name="set_enabled_file_types">Configure Enabled File Types</string>
+    <string name="configure_navigated_file_types">Configure Navigated File Types</string>
     <string name="_default">Default</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
@@ -61,7 +61,7 @@
     <string name="rate_the_app_in_the_playstore">Rate the app in the PlayStore</string>
     <string name="configure_the_used_file_types">Configure the used file types.</string>
     <string name="exclude">Exclude</string>
-    <string name="enabled_file_types">Enabled File Types</string>
+    <string name="navigated_file_types">Navigated File Types</string>
     <string name="select_the_auto_move_destination">Select the auto move destination.</string>
     <string name="set_auto_move_destination_for_all_sources">Set Auto Move destination for all sources</string>
     <string name="start_navigator_on_system_boot">Start navigator on system boot</string>
