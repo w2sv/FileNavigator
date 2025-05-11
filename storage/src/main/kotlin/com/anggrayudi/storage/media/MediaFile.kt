@@ -166,7 +166,7 @@ class MediaFile @JvmOverloads constructor(
     val presentsInSafDatabase: Boolean
         get() = context.contentResolver.query(uri, null, null, null, null)?.use {
             it.count > 0
-        } ?: false
+        } == true
 
     /**
      * @see isEmpty
@@ -403,7 +403,6 @@ class MediaFile @JvmOverloads constructor(
     /**
      * @param append if `false` and the file already exists, it will recreate the file.
      */
-    @Suppress("DEPRECATION")
     @WorkerThread
     @JvmOverloads
     fun openOutputStream(append: Boolean = true): OutputStream? {
@@ -419,7 +418,6 @@ class MediaFile @JvmOverloads constructor(
         }
     }
 
-    @Suppress("DEPRECATION")
     @WorkerThread
     fun openInputStream(): InputStream? {
         return try {
