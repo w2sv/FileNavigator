@@ -63,8 +63,8 @@ build-and-publish:
 	@$(MAKE) build-apk
 	@$(MAKE) create-gh-release
 
-	@$(MAKE) build-aab
-	@$(MAKE) publish-bundle
+#	@$(MAKE) build-aab
+#	@$(MAKE) publish-bundle
 
 create-gh-release:
 	@echo "Create GitHub Release"
