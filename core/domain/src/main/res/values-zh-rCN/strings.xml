@@ -14,6 +14,7 @@
     <string name="photo">照片</string>
     <string name="ebook">电子书</string>
     <string name="file_type_download">下载内容：%1$s</string>
+    <string name="gif">GIF动态图</string>
     <string name="unrecognized_destination">无法识别的位置</string>
     <string name="volume_root">存储空间根目录</string>
 </resources>
