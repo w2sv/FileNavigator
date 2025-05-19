@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image">图片</string>
+    <string name="video">视频</string>
+    <string name="audio">音频</string>
+    <string name="archive">压缩文件</string>
+    <string name="apk">安装包</string>
+    <string name="text">文本文件</string>
+    <string name="download">下载文件</string>
+    <string name="other_app">其它应用</string>
+    <string name="screenshot">截图</string>
+    <string name="recording">录制视频</string>
+    <string name="camera">相机</string>
+    <string name="photo">照片</string>
+    <string name="ebook">电子书</string>
+    <string name="file_type_download">下载内容：%1$s</string>
+    <string name="unrecognized_destination">无法识别的位置</string>
+    <string name="volume_root">存储空间根目录</string>
+</resources>
