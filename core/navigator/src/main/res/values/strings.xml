@@ -1,8 +1,8 @@
 <resources>
     <!--For use in Manifest-->
-    <string name="task_affinity_file_moving">com.w2sv.filenavigator.moving</string>
-    <string name="task_affinity_file_viewing">com.w2sv.filenavigator.viewing</string>
-    <string name="task_affinity_file_deletion">com.w2sv.filenavigator.deletion</string>
+    <string name="task_affinity_file_moving" translatable="false">com.w2sv.filenavigator.moving</string>
+    <string name="task_affinity_file_viewing" translatable="false">com.w2sv.filenavigator.viewing</string>
+    <string name="task_affinity_file_deletion" translatable="false">com.w2sv.filenavigator.deletion</string>
 
     <string name="move_success_toast_text"><![CDATA[Moved %1$s to <b>%2$s</b>]]></string>
     <string name="auto_move_success_toast_text"><![CDATA[Auto Moved %1$s to <b>%2$s</b>]]></string>
