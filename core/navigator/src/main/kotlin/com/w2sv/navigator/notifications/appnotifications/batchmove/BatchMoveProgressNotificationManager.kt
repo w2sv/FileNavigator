@@ -7,7 +7,7 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.core.text.buildSpannedString
 import com.w2sv.androidutils.res.getQuantityText
-import com.w2sv.core.navigator.R
+import com.w2sv.core.common.R
 import com.w2sv.navigator.moving.batch.CancelBatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.model.NavigatorMoveDestination

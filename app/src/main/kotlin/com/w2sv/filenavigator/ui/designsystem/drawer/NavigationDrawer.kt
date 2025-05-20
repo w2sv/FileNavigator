@@ -25,8 +25,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.w2sv.core.common.R
 import com.w2sv.filenavigator.BuildConfig
-import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.SystemBarsIgnoringVisibilityPaddedColumn
 import com.w2sv.filenavigator.ui.designsystem.emptyWindowInsets
 import java.time.LocalDate

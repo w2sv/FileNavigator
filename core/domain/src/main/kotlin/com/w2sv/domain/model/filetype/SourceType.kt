@@ -2,7 +2,7 @@ package com.w2sv.domain.model.filetype
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.w2sv.core.domain.R
+import com.w2sv.core.common.R
 
 enum class SourceType(
     @StringRes val labelRes: Int,

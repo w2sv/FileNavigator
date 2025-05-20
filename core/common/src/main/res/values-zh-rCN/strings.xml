@@ -1,7 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- File Types -->
+    <string name="image">图片</string>
+    <string name="video">视频</string>
+    <string name="audio">音频</string>
+    <string name="archive">压缩文件</string>
+    <string name="apk">安装包</string>
+    <string name="text">文本文件</string>
+    <string name="ebook">电子书</string>
+    <string name="gif">GIF动态图</string>
+    <!-- Source Types -->
+    <string name="download">下载文件</string>
+    <string name="other_app">其它应用</string>
+    <string name="screenshot">截图</string>
+    <string name="recording">录制视频</string>
+    <string name="camera">相机</string>
+    <string name="photo">照片</string>
+
+    <string name="file_type_download">下载内容：%1$s</string>
+    <string name="unrecognized_destination">无法识别的位置</string>
+    <string name="volume_root">存储空间根目录</string>
+    <string name="move_success_toast_text"><![CDATA[移动 %1$s 至 <b>%2$s</b>]]></string>
+    <string name="auto_move_success_toast_text"><![CDATA[已自动移动 %1$s 至 <b>%2$s</b>]]></string>
+    <string name="move">移动</string>
+    <string name="file_navigator_is_running">File Navigator正在运行</string>
     <string name="start">开始</string>
     <string name="stop">停止</string>
+    <string name="new_move_file_notification_title">新的 %1$s</string>
+    <string name="new_navigatable_file">发现可归类文件</string>
+    <string name="batch_move_files">批量移动文件</string>
+    <string name="move_progress">移动进度</string>
+    <string name="manage_all_files_permission_missing">文件管理权限缺失</string>
+    <string name="internal_error">内部错误</string>
+    <string name="file_has_already_been_moved_or_deleted">文件已被移动或删除</string>
+    <plurals name="navigatable_file">
+        <item quantity="other">%1$d 个可移动文件</item>
+    </plurals>
+    <string name="foreground_service_notification_content">当发现新增需要归类的文件时向您发送通知</string>
+    <string name="file_already_at_selected_location">文件已位于指定位置</string>
+    <string name="not_enough_space_on_destination">目标文件夹已无可用空间</string>
+    <string name="to">移动至 /%1$s</string>
+    <string name="starting_navigator">正在启动File Navigator…</string>
+    <string name="auto_move_destination_invalid">设置的自动移动位置现已无效</string>
+    <string name="has_been_deleted_and_got_therefore_removed_from">已被删除并以此已不存在于</string>
+    <string name="quick_move_destination_doesnt_exist">快速移动目标路径不存在</string>
+    <string name="couldnt_move">无法移动</string>
+    <string name="directory">文件夹</string>
+    <string name="size">大小</string>
+    <string name="move_files">移动 %1$d 个文件</string>
+    <string name="move_progress_notification_title">正在移动 %1$d 个文件…</string>
+    <string name="move_results">移动结果</string>
+    <plurals name="moved_files_to">
+        <item quantity="other"><![CDATA[已移动 %1$d 个文件至 <b>%2$s</b>]]></item>
+    </plurals>
+    <string name="cancel">取消</string>
+    <string name="directory_access">文件夹访问权限</string>
+    <string name="understood">好的</string>
+    <string name="quick_move_permission_query_dialog_content">你需要授予File Navigator访问指定用于快速移动的文件夹的权限.\n\n该操作在选定某个文件夹时只需操作一次.</string>
+    <string name="file_deletion_confirmation_dialog_message"><![CDATA[确认删除 <b>%1$s</b>?]]></string>
+    <string name="delete">删除</string>
+    <plurals name="couldn_t_move_files_due_to">
+        <item quantity="other"><![CDATA[无法移动 %1$s 个文件。出错： <b>%2$s</b>]]></item>
+    </plurals>
+    <string name="yes">确认</string>
+    <string name="no">取消</string>
+    <string name="successfully_deleted"><![CDATA[成功删除 <b>%1$s</b>]]></string>
+    <string name="couldn_t_delete"><![CDATA[无法删除 <b>%1$s</b>]]></string>
     <string name="grant">授予权限</string>
     <string name="select_at_least_one_file_type">至少选择一种文件类型</string>
     <string name="apply">应用</string>
@@ -12,8 +76,6 @@
     <string name="dark">暗色背景</string>
     <string name="light">亮色背景</string>
     <string name="theme_button_cd">使用 %s 主题</string>
-    <string name="yes">确认</string>
-    <string name="no">取消</string>
     <string name="post_notifications_permission_rational">File Navigator需要 <b>发送通知权限</b> 用于就文件分类事项发送通知</string>
     <string name="manage_external_storage_permission_rational">File Navigator需要<b>所有文件管理权限</b>用于移动将要进行分类的文件</string>
     <string name="theme">主题</string>
@@ -98,7 +160,6 @@
     <string name="create_file_type_dialog_title">创建文件类型</string>
     <string name="create">创建</string>
     <string name="delete_the_file_type">删除文件类型</string>
-    <string name="cancel">取消</string>
     <string name="add_a_file_extension">添加文件扩展名</string>
     <string name="color">配色</string>
     <string name="file_extensions">文件扩展名</string>
@@ -113,7 +174,6 @@
     <string name="delete_file_type">"删除文件类型 <b>%1$s</b> "</string>
     <string name="enter_a_file_extension">输入文件扩展名</string>
     <plurals name="add_file_types_button">
-        <item quantity="one">添加文件类型</item>
         <item quantity="other">添加文件类型</item>
     </plurals>
 </resources>

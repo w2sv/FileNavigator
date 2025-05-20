@@ -27,8 +27,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.w2sv.core.common.R
 import com.w2sv.domain.model.Theme
-import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.rememberBorderAnimationState
 
 @Composable

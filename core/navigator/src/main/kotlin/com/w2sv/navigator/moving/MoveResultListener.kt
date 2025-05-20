@@ -9,7 +9,7 @@ import com.w2sv.androidutils.res.getHtmlFormattedText
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.core.navigator.R
+import com.w2sv.core.common.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMovedFileUseCase
 import com.w2sv.navigator.moving.model.AnyMoveBundle

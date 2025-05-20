@@ -1,13 +1,13 @@
 package com.w2sv.filenavigator.ui.state
 
 import androidx.compose.runtime.Stable
+import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetWrappingFileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.viewmodel.MakeSnackbarVisuals

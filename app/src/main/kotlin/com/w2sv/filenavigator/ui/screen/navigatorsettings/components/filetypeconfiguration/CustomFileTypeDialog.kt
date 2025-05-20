@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.rememberStyledTextResource
-import com.w2sv.core.domain.R
+import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
@@ -46,8 +46,8 @@ fun CustomFileTypeCreationDialog(
     modifier: Modifier = Modifier
 ) {
     ColorPickerDialogOverlaidCustomFileTypeConfigurationDialog(
-        title = stringResource(com.w2sv.filenavigator.R.string.create_file_type_dialog_title),
-        confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.create),
+        title = stringResource(R.string.create_file_type_dialog_title),
+        confirmButtonText = stringResource(R.string.create),
         customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, createFileType),
         onDismissRequest = onDismissRequest,
         excludeFileExtension = excludeFileExtension,
@@ -65,8 +65,8 @@ fun CustomFileTypeConfigurationDialog(
     modifier: Modifier = Modifier
 ) {
     ColorPickerDialogOverlaidCustomFileTypeConfigurationDialog(
-        title = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_dialog_title),
-        confirmButtonText = stringResource(com.w2sv.filenavigator.R.string.apply),
+        title = stringResource(R.string.edit_file_type_dialog_title),
+        confirmButtonText = stringResource(R.string.apply),
         customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, saveFileType, fileType),
         onDismissRequest = onDismissRequest,
         excludeFileExtension = excludeFileExtension,
@@ -124,15 +124,15 @@ private fun StatelessCustomFileTypeConfigurationDialog(
 
         OutlinedTextField(
             editor = customFileTypeEditor.nameEditor,
-            placeholderText = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_name_field_placeholder),
-            labelText = stringResource(com.w2sv.filenavigator.R.string.edit_file_type_name_field_label),
+            placeholderText = stringResource(R.string.edit_file_type_name_field_placeholder),
+            labelText = stringResource(R.string.edit_file_type_name_field_label),
             onApply = customFileTypeEditor::clearFocus
         )
         Column {
             OutlinedTextField(
                 editor = customFileTypeEditor.extensionEditor,
-                placeholderText = stringResource(com.w2sv.filenavigator.R.string.enter_a_file_extension),
-                labelText = stringResource(com.w2sv.filenavigator.R.string.add_a_file_extension),
+                placeholderText = stringResource(R.string.enter_a_file_extension),
+                labelText = stringResource(R.string.add_a_file_extension),
                 onApply = customFileTypeEditor::addExtension,
                 applyIconImageVector = Icons.Outlined.Add,
                 showApplyIconOnlyWhenFocused = false,
@@ -143,7 +143,7 @@ private fun StatelessCustomFileTypeConfigurationDialog(
                             RemoveExtensionFromFileTypeButtonRow(
                                 modifier = Modifier.padding(top = 4.dp),
                                 text = rememberStyledTextResource(
-                                    com.w2sv.filenavigator.R.string.exclude_from,
+                                    R.string.exclude_from,
                                     excludableFileTypeExtension.fileExtension,
                                     excludableFileTypeExtension.fileType.stringResource()
                                 ),
@@ -190,7 +190,7 @@ private fun FileExtensionChipWithTooltip(
                     deleteExtension()
                     tooltipState.dismiss()
                 },
-                contentDescription = stringResource(com.w2sv.filenavigator.R.string.delete_file_extension)
+                contentDescription = stringResource(R.string.delete_file_extension)
             )
         },
         state = tooltipState,

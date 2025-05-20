@@ -38,9 +38,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import com.w2sv.composed.OnLifecycleEvent
 import com.w2sv.composed.extensions.thenIf
+import com.w2sv.core.common.R
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
-import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.designsystem.WeightedBox
 import com.w2sv.filenavigator.ui.modelext.color

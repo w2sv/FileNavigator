@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import com.w2sv.filenavigator.R
+import com.w2sv.core.common.R
 
 @Stable
 interface DropdownMenuScope : ColumnScope {

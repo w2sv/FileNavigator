@@ -6,7 +6,7 @@ import android.os.Parcelable
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.VisibleForTesting
-import com.w2sv.core.domain.R
+import com.w2sv.core.common.R
 import kotlin.random.Random
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize

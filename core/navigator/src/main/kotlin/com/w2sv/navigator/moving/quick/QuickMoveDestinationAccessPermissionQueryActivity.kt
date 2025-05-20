@@ -9,7 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
-import com.w2sv.core.navigator.R
+import com.w2sv.core.common.R
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.kotlinutils.threadUnsafeLazy

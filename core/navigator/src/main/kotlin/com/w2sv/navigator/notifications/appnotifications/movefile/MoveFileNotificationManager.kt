@@ -18,7 +18,7 @@ import com.w2sv.common.util.loadBitmapWithFileNotFoundHandling
 import com.w2sv.common.util.log
 import com.w2sv.common.util.removeSlashSuffix
 import com.w2sv.common.util.slashPrefixed
-import com.w2sv.core.navigator.R
+import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
@@ -306,7 +306,7 @@ private fun MoveFile.notificationTitle(context: Context): String =
 
 private fun MoveFile.notificationLabel(context: Context): String =
     when {
-        isGif -> context.getString(com.w2sv.core.domain.R.string.gif)
+        isGif -> context.getString(R.string.gif)
         else -> {
             when (sourceType) {
                 SourceType.Screenshot, SourceType.Recording -> context.getString(
@@ -315,14 +315,14 @@ private fun MoveFile.notificationLabel(context: Context): String =
 
                 SourceType.Camera -> context.getString(
                     when (fileType) {
-                        PresetFileType.Image -> com.w2sv.core.domain.R.string.photo
-                        PresetFileType.Video -> com.w2sv.core.domain.R.string.video
+                        PresetFileType.Image -> R.string.photo
+                        PresetFileType.Video -> R.string.video
                         else -> throw IllegalArgumentException()
                     }
                 )
 
                 SourceType.Download -> context.getString(
-                    com.w2sv.core.domain.R.string.file_type_download,
+                    R.string.file_type_download,
                     fileType.label(context)
                 )
 

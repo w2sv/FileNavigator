@@ -35,11 +35,11 @@ import com.w2sv.common.util.colonSuffixed
 import com.w2sv.composed.OnChange
 import com.w2sv.composed.colorSaver
 import com.w2sv.composed.rememberStyledTextResource
+import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.PresetWrappingFileType
-import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.color

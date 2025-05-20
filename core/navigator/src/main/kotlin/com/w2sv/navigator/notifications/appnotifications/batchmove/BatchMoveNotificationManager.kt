@@ -7,7 +7,7 @@ import android.content.Context
 import android.graphics.Color
 import androidx.core.app.NotificationCompat
 import com.w2sv.androidutils.res.isNightModeActiveCompat
-import com.w2sv.core.navigator.R
+import com.w2sv.core.common.R
 import com.w2sv.navigator.moving.api.activity.AbstractDestinationPickerActivity
 import com.w2sv.navigator.moving.batch.BatchMoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner

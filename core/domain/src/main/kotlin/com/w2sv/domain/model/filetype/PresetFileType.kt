@@ -6,7 +6,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import com.anggrayudi.storage.media.MediaType
-import com.w2sv.core.domain.R
+import com.w2sv.core.common.R
 
 sealed interface PresetFileType : StaticFileType {
     val labelRes: Int

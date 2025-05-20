@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.lifecycle.coroutineScope
 import com.w2sv.androidutils.res.getHtmlFormattedText
 import com.w2sv.androidutils.widget.showToast
-import com.w2sv.core.navigator.R
+import com.w2sv.core.common.R
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.notifications.NotificationResources

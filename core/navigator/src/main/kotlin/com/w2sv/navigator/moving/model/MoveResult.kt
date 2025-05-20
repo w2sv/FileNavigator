@@ -1,7 +1,7 @@
 package com.w2sv.navigator.moving.model
 
 import androidx.annotation.StringRes
-import com.w2sv.core.navigator.R
+import com.w2sv.core.common.R
 import com.w2sv.navigator.notifications.NotificationResources
 
 internal sealed class MoveResult(val cancelMoveFileNotification: Boolean) {

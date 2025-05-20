@@ -48,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.colonSuffixed
+import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.HighlightedDialogButton
 import com.w2sv.filenavigator.ui.theme.dialogSectionLabel
@@ -85,7 +86,7 @@ fun FileTypeConfigurationDialog(
     modifier: Modifier = Modifier,
     iconTint: Color = LocalContentColor.current,
     confirmButtonEnabled: Boolean = true,
-    confirmButtonText: String = stringResource(com.w2sv.filenavigator.R.string.apply),
+    confirmButtonText: String = stringResource(R.string.apply),
     content: @Composable ColumnScope.() -> Unit
 ) {
     AlertDialog(
@@ -115,7 +116,7 @@ fun FileTypeConfigurationDialog(
                 enabled = confirmButtonEnabled
             )
         },
-        dismissButton = { DialogButton(text = stringResource(com.w2sv.core.navigator.R.string.cancel), onClick = onDismissRequest) }
+        dismissButton = { DialogButton(text = stringResource(R.string.cancel), onClick = onDismissRequest) }
     )
 }
 
@@ -168,7 +169,7 @@ private fun ColorRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = stringResource(com.w2sv.filenavigator.R.string.color).colonSuffixed(),
+            text = stringResource(R.string.color).colonSuffixed(),
             style = MaterialTheme.typography.dialogSectionLabel
         )
         Box(contentAlignment = Alignment.Center) {

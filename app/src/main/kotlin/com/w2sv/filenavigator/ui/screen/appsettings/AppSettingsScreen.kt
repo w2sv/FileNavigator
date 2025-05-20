@@ -28,7 +28,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.androidutils.os.dynamicColorsSupported
 import com.w2sv.composed.rememberStyledTextResource
-import com.w2sv.filenavigator.R
+import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar

@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.composed.OnChange
 import com.w2sv.composed.rememberStyledTextResource
+import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
@@ -36,8 +37,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import slimber.log.i
 
 enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageRes: Int) : InputInvalidityReason {
-    ContainsSpecialCharacter(com.w2sv.filenavigator.R.string.name_must_not_contain_special_characters),
-    AlreadyExists(com.w2sv.filenavigator.R.string.file_type_already_exists)
+    ContainsSpecialCharacter(R.string.name_must_not_contain_special_characters),
+    AlreadyExists(R.string.file_type_already_exists)
 }
 
 sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageRes: Int) : InputInvalidityReason {
@@ -46,10 +47,10 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
         get() = this as? IsExcludableExtension
 
     data object ContainsSpecialCharacter :
-        FileExtensionInvalidityReason(com.w2sv.filenavigator.R.string.extension_must_not_contain_special_characters)
+        FileExtensionInvalidityReason(R.string.extension_must_not_contain_special_characters)
 
     data object AlreadyAmongstAddedExtensions :
-        FileExtensionInvalidityReason(com.w2sv.filenavigator.R.string.already_amongst_added_extensions)
+        FileExtensionInvalidityReason(R.string.already_amongst_added_extensions)
 
     sealed class IsExistingFileTypeExtension(@StringRes errorMessageRes: Int) : FileExtensionInvalidityReason(errorMessageRes) {
         abstract val fileExtension: String
@@ -83,13 +84,13 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
     }
 
     data class IsNonExcludableExtension(override val fileExtension: String, override val fileType: AnyPresetWrappingFileType) :
-        IsExistingFileTypeExtension(com.w2sv.filenavigator.R.string.is_file_type_extension_and_must_not_be_readded)
+        IsExistingFileTypeExtension(R.string.is_file_type_extension_and_must_not_be_readded)
 
     data class IsOnlyFileTypeExtension(override val fileExtension: String, override val fileType: FileType) :
-        IsExistingFileTypeExtension(com.w2sv.filenavigator.R.string.is_only_file_type_extension_and_must_not_be_readded)
+        IsExistingFileTypeExtension(R.string.is_only_file_type_extension_and_must_not_be_readded)
 
     data class IsExcludableExtension(override val fileExtension: String, override val fileType: FileType) :
-        IsExistingFileTypeExtension(com.w2sv.filenavigator.R.string.is_other_file_type_extension)
+        IsExistingFileTypeExtension(R.string.is_other_file_type_extension)
 }
 
 @Stable

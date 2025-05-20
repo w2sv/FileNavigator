@@ -5,7 +5,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
-import com.w2sv.core.navigator.R
+import com.w2sv.core.common.R
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.notifications.api.AppNotificationManager
 import com.w2sv.navigator.shared.mainActivityPendingIntent

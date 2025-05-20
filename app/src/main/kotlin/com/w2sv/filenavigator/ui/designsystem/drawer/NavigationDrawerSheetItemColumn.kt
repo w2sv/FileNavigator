@@ -35,7 +35,7 @@ import com.w2sv.androidutils.packagePlayStoreUrl
 import com.w2sv.androidutils.startActivity
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.AppUrl
-import com.w2sv.filenavigator.R
+import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
 import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults

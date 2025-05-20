@@ -9,7 +9,7 @@ import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.util.LoggingComponentActivity
 import com.w2sv.common.util.MediaUri
-import com.w2sv.core.navigator.R
+import com.w2sv.core.common.R
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.shared.plus

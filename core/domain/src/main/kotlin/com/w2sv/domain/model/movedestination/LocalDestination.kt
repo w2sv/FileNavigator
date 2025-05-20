@@ -5,7 +5,7 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.common.util.DocumentUri
-import com.w2sv.core.domain.R
+import com.w2sv.core.common.R
 
 @JvmInline
 value class LocalDestination(override val documentUri: DocumentUri) :

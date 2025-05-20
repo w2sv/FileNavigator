@@ -26,7 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.extensions.thenIfNotNull
-import com.w2sv.filenavigator.R
+import com.w2sv.core.common.R
 
 @Composable
 fun NavigationDrawerScreenTopAppBar(

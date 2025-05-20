@@ -36,12 +36,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.common.util.logIdentifier
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
+import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
-import com.w2sv.filenavigator.R
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.designsystem.DefaultItemRowIcon
 import com.w2sv.filenavigator.ui.designsystem.IconSize
@@ -246,7 +246,7 @@ private fun MoreColumnItems(
         verticalArrangement = Arrangement.spacedBy(Spacing.VerticalItemRow)
     ) {
         SwitchItemRow(
-            icon = { DefaultItemRowIcon(res = com.w2sv.core.navigator.R.drawable.ic_files_24) },
+            icon = { DefaultItemRowIcon(res = R.drawable.ic_files_24) },
             labelRes = R.string.show_batch_move_notification,
             checked = showBatchMoveNotification,
             onCheckedChange = setShowBatchMoveNotification,
