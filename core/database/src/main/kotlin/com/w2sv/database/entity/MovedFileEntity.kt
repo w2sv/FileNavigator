@@ -28,7 +28,7 @@ internal data class MovedFileEntity(
     val external: Type.External?
 ) {
     sealed interface Type {
-        data class Local(val mediaUri: Uri, val moveDestination: Uri) : Type
+        data class Local(val mediaUri: Uri?, val moveDestination: Uri) : Type
         data class External(val providerPackageName: String?, val providerAppLabel: String?) : Type
     }
 
@@ -41,7 +41,7 @@ internal data class MovedFileEntity(
         moveDateTime = movedFile.moveDateTime,
         autoMoved = movedFile.autoMoved,
         local = movedFile.localOrNull?.let {
-            Type.Local(it.mediaUri.uri, movedFile.moveDestination.documentUri.uri)
+            Type.Local(it.mediaUri?.uri, movedFile.moveDestination.documentUri.uri)
         },
         external = movedFile.externalOrNull?.let {
             Type.External(
@@ -56,7 +56,7 @@ internal data class MovedFileEntity(
             local != null -> {
                 MovedFile.Local(
                     documentUri = documentUri.documentUri,
-                    mediaUri = local.mediaUri.mediaUri,
+                    mediaUri = local.mediaUri?.mediaUri,
                     name = name,
                     originalName = originalName,
                     fileType = type,

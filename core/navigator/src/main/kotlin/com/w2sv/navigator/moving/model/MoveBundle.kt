@@ -99,7 +99,7 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
 
                 MovedFile.Local(
                     documentUri = movedFileDocumentUri,
-                    mediaUri = MediaUri.parse("kjh"),
+                    mediaUri = movedFileDocumentUri.mediaUri(context),
                     name = file.mediaStoreFileData.name,
                     originalName = null,
                     fileType = file.fileType,

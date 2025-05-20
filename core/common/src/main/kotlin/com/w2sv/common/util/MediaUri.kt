@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import androidx.core.net.toUri
 import kotlinx.parcelize.Parcelize
+import slimber.log.e
 
 @Parcelize
 @JvmInline
@@ -18,12 +19,20 @@ value class MediaUri(val uri: Uri) : Parcelable {
         MediaId.fromUri(uri)
 
     companion object {
+        /**
+         * @throws java.lang.IllegalArgumentException java.io.FileNotFoundException: No item at content://media/6164-3862/file
+         */
         fun fromDocumentUri(context: Context, documentUri: DocumentUri): MediaUri? =
-            MediaStore.getMediaUri(
-                context,
-                documentUri.uri
-            )
-                ?.mediaUri
+            try {
+                MediaStore.getMediaUri(
+                    context,
+                    documentUri.uri
+                )
+                    ?.mediaUri
+            } catch (e: IllegalArgumentException) {
+                e(e)
+                null
+            }
 
         fun parse(uriString: String): MediaUri =
             uriString.toUri().mediaUri

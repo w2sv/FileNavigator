@@ -35,7 +35,7 @@ sealed interface MovedFile {
      */
     data class Local(
         override val documentUri: DocumentUri,
-        val mediaUri: MediaUri,
+        val mediaUri: MediaUri?,
         override val name: String,
         override val originalName: String?,
         override val fileType: FileType,
