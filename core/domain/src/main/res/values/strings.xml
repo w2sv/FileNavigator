@@ -2,7 +2,7 @@
     <string name="image">Image</string>
     <string name="video">Video</string>
     <string name="audio">Audio</string>
-    <string name="pdf">PDF</string>
+    <string name="pdf" translatable="false">PDF</string>
     <string name="archive">Archive</string>
     <string name="apk">APK</string>
     <string name="text">Text</string>
