@@ -39,7 +39,6 @@
     <string name="return_to_main_screen">Return to main screen</string>
     <string name="discard">Discard</string>
     <string name="move_history">Move History</string>
-    <string name="copyright" translatable="false">© 2023 - %1$s | w2sv</string>
     <string name="navigator_settings">Navigator Settings</string>
     <string name="couldn_t_find_file">Couldn\'t find file.</string>
     <string name="delete_entry">Delete entry</string>

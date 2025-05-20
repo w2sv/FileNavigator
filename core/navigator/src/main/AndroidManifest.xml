@@ -70,26 +70,26 @@
 
         <activity
             android:name="com.w2sv.navigator.notifications.appnotifications.movefile.FileDestinationPickerActivity"
-            android:taskAffinity="@string/task_affinity_file_moving"
+            android:taskAffinity="com.w2sv.filenavigator.moving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name="com.w2sv.navigator.notifications.appnotifications.batchmove.BatchMoveDestinationPickerActivity"
-            android:taskAffinity="@string/task_affinity_file_moving"
+            android:taskAffinity="com.w2sv.filenavigator.moving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name="com.w2sv.navigator.moving.quick.QuickMoveDestinationAccessPermissionQueryActivity"
-            android:taskAffinity="@string/task_affinity_file_moving"
+            android:taskAffinity="com.w2sv.filenavigator.moving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name="com.w2sv.navigator.notifications.appnotifications.movefile.ViewFileIfPresentActivity"
             android:noHistory="true"
-            android:taskAffinity="@string/task_affinity_file_viewing"
+            android:taskAffinity="com.w2sv.filenavigator.viewing"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name="com.w2sv.navigator.notifications.appnotifications.movefile.FileDeletionActivity"
             android:excludeFromRecents="true"
             android:noHistory="true"
-            android:taskAffinity="@string/task_affinity_file_deletion"
+            android:taskAffinity="com.w2sv.filenavigator.deletion"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
     </application>

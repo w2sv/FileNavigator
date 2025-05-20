@@ -1,6 +1,4 @@
 <resources>
-    <!--For use in Manifest-->
-
     <string name="move_success_toast_text"><![CDATA[移动 %1$s 至 <b>%2$s</b>]]></string>
     <string name="auto_move_success_toast_text"><![CDATA[已自动移动 %1$s 至 <b>%2$s</b>]]></string>
     <string name="move">移动</string>
@@ -15,7 +13,6 @@
     <string name="internal_error">内部错误</string>
     <string name="file_has_already_been_moved_or_deleted">文件已被移动或删除</string>
     <plurals name="navigatable_file">
-        <item quantity="one">%1$d 个可移动文件</item>
         <item quantity="other">%1$d 个可移动文件</item>
     </plurals>
     <string name="foreground_service_notification_content">当发现新增需要归类的文件时向您发送通知</string>
@@ -33,7 +30,6 @@
     <string name="move_progress_notification_title">正在移动 %1$d 个文件…</string>
     <string name="move_results">移动结果</string>
     <plurals name="moved_files_to">
-        <item quantity="one"><![CDATA[已移动 %1$d 个文件至 <b>%2$s</b>]]></item>
         <item quantity="other"><![CDATA[已移动 %1$d 个文件至 <b>%2$s</b>]]></item>
     </plurals>
     <string name="cancel">取消</string>
@@ -43,7 +39,6 @@
     <string name="file_deletion_confirmation_dialog_message"><![CDATA[确认删除 <b>%1$s</b>?]]></string>
     <string name="delete">删除</string>
     <plurals name="couldn_t_move_files_due_to">
-        <item quantity="one"><![CDATA[无法移动 %1$s 个文件。出错： <b>%2$s</b>]]></item>
         <item quantity="other"><![CDATA[无法移动 %1$s 个文件。出错： <b>%2$s</b>]]></item>
     </plurals>
     <string name="yes">确认</string>
