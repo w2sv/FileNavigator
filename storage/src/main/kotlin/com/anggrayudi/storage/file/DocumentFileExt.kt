@@ -909,80 +909,39 @@ fun DocumentFile.makeFile(
     mode: CreateMode = CreateMode.CREATE_NEW,
     onConflict: SingleFileConflictCallback<DocumentFile>? = null
 ): DocumentFile? {
-    if (!isDirectory || !isWritable(context)) {
-        return null
-    }
+    if (!isWritableDir(context)) return null
 
-    val cleanName = name.removeForbiddenCharsFromFilename().trimFileSeparator()
-    val subFolder = cleanName.substringBeforeLast('/', "")
-    val parent = if (subFolder.isEmpty()) {
-        this
-    } else {
-        makeFolder(context, subFolder, mode) ?: return null
-    }
+    val info = FileCreationInfo.infer(name, mimeType)
+    val parent = if (info.subFolder.isEmpty()) this else makeFolder(context, info.subFolder, mode) ?: return null
 
-    val filename = cleanName.substringAfterLast('/')
-    val extensionByName = MimeType.getExtensionFromFileName(cleanName)
-    val extension =
-        if (extensionByName.isNotEmpty() && (mimeType == null || mimeType == MimeType.UNKNOWN || mimeType == MimeType.BINARY_FILE)) {
-            extensionByName
-        } else {
-            MimeType.getExtensionFromMimeTypeOrFileName(mimeType, cleanName)
-        }
-    val baseFileName = filename.removeSuffix(".$extension")
-    val fullFileName = "$baseFileName.$extension".trimEnd('.')
-
-    var createMode = mode
-    var existingFile: DocumentFile? = null
-    if (onConflict != null) {
-        parent.child(context, fullFileName)?.let { targetFile ->
-            existingFile = targetFile
-            createMode = awaitUiResultWithPending(onConflict.uiScope) {
-                onConflict.onFileConflict(
-                    targetFile,
-                    SingleFileConflictCallback.FileConflictAction(it)
-                )
-            }.toCreateMode(true)
-        }
-    }
-
-    if (createMode != CreateMode.CREATE_NEW) {
-        (existingFile ?: parent.child(context, fullFileName))?.let {
-            return when {
-                createMode == CreateMode.REPLACE -> it.recreateFile(context)
-                createMode != CreateMode.SKIP_IF_EXISTS && it.isFile -> it
-                else -> null
-            }
-        }
-    }
-
-    // RawDocumentFile does not avoid duplicate file name, but TreeDocumentFile does.
-    if (isRawFile)
-        return file(context)
-            ?.makeFile(
-                context,
-                cleanName,
-                mimeType,
-                createMode
+    val finalMode = child(context, info.fullFileName)
+        ?.let {
+            resolveFileConflict(
+                file = it,
+                mode = mode,
+                onConflict = onConflict,
+                recreate = { recreateFile(context) },
+                exists = { exists() },
+                isFile = { isFile },
+                onFileResolved = { return it }
             )
-            ?.let { DocumentFile.fromFile(it) }
+        } ?: mode
 
-    val correctMimeType = MimeType.getMimeTypeFromExtension(extension).let {
-        if (it == MimeType.UNKNOWN) MimeType.BINARY_FILE else it
-    }
+    file(context)
+        ?.makeFileCore(context, info, finalMode)
+        ?.let { return DocumentFile.fromFile(it) }
 
     return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
         parent.createFile(
-            correctMimeType,
-            baseFileName
-        )  // This throws java.lang.UnsupportedOperationException for SD card auto move destinations
-            ?.also {
-                if (correctMimeType == MimeType.BINARY_FILE && it.name != fullFileName) {
-                    it.renameTo(fullFileName)
-                }
+            info.mimeType,
+            info.baseFileName
+        )?.also {  // This throws java.lang.UnsupportedOperationException for SD card auto move destinations
+            if (info.mimeType == MimeType.BINARY_FILE && it.name != info.fullFileName) {
+                it.renameTo(info.fullFileName)
             }
+        }
     } else {
-        parent.createFile(correctMimeType, fullFileName)
+        parent.createFile(info.mimeType, info.fullFileName)
     }
 }
 
@@ -996,9 +955,7 @@ fun DocumentFile.makeFolder(
     name: String,
     mode: CreateMode = CreateMode.CREATE_NEW
 ): DocumentFile? {
-    if (!isDirectory || !isWritable(context)) {
-        return null
-    }
+    if (!isWritableDir(context)) return null
 
     if (isRawFile) {
         return file(context)?.makeFolder(context, name, mode)?.let { DocumentFile.fromFile(it) }
@@ -1068,6 +1025,9 @@ fun DocumentFile.makeFolder(
     }
     return currentDirectory
 }
+
+fun DocumentFile.isWritableDir(context: Context): Boolean =
+    isDirectory && isWritable(context)
 
 /**
  * Use this function if you cannot create or read file/folder in downloads directory.
@@ -3464,6 +3424,12 @@ private fun DocumentFile.moveFileTo(
             scope.trySend(SingleFileResult.Error(SingleFileError.TargetNotWritable))
             return
         }
+
+        println("targetFile: ${targetFile.uri}")
+//        println("mediaUri: ${MediaStore.getMediaUri(
+//            context,
+//            targetFile.uri
+//        )}")
 
         val wrappedTargetFile = FileWrapper.Document(targetFile)
         copyFileStream(
