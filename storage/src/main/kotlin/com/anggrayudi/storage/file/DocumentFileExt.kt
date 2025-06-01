@@ -308,7 +308,7 @@ fun DocumentFile.inInternalStorage(context: Context) =
  */
 fun DocumentFile.inPrimaryStorage(context: Context) =
     isTreeDocumentFile && getStorageId(context) == PRIMARY ||
-            isRawFile && uri.path.orEmpty().startsWith(SimpleStorage.externalStoragePath)
+        isRawFile && uri.path.orEmpty().startsWith(SimpleStorage.externalStoragePath)
 
 /**
  * `true` if this file located in SD Card
@@ -559,7 +559,7 @@ fun DocumentFile.checkRequirements(
     requiresWriteAccess: Boolean,
     considerRawFile: Boolean
 ) = canRead() &&
-        (considerRawFile || isExternalStorageManager(context)) && shouldWritable(
+    (considerRawFile || isExternalStorageManager(context)) && shouldWritable(
     context,
     requiresWriteAccess
 )
@@ -773,7 +773,7 @@ fun DocumentFile.findParent(context: Context, requiresWriteAccess: Boolean = tru
                     Log.w(
                         "DocumentFileUtils",
                         "Cannot modify field mParent in androidx.documentfile.provider.DocumentFile. " +
-                                "Please exclude DocumentFile from obfuscation.",
+                            "Please exclude DocumentFile from obfuscation.",
                         e
                     )
                 }
@@ -862,13 +862,13 @@ fun DocumentFile.autoIncrementFileName(context: Context, filename: String): Stri
         var lastFileCount = files.filter {
             val name = it.name.orEmpty()
             name.startsWith(prefix) && (
-                    DocumentFileCompat.FILE_NAME_DUPLICATION_REGEX_WITH_EXTENSION.matches(
+                DocumentFileCompat.FILE_NAME_DUPLICATION_REGEX_WITH_EXTENSION.matches(
+                    name
+                ) ||
+                    DocumentFileCompat.FILE_NAME_DUPLICATION_REGEX_WITHOUT_EXTENSION.matches(
                         name
-                    ) ||
-                            DocumentFileCompat.FILE_NAME_DUPLICATION_REGEX_WITHOUT_EXTENSION.matches(
-                                name
-                            )
                     )
+                )
         }.maxOfOrNull {
             it.name.orEmpty().substringAfterLast('(', "")
                 .substringBefore(')', "")
@@ -911,14 +911,6 @@ fun DocumentFile.makeFile(
 ): DocumentFile? {
     if (!isDirectory || !isWritable(context)) {
         return null
-    }
-
-    val targetFile = file(context)!!.child(name)
-    targetFile.createNewFile().let { successfullyCreated ->
-        println(if (successfullyCreated) "Successfully created target file ${targetFile.absolutePath}" else "Could not create target file ${targetFile.absolutePath}")
-        if (successfullyCreated) {
-            return DocumentFile.fromFile(targetFile)
-        }
     }
 
     val cleanName = name.removeForbiddenCharsFromFilename().trimFileSeparator()
@@ -964,8 +956,8 @@ fun DocumentFile.makeFile(
         }
     }
 
-    if (isRawFile) {
-        // RawDocumentFile does not avoid duplicate file name, but TreeDocumentFile does.
+    // RawDocumentFile does not avoid duplicate file name, but TreeDocumentFile does.
+    if (isRawFile)
         return file(context)
             ?.makeFile(
                 context,
@@ -974,18 +966,21 @@ fun DocumentFile.makeFile(
                 createMode
             )
             ?.let { DocumentFile.fromFile(it) }
-    }
 
     val correctMimeType = MimeType.getMimeTypeFromExtension(extension).let {
         if (it == MimeType.UNKNOWN) MimeType.BINARY_FILE else it
     }
 
     return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-        parent.createFile(correctMimeType, baseFileName)?.also {
-            if (correctMimeType == MimeType.BINARY_FILE && it.name != fullFileName) {
-                it.renameTo(fullFileName)
+        parent.createFile(
+            correctMimeType,
+            baseFileName
+        )  // This throws java.lang.UnsupportedOperationException for SD card auto move destinations
+            ?.also {
+                if (correctMimeType == MimeType.BINARY_FILE && it.name != fullFileName) {
+                    it.renameTo(fullFileName)
+                }
             }
-        }
     } else {
         parent.createFile(correctMimeType, fullFileName)
     }
@@ -1017,9 +1012,9 @@ fun DocumentFile.makeFolder(
     var currentDirectory =
         if (isDownloadsDocument && isTreeDocumentFile) {
             (
-                    toWritableDownloadsDocumentFile(context)
-                        ?: return null
-                    )
+                toWritableDownloadsDocumentFile(context)
+                    ?: return null
+                )
         } else {
             this
         }
@@ -1092,10 +1087,10 @@ fun DocumentFile.toWritableDownloadsDocumentFile(context: Context): DocumentFile
             // content://com.android.providers.downloads.documents/tree/downloads/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FIKO5
             // raw:/storage/emulated/0/Download/IKO5
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && (
-                    path.startsWith("/tree/downloads/document/raw:") || path.startsWith(
-                        "/document/raw:"
-                    )
-                    ) -> {
+                path.startsWith("/tree/downloads/document/raw:") || path.startsWith(
+                    "/document/raw:"
+                )
+                ) -> {
                 val downloads = DocumentFileCompat.fromPublicFolder(
                     context,
                     PublicDirectory.DOWNLOADS,
@@ -1108,23 +1103,23 @@ fun DocumentFile.toWritableDownloadsDocumentFile(context: Context): DocumentFile
 
             // msd for directories and msf for files
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && (
-                    // // If comes from SAF file picker ACTION_OPEN_DOCUMENT on API 30+
-                    path.matches(Regex("/document/ms[f,d]:\\d+")) ||
-                            // If comes from SAF folder picker ACTION_OPEN_DOCUMENT_TREE,
-                            // e.g. content://com.android.providers.downloads.documents/tree/msd%3A535/document/msd%3A535
-                            path.matches(Regex("/tree/ms[f,d]:\\d+(.*?)")) ||
-                            // If comes from findFile() or fromPublicFolder(),
-                            // e.g. content://com.android.providers.downloads.documents/tree/downloads/document/msd%3A271
-                            path.matches(Regex("/tree/downloads/document/ms[f,d]:\\d+"))
-                    ) ||
+                // // If comes from SAF file picker ACTION_OPEN_DOCUMENT on API 30+
+                path.matches(Regex("/document/ms[f,d]:\\d+")) ||
                     // If comes from SAF folder picker ACTION_OPEN_DOCUMENT_TREE,
-                    // e.g. content://com.android.providers.downloads.documents/tree/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FDenai/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FDenai
-                    path.startsWith("/tree/raw:") ||
+                    // e.g. content://com.android.providers.downloads.documents/tree/msd%3A535/document/msd%3A535
+                    path.matches(Regex("/tree/ms[f,d]:\\d+(.*?)")) ||
                     // If comes from findFile() or fromPublicFolder(),
-                    // e.g. content://com.android.providers.downloads.documents/tree/downloads/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FDenai
-                    path.startsWith("/tree/downloads/document/raw:") ||
-                    // API 26 - 27 => content://com.android.providers.downloads.documents/document/22
-                    path.matches(Regex("/document/\\d+")) -> takeIf { it.isWritable(context) }
+                    // e.g. content://com.android.providers.downloads.documents/tree/downloads/document/msd%3A271
+                    path.matches(Regex("/tree/downloads/document/ms[f,d]:\\d+"))
+                ) ||
+                // If comes from SAF folder picker ACTION_OPEN_DOCUMENT_TREE,
+                // e.g. content://com.android.providers.downloads.documents/tree/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FDenai/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FDenai
+                path.startsWith("/tree/raw:") ||
+                // If comes from findFile() or fromPublicFolder(),
+                // e.g. content://com.android.providers.downloads.documents/tree/downloads/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FDenai
+                path.startsWith("/tree/downloads/document/raw:") ||
+                // API 26 - 27 => content://com.android.providers.downloads.documents/document/22
+                path.matches(Regex("/document/\\d+")) -> takeIf { it.isWritable(context) }
 
             else -> null
         }
@@ -1281,10 +1276,10 @@ private fun DocumentFile.walkFileTreeForSearch(
             if (documentType != DocumentFileType.FILE) {
                 val folderName = file.name.orEmpty()
                 if ((nameFilter.isEmpty() || folderName == nameFilter) && (
-                            regex == null || regex.matches(
-                                folderName
-                            )
-                            )
+                        regex == null || regex.matches(
+                            folderName
+                        )
+                        )
                 ) {
                     fileTree.add(file)
                 }

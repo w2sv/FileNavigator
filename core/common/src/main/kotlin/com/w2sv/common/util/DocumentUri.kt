@@ -7,8 +7,8 @@ import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.kotlinutils.copyWithReplacedLast
-import java.io.File
 import kotlinx.parcelize.Parcelize
+import java.io.File
 
 private const val PATH_SLASH_ENCODING = "%2F"
 private const val PATH_COLON_ENCODING = "%3A"
@@ -83,12 +83,20 @@ value class DocumentUri(val uri: Uri) : Parcelable {
         fun fromDocumentFile(documentFile: DocumentFile): DocumentUri =
             documentFile.uri.documentUri
 
+        /**
+         * Doesn't do anything for e.g. [treeUri]=_content://com.android.externalstorage.documents/tree/6164-3862%3ANavigated/document/6164-3862%3ANavigated%2FFilename_
+         *
+         * @see DocumentFile.fromTreeUri
+         */
         fun fromTreeUri(context: Context, treeUri: Uri): DocumentUri? =
             DocumentFile.fromTreeUri(context, treeUri)?.let { fromDocumentFile(it) }
 
         fun fromMediaUri(context: Context, mediaUri: MediaUri): DocumentUri? =
             mediaUri.documentUri(context)
 
+        /**
+         * @see DocumentFile.fromFile
+         */
         fun fromFile(file: File): DocumentUri =
             fromDocumentFile(DocumentFile.fromFile(file))
     }
@@ -100,13 +108,15 @@ val Uri.decoded: String
 val Uri.documentUri: DocumentUri
     get() = DocumentUri(this)
 
-fun Uri.documentUriIfValid(context: Context): DocumentUri? {
-    return if (isValidDocumentUri(context)) {
+fun Uri.documentUriIfValid(context: Context): DocumentUri? =
+    if (isDocumentUri(context)) {
         documentUri
     } else {
         null
     }
-}
 
-fun Uri.isValidDocumentUri(context: Context): Boolean =
+/**
+ * @see DocumentFile.isDocumentUri
+ */
+fun Uri.isDocumentUri(context: Context): Boolean =
     DocumentFile.isDocumentUri(context, this)

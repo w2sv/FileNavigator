@@ -3,11 +3,14 @@ package com.w2sv.filenavigator.ui.modelext
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.material3.SnackbarVisuals
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
+import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
+import slimber.log.e
 
 fun MovedFile.exists(context: Context): Boolean {
     return try {
@@ -28,7 +31,7 @@ fun MovedFile.launchViewMovedFileActivity(context: Context): SnackbarVisuals? {
                     when (this@launchViewMovedFileActivity) {
                         is MovedFile.Local -> {
                             setDataAndType(
-                                mediaUri.uri,
+                                mediaUri?.uri ?: documentUri.mediaUri(context)?.uri ?: run { throw IllegalArgumentException("Couldn't retrieve media uri") },
                                 this@launchViewMovedFileActivity.fileType.mediaType.mimeType
                             )
                         }
@@ -43,10 +46,17 @@ fun MovedFile.launchViewMovedFileActivity(context: Context): SnackbarVisuals? {
                 }
         )
         null
-    } catch (_: ActivityNotFoundException) {
-        AppSnackbarVisuals(
-            message = context.getString(R.string.provider_does_not_support_file_viewing),
-            kind = SnackbarKind.Error
-        )
+    } catch (e: Throwable) {
+        e { e.toString() }
+        when (e) {
+            is ActivityNotFoundException -> AppSnackbarVisuals(
+                message = context.getString(R.string.provider_does_not_support_file_viewing),
+                kind = SnackbarKind.Error
+            )
+            else -> AppSnackbarVisuals(
+                message = "Couldnt get media uri",
+                kind = SnackbarKind.Error
+            )
+        }
     }
 }

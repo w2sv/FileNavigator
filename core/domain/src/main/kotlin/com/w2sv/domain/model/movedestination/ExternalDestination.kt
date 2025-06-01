@@ -10,9 +10,8 @@ data class ExternalDestination(
     override val providerAppLabel: String?
 ) : ExternalDestinationApi, FileDestinationApi {
 
-    override fun uiRepresentation(context: Context): String {
-        return providerAppLabel
+    override fun uiRepresentation(context: Context): String =
+        providerAppLabel
             ?: documentUri.uri.authority
             ?: context.getString(R.string.unrecognized_destination)
-    }
 }

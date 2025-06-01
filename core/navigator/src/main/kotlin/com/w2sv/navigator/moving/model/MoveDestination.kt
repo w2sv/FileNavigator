@@ -22,6 +22,9 @@ import kotlinx.parcelize.TypeParceler
 
 internal sealed interface MoveDestination : Parcelable, MoveDestinationApi {
 
+    val isFile get() = this is File
+    val isExternal get() = this is ExternalDestinationApi
+
     @Parcelize
     @TypeParceler<LocalDestinationApi, LocalDestinationApiParceler>()
     data class Directory(private val localDestination: LocalDestinationApi) :
@@ -76,8 +79,8 @@ internal sealed interface MoveDestination : Parcelable, MoveDestinationApi {
             )
 
             companion object {
-                fun get(documentUri: DocumentUri, context: Context): External {
-                    return documentUri.uri.authority
+                operator fun invoke(documentUri: DocumentUri, context: Context): External =
+                    documentUri.uri.authority
                         ?.let {
                             context.packageManager.resolveContentProvider(
                                 it,
@@ -99,12 +102,11 @@ internal sealed interface MoveDestination : Parcelable, MoveDestinationApi {
                             providerPackageName = null,
                             providerAppLabel = null
                         )
-                }
             }
         }
 
         companion object {
-            fun get(documentUri: DocumentUri, context: Context): File =
+            operator fun invoke(documentUri: DocumentUri, context: Context): File =
                 // TODO: test
                 when (documentUri.uri.authority!!) {
                     "com.android.externalstorage.documents" -> Local(
@@ -112,7 +114,7 @@ internal sealed interface MoveDestination : Parcelable, MoveDestinationApi {
                         mediaUri = documentUri.mediaUri(context)!!
                     )
 
-                    else -> External.get(
+                    else -> External(
                         documentUri = documentUri,
                         context = context
                     )

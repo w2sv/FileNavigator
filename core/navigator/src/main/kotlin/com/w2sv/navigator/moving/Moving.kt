@@ -9,9 +9,9 @@ import com.anggrayudi.storage.result.SingleFileResult
 import com.w2sv.common.util.hasChild
 import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.common.util.log
+import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveResult
-import com.w2sv.navigator.moving.model.MoveDestination
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import slimber.log.e
@@ -26,8 +26,7 @@ internal sealed interface PreCheckResult {
     value class Failure(val reason: MoveResult.Failure) : PreCheckResult
 
     companion object {
-
-        fun get( // TODO: test
+        operator fun invoke( // TODO: test
             moveFile: MoveFile,
             context: Context,
             destinationDirectory: DocumentFile?
@@ -57,10 +56,10 @@ internal suspend fun MoveFile.moveTo(
     onResult: (MoveResult) -> Unit
 ) {
     when (
-        val preCheckResult = PreCheckResult.get(
+        val preCheckResult = PreCheckResult(
             moveFile = this,
             context = context,
-            destinationDirectory = if (destination is MoveDestination.File) null else destinationDocumentFile
+            destinationDirectory = if (destination.isFile) null else destinationDocumentFile
         )
     ) {
         is PreCheckResult.Success -> {
@@ -68,7 +67,7 @@ internal suspend fun MoveFile.moveTo(
                 is MoveDestination.File -> {
                     preCheckResult.moveMediaFile.copyToFileDestinationAndDelete(
                         fileDestination = destinationDocumentFile,
-                        isCloudDestination = destination is MoveDestination.File.External,
+                        isExternalDestination = destination.isExternal,
                         onResult = onResult
                     )
                 }
@@ -88,20 +87,28 @@ internal suspend fun MoveFile.moveTo(
     }
 }
 
+/**
+ * Attempts to move this [MediaFile] to the [folderDestination] and eventually invokes [onResult].
+ *
+ * This moving method is used for
+ * - quick move
+ * - auto move
+ * - batch move
+ */
 internal suspend fun MediaFile.moveTo(folderDestination: DocumentFile, onResult: (MoveResult) -> Unit) {
     moveTo(
         targetFolder = folderDestination,
         onConflict = onFileConflict
     )
         .map { moveState ->
-            log(moveState)
+            moveState.logTypeSpecifically()
 
             when (moveState) {
                 is SingleFileResult.Error -> {
                     when (moveState.errorCode) {
-                        SingleFileError.TargetNotFound -> MoveResult.MoveDestinationNotFound
+                        is SingleFileError.TargetNotFound -> MoveResult.MoveDestinationNotFound
                         is SingleFileError.NotEnoughSpaceOnTarget -> MoveResult.NotEnoughSpaceOnDestination
-                        SingleFileError.SourceNotFound -> MoveResult.MoveFileNotFound
+                        is SingleFileError.SourceNotFound -> MoveResult.MoveFileNotFound
                         is SingleFileError.StoragePermissionMissing -> MoveResult.ManageAllFilesPermissionMissing
                         else -> MoveResult.InternalError
                     }
@@ -117,7 +124,7 @@ internal suspend fun MediaFile.moveTo(folderDestination: DocumentFile, onResult:
 
 private suspend fun MediaFile.copyToFileDestinationAndDelete(
     fileDestination: DocumentFile,
-    isCloudDestination: Boolean,
+    isExternalDestination: Boolean,
     onResult: (MoveResult) -> Unit
 ) {
     i { "Destination writable: ${fileDestination.canWrite()}" }
@@ -125,11 +132,11 @@ private suspend fun MediaFile.copyToFileDestinationAndDelete(
     copyToFile(
         targetFile = fileDestination,
         deleteOnSuccess = true,
-        checkIfEnoughSpaceOnTarget = !isCloudDestination,
-        checkIfTargetWritable = !isCloudDestination
+        checkIfEnoughSpaceOnTarget = !isExternalDestination,
+        checkIfTargetWritable = !isExternalDestination
     )
         .map { moveState ->
-            log(moveState)
+            moveState.logTypeSpecifically()
 
             when (moveState) {
                 is SingleFileResult.Error -> {
@@ -159,10 +166,10 @@ private suspend fun MediaFile.copyToFileDestinationAndDelete(
 
 private val onFileConflict = object : SingleFileConflictCallback<DocumentFile>() {}
 
-private fun log(result: SingleFileResult) {
-    when (result) {
-        is SingleFileResult.Error -> e { result.debugString }
-        else -> i { result.javaClass.simpleName }
+private fun SingleFileResult.logTypeSpecifically() {
+    when (this) {
+        is SingleFileResult.Error -> e { debugString }
+        else -> i { "MoveResult: ${javaClass.simpleName}" }
     }
 }
 

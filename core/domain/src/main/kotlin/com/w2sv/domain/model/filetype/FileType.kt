@@ -1,20 +1,23 @@
 package com.w2sv.domain.model.filetype
 
 import android.os.Parcelable
-import kotlinx.parcelize.IgnoredOnParcel
+import com.w2sv.common.util.logIdentifier
 
 sealed interface FileType : StaticFileType.ExtensionSet, Parcelable {
     val colorInt: Int
 
-    @IgnoredOnParcel
     val asExtensionConfigurableTypeOrNull: PresetWrappingFileType.ExtensionConfigurable?
         get() = this as? PresetWrappingFileType.ExtensionConfigurable
 
-    @IgnoredOnParcel
     val wrappedPresetTypeOrNull: PresetFileType?
         get() = (this as? PresetWrappingFileType<*>)?.presetFileType
 
-    @IgnoredOnParcel
     val isMediaType: Boolean
         get() = wrappedPresetTypeOrNull is PresetFileType.Media
+
+    val logIdentifier: String
+        get() = when (this) {
+            is CustomFileType -> name
+            is AnyPresetWrappingFileType -> presetFileType.logIdentifier
+        }
 }

@@ -236,7 +236,7 @@ fun File.makeFile(
             parent,
             autoIncrementFileName(fullFileName)
         ).let { if (it.createNewFile()) it else null }
-    } catch (e: IOException) {
+    } catch (_: IOException) {
         null
     }
 }

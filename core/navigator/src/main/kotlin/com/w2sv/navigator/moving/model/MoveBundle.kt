@@ -4,11 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import com.w2sv.androidutils.os.getParcelableCompat
-import com.w2sv.common.util.MediaUri
 import com.w2sv.common.util.log
 import com.w2sv.domain.model.MovedFile
 import kotlinx.parcelize.Parcelize
-import slimber.log.i
 import java.time.LocalDateTime
 
 internal typealias AnyMoveBundle = MoveBundle<*, *>
@@ -62,7 +60,7 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
         override val destinationSelectionManner: DestinationSelectionManner.Auto
     ) : MoveBundle<MoveDestination.Directory, DestinationSelectionManner.Auto>
 
-    fun movedFileEntry(context: Context, dateTime: LocalDateTime): MovedFile {
+    fun movedFile(context: Context, dateTime: LocalDateTime): MovedFile {
         val name = destination.fileName(context)
         val originalName = file.mediaStoreFileData.name.takeIf { it != name }
         return when (val capturedDestination = destination) {
@@ -92,11 +90,7 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
             }
 
             is MoveDestination.Directory -> {
-                i { "Destination=$destination" }
                 val movedFileDocumentUri = destination.documentUri.childDocumentUri(fileName = file.mediaStoreFileData.name)
-                i { "movedFileDocumentUri=$movedFileDocumentUri" }
-                i { "moved file exists=${movedFileDocumentUri.documentFile(context).exists()}" }
-
                 MovedFile.Local(
                     documentUri = movedFileDocumentUri,
                     mediaUri = movedFileDocumentUri.mediaUri(context),
@@ -110,7 +104,7 @@ internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSele
                 )
             }
         }
-            .log { "Created move bundle: $it" }
+            .log { "Created MovedFile.$it" }
     }
 
     companion object {

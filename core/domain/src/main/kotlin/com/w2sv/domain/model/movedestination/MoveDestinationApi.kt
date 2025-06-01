@@ -11,7 +11,7 @@ interface MoveDestinationApi {
     fun uiRepresentation(context: Context): String
 
     /**
-     * @see DocumentFile.fromSingleUri
+     * @see DocumentUri.documentFile
      */
     fun documentFile(context: Context): DocumentFile =
         documentUri.documentFile(context)

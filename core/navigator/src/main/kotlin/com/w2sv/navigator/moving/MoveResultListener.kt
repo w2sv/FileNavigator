@@ -134,7 +134,7 @@ internal class MoveResultListener @Inject constructor(
 
         scope.launch {
             insertMovedFileUseCase(
-                movedFileEntry(
+                movedFile(
                     context = context,
                     dateTime = LocalDateTime.now()
                 )
