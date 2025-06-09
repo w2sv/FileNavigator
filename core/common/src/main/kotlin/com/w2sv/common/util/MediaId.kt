@@ -8,7 +8,7 @@ import slimber.log.e
 value class MediaId(val value: Long) {
 
     companion object {
-        fun fromUri(uri: Uri): MediaId? {
+        fun parseFromUri(uri: Uri): MediaId? {
             return try {
                 val parsedId = ContentUris.parseId(uri)
                 if (parsedId != -1L) {

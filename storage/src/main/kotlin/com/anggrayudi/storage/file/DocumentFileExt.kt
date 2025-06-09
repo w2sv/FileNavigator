@@ -34,7 +34,7 @@ import com.anggrayudi.storage.extension.isDownloadsDocument
 import com.anggrayudi.storage.extension.isExternalStorageDocument
 import com.anggrayudi.storage.extension.isMediaDocument
 import com.anggrayudi.storage.extension.isRawFile
-import com.anggrayudi.storage.extension.isTreeDocumentFile
+import com.anggrayudi.storage.extension.isDocumentTreeUri
 import com.anggrayudi.storage.extension.openInputStream
 import com.anggrayudi.storage.extension.openOutputStream
 import com.anggrayudi.storage.extension.parent
@@ -119,7 +119,7 @@ fun DocumentFile.getStorageId(context: Context) =
     uri.getStorageId(context)
 
 val DocumentFile.isTreeDocumentFile: Boolean
-    get() = uri.isTreeDocumentFile
+    get() = uri.isDocumentTreeUri
 
 val DocumentFile.isExternalStorageDocument: Boolean
     get() = uri.isExternalStorageDocument
@@ -568,7 +568,7 @@ fun DocumentFile.checkRequirements(
  * @return File path without storage ID. Returns empty `String` if:
  * * It is the root path
  * * It is not a raw file and the authority is neither [DocumentFileCompat.EXTERNAL_STORAGE_AUTHORITY] nor [DocumentFileCompat.DOWNLOADS_FOLDER_AUTHORITY]
- * * The authority is [DocumentFileCompat.DOWNLOADS_FOLDER_AUTHORITY], but [isTreeDocumentFile] returns `false`
+ * * The authority is [DocumentFileCompat.DOWNLOADS_FOLDER_AUTHORITY], but [isDocumentTreeUri] returns `false`
  */
 fun DocumentFile.getBasePath(context: Context): String {
     val path = uri.path.orEmpty()
@@ -681,7 +681,7 @@ fun DocumentFile.getRelativePath(context: Context) =
  *
  * @return File's actual path. Returns empty `String` if:
  * * It is not a raw file and the authority is neither [DocumentFileCompat.EXTERNAL_STORAGE_AUTHORITY] nor [DocumentFileCompat.DOWNLOADS_FOLDER_AUTHORITY]
- * * The authority is [DocumentFileCompat.DOWNLOADS_FOLDER_AUTHORITY], but [isTreeDocumentFile] returns `false`
+ * * The authority is [DocumentFileCompat.DOWNLOADS_FOLDER_AUTHORITY], but [isDocumentTreeUri] returns `false`
  *
  * @see File.getAbsolutePath
  * @see getSimplePath

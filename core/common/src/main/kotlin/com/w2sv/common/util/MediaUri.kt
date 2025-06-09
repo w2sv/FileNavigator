@@ -5,6 +5,9 @@ import android.net.Uri
 import android.os.Parcelable
 import android.provider.MediaStore
 import androidx.core.net.toUri
+import com.anggrayudi.storage.media.MediaFile
+import com.anggrayudi.storage.media.MediaStoreCompat
+import com.anggrayudi.storage.media.MediaType
 import kotlinx.parcelize.Parcelize
 import slimber.log.e
 
@@ -16,11 +19,24 @@ value class MediaUri(val uri: Uri) : Parcelable {
         MediaStore.getDocumentUri(context, uri)?.documentUri
 
     fun id(): MediaId? =
-        MediaId.fromUri(uri)
+        MediaId.parseFromUri(uri)
+
+    fun idIncremented(): MediaUri? =
+        id()?.let { nonNullId -> parse("${uri.toString().substringBeforeLast("/")}/${nonNullId.value + 1}") }
+
+    fun mediaFile(mediaType: MediaType, context: Context): MediaFile? =
+        id()?.let {
+            MediaStoreCompat.fromMediaId(
+                context = context,
+                mediaType = mediaType,
+                id = it.value
+            )
+        }
 
     companion object {
         /**
          * @throws java.lang.IllegalArgumentException java.io.FileNotFoundException: No item at content://media/6164-3862/file
+         * @throws java.lang.SecurityException: MediaProvider: User 11009 does not have read permission on ...
          */
         fun fromDocumentUri(context: Context, documentUri: DocumentUri): MediaUri? =
             try {
@@ -29,8 +45,8 @@ value class MediaUri(val uri: Uri) : Parcelable {
                     documentUri.uri
                 )
                     ?.mediaUri
-            } catch (e: IllegalArgumentException) {
-                e(e)
+            } catch (e: Exception) {
+                e { "Encountered ${e::class.java.name}: ${e.message} whilst attempting to get media Uri" }
                 null
             }
 

@@ -5,6 +5,7 @@ package com.anggrayudi.storage.extension
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import androidx.annotation.WorkerThread
 import com.anggrayudi.storage.file.DocumentFileCompat
@@ -39,8 +40,11 @@ fun Uri.getStorageId(context: Context): String {
     }
 }
 
-val Uri.isTreeDocumentFile: Boolean
-    get() = path?.startsWith("/tree/") == true
+/**
+ * @see DocumentsContract.isTreeUri
+ */
+val Uri.isDocumentTreeUri: Boolean
+    get() = DocumentsContract.isTreeUri(this)
 
 val Uri.isExternalStorageDocument: Boolean
     get() = authority == DocumentFileCompat.EXTERNAL_STORAGE_AUTHORITY
@@ -78,7 +82,7 @@ fun Uri.openOutputStream(context: Context, append: Boolean = true): OutputStream
         } else {
             context.contentResolver.openOutputStream(
                 this,
-                if (append && isTreeDocumentFile) "wa" else "w"
+                if (append && isDocumentTreeUri) "wa" else "w"
             )
         }
     } catch (e: IOException) {

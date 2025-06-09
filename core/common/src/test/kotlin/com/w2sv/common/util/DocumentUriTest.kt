@@ -63,10 +63,10 @@ internal class DocumentUriTest {
     }
 
     @Test
-    fun testChildDocumentUri() {
+    fun testConstructChildDocumentUri() {
         assertEquals(
             DocumentUri.parse("content://com.android.externalstorage.documents/document/primary%3AMoved%2FGIFs%2FsomeFile.jpg"),
-            contentUri.childDocumentUri("someFile.jpg")
+            contentUri.constructChildDocumentUri("someFile.jpg")
         )
     }
 
@@ -91,6 +91,19 @@ internal class DocumentUriTest {
         assertEquals(
             "primary",
             contentUri.volumeName
+        )
+    }
+
+    @Test
+    fun treePathSegmentRemoved() {
+        assertEquals(
+            DocumentUri.parse("content://com.android.externalstorage.documents/document/primary%3AMoved/Screenshots"),
+            DocumentUri.parse("content://com.android.externalstorage.documents/tree/primary%3AMoved%2FScreenshots/document/primary%3AMoved%2FScreenshots")
+                .treePathSegmentRemoved()
+        )
+        assertEquals(
+            contentUri,
+            contentUri.treePathSegmentRemoved()
         )
     }
 }

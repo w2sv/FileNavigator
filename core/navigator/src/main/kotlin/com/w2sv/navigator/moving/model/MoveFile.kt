@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Parcelable
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
+import com.anggrayudi.storage.media.MediaType
 import com.w2sv.androidutils.os.getParcelableCompat
 import com.w2sv.common.util.MediaUri
 import com.w2sv.domain.model.filetype.FileAndSourceType
@@ -21,10 +22,10 @@ internal data class MoveFile(
     val fileAndSourceType: FileAndSourceType
 ) : Parcelable {
 
-    fun simpleStorageMediaFile(context: Context): MediaFile? =
+    fun mediaFile(context: Context): MediaFile? =
         MediaStoreCompat.fromMediaId(
             context = context,
-            mediaType = fileType.mediaType,
+            mediaType = mediaType,
             id = mediaStoreFileData.rowId
         )
 
@@ -33,6 +34,9 @@ internal data class MoveFile(
 
     val sourceType: SourceType
         get() = fileAndSourceType.sourceType
+
+    val mediaType: MediaType
+        get() = fileType.mediaType
 
     val isGif: Boolean
         get() = fileType.wrappedPresetTypeOrNull is PresetFileType.Image && mediaStoreFileData.extension.lowercase() == "gif"

@@ -20,4 +20,12 @@ internal class MediaUriTest {
     fun testId() {
         assertEquals(MediaId(value = 1000012597), mediaUri.id())
     }
+
+    @Test
+    fun testIdIncremented() {
+        assertEquals(
+            MediaUri.parse("content://media/external/images/media/1000012598"),
+            mediaUri.idIncremented()
+        )
+    }
 }

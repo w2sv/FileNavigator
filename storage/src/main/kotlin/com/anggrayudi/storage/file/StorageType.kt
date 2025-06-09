@@ -10,13 +10,15 @@ import com.anggrayudi.storage.extension.getStorageId
  */
 enum class StorageType {
     /**
-     * Equals to primary storage.
+     * Equals primary storage.
      * @see [SimpleStorage.externalStoragePath]
      */
     EXTERNAL,
     DATA,
     SD_CARD,
     UNKNOWN;
+
+    val isSdCard: Boolean get() = this == SD_CARD
 
     fun isExpected(actualStorageType: StorageType) =
         this == UNKNOWN || this == actualStorageType

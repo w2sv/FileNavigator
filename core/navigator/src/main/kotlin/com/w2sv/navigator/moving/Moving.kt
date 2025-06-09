@@ -31,7 +31,7 @@ internal sealed interface PreCheckResult {
             context: Context,
             destinationDirectory: DocumentFile?
         ): PreCheckResult {
-            val moveMediaFile = moveFile.simpleStorageMediaFile(context)
+            val moveMediaFile = moveFile.mediaFile(context)
 
             return when {
                 !moveFile.mediaStoreFileData.fileExists -> Failure(MoveResult.MoveFileNotFound)

@@ -176,4 +176,5 @@
     <plurals name="add_file_types_button">
         <item quantity="other">添加文件类型</item>
     </plurals>
+    <string name="can_t_view_file_from_within_file_navigator">无法从文件导航器查看文</string>
 </resources>

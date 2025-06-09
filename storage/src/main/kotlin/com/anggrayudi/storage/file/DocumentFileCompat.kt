@@ -21,7 +21,7 @@ import com.anggrayudi.storage.extension.isDocumentsDocument
 import com.anggrayudi.storage.extension.isDownloadsDocument
 import com.anggrayudi.storage.extension.isExternalStorageDocument
 import com.anggrayudi.storage.extension.isRawFile
-import com.anggrayudi.storage.extension.isTreeDocumentFile
+import com.anggrayudi.storage.extension.isDocumentTreeUri
 import com.anggrayudi.storage.extension.replaceCompletely
 import com.anggrayudi.storage.extension.trimFileSeparator
 import com.anggrayudi.storage.file.DocumentFileCompat.buildAbsolutePath
@@ -141,7 +141,7 @@ object DocumentFileCompat {
                 uri.path ?: return null
             ).run { if (canRead()) DocumentFile.fromFile(this) else null }
 
-            uri.isTreeDocumentFile -> context.documentFileFromTreeUri(uri)
+            uri.isDocumentTreeUri -> context.documentFileFromTreeUri(uri)
                 ?.run { if (isDownloadsDocument) toWritableDownloadsDocumentFile(context) else this }
 
             else -> DocumentFile.fromSingleUri(context, uri)
@@ -394,7 +394,7 @@ object DocumentFileCompat {
             val cleanBasePath = getBasePath(context, fullPath)
             context.contentResolver.persistedUriPermissions
                 // For instance, content://com.android.externalstorage.documents/tree/primary%3AMusic
-                .filter { it.isReadPermission && it.isWritePermission && it.uri.isTreeDocumentFile }
+                .filter { it.isReadPermission && it.isWritePermission && it.uri.isDocumentTreeUri }
                 .forEach {
                     if (Build.VERSION.SDK_INT < 30) {
                         if (it.uri.isDownloadsDocument && fullPath.hasParent(PublicDirectory.DOWNLOADS.absolutePath)) {
@@ -584,7 +584,7 @@ object DocumentFileCompat {
         val storages = mutableMapOf<String, MutableSet<String>>()
         storages[PRIMARY] = HashSet()
         context.contentResolver.persistedUriPermissions
-            .filter { it.isReadPermission && it.isWritePermission && it.uri.isTreeDocumentFile }
+            .filter { it.isReadPermission && it.isWritePermission && it.uri.isDocumentTreeUri }
             .forEach {
                 if (it.uri.isDownloadsDocument) {
                     storages[PRIMARY]?.add(PublicDirectory.DOWNLOADS.absolutePath)
@@ -622,7 +622,7 @@ object DocumentFileCompat {
     @JvmStatic
     fun getAccessibleUris(context: Context): Map<String, List<Uri>> {
         return context.contentResolver.persistedUriPermissions
-            .filter { it.isReadPermission && it.isWritePermission && it.uri.isTreeDocumentFile }
+            .filter { it.isReadPermission && it.isWritePermission && it.uri.isDocumentTreeUri }
             .map { it.uri }
             .groupBy { it.getStorageId(context) }
             .filter { it.key.isNotEmpty() }

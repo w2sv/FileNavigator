@@ -127,9 +127,7 @@ private fun rememberMoveEntryRowOnClick(
         { movedFile, fileExists ->
             if (fileExists) {
                 snackbarHostState.currentSnackbarData?.dismiss()
-                movedFile.launchViewMovedFileActivity(context)?.let { snackbarVisuals ->
-                    snackbarHostState.showSnackbar(snackbarVisuals)
-                }
+                movedFile.launchViewMovedFileActivity(context, showSnackbarOnError = { snackbarHostState.showSnackbar(it) })
             } else {
                 snackbarHostState.dismissCurrentSnackbarAndShow(
                     AppSnackbarVisuals(
