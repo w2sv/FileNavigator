@@ -11,8 +11,8 @@ import com.anggrayudi.storage.extension.isDocumentTreeUri
 import com.anggrayudi.storage.file.StorageType
 import com.anggrayudi.storage.file.getSimplePath
 import com.w2sv.kotlinutils.copyWithReplacedLast
-import kotlinx.parcelize.Parcelize
 import java.io.File
+import kotlinx.parcelize.Parcelize
 
 private const val SLASH_ENCODING = "%2F"
 private const val COLON_ENCODING = "%3A"
@@ -69,28 +69,30 @@ value class DocumentUri(val uri: Uri) : Parcelable {
      * ```[SCHEME]://[AUTHORITY]/tree/[PATH]/document/[PATH]```
      */
     fun documentTreeUri(): DocumentUri =
-        if (isDocumentTreeUri)
+        if (isDocumentTreeUri) {
             this
-        else
+        } else {
             uri.run {
                 val encodedLastPathSegment = Uri.encode(lastPathSegment)
                 parse("content://$authority/tree/$encodedLastPathSegment/document/$encodedLastPathSegment")
             }
+        }
 
     /**
      * Converts this documentTreeUri to a documentUri by manually removing the tree path segment, and thereby converting it to the single file
      * document uri structure. If [isDocumentTreeUri] returns false, however, this Uri is returned as is.
      */
     fun treePathSegmentRemoved(): DocumentUri =
-        if (isDocumentTreeUri)
+        if (isDocumentTreeUri) {
             uri.run {
                 buildUpon()
                     .path(path!!.replaceBefore("/document/", ""))
                     .build()
                     .documentUri
             }
-        else
+        } else {
             this
+        }
 
     // ====================
     // Volumes

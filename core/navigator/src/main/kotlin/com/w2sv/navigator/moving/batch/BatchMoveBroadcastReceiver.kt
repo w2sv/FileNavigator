@@ -9,8 +9,8 @@ import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.util.LoggingBroadcastReceiver
 import com.w2sv.navigator.MoveResultChannel
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.model.MoveDestination
+import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.moveTo
 import com.w2sv.navigator.notifications.appnotifications.batchmove.BatchMoveProgressNotificationManager
 import dagger.hilt.android.AndroidEntryPoint

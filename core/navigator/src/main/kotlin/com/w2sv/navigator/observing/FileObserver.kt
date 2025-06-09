@@ -20,8 +20,8 @@ import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MediaIdWithMediaType
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveDestination
+import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
 import com.w2sv.navigator.observing.model.MediaStoreDataProducer
 import com.w2sv.navigator.observing.model.MediaStoreFileData

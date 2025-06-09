@@ -98,7 +98,9 @@ internal class DocumentUriTest {
     fun treePathSegmentRemoved() {
         assertEquals(
             DocumentUri.parse("content://com.android.externalstorage.documents/document/primary%3AMoved/Screenshots"),
-            DocumentUri.parse("content://com.android.externalstorage.documents/tree/primary%3AMoved%2FScreenshots/document/primary%3AMoved%2FScreenshots")
+            DocumentUri.parse(
+                "content://com.android.externalstorage.documents/tree/primary%3AMoved%2FScreenshots/document/primary%3AMoved%2FScreenshots"
+            )
                 .treePathSegmentRemoved()
         )
         assertEquals(

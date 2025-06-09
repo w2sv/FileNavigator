@@ -8,9 +8,9 @@ import com.w2sv.common.util.DocumentUri
 import com.w2sv.common.util.MediaUri
 import com.w2sv.common.util.log
 import com.w2sv.domain.model.MovedFile
+import java.time.LocalDateTime
 import kotlinx.parcelize.Parcelize
 import slimber.log.i
-import java.time.LocalDateTime
 
 internal typealias AnyMoveBundle = MoveBundle<*, *>
 
@@ -135,9 +135,14 @@ private fun MoveDestination.Directory.movedFileMediaUri(
         return null
     }
 
-    i { "File has been auto moved to a SD Card destination; Attempting to get the media Uri by incrementing the media Id of the original file" }
+    i {
+        "File has been auto moved to a SD Card destination;" +
+            "Attempting to get the media Uri by incrementing the media Id of the original file"
+    }
     val mediaUri =
-        requireNotNull(moveFile.mediaUri.idIncremented()) // Should never be null here, since the original mediaUri originates from the system and should therefore be correct
+        requireNotNull(
+            moveFile.mediaUri.idIncremented()
+        ) // Should never be null here, since the original mediaUri originates from the system and should therefore be correct
     val reconstructedDocumentUri = mediaUri.documentUri(context)
     return when {
         reconstructedDocumentUri == null -> {
@@ -151,7 +156,11 @@ private fun MoveDestination.Directory.movedFileMediaUri(
         }
 
         else -> {
-            i { "File name of reconstructed document Uri=${reconstructedDocumentUri.fileName(context)} does not match original file name=${moveFile.mediaStoreFileData.name}" }
+            i {
+                "File name of reconstructed document Uri=${reconstructedDocumentUri.fileName(
+                    context
+                )} does not match original file name=${moveFile.mediaStoreFileData.name}"
+            }
             null
         }
     }

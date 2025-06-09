@@ -9,8 +9,8 @@ import androidx.core.text.buildSpannedString
 import com.w2sv.androidutils.res.getQuantityText
 import com.w2sv.core.common.R
 import com.w2sv.navigator.moving.batch.CancelBatchMoveBroadcastReceiver
-import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.model.MoveDestination
+import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.notifications.api.AppNotificationManager
 import com.w2sv.navigator.notifications.api.SingleInstanceNotificationManager
 import com.w2sv.navigator.notifications.appnotifications.AppNotificationChannel
@@ -99,10 +99,7 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
                         return super.build()
                     }
 
-                    private fun contentText(
-                        moveResultToCount: Map<MoveResult, Int>,
-                        destination: MoveDestination.Directory
-                    ): CharSequence {
+                    private fun contentText(moveResultToCount: Map<MoveResult, Int>, destination: MoveDestination.Directory): CharSequence {
                         val resultRowPrefix = if (moveResultToCount.size >= 2) "• " else null
                         return buildSpannedString {
                             moveResultToCount[MoveResult.Success]?.let { moveSuccessCount ->

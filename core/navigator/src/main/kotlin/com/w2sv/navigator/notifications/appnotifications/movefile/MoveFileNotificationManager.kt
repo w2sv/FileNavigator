@@ -27,8 +27,8 @@ import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
 import com.w2sv.navigator.moving.api.activity.AbstractDestinationPickerActivity
 import com.w2sv.navigator.moving.model.DestinationSelectionManner
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.model.MoveDestination
+import com.w2sv.navigator.moving.model.MoveFile
 import com.w2sv.navigator.moving.quick.QuickMoveDestinationAccessPermissionQueryActivity
 import com.w2sv.navigator.notifications.NotificationResources
 import com.w2sv.navigator.notifications.api.MultiInstanceNotificationManager

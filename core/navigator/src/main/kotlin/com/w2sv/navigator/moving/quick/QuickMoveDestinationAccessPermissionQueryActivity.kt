@@ -15,8 +15,8 @@ import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.moving.model.MoveDestination
+import com.w2sv.navigator.moving.model.MoveResult
 import com.w2sv.navigator.shared.DialogHostingActivity
 import com.w2sv.navigator.shared.roundedCornersAlertDialogBuilder
 import com.w2sv.navigator.shared.setIconHeader
