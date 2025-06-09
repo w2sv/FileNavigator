@@ -1,5 +1,5 @@
 [versions]
-agp = "8.10.0"
+agp = "8.10.1"
 androidxActivity = "1.10.1"
 baselineprofile = "1.3.4"
 benchmarkMacroJunit4 = "1.3.4"
@@ -8,33 +8,33 @@ compileSdk = "35"
 compose-destinations = "2.2.0"
 compose-lint-checks = "1.4.2"
 compose-material3 = "1.3.2"
-compose-tooling = "1.8.1"
+compose-tooling = "1.8.2"
 hilt = "2.56.2"
 hiltNavigationCompose = "1.2.0"
 junit = "4.13.2"
-kotlin = "2.1.20"
-kotlinxCollectionsImmutable = "0.3.8"
+kotlin = "2.1.21"
+kotlinxCollectionsImmutable = "0.4.0"
 kotlinxCoroutines = "1.10.2"
-ksp = "2.1.20-2.0.1"
-ktlint = "12.2.0"
-lifecycle = "2.9.0"
+ksp = "2.1.21-2.0.1"
+ktlint = "12.3.0"
+lifecycle = "2.9.1"
 # @keep
 minSdk = "30"
-protobuf = "4.30.2"
+protobuf = "4.31.1"
 protobuf-plugin = "0.9.5"
 room = "2.7.1"
 triplet-play = "3.12.1"
+versionCatalogUpdate = "1.0.0"
+versions = "0.52.0"
 w2sv-composed = "0.0.6-rc1"
 w2sv-datastoreutils = "0.0.7-rc2"
 w2sv-kotlinutils = "0.1.8-rc1"
-versionCatalogUpdate = "1.0.0"
-versions = "0.52.0"
 
 [libraries]
 # @keep
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidxActivity" }
-androidx-appcompat = "androidx.appcompat:appcompat:1.7.0"
+androidx-appcompat = "androidx.appcompat:appcompat:1.7.1"
 androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-tooling" }
@@ -83,8 +83,8 @@ w2sv-composed-permissions = { module = "com.github.w2sv.Composed:permissions", v
 w2sv-datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:datastoreflow", version.ref = "w2sv-datastoreutils" }
 w2sv-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:preferences", version.ref = "w2sv-datastoreutils" }
 w2sv-kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "w2sv-kotlinutils" }
-w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.1.0-rc1"
 w2sv-reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.6-rc2"
+w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.1.0-rc1"
 
 [bundles]
 instrumentationTest = [
