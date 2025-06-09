@@ -7,7 +7,7 @@ plugins {
 dependencies {
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.w2sv.kotlinutils)
-    implementation(projects.storage)
+    implementation(libs.w2sv.simplestorage)
     implementation(libs.slimber)
 
     implementation(libs.androidx.core.ktx)

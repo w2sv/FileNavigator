@@ -136,7 +136,7 @@ dependencies {
     // Other
     implementation(libs.slimber)
     implementation(libs.google.guava)
-    implementation(projects.storage)
+    implementation(libs.w2sv.simplestorage)
     implementation(libs.kotlinx.collections.immutable)
     lintChecks(libs.compose.lint.checks)
     implementation(libs.textflow)

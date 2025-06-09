@@ -11,7 +11,7 @@ dependencies {
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.w2sv.kotlinutils)
     implementation(libs.slimber)
-    implementation(projects.storage)
+    implementation(libs.w2sv.simplestorage)
     implementation(libs.androidx.core.ktx)
 
     testImplementation(projects.core.test)

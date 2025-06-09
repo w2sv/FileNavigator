@@ -27,42 +27,10 @@ triplet-play = "3.12.1"
 w2sv-composed = "0.0.6-rc1"
 w2sv-datastoreutils = "0.0.7-rc2"
 w2sv-kotlinutils = "0.1.8-rc1"
-activity = "1.10.1"
-android-gradle-plugin = "8.10.0"
-appcompat = "1.7.0"
-core-ktx = "1.16.0"
-coroutines = "1.10.2"
-documentfile = "1.1.0"
-# @keep
-dokka = "1.9.20"
-fragment = "1.8.6"
-lifecycle-viewmodel-ktx = "2.9.0"
-# @keep
-maven-publish-plugin = "0.28.0"
-mockito-all = "1.10.19"
-mockito-core = "5.17.0"
-mockito-inline = "5.2.0"
-mockito-kotlin = "2.2.0"
-mockk = "1.14.2"
-powermock-api-mockito2 = "2.0.9"
-powermock-module-junit4 = "2.0.9"
-robolectric = "4.14.1"
 versionCatalogUpdate = "1.0.0"
 versions = "0.52.0"
 
 [libraries]
-androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "documentfile" }
-androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "fragment" }
-androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle-viewmodel-ktx" }
-junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
-kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
-mockito-all = { module = "org.mockito:mockito-all", version.ref = "mockito-all" }
-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito-core" }
-mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito-inline" }
-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-powermock-api-mockito2 = { module = "org.powermock:powermock-api-mockito2", version.ref = "powermock-api-mockito2" }
-powermock-module-junit4 = { module = "org.powermock:powermock-module-junit4", version.ref = "powermock-module-junit4" }
-
 # @keep
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidxActivity" }
@@ -115,6 +83,7 @@ w2sv-composed-permissions = { module = "com.github.w2sv.Composed:permissions", v
 w2sv-datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:datastoreflow", version.ref = "w2sv-datastoreutils" }
 w2sv-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:preferences", version.ref = "w2sv-datastoreutils" }
 w2sv-kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "w2sv-kotlinutils" }
+w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.1.0-rc1"
 w2sv-reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.6-rc2"
 
 [bundles]

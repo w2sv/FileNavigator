@@ -24,7 +24,7 @@ dependencies {
 
     implementation(libs.google.guava)
 
-    implementation(projects.storage)
+    implementation(libs.w2sv.simplestorage)
 
     // ==============
     // Test
