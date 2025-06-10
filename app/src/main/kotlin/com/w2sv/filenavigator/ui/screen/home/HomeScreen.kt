@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.home
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -61,6 +62,7 @@ fun HomeScreen(
                 )
             }
         ) { paddingValues ->
+            @SuppressLint("ConfigurationScreenWidthHeight")
             val sharedModifier =
                 Modifier
                     .fillMaxSize()
@@ -107,7 +109,7 @@ private fun PortraitMode(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         statusDisplayCard(Modifier)
-        moveHistoryCard(Modifier.fillMaxHeight(0.7f))
+        moveHistoryCard(Modifier.fillMaxHeight(0.8f))
     }
 }
 
