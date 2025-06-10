@@ -16,7 +16,12 @@ import slimber.log.e
 value class MediaUri(val uri: Uri) : Parcelable {
 
     fun documentUri(context: Context): DocumentUri? =
-        MediaStore.getDocumentUri(context, uri)?.documentUri
+        try {
+            MediaStore.getDocumentUri(context, uri)?.documentUri
+        } catch (e: IllegalArgumentException) {
+            e { "Encountered ${e.message} whilst attempting to convert MediaUri to DocumentUri" }
+            null
+        }
 
     fun id(): MediaId? =
         MediaId.parseFromUri(uri)

@@ -184,5 +184,5 @@
         <item quantity="one">Add File Type</item>
         <item quantity="other">Add File Types</item>
     </plurals>
-    <string name="can_t_view_file_from_within_file_navigator">Can\'t view file from within File Navigator.</string>
+    <string name="can_t_view_file_from_within_file_navigator">Can\'t view this file from within File Navigator.</string>
 </resources>

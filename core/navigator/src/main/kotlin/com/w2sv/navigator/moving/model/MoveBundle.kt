@@ -139,10 +139,9 @@ private fun MoveDestination.Directory.movedFileMediaUri(
         "File has been auto moved to a SD Card destination;" +
             "Attempting to get the media Uri by incrementing the media Id of the original file"
     }
-    val mediaUri =
-        requireNotNull(
-            moveFile.mediaUri.idIncremented()
-        ) // Should never be null here, since the original mediaUri originates from the system and should therefore be correct
+
+    // Should never be null here, since the original mediaUri originates from the system and should therefore be correct
+    val mediaUri = requireNotNull(moveFile.mediaUri.idIncremented())
     val reconstructedDocumentUri = mediaUri.documentUri(context)
     return when {
         reconstructedDocumentUri == null -> {
