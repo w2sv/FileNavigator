@@ -171,7 +171,7 @@
     <string name="color">Color</string>
     <string name="file_extensions">File Extensions</string>
     <string name="leave_at_least_one_file_extension_enabled">Leave at least one file extension enabled.</string>
-    <string name="extension_is_the_only_file_type_extension_and_must_not_be_disabled"><b>%1$s</b> is the only <b>%2$s</b> extension and must not be disabled.</string>
+    <string name="you_cant_disable_this_unique_file_extension">You can\'t disable this unique extension.</string>
     <string name="create_file_type_card_label">Create a file type</string>
     <string name="media_file_type_extensions_can_t_be_modified">Media file type extensions can\'t be modified.</string>
     <string name="open_the_dropdown_menu">Open the dropdown menu.</string>

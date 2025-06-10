@@ -89,6 +89,7 @@ private data class ConflictingCustomFileType(val fileType: CustomFileType, val e
         }
 }
 
+// TODO: refactor
 @Composable
 fun PresetFileTypeConfigurationDialog(
     fileType: AnyPresetWrappingFileType,
@@ -218,7 +219,7 @@ fun PresetFileTypeConfigurationDialog(
                             snackbarKind = SnackbarKind.Error,
                             message = stringResource(
                                 if (availableExtensions.size == 1) {
-                                    R.string.extension_is_the_only_file_type_extension_and_must_not_be_disabled
+                                    R.string.you_cant_disable_this_unique_file_extension
                                 } else {
                                     R.string.leave_at_least_one_file_extension_enabled
                                 }
