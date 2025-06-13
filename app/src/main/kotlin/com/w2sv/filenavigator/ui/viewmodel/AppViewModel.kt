@@ -13,11 +13,11 @@ import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.kotlinutils.coroutines.flow.combineStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class AppViewModel @Inject constructor(

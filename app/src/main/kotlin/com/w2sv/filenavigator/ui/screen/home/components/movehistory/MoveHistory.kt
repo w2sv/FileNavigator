@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,13 +31,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import com.w2sv.composed.OnLifecycleEvent
 import com.w2sv.composed.extensions.thenIf
-import com.w2sv.core.common.R
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
@@ -117,24 +114,12 @@ private fun MoveRecordView(
     ) {
         FileNameWithTypeAndSourceIcon(moveEntry = movedFile, modifier = Modifier.weight(0.7f))
         CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.primary) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .weight(0.2f)
-                    .padding(horizontal = 4.dp)
-            ) {
+            WeightedBox(weight = 0.2f, contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowForward,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )
-                if (movedFile.autoMoved) {
-                    Text(
-                        text = stringResource(id = R.string.auto),
-                        fontSize = 13.sp,
-                        lineHeight = 1.sp
-                    )
-                }
             }
         }
         WeightedBox(weight = 0.5f) {

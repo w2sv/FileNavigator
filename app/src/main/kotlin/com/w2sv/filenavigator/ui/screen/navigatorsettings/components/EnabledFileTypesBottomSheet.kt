@@ -116,7 +116,7 @@ fun EnabledFileTypesBottomSheet(
         modifier = modifier
     ) {
         Text(
-            text = stringResource(R.string.configure_navigated_file_types),
+            text = stringResource(R.string.select_navigated_file_types),
             fontSize = 22.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier

@@ -7,17 +7,17 @@ import com.w2sv.domain.usecase.MoveDestinationPathConverter
 
 val LocalDestinationsNavigator =
     staticCompositionLocalOf<DestinationsNavigator> {
-        throw UninitializedPropertyAccessException(
-            "LocalDestinationsNavigator not yet provided"
-        )
+        noCompositionLocalProvidedFor("LocalDestinationsNavigator")
     }
 
 val LocalMoveDestinationPathConverter =
     staticCompositionLocalOf<MoveDestinationPathConverter> {
-        throw UninitializedPropertyAccessException(
-            "LocalDocumentUriToPathConverter not yet provided"
-        )
+        noCompositionLocalProvidedFor("LocalMoveDestinationPathConverter")
     }
 
 val LocalUseDarkTheme =
     compositionLocalOf { false }
+
+private fun noCompositionLocalProvidedFor(name: String): Nothing {
+    throw UninitializedPropertyAccessException("$name not provided")
+}

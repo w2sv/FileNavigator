@@ -76,7 +76,7 @@
     <string name="apply">Apply</string>
     <string name="disable_navigator_on_low_battery">Disable navigator on low battery</string>
     <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">Leave at least one file source selected or disable the entire file type.</string>
-    <string name="configure_navigated_file_types">Configure Navigated File Types</string>
+    <string name="select_navigated_file_types">Select Navigated File Types</string>
     <string name="_default">Default</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
@@ -99,7 +99,6 @@
     <string name="license">License</string>
     <string name="about_the_developer">About the Developer</string>
     <string name="dynamic_colors">Dynamic Colors</string>
-    <string name="navigator_status">Navigator Status:</string>
     <string name="active">Active</string>
     <string name="inactive">Inactive</string>
     <string name="delete_move_history_dropdown_menu_item_label">Delete move history</string>
@@ -185,4 +184,6 @@
         <item quantity="other">Add File Types</item>
     </plurals>
     <string name="can_t_view_file_from_within_file_navigator">Can\'t view this file from within File Navigator.</string>
+    <string name="navigator">Navigator</string>
+    <string name="status">Status:</string>
 </resources>

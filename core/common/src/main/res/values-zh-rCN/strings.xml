@@ -71,7 +71,7 @@
     <string name="apply">应用</string>
     <string name="disable_navigator_on_low_battery">低电量时自动禁用分类导航程序</string>
     <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">除非禁用此文件类型，请至少选择一个文件源</string>
-    <string name="configure_navigated_file_types">配置将要进行分类整理的文件类型</string>
+    <string name="select_navigated_file_types"> 选择将要进行分类整理的文件类型</string>
     <string name="_default">默认</string>
     <string name="dark">暗色背景</string>
     <string name="light">亮色背景</string>
@@ -92,7 +92,6 @@
     <string name="license">开源协议</string>
     <string name="about_the_developer">关于开发者</string>
     <string name="dynamic_colors">动态配色</string>
-    <string name="navigator_status">整理程序状态:</string>
     <string name="active">已启动</string>
     <string name="inactive">未启动</string>
     <string name="delete_move_history_dropdown_menu_item_label">清除文件移动记录</string>
@@ -177,4 +176,6 @@
         <item quantity="other">添加文件类型</item>
     </plurals>
     <string name="can_t_view_file_from_within_file_navigator">无法从文件导航器查看文</string>
+    <string name="navigator">Navigator</string>
+    <string name="status">状态:</string>
 </resources>
