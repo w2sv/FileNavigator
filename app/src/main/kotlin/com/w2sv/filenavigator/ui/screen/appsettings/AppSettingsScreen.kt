@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -46,23 +47,25 @@ import com.w2sv.filenavigator.ui.designsystem.drawer.model.rememberAppPreference
 @Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
 fun AppSettingsScreen(navigator: DestinationsNavigator, appPreferences: AppPreferences = rememberAppPreferences()) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility)
-    ) {
-        BackArrowTopAppBar(
-            title = stringResource(id = R.string.app_settings),
-            onBack = remember { { navigator.popBackStack() } },
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        SettingsCardColumn(
-            appPreferences = appPreferences,
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = Padding.defaultHorizontal)
-        )
+                .windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility)
+        ) {
+            BackArrowTopAppBar(
+                title = stringResource(id = R.string.app_settings),
+                onBack = remember { { navigator.popBackStack() } },
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            SettingsCardColumn(
+                appPreferences = appPreferences,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = Padding.defaultHorizontal)
+            )
+        }
     }
 }
 

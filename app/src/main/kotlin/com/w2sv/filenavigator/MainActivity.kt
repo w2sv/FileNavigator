@@ -11,8 +11,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -20,23 +18,25 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.RequiredPermissionsScreenDestination
-import com.ramcosta.composedestinations.navigation.dependency
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.utils.isRouteOnBackStack
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.Theme
+import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
+import com.w2sv.filenavigator.ui.LocalPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.state.rememberPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
@@ -44,11 +44,15 @@ import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val appVM by viewModels<AppViewModel>()
+
+    @Inject
+    lateinit var moveDestinationPathConverter: MoveDestinationPathConverter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         var triggerStatusBarStyleUpdate by mutableStateOf(false)
@@ -83,44 +87,24 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     val navController = rememberNavController()
-                    val destinationsNavController = navController.rememberDestinationsNavigator()
-
-                    val postNotificationsPermissionState =
-                        rememberPostNotificationsPermissionState(
-                            onPermissionResult = { appVM.savePostNotificationsPermissionRequestedIfRequired() },
-                            onStatusChanged = appVM::setPostNotificationsPermissionGranted
-                        )
-
-                    val allPermissionsGranted by appVM.allPermissionsGranted.collectAsStateWithLifecycle()
-                    OnChange(allPermissionsGranted) {
-                        if (!allPermissionsGranted) {
-                            FileNavigator.stop(this)
-
-                            if (!navController.isRouteOnBackStack(RequiredPermissionsScreenDestination)) {
-                                destinationsNavController.navigate(
-                                    direction = RequiredPermissionsScreenDestination,
-                                    builder = {
-                                        launchSingleTop = true
-                                        popUpTo(RequiredPermissionsScreenDestination)
-                                    }
-                                )
-                            }
-                        }
-                    }
 
                     CompositionLocalProvider(
-                        LocalDestinationsNavigator provides destinationsNavController,
-                        LocalMoveDestinationPathConverter provides appVM.moveDestinationPathConverter
+                        LocalDestinationsNavigator provides navController.rememberDestinationsNavigator(),
+                        LocalMoveDestinationPathConverter provides moveDestinationPathConverter,
+                        LocalPostNotificationsPermissionState provides rememberPostNotificationsPermissionState(
+                            onPermissionResult = { appVM.savePostNotificationsPermissionRequested() },
+                            onStatusChanged = appVM::setPostNotificationsPermissionGranted
+                        )
                     ) {
-                        Surface(modifier = Modifier.fillMaxSize()) {
-                            DestinationsNavHost(
-                                navGraph = NavGraphs.root,
-                                navController = navController,
-                                dependenciesContainerBuilder = {
-                                    dependency(postNotificationsPermissionState)
-                                }
-                            )
-                        }
+                        NavigateToPermissionsScreenOnMissingPermission(
+                            permissionIsMissing = !appVM.allPermissionsGranted.lifecycleAwareStateValue(),
+                            navController = navController
+                        )
+
+                        DestinationsNavHost(
+                            navGraph = NavGraphs.root,
+                            navController = navController
+                        )
                     }
                 }
             }
@@ -130,6 +114,28 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         appVM.updateManageAllFilesPermissionGranted()
+    }
+}
+
+@Composable
+private fun NavigateToPermissionsScreenOnMissingPermission(
+    permissionIsMissing: Boolean,
+    navController: NavHostController,
+    destinationsNavigator: DestinationsNavigator = LocalDestinationsNavigator.current
+) {
+    val context = LocalContext.current
+    OnChange(permissionIsMissing) {
+        if (it && !navController.isRouteOnBackStack(RequiredPermissionsScreenDestination)) {
+            FileNavigator.stop(context)
+
+            destinationsNavigator.navigate(
+                direction = RequiredPermissionsScreenDestination,
+                builder = {
+                    launchSingleTop = true
+                    popUpTo(RequiredPermissionsScreenDestination)
+                }
+            )
+        }
     }
 }
 

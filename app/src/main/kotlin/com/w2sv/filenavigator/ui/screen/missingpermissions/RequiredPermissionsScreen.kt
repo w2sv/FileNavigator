@@ -33,9 +33,10 @@ import com.w2sv.composed.OnChange
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.core.common.R
+import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
+import com.w2sv.filenavigator.ui.LocalPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
-import com.w2sv.filenavigator.ui.state.PostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
@@ -48,31 +49,12 @@ private object RequiredPermissionsScreenDefaults {
 
 @Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
-fun RequiredPermissionsScreen(
-    postNotificationsPermissionState: PostNotificationsPermissionState,
-    destinationsNavigator: DestinationsNavigator
-) {
-    val permissionCards =
-        rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState.state)
+fun RequiredPermissionsScreen(postNotificationsPermissionState: PermissionState = LocalPostNotificationsPermissionState.current) {
+    val permissionCards = rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState)
 
-    // Navigate to HomeScreenDestination if all permissions granted
-    OnChange(value = permissionCards) {
-        if (it.isEmpty()) {
-            destinationsNavigator.navigate(
-                direction = HomeScreenDestination,
-                builder = {
-                    launchSingleTop = true
-                    popUpTo(HomeScreenDestination)
-                }
-            )
-        }
-    }
+    NavigateToHomeScreenWhenAllPermissionsGranted(allPermissionsGranted = permissionCards.isEmpty())
 
-    Scaffold(
-        topBar = {
-            TopAppBarAboveHorizontalDivider(title = stringResource(id = R.string.required_permissions))
-        }
-    ) { paddingValues ->
+    Scaffold(topBar = { TopAppBarAboveHorizontalDivider(title = stringResource(id = R.string.required_permissions)) }) { paddingValues ->
         val sharedModifier =
             Modifier
                 .fillMaxSize()
@@ -81,6 +63,24 @@ fun RequiredPermissionsScreen(
         when (isPortraitModeActive) {
             true -> PortraitMode(permissionCards = permissionCards, modifier = sharedModifier)
             false -> LandscapeMode(permissionCards = permissionCards, modifier = sharedModifier)
+        }
+    }
+}
+
+@Composable
+private fun NavigateToHomeScreenWhenAllPermissionsGranted(
+    allPermissionsGranted: Boolean,
+    destinationsNavigator: DestinationsNavigator = LocalDestinationsNavigator.current
+) {
+    OnChange(value = allPermissionsGranted) {
+        if (it) {
+            destinationsNavigator.navigate(
+                direction = HomeScreenDestination,
+                builder = {
+                    launchSingleTop = true
+                    popUpTo(HomeScreenDestination)
+                }
+            )
         }
     }
 }
@@ -122,18 +122,18 @@ private fun LandscapeMode(permissionCards: ImmutableList<ModifierReceivingCompos
 
 @Composable
 private fun rememberMovablePermissionCards(
-    postNotificationsPermissionState: PermissionState?,
+    postNotificationsPermissionState: PermissionState,
     appVM: AppViewModel = activityViewModel(),
     context: Context = LocalContext.current
 ): ImmutableList<ModifierReceivingComposable> {
     val manageAllFilesPermissionGranted by appVM.manageAllFilesPermissionGranted.collectAsStateWithLifecycle()
 
     return remember(
-        key1 = postNotificationsPermissionState?.status?.isGranted,
+        key1 = postNotificationsPermissionState.status.isGranted,
         key2 = manageAllFilesPermissionGranted
     ) {
         buildList {
-            if (postNotificationsPermissionState?.status?.isGranted == false) {
+            if (!postNotificationsPermissionState.status.isGranted) {
                 add(
                     PermissionCardProperties(
                         iconRes = R.drawable.ic_notifications_24,

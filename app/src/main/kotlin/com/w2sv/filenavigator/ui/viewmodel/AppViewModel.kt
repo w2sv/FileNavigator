@@ -9,7 +9,6 @@ import com.w2sv.androidutils.os.postNotificationsPermissionRequired
 import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
-import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.kotlinutils.coroutines.flow.combineStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -22,7 +21,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
-    val moveDestinationPathConverter: MoveDestinationPathConverter,
     @ApplicationContext context: Context
 ) :
     ViewModel() {
@@ -39,13 +37,7 @@ class AppViewModel @Inject constructor(
     }
 
     private val postNotificationsPermissionGranted =
-        MutableStateFlow(
-            if (postNotificationsPermissionRequired) {
-                context.hasPermission(Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                true
-            }
-        )
+        MutableStateFlow(!postNotificationsPermissionRequired || context.hasPermission(Manifest.permission.POST_NOTIFICATIONS))
 
     fun setPostNotificationsPermissionGranted(value: Boolean) {
         postNotificationsPermissionGranted.value = value
@@ -57,7 +49,7 @@ class AppViewModel @Inject constructor(
             SharingStarted.Eagerly
         )
 
-    fun savePostNotificationsPermissionRequestedIfRequired() {
+    fun savePostNotificationsPermissionRequested() {
         if (!postNotificationsPermissionRequested.value) {
             viewModelScope.launch {
                 preferencesRepository.postNotificationsPermissionRequested.save(true)
