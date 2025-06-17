@@ -4,13 +4,13 @@ androidxActivity = "1.10.1"
 baselineprofile = "1.3.4"
 benchmarkMacroJunit4 = "1.3.4"
 # @keep
-compileSdk = "35"
-compose-destinations = "2.2.0"
+compileSdk = "36"
 compose-lint-checks = "1.4.2"
 compose-material3 = "1.3.2"
 compose-tooling = "1.8.2"
 hilt = "2.56.2"
 hiltNavigationCompose = "1.2.0"
+nav3Core = "1.0.0-alpha03"
 junit = "4.13.2"
 kotlin = "2.1.21"
 kotlinxCollectionsImmutable = "0.4.0"
@@ -29,6 +29,8 @@ versions = "0.52.0"
 w2sv-composed = "0.0.6-rc1"
 w2sv-datastoreutils = "0.0.7-rc2"
 w2sv-kotlinutils = "0.1.8-rc1"
+kotlinSerialization = "2.1.21"
+kotlinxSerializationCore = "1.8.1"
 
 [libraries]
 # @keep
@@ -49,6 +51,8 @@ androidx-core-ktx = "androidx.core:core-ktx:1.16.0"
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
@@ -57,8 +61,6 @@ androidx-splashscreen = "androidx.core:core-splashscreen:1.0.1"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.2.1"
 androidx-test-rules = "androidx.test:rules:1.6.1"
 androidx-test-runner = "androidx.test:runner:1.6.2"
-compose-destinations = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "compose-destinations" }
-compose-destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "compose-destinations" }
 compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "compose-lint-checks" }
 google-guava = "com.google.guava:guava:33.4.8-jre"
 google-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
@@ -85,6 +87,7 @@ w2sv-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:pre
 w2sv-kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "w2sv-kotlinutils" }
 w2sv-reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.6-rc2"
 w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.1.0-rc1"
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 
 [bundles]
 instrumentationTest = [
@@ -123,3 +126,4 @@ play = { id = "com.github.triplet.play", version.ref = "triplet-play" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdate" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization"}

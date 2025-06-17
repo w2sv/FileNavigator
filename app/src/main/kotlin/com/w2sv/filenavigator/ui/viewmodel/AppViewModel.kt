@@ -57,13 +57,13 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    val allPermissionsGranted =
-        combineStates(
+    val anyPermissionMissing = combineStates(
+        listOf(
             postNotificationsPermissionGranted,
             manageAllFilesPermissionGranted
-        ) { f1, f2 ->
-            f1 && f2
-        }
+        ),
+        transform = { it.any { !it } }
+    )
 
     // ==============
     // Theme

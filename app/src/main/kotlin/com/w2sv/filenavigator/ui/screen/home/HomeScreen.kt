@@ -19,12 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.NavigationDrawerScreenTopAppBar
-import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.designsystem.drawer.drawerRepelledAnimation
@@ -36,7 +33,6 @@ import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Destination<RootGraph>(style = NavigationTransitions::class, start = true)
 @Composable
 fun HomeScreen(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),

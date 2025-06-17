@@ -23,20 +23,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.androidutils.openAppSettings
 import com.w2sv.common.util.goToManageExternalStorageSettings
 import com.w2sv.composed.OnChange
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.core.common.R
-import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
 import com.w2sv.filenavigator.ui.LocalPostNotificationsPermissionState
-import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
+import com.w2sv.filenavigator.ui.navigation.LocalNavigator
+import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
@@ -47,12 +43,18 @@ private object RequiredPermissionsScreenDefaults {
     val CardSpacing = 32.dp
 }
 
-@Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
-fun RequiredPermissionsScreen(postNotificationsPermissionState: PermissionState = LocalPostNotificationsPermissionState.current) {
+fun RequiredPermissionsScreen(
+    navigator: Navigator = LocalNavigator.current,
+    postNotificationsPermissionState: PermissionState = LocalPostNotificationsPermissionState.current
+) {
     val permissionCards = rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState)
 
-    NavigateToHomeScreenWhenAllPermissionsGranted(allPermissionsGranted = permissionCards.isEmpty())
+    OnChange(value = permissionCards.isEmpty()) {
+        if (it) {
+            navigator.leaveRequiredPermissions()
+        }
+    }
 
     Scaffold(topBar = { TopAppBarAboveHorizontalDivider(title = stringResource(id = R.string.required_permissions)) }) { paddingValues ->
         val sharedModifier =
@@ -63,24 +65,6 @@ fun RequiredPermissionsScreen(postNotificationsPermissionState: PermissionState 
         when (isPortraitModeActive) {
             true -> PortraitMode(permissionCards = permissionCards, modifier = sharedModifier)
             false -> LandscapeMode(permissionCards = permissionCards, modifier = sharedModifier)
-        }
-    }
-}
-
-@Composable
-private fun NavigateToHomeScreenWhenAllPermissionsGranted(
-    allPermissionsGranted: Boolean,
-    destinationsNavigator: DestinationsNavigator = LocalDestinationsNavigator.current
-) {
-    OnChange(value = allPermissionsGranted) {
-        if (it) {
-            destinationsNavigator.navigate(
-                direction = HomeScreenDestination,
-                builder = {
-                    launchSingleTop = true
-                    popUpTo(HomeScreenDestination)
-                }
-            )
         }
     }
 }

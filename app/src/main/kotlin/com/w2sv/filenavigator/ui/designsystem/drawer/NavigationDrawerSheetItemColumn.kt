@@ -27,18 +27,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
 import androidx.core.net.toUri
-import com.ramcosta.composedestinations.generated.destinations.AppSettingsScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.androidutils.openUrl
 import com.w2sv.androidutils.packagePlayStoreUrl
 import com.w2sv.androidutils.startActivity
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.AppUrl
 import com.w2sv.core.common.R
-import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
 import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults
+import com.w2sv.filenavigator.ui.navigation.LocalNavigator
+import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -49,7 +47,7 @@ internal fun NavigationDrawerSheetItemColumn(
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current,
-    destinationsNavigator: DestinationsNavigator = LocalDestinationsNavigator.current
+    navigator: Navigator = LocalNavigator.current
 ) {
     Column(modifier = modifier) {
         remember {
@@ -64,17 +62,17 @@ internal fun NavigationDrawerSheetItemColumn(
                     onClick = {
                         scope.launch {
                             closeDrawer()
-                            destinationsNavigator.navigate(AppSettingsScreenDestination)
+                            navigator.toAppSettings()
                         }
                     }
                 ),
                 NavigationDrawerSheetElement.Item(
-                    iconRes = com.w2sv.core.common.R.drawable.ic_app_logo_24,
+                    iconRes = R.drawable.ic_app_logo_24,
                     labelRes = R.string.navigator_settings,
                     onClick = {
                         scope.launch {
                             closeDrawer()
-                            destinationsNavigator.navigate(NavigatorSettingsScreenDestination)
+                            navigator.toNavigatorSettings()
                         }
                     }
                 ),

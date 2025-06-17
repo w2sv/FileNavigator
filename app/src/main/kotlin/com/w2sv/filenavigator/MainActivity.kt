@@ -18,31 +18,20 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.generated.destinations.RequiredPermissionsScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.utils.isRouteOnBackStack
-import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
-import com.w2sv.composed.OnChange
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
-import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.LocalPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.LocalUseDarkTheme
+import com.w2sv.filenavigator.ui.navigation.NavGraph
 import com.w2sv.filenavigator.ui.state.rememberPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
-import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -86,25 +75,15 @@ class MainActivity : ComponentActivity() {
                             systemBarStyle
                         )
                     }
-                    val navController = rememberNavController()
 
                     CompositionLocalProvider(
-                        LocalDestinationsNavigator provides navController.rememberDestinationsNavigator(),
                         LocalMoveDestinationPathConverter provides moveDestinationPathConverter,
                         LocalPostNotificationsPermissionState provides rememberPostNotificationsPermissionState(
                             onPermissionResult = { appVM.savePostNotificationsPermissionRequested() },
                             onStatusChanged = appVM::setPostNotificationsPermissionGranted
                         )
                     ) {
-                        NavigateToPermissionsScreenOnMissingPermission(
-                            permissionIsMissing = !appVM.allPermissionsGranted.lifecycleAwareStateValue(),
-                            navController = navController
-                        )
-
-                        DestinationsNavHost(
-                            navGraph = NavGraphs.root,
-                            navController = navController
-                        )
+                        NavGraph(anyPermissionMissing = appVM.anyPermissionMissing.lifecycleAwareStateValue())
                     }
                 }
             }
@@ -114,28 +93,6 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         appVM.updateManageAllFilesPermissionGranted()
-    }
-}
-
-@Composable
-private fun NavigateToPermissionsScreenOnMissingPermission(
-    permissionIsMissing: Boolean,
-    navController: NavHostController,
-    destinationsNavigator: DestinationsNavigator = LocalDestinationsNavigator.current
-) {
-    val context = LocalContext.current
-    OnChange(permissionIsMissing) {
-        if (it && !navController.isRouteOnBackStack(RequiredPermissionsScreenDestination)) {
-            FileNavigator.stop(context)
-
-            destinationsNavigator.navigate(
-                direction = RequiredPermissionsScreenDestination,
-                builder = {
-                    launchSingleTop = true
-                    popUpTo(RequiredPermissionsScreenDestination)
-                }
-            )
-        }
     }
 }
 

@@ -24,9 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.androidutils.os.dynamicColorsSupported
 import com.w2sv.composed.rememberStyledTextResource
 import com.w2sv.core.common.R
@@ -36,17 +33,17 @@ import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.DefaultItemRowIcon
 import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRow
-import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.Spacing
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
 import com.w2sv.filenavigator.ui.designsystem.drawer.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.designsystem.drawer.model.AppPreferences
 import com.w2sv.filenavigator.ui.designsystem.drawer.model.rememberAppPreferences
+import com.w2sv.filenavigator.ui.navigation.LocalNavigator
+import com.w2sv.filenavigator.ui.navigation.Navigator
 
-@Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
-fun AppSettingsScreen(navigator: DestinationsNavigator, appPreferences: AppPreferences = rememberAppPreferences()) {
+fun AppSettingsScreen(navigator: Navigator = LocalNavigator.current, appPreferences: AppPreferences = rememberAppPreferences()) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier

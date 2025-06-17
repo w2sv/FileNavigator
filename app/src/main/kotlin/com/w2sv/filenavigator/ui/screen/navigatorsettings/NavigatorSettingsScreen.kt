@@ -43,9 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.w2sv.composed.CollectLatestFromFlow
 import com.w2sv.composed.OnChange
 import com.w2sv.composed.OnDispose
@@ -58,9 +55,10 @@ import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
-import com.w2sv.filenavigator.ui.designsystem.NavigationTransitions
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
+import com.w2sv.filenavigator.ui.navigation.LocalNavigator
+import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AutoMoveIntroductionDialogIfNotYetShown
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.EnabledFileTypesBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
@@ -95,14 +93,13 @@ private sealed interface FileTypeConfigurationDialog : Parcelable {
     value class ConfigurePresetType(val fileType: AnyPresetWrappingFileType) : FileTypeConfigurationDialog
 }
 
-@Destination<RootGraph>(style = NavigationTransitions::class)
 @Composable
 fun NavigatorSettingsScreen(
-    navigator: DestinationsNavigator,
     navigatorVM: NavigatorViewModel = activityViewModel(),
     context: Context = LocalContext.current,
     scope: CoroutineScope = rememberCoroutineScope(),
-    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
+    navigator: Navigator = LocalNavigator.current,
 ) {
     CollectLatestFromFlow(
         flow = navigatorVM.makeSnackbarVisuals,

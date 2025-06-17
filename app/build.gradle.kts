@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.filenavigator.hilt)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.baselineprofile)
 }
 
@@ -118,6 +119,8 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.splashscreen)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
 
     // .Compose
     implementation(libs.androidx.compose.material3)
@@ -129,15 +132,16 @@ dependencies {
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.lifecycle.compose)
-    implementation(libs.compose.destinations)
-    ksp(libs.compose.destinations.ksp)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // Kotlinx
+    implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.kotlinx.serialization.core)
 
     // Other
     implementation(libs.slimber)
     implementation(libs.google.guava)
     implementation(libs.w2sv.simplestorage)
-    implementation(libs.kotlinx.collections.immutable)
     lintChecks(libs.compose.lint.checks)
     implementation(libs.textflow)
 

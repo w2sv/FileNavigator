@@ -34,17 +34,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ramcosta.composedestinations.generated.destinations.NavigatorSettingsScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import com.w2sv.core.common.R
-import com.w2sv.filenavigator.ui.LocalDestinationsNavigator
+import com.w2sv.filenavigator.ui.navigation.LocalNavigator
+import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DEFAULT_ANIMATION_DURATION
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
@@ -106,7 +102,7 @@ fun NavigatorStatusCard(modifier: Modifier = Modifier, navigatorVM: NavigatorVie
 private fun NavigatorStatusCard(
     navigatorIsRunning: Boolean,
     modifier: Modifier = Modifier,
-    destinationsNavigator: DestinationsNavigator = LocalDestinationsNavigator.current
+    navigator: Navigator = LocalNavigator.current
 ) {
     val navigatorStatusUiData = remember(navigatorIsRunning) {
         NavigatorStatusUiData.map.getValue(navigatorIsRunning)
@@ -117,20 +113,20 @@ private fun NavigatorStatusCard(
             HeaderWithStatusRow(statusText)
             ButtonRow(
                 toggleButton,
-                onSettingsButtonClick = { destinationsNavigator.navigate(NavigatorSettingsScreenDestination) },
+                onSettingsButtonClick = { navigator.toNavigatorSettings() },
                 modifier = Modifier.fillMaxWidth()
             )
         }
     }
 }
 
-@Preview
-@Composable
-private fun Prev() {
-    AppTheme {
-        NavigatorStatusCard(navigatorIsRunning = true, destinationsNavigator = EmptyDestinationsNavigator)
-    }
-}
+//@Preview
+//@Composable
+//private fun Prev() {
+//    AppTheme {
+//        NavigatorStatusCard(navigatorIsRunning = true, destinationsNavigator = EmptyDestinationsNavigator)
+//    }
+//}
 
 @Composable
 private fun HeaderWithStatusRow(statusText: StatusText, modifier: Modifier = Modifier) {
