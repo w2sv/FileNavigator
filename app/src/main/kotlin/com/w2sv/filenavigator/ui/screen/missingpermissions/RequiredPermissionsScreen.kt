@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.screen.missingpermissions
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -20,21 +18,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.w2sv.androidutils.openAppSettings
 import com.w2sv.common.util.goToManageExternalStorageSettings
-import com.w2sv.composed.OnChange
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.LocalPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
-import com.w2sv.filenavigator.ui.navigation.LocalNavigator
-import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.activityViewModel
+import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -45,16 +40,14 @@ private object RequiredPermissionsScreenDefaults {
 
 @Composable
 fun RequiredPermissionsScreen(
-    navigator: Navigator = LocalNavigator.current,
-    postNotificationsPermissionState: PermissionState = LocalPostNotificationsPermissionState.current
+    postNotificationsPermissionState: PermissionState = LocalPostNotificationsPermissionState.current,
+    appViewModel: AppViewModel = activityViewModel()
 ) {
-    val permissionCards = rememberMovablePermissionCards(postNotificationsPermissionState = postNotificationsPermissionState)
-
-    OnChange(value = permissionCards.isEmpty()) {
-        if (it) {
-            navigator.leaveRequiredPermissions()
-        }
-    }
+    val permissionCards = rememberMovablePermissionCards(
+        manageAllFilesPermissionGranted = appViewModel.permissions.manageAllFilesGranted.lifecycleAwareStateValue(),
+        postNotificationsPermissionRequested = { appViewModel.permissions.postNotificationsGranted.value },
+        postNotificationsPermissionState = postNotificationsPermissionState
+    )
 
     Scaffold(topBar = { TopAppBarAboveHorizontalDivider(title = stringResource(id = R.string.required_permissions)) }) { paddingValues ->
         val sharedModifier =
@@ -106,12 +99,11 @@ private fun LandscapeMode(permissionCards: ImmutableList<ModifierReceivingCompos
 
 @Composable
 private fun rememberMovablePermissionCards(
+    manageAllFilesPermissionGranted: Boolean,
+    postNotificationsPermissionRequested: () -> Boolean,
     postNotificationsPermissionState: PermissionState,
-    appVM: AppViewModel = activityViewModel(),
-    context: Context = LocalContext.current
 ): ImmutableList<ModifierReceivingComposable> {
-    val manageAllFilesPermissionGranted by appVM.manageAllFilesPermissionGranted.collectAsStateWithLifecycle()
-
+    val context = LocalContext.current
     return remember(
         key1 = postNotificationsPermissionState.status.isGranted,
         key2 = manageAllFilesPermissionGranted
@@ -124,10 +116,8 @@ private fun rememberMovablePermissionCards(
                         textRes = R.string.post_notifications_permission_rational,
                         onGrantButtonClick = {
                             postNotificationsPermissionState.launchPermissionRequest(
-                                launchedBefore = appVM.postNotificationsPermissionRequested.value,
-                                onSuppressed = {
-                                    context.openAppSettings()
-                                }
+                                launchedBefore = postNotificationsPermissionRequested(),
+                                onSuppressed = { context.openAppSettings() }
                             )
                         }
                     )
@@ -138,9 +128,7 @@ private fun rememberMovablePermissionCards(
                     PermissionCardProperties(
                         iconRes = R.drawable.ic_folder_open_24,
                         textRes = R.string.manage_external_storage_permission_rational,
-                        onGrantButtonClick = {
-                            goToManageExternalStorageSettings(context)
-                        }
+                        onGrantButtonClick = { goToManageExternalStorageSettings(context) }
                     )
                 )
             }

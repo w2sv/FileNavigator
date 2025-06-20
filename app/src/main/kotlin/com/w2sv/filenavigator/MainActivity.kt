@@ -79,11 +79,11 @@ class MainActivity : ComponentActivity() {
                     CompositionLocalProvider(
                         LocalMoveDestinationPathConverter provides moveDestinationPathConverter,
                         LocalPostNotificationsPermissionState provides rememberPostNotificationsPermissionState(
-                            onPermissionResult = { appVM.savePostNotificationsPermissionRequested() },
-                            onStatusChanged = appVM::setPostNotificationsPermissionGranted
+                            onPermissionResult = { appVM.permissions.savePostNotificationsRequested() },
+                            onStatusChanged = appVM.permissions::setPostNotificationsGranted
                         )
                     ) {
-                        NavGraph(anyPermissionMissing = appVM.anyPermissionMissing.lifecycleAwareStateValue())
+                        NavGraph(anyPermissionMissing = appVM.permissions.anyMissing.lifecycleAwareStateValue())
                     }
                 }
             }
@@ -92,19 +92,18 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        appVM.updateManageAllFilesPermissionGranted()
+        appVM.permissions.updateManageAllFilesPermission()
     }
 }
 
 @ReadOnlyComposable
 @Composable
-private fun useDarkTheme(theme: Theme): Boolean {
-    return when (theme) {
+private fun useDarkTheme(theme: Theme): Boolean =
+    when (theme) {
         Theme.Light -> false
         Theme.Dark -> true
         Theme.Default -> isSystemInDarkTheme()
     }
-}
 
 private class SwipeRightSplashScreenExitAnimation(private val onAnimationEnd: () -> Unit = {}) :
     SplashScreen.OnExitAnimationListener {

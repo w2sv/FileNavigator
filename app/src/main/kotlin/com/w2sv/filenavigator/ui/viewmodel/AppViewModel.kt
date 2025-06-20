@@ -1,20 +1,16 @@
 package com.w2sv.filenavigator.ui.viewmodel
 
-import android.Manifest
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.w2sv.androidutils.hasPermission
-import com.w2sv.androidutils.os.postNotificationsPermissionRequired
-import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
+import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.kotlinutils.coroutines.flow.combineStates
+import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,45 +21,16 @@ class AppViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    // ==============
-    // Permission-related
-    // ==============
+    val permissions = AppPermissions(preferencesRepository, viewModelScope, context)
 
-    val manageAllFilesPermissionGranted get() = _manageAllFilesPermissionGranted.asStateFlow()
-    private val _manageAllFilesPermissionGranted = MutableStateFlow(isExternalStorageManger)
-
-    fun updateManageAllFilesPermissionGranted() {
-        _manageAllFilesPermissionGranted.value = isExternalStorageManger
-    }
-
-    private val postNotificationsPermissionGranted =
-        MutableStateFlow(!postNotificationsPermissionRequired || context.hasPermission(Manifest.permission.POST_NOTIFICATIONS))
-
-    fun setPostNotificationsPermissionGranted(value: Boolean) {
-        postNotificationsPermissionGranted.value = value
-    }
-
-    val postNotificationsPermissionRequested =
-        preferencesRepository.postNotificationsPermissionRequested.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly
-        )
-
-    fun savePostNotificationsPermissionRequested() {
-        if (!postNotificationsPermissionRequested.value) {
-            viewModelScope.launch {
-                preferencesRepository.postNotificationsPermissionRequested.save(true)
+    init {
+        // Stop FileNavigator when any permission missing
+        permissions.anyMissing.collectOn(viewModelScope) {
+            if (it) {
+                FileNavigator.stop(context)
             }
         }
     }
-
-    val anyPermissionMissing = combineStates(
-        listOf(
-            postNotificationsPermissionGranted,
-            manageAllFilesPermissionGranted
-        ),
-        transform = { it.any { !it } }
-    )
 
     // ==============
     // Theme

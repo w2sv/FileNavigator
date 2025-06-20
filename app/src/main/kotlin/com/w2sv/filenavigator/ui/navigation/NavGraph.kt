@@ -1,14 +1,9 @@
 package com.w2sv.filenavigator.ui.navigation
 
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
-import androidx.compose.ui.unit.IntOffset
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -21,8 +16,8 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.NavigatorSettingsScree
 
 @Composable
 fun NavGraph(anyPermissionMissing: Boolean) {
-    val backStack = rememberNavBackStack(if (anyPermissionMissing) Screen.RequiredPermissions else Screen.Home)
-    val navigator = remember(backStack) { Navigator(backStack) }
+    val backStack = rememberNavBackStack(Screen.initial(anyPermissionMissing))
+    val navigator = remember(backStack) { NavigatorImpl(backStack) }
 
     CompositionLocalProvider(LocalNavigator provides navigator) {
         NavDisplay(
@@ -30,26 +25,14 @@ fun NavGraph(anyPermissionMissing: Boolean) {
             onBack = { backStack.removeLastOrNull() },
             transitionSpec = {
                 ContentTransform(
-                    slideInHorizontally(
-                        initialOffsetX = { it }, // from right
-                        animationSpec = springSpec
-                    ),
-                    slideOutHorizontally(
-                        targetOffsetX = { -it }, // to left
-                        animationSpec = springSpec
-                    )
+                    NavAnimation.NonPop.enter(),
+                    NavAnimation.NonPop.exit()
                 )
             },
             popTransitionSpec = {
                 ContentTransform(
-                    slideInHorizontally(
-                        initialOffsetX = { -it }, // from left (back)
-                        animationSpec = springSpec
-                    ),
-                    slideOutHorizontally(
-                        targetOffsetX = { it }, // to right (back)
-                        animationSpec = springSpec
-                    )
+                    NavAnimation.Pop.enter(),
+                    NavAnimation.Pop.exit()
                 )
             },
             entryProvider = entryProvider {
@@ -68,15 +51,12 @@ fun NavGraph(anyPermissionMissing: Boolean) {
             }
         )
 
+        // Navigate to or away from Screen.RequiredPermissions when respective conditions met
         OnChange(anyPermissionMissing) {
-            if (it && navigator.currentScreen !is Screen.RequiredPermissions) {
-                navigator.toRequiredPermissions()
+            when {
+                it && navigator.currentScreen !is Screen.RequiredPermissions -> navigator.toRequiredPermissions()
+                !it && navigator.currentScreen is Screen.RequiredPermissions -> navigator.leaveRequiredPermissions()
             }
         }
     }
 }
-
-private val springSpec = spring<IntOffset>(
-    stiffness = Spring.StiffnessMediumLow,
-    dampingRatio = Spring.DampingRatioNoBouncy
-)
