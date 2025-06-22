@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.core.common.R
@@ -45,12 +46,11 @@ import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
 import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
-import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.filenavigator.ui.viewmodel.MoveHistoryViewModel
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun MoveHistoryCard(modifier: Modifier = Modifier, moveHistoryVM: MoveHistoryViewModel = activityViewModel()) {
+fun MoveHistoryCard(modifier: Modifier = Modifier, moveHistoryVM: MoveHistoryViewModel = hiltViewModel()) {
     val moveHistory by moveHistoryVM.moveHistory.collectAsStateWithLifecycle()
 
     val moveHistoryIsEmpty by remember {
@@ -110,7 +110,7 @@ fun MoveHistoryCard(modifier: Modifier = Modifier, moveHistoryVM: MoveHistoryVie
             } else {
                 MoveHistory(
                     history = moveHistory.toImmutableList(),
-                    onRowClick = rememberMoveEntryRowOnClick()
+                    onRowClick = rememberMoveEntryRowOnClick(moveHistoryVM::launchEntryDeletion)
                 )
             }
         }
@@ -119,7 +119,7 @@ fun MoveHistoryCard(modifier: Modifier = Modifier, moveHistoryVM: MoveHistoryVie
 
 @Composable
 private fun rememberMoveEntryRowOnClick(
-    moveHistoryVM: MoveHistoryViewModel = activityViewModel(),
+    launchHistoryEntryDeletion: (MovedFile) -> Unit,
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ): suspend (MovedFile, Boolean) -> Unit {
@@ -136,7 +136,7 @@ private fun rememberMoveEntryRowOnClick(
                         action = SnackbarAction(
                             label = context.getString(R.string.delete_entry),
                             callback = {
-                                moveHistoryVM.launchEntryDeletion(movedFile)
+                                launchHistoryEntryDeletion(movedFile)
                                 snackbarHostState.currentSnackbarData?.dismiss()
                             }
                         )

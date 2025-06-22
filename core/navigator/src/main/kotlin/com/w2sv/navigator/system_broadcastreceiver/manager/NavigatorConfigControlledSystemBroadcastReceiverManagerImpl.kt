@@ -6,12 +6,12 @@ import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.navigator.system_broadcastreceiver.BootCompletedReceiver
 import com.w2sv.navigator.system_broadcastreceiver.PowerSaveModeChangedReceiver
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import slimber.log.i
-import javax.inject.Inject
 
 internal class NavigatorConfigControlledSystemBroadcastReceiverManagerImpl @Inject constructor(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,

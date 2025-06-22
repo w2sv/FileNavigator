@@ -2,7 +2,6 @@ package com.w2sv.filenavigator.ui.viewmodel
 
 import android.content.Context
 import androidx.compose.material3.SnackbarVisuals
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.filenavigator.ui.state.ReversibleNavigatorConfig
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newCoroutineContext
 
 typealias MakeSnackbarVisuals = (Context) -> SnackbarVisuals
 
@@ -26,7 +24,7 @@ class NavigatorViewModel @Inject constructor(
     val navigatorIsRunning: FileNavigator.IsRunning,
     navigatorConfigControlledSystemBroadcastReceiverManager: NavigatorConfigControlledSystemBroadcastReceiverManager,
     @ApplicationContext context: Context
-) : ViewModel() {
+) : LifecycleLoggingViewModel() {
 
     init {
         navigatorConfigControlledSystemBroadcastReceiverManager.toggleReceiversOnStatusChange(

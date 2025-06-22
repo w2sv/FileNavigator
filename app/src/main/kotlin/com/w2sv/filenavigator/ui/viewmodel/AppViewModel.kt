@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.viewmodel
 
 import android.content.Context
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
@@ -19,7 +18,7 @@ class AppViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
     @ApplicationContext context: Context
 ) :
-    ViewModel() {
+    LifecycleLoggingViewModel() {
 
     val permissions = AppPermissions(preferencesRepository, viewModelScope, context)
 
