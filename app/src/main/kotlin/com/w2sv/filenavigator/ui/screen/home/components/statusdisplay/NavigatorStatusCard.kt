@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.navigation.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
@@ -44,7 +46,6 @@ import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.DEFAULT_ANIMATION_DURATION
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
-import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import com.w2sv.navigator.FileNavigator
 
@@ -95,7 +96,8 @@ private data class NavigatorToggleButton(
 
 @Composable
 fun NavigatorStatusCard(modifier: Modifier = Modifier, navigatorVM: NavigatorViewModel = activityViewModel()) {
-    NavigatorStatusCard(navigatorIsRunning = navigatorVM.navigatorIsRunning.lifecycleAwareStateValue(), modifier = modifier)
+    val navigatorIsRunning by navigatorVM.navigatorIsRunning.collectAsStateWithLifecycle()
+    NavigatorStatusCard(navigatorIsRunning = navigatorIsRunning, modifier = modifier)
 }
 
 @Composable
@@ -120,13 +122,13 @@ private fun NavigatorStatusCard(
     }
 }
 
-//@Preview
-//@Composable
-//private fun Prev() {
+// @Preview
+// @Composable
+// private fun Prev() {
 //    AppTheme {
 //        NavigatorStatusCard(navigatorIsRunning = true, destinationsNavigator = EmptyDestinationsNavigator)
 //    }
-//}
+// }
 
 @Composable
 private fun HeaderWithStatusRow(statusText: StatusText, modifier: Modifier = Modifier) {

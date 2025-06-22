@@ -15,10 +15,14 @@ interface Navigator {
 }
 
 class NavigatorImpl(backStack: NavBackStack) : Navigator, Nav3Navigator(backStack) {
-    override fun toAppSettings() = launchSingleTop(Screen.AppSettings)
-    override fun toRequiredPermissions() = clearAndLaunch(Screen.RequiredPermissions)
-    override fun leaveRequiredPermissions() = clearAndLaunch(Screen.Home)
-    override fun toNavigatorSettings() = launchSingleTop(Screen.NavigatorSettings)
+    override fun toAppSettings() =
+        launchSingleTop(Screen.AppSettings)
+    override fun toRequiredPermissions() =
+        clearAndLaunch(Screen.RequiredPermissions)
+    override fun leaveRequiredPermissions() =
+        clearAndLaunch(Screen.Home)
+    override fun toNavigatorSettings() =
+        launchSingleTop(Screen.NavigatorSettings)
 }
 
 class PreviewNavigator : Navigator {

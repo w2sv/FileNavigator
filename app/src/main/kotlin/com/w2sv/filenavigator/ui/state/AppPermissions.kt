@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.viewmodel
+package com.w2sv.filenavigator.ui.state
 
 import android.Manifest
 import android.content.Context

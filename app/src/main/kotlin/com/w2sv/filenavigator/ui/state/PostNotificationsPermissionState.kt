@@ -10,10 +10,7 @@ import com.w2sv.androidutils.os.postNotificationsPermissionRequired
 import com.w2sv.composed.OnChange
 
 @Composable
-fun rememberPostNotificationsPermissionState(
-    onPermissionResult: (Boolean) -> Unit,
-    onStatusChanged: (Boolean) -> Unit
-): PermissionState =
+fun rememberPostNotificationsPermissionState(onPermissionResult: (Boolean) -> Unit, onStatusChanged: (Boolean) -> Unit): PermissionState =
     if (postNotificationsPermissionRequired) {
         rememberPermissionState(
             permission = Manifest.permission.POST_NOTIFICATIONS,

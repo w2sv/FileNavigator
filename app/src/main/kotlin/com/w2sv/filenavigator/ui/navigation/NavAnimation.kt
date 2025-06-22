@@ -17,15 +17,17 @@ object NavAnimation {
 
     object NonPop {
 
-        fun enter() = slideInHorizontally(
-            initialOffsetX = { it / 2 },
-            animationSpec = slideAnimationSpec
-        ) + fadeIn(animationSpec = fadeAnimationSpec)
+        fun enter() =
+            slideInHorizontally(
+                initialOffsetX = { it / 2 },
+                animationSpec = slideAnimationSpec
+            ) + fadeIn(animationSpec = fadeAnimationSpec)
 
-        fun exit() = slideOutHorizontally(
-            targetOffsetX = { -it / 2 },
-            animationSpec = slideAnimationSpec
-        ) + fadeOut(animationSpec = fadeAnimationSpec)
+        fun exit() =
+            slideOutHorizontally(
+                targetOffsetX = { -it / 2 },
+                animationSpec = slideAnimationSpec
+            ) + fadeOut(animationSpec = fadeAnimationSpec)
 
         private val slideAnimationSpec: FiniteAnimationSpec<IntOffset> = tween(
             durationMillis = (ANIMATION_DURATION * 1.5).toInt(),
@@ -41,15 +43,17 @@ object NavAnimation {
 
     object Pop {
 
-        fun enter() = slideInHorizontally(
-            initialOffsetX = { -it / 2 },
-            animationSpec = slideAnimationSpec
-        ) + fadeIn(animationSpec = fadeAnimationSpec)
+        fun enter() =
+            slideInHorizontally(
+                initialOffsetX = { -it / 2 },
+                animationSpec = slideAnimationSpec
+            ) + fadeIn(animationSpec = fadeAnimationSpec)
 
-        fun exit() = slideOutHorizontally(
-            targetOffsetX = { it / 2 },
-            animationSpec = slideAnimationSpec
-        ) + fadeOut(animationSpec = fadeAnimationSpec)
+        fun exit() =
+            slideOutHorizontally(
+                targetOffsetX = { it / 2 },
+                animationSpec = slideAnimationSpec
+            ) + fadeOut(animationSpec = fadeAnimationSpec)
 
         private val slideAnimationSpec: FiniteAnimationSpec<IntOffset> = tween(
             durationMillis = (ANIMATION_DURATION * 1.2).toInt(),

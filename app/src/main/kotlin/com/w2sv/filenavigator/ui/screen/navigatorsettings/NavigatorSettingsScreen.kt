@@ -68,7 +68,6 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypecon
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.activityViewModel
-import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toImmutableSet
@@ -99,7 +98,7 @@ fun NavigatorSettingsScreen(
     context: Context = LocalContext.current,
     scope: CoroutineScope = rememberCoroutineScope(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
-    navigator: Navigator = LocalNavigator.current,
+    navigator: Navigator = LocalNavigator.current
 ) {
     CollectLatestFromFlow(
         flow = navigatorVM.makeSnackbarVisuals,
@@ -130,6 +129,8 @@ fun NavigatorSettingsScreen(
         mutableStateOf<FileTypeConfigurationDialog?>(null)
     }
 
+    val configurationHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
+
     Scaffold(
         topBar = {
             BackArrowTopAppBar(
@@ -139,7 +140,7 @@ fun NavigatorSettingsScreen(
         },
         floatingActionButton = {
             ConfigurationButtonRow(
-                configurationHasChanged = navigatorVM.reversibleConfig.statesDissimilar.lifecycleAwareStateValue(),
+                configurationHasChanged = configurationHasChanged,
                 resetConfiguration = remember { navigatorVM.reversibleConfig::reset },
                 syncConfiguration = remember {
                     {

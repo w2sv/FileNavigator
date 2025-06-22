@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.w2sv.androidutils.openAppSettings
@@ -29,7 +31,6 @@ import com.w2sv.filenavigator.ui.LocalPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.activityViewModel
-import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -43,8 +44,10 @@ fun RequiredPermissionsScreen(
     postNotificationsPermissionState: PermissionState = LocalPostNotificationsPermissionState.current,
     appViewModel: AppViewModel = activityViewModel()
 ) {
+    val manageAllFilesPermissionGranted by appViewModel.permissions.manageAllFilesGranted.collectAsStateWithLifecycle()
+
     val permissionCards = rememberMovablePermissionCards(
-        manageAllFilesPermissionGranted = appViewModel.permissions.manageAllFilesGranted.lifecycleAwareStateValue(),
+        manageAllFilesPermissionGranted = manageAllFilesPermissionGranted,
         postNotificationsPermissionRequested = { appViewModel.permissions.postNotificationsGranted.value },
         postNotificationsPermissionState = postNotificationsPermissionState
     )
@@ -101,7 +104,7 @@ private fun LandscapeMode(permissionCards: ImmutableList<ModifierReceivingCompos
 private fun rememberMovablePermissionCards(
     manageAllFilesPermissionGranted: Boolean,
     postNotificationsPermissionRequested: () -> Boolean,
-    postNotificationsPermissionState: PermissionState,
+    postNotificationsPermissionState: PermissionState
 ): ImmutableList<ModifierReceivingComposable> {
     val context = LocalContext.current
     return remember(

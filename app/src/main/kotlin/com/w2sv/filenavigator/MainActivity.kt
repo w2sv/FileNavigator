@@ -22,6 +22,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
@@ -30,7 +31,6 @@ import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.navigation.NavGraph
 import com.w2sv.filenavigator.ui.state.rememberPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.util.lifecycleAwareStateValue
 import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -55,12 +55,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val useDarkTheme = useDarkTheme(theme = appVM.theme.lifecycleAwareStateValue())
+            val theme by appVM.theme.collectAsStateWithLifecycle()
+            val useDarkTheme = useDarkTheme(theme = theme)
+            val useAmoledBlackTheme by appVM.useAmoledBlackTheme.collectAsStateWithLifecycle()
+            val useDynamicColors by appVM.useDynamicColors.collectAsStateWithLifecycle()
+            val anyPermissionMissing by appVM.permissions.anyMissing.collectAsStateWithLifecycle()
+
             CompositionLocalProvider(LocalUseDarkTheme provides useDarkTheme) {
                 AppTheme(
                     useDarkTheme = useDarkTheme,
-                    useAmoledBlackTheme = appVM.useAmoledBlackTheme.lifecycleAwareStateValue(),
-                    useDynamicColors = appVM.useDynamicColors.lifecycleAwareStateValue()
+                    useAmoledBlackTheme = useAmoledBlackTheme,
+                    useDynamicColors = useDynamicColors
                 ) {
                     // Reset system bar styles on theme change
                     LaunchedEffect(useDarkTheme, triggerStatusBarStyleUpdate) {
@@ -83,7 +88,7 @@ class MainActivity : ComponentActivity() {
                             onStatusChanged = appVM.permissions::setPostNotificationsGranted
                         )
                     ) {
-                        NavGraph(anyPermissionMissing = appVM.permissions.anyMissing.lifecycleAwareStateValue())
+                        NavGraph(anyPermissionMissing = anyPermissionMissing)
                     }
                 }
             }
