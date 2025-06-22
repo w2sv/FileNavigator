@@ -165,11 +165,11 @@ sealed interface PresetFileType : StaticFileType {
         )
     )
 
-    data object APK : NonMedia.ExtensionSet(
+    data object APK : NonMedia.ExtensionConfigurable(
         R.string.apk,
         R.drawable.ic_apk_file_24,
         -15410306,
-        setOf("apk")
+        setOf("apk", "apkm", "xapk", "apks")
     )
 
     data object EBook : NonMedia.ExtensionConfigurable(
