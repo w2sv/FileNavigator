@@ -5,13 +5,10 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,8 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import com.w2sv.composed.extensions.thenIfNotNull
 import com.w2sv.core.common.R
 
 @Composable
@@ -35,11 +30,7 @@ fun NavigationDrawerScreenTopAppBar(
     onNavigationIconClick: () -> Unit
 ) {
     TopAppBar(
-        title = {
-            Text(
-                title
-            )
-        },
+        title = { Text(title) },
         modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
@@ -50,8 +41,7 @@ fun NavigationDrawerScreenTopAppBar(
             IconButton(onClick = onNavigationIconClick) {
                 Icon(
                     imageVector = Icons.Filled.Menu,
-                    contentDescription = stringResource(R.string.open_navigation_drawer),
-                    modifier = Modifier.size(28.dp)
+                    contentDescription = stringResource(R.string.open_navigation_drawer)
                 )
             }
         },
@@ -64,7 +54,7 @@ fun NavigationDrawerScreenTopAppBar(
 fun TopAppBarAboveHorizontalDivider(
     title: String,
     modifier: Modifier = Modifier,
-    navigationIcon: (@Composable () -> Unit)? = null,
+    navigationIcon: @Composable () -> Unit = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors()
 ) {
@@ -73,12 +63,11 @@ fun TopAppBarAboveHorizontalDivider(
             title = {
                 Text(
                     text = title,
-                    modifier = Modifier.thenIfNotNull(navigationIcon) { padding(start = 14.dp) },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             },
-            navigationIcon = navigationIcon ?: {},
+            navigationIcon = navigationIcon,
             windowInsets = windowInsets,
             colors = colors
         )
@@ -96,12 +85,7 @@ fun BackArrowTopAppBar(
         title = title,
         modifier = modifier,
         navigationIcon = {
-            FilledTonalIconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .padding(start = 12.dp)
-                    .size(38.dp)
-            ) {
+            IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
                     contentDescription = stringResource(R.string.return_to_main_screen)

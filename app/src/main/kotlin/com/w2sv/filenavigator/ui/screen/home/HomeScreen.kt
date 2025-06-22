@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import com.w2sv.composed.isPortraitModeActive
+import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.NavigationDrawerScreenTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.Padding
@@ -49,7 +50,7 @@ fun HomeScreen(
             },
             topBar = {
                 NavigationDrawerScreenTopAppBar(
-                    title = stringResource(id = com.w2sv.core.common.R.string.app_name),
+                    title = stringResource(id = R.string.app_name),
                     onNavigationIconClick = {
                         scope.launch {
                             drawerState.open()

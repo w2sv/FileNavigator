@@ -5,21 +5,17 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -44,25 +40,23 @@ import com.w2sv.filenavigator.ui.navigation.Navigator
 
 @Composable
 fun AppSettingsScreen(navigator: Navigator = LocalNavigator.current, appPreferences: AppPreferences = rememberAppPreferences()) {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility)
-        ) {
+    Scaffold(
+        topBar = {
             BackArrowTopAppBar(
                 title = stringResource(id = R.string.app_settings),
-                onBack = remember { { navigator.popBackStack() } },
+                onBack = { navigator.popBackStack() },
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            SettingsCardColumn(
-                appPreferences = appPreferences,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = Padding.defaultHorizontal)
-            )
         }
+    ) { innerPadding ->
+        SettingsCardColumn(
+            appPreferences = appPreferences,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = Padding.defaultHorizontal)
+        )
     }
 }
 
