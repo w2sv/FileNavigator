@@ -6,8 +6,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
@@ -24,7 +24,7 @@ fun AppUi(
     appVM: AppViewModel = activityViewModel()
 ) {
     val theme by appVM.theme.collectAsStateWithLifecycle()
-    val useDarkTheme = useDarkTheme(theme = theme)
+    val useDarkTheme = rememberUseDarkTheme(theme = theme)
     val useAmoledBlackTheme by appVM.useAmoledBlackTheme.collectAsStateWithLifecycle()
     val useDynamicColors by appVM.useDynamicColors.collectAsStateWithLifecycle()
     val anyPermissionMissing by appVM.permissions.anyMissing.collectAsStateWithLifecycle()
@@ -61,11 +61,14 @@ fun AppUi(
     }
 }
 
-@ReadOnlyComposable
 @Composable
-private fun useDarkTheme(theme: Theme): Boolean =
-    when (theme) {
-        Theme.Light -> false
-        Theme.Dark -> true
-        Theme.Default -> isSystemInDarkTheme()
+private fun rememberUseDarkTheme(theme: Theme): Boolean {
+    val isSystemInDarkTheme = isSystemInDarkTheme()
+    return remember(theme, isSystemInDarkTheme) {
+        when (theme) {
+            Theme.Light -> false
+            Theme.Dark -> true
+            Theme.Default -> isSystemInDarkTheme
+        }
     }
+}
