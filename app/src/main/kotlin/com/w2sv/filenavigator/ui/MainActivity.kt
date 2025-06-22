@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator
+package com.w2sv.filenavigator.ui
 
 import android.animation.ObjectAnimator
 import android.graphics.Color
@@ -25,13 +25,9 @@ import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
-import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
-import com.w2sv.filenavigator.ui.LocalPostNotificationsPermissionState
-import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.navigation.NavGraph
 import com.w2sv.filenavigator.ui.state.rememberPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -121,7 +117,7 @@ private class SwipeRightSplashScreenExitAnimation(private val onAnimationEnd: ()
         )
             .apply {
                 interpolator = AnticipateInterpolator()
-                duration = 400L
+                ObjectAnimator.setDuration = 400L
                 doOnEnd {
                     splashScreenViewProvider.remove()
                     onAnimationEnd()

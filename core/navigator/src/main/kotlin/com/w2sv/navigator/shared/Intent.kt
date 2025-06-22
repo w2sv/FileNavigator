@@ -17,7 +17,7 @@ internal fun mainActivityPendingIntent(context: Context): PendingIntent =
 
 internal fun mainActivityIntent(context: Context): Intent =
     Intent.makeRestartActivityTask(
-        ComponentName(context, "com.w2sv.filenavigator.MainActivity")
+        ComponentName(context, "com.w2sv.filenavigator.ui.MainActivity")
     )
 
 internal operator fun Intent.plus(notificationResources: NotificationResources?): Intent =
