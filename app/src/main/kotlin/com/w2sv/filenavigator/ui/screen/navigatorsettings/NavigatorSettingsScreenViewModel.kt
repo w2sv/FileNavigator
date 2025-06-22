@@ -1,10 +1,11 @@
-package com.w2sv.filenavigator.ui.viewmodel
+package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
 import android.content.Context
 import androidx.compose.material3.SnackbarVisuals
 import androidx.lifecycle.viewModelScope
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.filenavigator.ui.state.ReversibleNavigatorConfig
+import com.w2sv.filenavigator.ui.util.LifecycleLoggingViewModel
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.system_broadcastreceiver.manager.NavigatorConfigControlledSystemBroadcastReceiverManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
 typealias MakeSnackbarVisuals = (Context) -> SnackbarVisuals
 
 @HiltViewModel
-class NavigatorViewModel @Inject constructor(
+class NavigatorSettingsScreenViewModel @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
     val navigatorIsRunning: FileNavigator.IsRunning,
     navigatorConfigControlledSystemBroadcastReceiverManager: NavigatorConfigControlledSystemBroadcastReceiverManager,

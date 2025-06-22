@@ -31,7 +31,7 @@ import com.w2sv.filenavigator.ui.LocalPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.activityViewModel
-import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
+import com.w2sv.filenavigator.ui.AppViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

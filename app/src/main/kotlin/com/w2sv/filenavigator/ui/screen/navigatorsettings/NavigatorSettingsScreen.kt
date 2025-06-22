@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.CollectLatestFromFlow
 import com.w2sv.composed.OnChange
@@ -67,8 +68,6 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypecon
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.PresetFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
-import com.w2sv.filenavigator.ui.util.activityViewModel
-import com.w2sv.filenavigator.ui.viewmodel.NavigatorViewModel
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.CoroutineScope
@@ -94,7 +93,7 @@ private sealed interface FileTypeConfigurationDialog : Parcelable {
 
 @Composable
 fun NavigatorSettingsScreen(
-    navigatorVM: NavigatorViewModel = activityViewModel(),
+    navigatorVM: NavigatorSettingsScreenViewModel = hiltViewModel(),
     context: Context = LocalContext.current,
     scope: CoroutineScope = rememberCoroutineScope(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,

@@ -46,12 +46,12 @@ import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
 import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
-import com.w2sv.filenavigator.ui.viewmodel.MoveHistoryViewModel
+import com.w2sv.filenavigator.ui.screen.home.HomeScreenViewModel
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun MoveHistoryCard(modifier: Modifier = Modifier, moveHistoryVM: MoveHistoryViewModel = hiltViewModel()) {
-    val moveHistory by moveHistoryVM.moveHistory.collectAsStateWithLifecycle()
+fun MoveHistoryCard(modifier: Modifier = Modifier, homeScreenVM: HomeScreenViewModel = hiltViewModel()) {
+    val moveHistory by homeScreenVM.moveHistory.collectAsStateWithLifecycle()
 
     val moveHistoryIsEmpty by remember {
         derivedStateOf { moveHistory.isEmpty() }
@@ -62,7 +62,7 @@ fun MoveHistoryCard(modifier: Modifier = Modifier, moveHistoryVM: MoveHistoryVie
     if (showHistoryDeletionDialog) {
         HistoryDeletionDialog(
             closeDialog = { showHistoryDeletionDialog = false },
-            onConfirmed = moveHistoryVM::launchHistoryDeletion
+            onConfirmed = homeScreenVM::launchHistoryDeletion
         )
     }
 
@@ -110,7 +110,7 @@ fun MoveHistoryCard(modifier: Modifier = Modifier, moveHistoryVM: MoveHistoryVie
             } else {
                 MoveHistory(
                     history = moveHistory.toImmutableList(),
-                    onRowClick = rememberMoveEntryRowOnClick(moveHistoryVM::launchEntryDeletion)
+                    onRowClick = rememberMoveEntryRowOnClick(homeScreenVM::launchEntryDeletion)
                 )
             }
         }

@@ -1,17 +1,18 @@
-package com.w2sv.filenavigator.ui.viewmodel
+package com.w2sv.filenavigator.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.filenavigator.ui.state.AppPermissions
+import com.w2sv.filenavigator.ui.util.LifecycleLoggingViewModel
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class AppViewModel @Inject constructor(
@@ -26,7 +27,7 @@ class AppViewModel @Inject constructor(
         // Stop FileNavigator when any permission missing
         permissions.anyMissing.collectOn(viewModelScope) {
             if (it) {
-                FileNavigator.stop(context)
+                FileNavigator.Companion.stop(context)
             }
         }
     }
@@ -37,7 +38,7 @@ class AppViewModel @Inject constructor(
 
     val theme = preferencesRepository.theme.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed()
+        SharingStarted.Companion.WhileSubscribed()
     )
 
     fun saveTheme(theme: Theme) {
@@ -48,7 +49,7 @@ class AppViewModel @Inject constructor(
 
     val useAmoledBlackTheme = preferencesRepository.useAmoledBlackTheme.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed()
+        SharingStarted.Companion.WhileSubscribed()
     )
 
     fun saveUseAmoledBlackTheme(value: Boolean) {
@@ -59,7 +60,7 @@ class AppViewModel @Inject constructor(
 
     val useDynamicColors = preferencesRepository.useDynamicColors.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed()
+        SharingStarted.Companion.WhileSubscribed()
     )
 
     fun saveUseDynamicColors(value: Boolean) {
@@ -74,7 +75,7 @@ class AppViewModel @Inject constructor(
 
     val showStorageVolumeNames = preferencesRepository.showStorageVolumeNames.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed()
+        SharingStarted.Companion.WhileSubscribed()
     )
 
     fun saveShowStorageVolumeNames(value: Boolean) {
@@ -85,7 +86,7 @@ class AppViewModel @Inject constructor(
 
     val showAutoMoveIntroduction = preferencesRepository.showAutoMoveIntroduction.stateIn(
         viewModelScope,
-        SharingStarted.Eagerly
+        SharingStarted.Companion.Eagerly
     )
 
     fun saveShowAutoMoveIntroduction(value: Boolean) {

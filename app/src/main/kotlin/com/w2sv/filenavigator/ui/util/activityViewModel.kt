@@ -12,6 +12,6 @@ import com.w2sv.androidutils.findActivity
 @Composable
 inline fun <reified VM : ViewModel> activityViewModel(): VM =
     hiltViewModel(
-        LocalView.current.findViewTreeViewModelStoreOwner()
+        viewModelStoreOwner = LocalView.current.findViewTreeViewModelStoreOwner()
             ?: LocalContext.current.findActivity() as ViewModelStoreOwner
     )

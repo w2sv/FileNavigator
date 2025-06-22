@@ -20,7 +20,7 @@ import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.activityViewModel
-import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
+import com.w2sv.filenavigator.ui.AppViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
 

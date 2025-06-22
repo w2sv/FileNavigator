@@ -31,7 +31,7 @@ import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.navigation.NavGraph
 import com.w2sv.filenavigator.ui.state.rememberPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.viewmodel.AppViewModel
+import com.w2sv.filenavigator.ui.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

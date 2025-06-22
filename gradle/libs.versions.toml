@@ -19,6 +19,7 @@ kotlinxSerializationCore = "1.8.1"
 ksp = "2.1.21-2.0.2"
 ktlint = "12.3.0"
 lifecycle = "2.9.1"
+lifecycleViewmodelNavigation3 = "1.0.0-alpha02"
 # @keep
 minSdk = "30"
 nav3Core = "1.0.0-alpha04"
@@ -51,6 +52,7 @@ androidx-core-ktx = "androidx.core:core-ktx:1.16.0"
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-navigation3-android = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3-android", version.ref = "lifecycleViewmodelNavigation3" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }

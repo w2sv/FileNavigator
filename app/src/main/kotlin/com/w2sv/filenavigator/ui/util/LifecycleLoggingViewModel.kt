@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.viewmodel
+package com.w2sv.filenavigator.ui.util
 
 import androidx.lifecycle.ViewModel
 import com.w2sv.common.util.logIdentifier
@@ -11,7 +11,7 @@ abstract class LifecycleLoggingViewModel : ViewModel() {
     }
 
     override fun onCleared() {
-        super.onCleared()
         i { "Lifecycle callback: ${this.logIdentifier}.onCleared" }
+        super.onCleared()
     }
 }

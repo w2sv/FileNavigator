@@ -14,11 +14,14 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
@@ -31,13 +34,15 @@ import com.w2sv.filenavigator.ui.screen.home.components.movehistory.MoveHistoryC
 import com.w2sv.filenavigator.ui.screen.home.components.statusdisplay.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
+import com.w2sv.filenavigator.ui.screen.home.HomeScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    scope: CoroutineScope = rememberCoroutineScope()
+    scope: CoroutineScope = rememberCoroutineScope(),
+    viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
     BackHandler(enabled = drawerState.isOpen) {
         scope.launch { drawerState.close() }
@@ -70,8 +75,10 @@ fun HomeScreen(
                         animationBoxHeight = LocalConfiguration.current.screenHeightDp
                     )
 
+            val navigatorIsRunning by viewModel.navigatorIsRunning.collectAsStateWithLifecycle()
+
             val statusDisplayCard: ModifierReceivingComposable = rememberMovableContentOf {
-                NavigatorStatusCard(it)
+                NavigatorStatusCard(navigatorIsRunning = navigatorIsRunning, modifier = it)
             }
             val moveHistoryCard: ModifierReceivingComposable = rememberMovableContentOf {
                 MoveHistoryCard(it)
