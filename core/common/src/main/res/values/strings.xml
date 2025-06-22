@@ -31,7 +31,6 @@
 
     <string name="new_move_file_notification_title">New %1$s</string>
     <string name="new_navigatable_file">New navigatable file</string>
-    <string name="batch_move_files">Batch move files</string>
     <string name="move_progress">Move progress</string>
     <string name="manage_all_files_permission_missing">Manage all files permission missing</string>
     <string name="internal_error">Internal Error</string>
@@ -47,7 +46,6 @@
     <string name="starting_navigator">Launching File Navigator…</string>
     <string name="auto_move_destination_invalid">Auto Move Destination invalid</string>
     <string name="has_been_deleted_and_got_therefore_removed_from">"has been deleted and got therefore removed from"</string>
-    <string name="quick_move_destination_doesnt_exist">Quick move destination doesn\'t exist</string>
     <string name="couldnt_move">Couldn\'t move</string>
     <string name="directory">Directory</string>
     <string name="size">Size</string>
@@ -59,7 +57,6 @@
         <item quantity="other"><![CDATA[Moved %1$d files to <b>%2$s</b>]]></item>
     </plurals>
     <string name="cancel">Cancel</string>
-    <string name="directory_access">Directory Access</string>
     <string name="understood">Understood</string>
     <string name="quick_move_permission_query_dialog_content">You need to grant File Navigator access to the selected destination to quick-move files there.\n\nThis is necessary only once per destination.</string>
     <string name="file_deletion_confirmation_dialog_message"><![CDATA[Are you sure you want to delete <b>%1$s</b>?]]></string>
@@ -127,7 +124,6 @@
     <string name="auto">Auto</string>
     <string name="rate_the_app_in_the_playstore">Rate the app in the PlayStore</string>
     <string name="configure_the_used_file_types">Configure the used file types.</string>
-    <string name="exclude">Exclude</string>
     <string name="navigated_file_types">Navigated File Types</string>
     <string name="select_the_auto_move_destination">Select the auto move destination.</string>
     <string name="set_auto_move_destination_for_all_sources">Set Auto Move destination for all sources</string>
@@ -162,7 +158,6 @@
     <string name="edit_file_type_name_field_label">Name</string>
     <string name="edit_file_type_dialog_title">Edit File Type</string>
     <string name="preset_non_media_file_type_configuration_dialog_title">Edit %1$s File Type</string>
-    <string name="save">Save</string>
     <string name="create_file_type_dialog_title">Create a File Type</string>
     <string name="create">Create</string>
     <string name="delete_the_file_type">Delete the file type.</string>
@@ -179,10 +174,6 @@
     <string name="remove_from">Remove <b>%1$s</b> from <b>%2$s</b></string>
     <string name="delete_file_type">Delete <b>%1$s</b> type</string>
     <string name="enter_a_file_extension">Enter a file extension</string>
-    <plurals name="add_file_types_button">
-        <item quantity="one">Add File Type</item>
-        <item quantity="other">Add File Types</item>
-    </plurals>
     <string name="can_t_view_file_from_within_file_navigator">Can\'t view this file from within File Navigator.</string>
     <string name="navigator">Navigator</string>
     <string name="status">Status:</string>
