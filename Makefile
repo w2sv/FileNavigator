@@ -55,16 +55,16 @@ build-and-publish:
 	@echo "Check"
 	@./gradlew check
 
+	@$(MAKE) baseline-profile
 	@$(MAKE) clean  # Required as 'publishBundle' publishes all .aab's in specified archive dir
-	@#$(MAKE) baseline-profile
 
 	@echo "Pushing latest changes";git add .; git commit -m "$(VERSION)"; git push;
 
 	@$(MAKE) build-apk
 	@$(MAKE) create-gh-release
 
-#	@$(MAKE) build-aab
-#	@$(MAKE) publish-bundle
+	@$(MAKE) build-aab
+	@$(MAKE) publish-bundle
 
 create-gh-release:
 	@echo "Create GitHub Release"

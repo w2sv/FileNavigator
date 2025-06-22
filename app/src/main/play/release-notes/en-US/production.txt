@@ -1,6 +1,6 @@
-- Enable creation of custom file types
-- Enable configuration of file type colors, as well as the exclusion of file extensions for non-media types
-- Add 'html' to Text file type extensions
-- Enabling and disabling of file types may now be done via a single, cohesive bottom sheet
-- UI polishments
-- Performance improvements
+- Fix auto move to SD card (hopefully)
+- UI improvements: Navigator card, file type settings button, top bars, navigation animations
+- Improve app performance
+- Set release SDK to 36
+- Add chinese translations
+
