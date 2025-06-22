@@ -117,7 +117,7 @@ private class SwipeRightSplashScreenExitAnimation(private val onAnimationEnd: ()
         )
             .apply {
                 interpolator = AnticipateInterpolator()
-                ObjectAnimator.setDuration = 400L
+                duration = 400L
                 doOnEnd {
                     splashScreenViewProvider.remove()
                     onAnimationEnd()

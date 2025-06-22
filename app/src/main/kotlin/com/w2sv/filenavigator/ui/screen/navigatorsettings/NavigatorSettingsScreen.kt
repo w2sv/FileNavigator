@@ -2,7 +2,6 @@ package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
 import android.content.Context
 import android.os.Parcelable
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.Transition
@@ -110,15 +109,6 @@ fun NavigatorSettingsScreen(
         mutableStateOf(false)
     }
 
-    val onBack: () -> Unit = remember {
-        {
-            navigatorVM.reversibleConfig.reset()
-            navigator.popBackStack()
-        }
-    }
-
-    BackHandler(onBack = onBack)
-
     AutoMoveIntroductionDialogIfNotYetShown()
 
     var showUsedFileTypesBottomSheet by rememberSaveable {
@@ -134,7 +124,7 @@ fun NavigatorSettingsScreen(
         topBar = {
             BackArrowTopAppBar(
                 title = stringResource(id = R.string.navigator_settings),
-                onBack = onBack
+                onBack = navigator::popBackStack
             )
         },
         floatingActionButton = {
