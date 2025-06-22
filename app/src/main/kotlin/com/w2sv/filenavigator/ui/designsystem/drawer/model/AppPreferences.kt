@@ -6,8 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.domain.model.Theme
-import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.filenavigator.ui.AppViewModel
+import com.w2sv.filenavigator.ui.util.activityViewModel
 
 @Stable
 data class AppPreferences(

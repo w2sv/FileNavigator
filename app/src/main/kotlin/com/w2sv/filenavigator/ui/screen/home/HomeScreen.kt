@@ -34,7 +34,6 @@ import com.w2sv.filenavigator.ui.screen.home.components.movehistory.MoveHistoryC
 import com.w2sv.filenavigator.ui.screen.home.components.statusdisplay.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
-import com.w2sv.filenavigator.ui.screen.home.HomeScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

@@ -27,11 +27,11 @@ import com.w2sv.common.util.goToManageExternalStorageSettings
 import com.w2sv.composed.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.core.common.R
+import com.w2sv.filenavigator.ui.AppViewModel
 import com.w2sv.filenavigator.ui.LocalPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.activityViewModel
-import com.w2sv.filenavigator.ui.AppViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
