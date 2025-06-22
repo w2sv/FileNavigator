@@ -7,30 +7,30 @@ benchmarkMacroJunit4 = "1.3.4"
 compileSdk = "36"
 compose-lint-checks = "1.4.2"
 compose-material3 = "1.3.2"
-compose-tooling = "1.8.2"
+compose-tooling = "1.8.3"
 hilt = "2.56.2"
 hiltNavigationCompose = "1.2.0"
-nav3Core = "1.0.0-alpha04"
 junit = "4.13.2"
 kotlin = "2.1.21"
+kotlinSerialization = "2.1.21"
 kotlinxCollectionsImmutable = "0.4.0"
 kotlinxCoroutines = "1.10.2"
-ksp = "2.1.21-2.0.1"
+kotlinxSerializationCore = "1.8.1"
+ksp = "2.1.21-2.0.2"
 ktlint = "12.3.0"
 lifecycle = "2.9.1"
 # @keep
 minSdk = "30"
+nav3Core = "1.0.0-alpha04"
 protobuf = "4.31.1"
 protobuf-plugin = "0.9.5"
-room = "2.7.1"
+room = "2.7.2"
 triplet-play = "3.12.1"
 versionCatalogUpdate = "1.0.0"
 versions = "0.52.0"
 w2sv-composed = "0.0.6-rc1"
 w2sv-datastoreutils = "0.0.7-rc2"
 w2sv-kotlinutils = "0.1.8-rc1"
-kotlinSerialization = "2.1.21"
-kotlinxSerializationCore = "1.8.1"
 
 [libraries]
 # @keep
@@ -70,12 +70,13 @@ junit = { module = "junit:junit", version.ref = "junit" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 # @keep
 ksp-gradlePlugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:5.4.0"
 protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
-robolectric = "org.robolectric:robolectric:4.14.1"
+robolectric = "org.robolectric:robolectric:4.15.1"
 slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
 textflow = "io.github.oleksandrbalan:textflow-material3:1.2.1"
 w2sv-androidutils-core = "com.github.w2sv.AndroidUtils:core:0.4.5-rc1"
@@ -87,7 +88,6 @@ w2sv-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:pre
 w2sv-kotlinutils = { module = "com.github.w2sv:KotlinUtils", version.ref = "w2sv-kotlinutils" }
 w2sv-reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.6-rc2"
 w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.1.0-rc1"
-kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 
 [bundles]
 instrumentationTest = [
@@ -120,10 +120,10 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 play = { id = "com.github.triplet.play", version.ref = "triplet-play" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdate" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization"}
