@@ -28,7 +28,7 @@ jobs:
                 run: echo "VERSION=$(grep -Po '^version=\K.*' gradle.properties)" >> $GITHUB_OUTPUT
 
             -   name: Create Github Release
-                uses: softprops/action-gh-release@v1
+                uses: softprops/action-gh-release@v2
                 with:
                     tag_name: ${{ steps.version.outputs.VERSION }}
                     files: app/build/outputs/apk/release/${{ steps.version.outputs.VERSION }}.apk
