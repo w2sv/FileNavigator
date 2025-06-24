@@ -16,5 +16,5 @@ decode_env_to_file() {
   fi
 }
 
-decode_env_to_file "SIGNING_KEYSTORE" "../keys.jks"
-decode_env_to_file "SIGNING_PROPERTIES" "../keys.properties"
+decode_env_to_file "SIGNING_KEYSTORE" "keys.jks"
+decode_env_to_file "SIGNING_PROPERTIES" "keystore.properties"

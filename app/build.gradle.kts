@@ -26,11 +26,12 @@ android {
             val keystorePropertiesFile = rootProject.file("keystore.properties")
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = Properties().apply { load(FileInputStream(keystorePropertiesFile)) }
-
                 storeFile = rootProject.file("keys.jks")
                 storePassword = keystoreProperties["storePassword"] as String
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
+            } else {
+                println("${keystorePropertiesFile.path} does not exist")
             }
         }
     }
@@ -46,7 +47,6 @@ android {
                 "proguard-rules.pro"
             )
             // isDebuggable = true
-            signingConfig = signingConfigs.getByName("release")
         }
     }
     buildFeatures {

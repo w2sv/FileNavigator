@@ -1,9 +1,13 @@
+name: Create GitHub APK Release
 on: workflow_dispatch
+
+permissions:
+    contents: write
 
 env:
     GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx3072m -XX:MaxMetaspaceSize=1g -Xms512m -XX:+HeapDumpOnOutOfMemoryError"
-    SIGNING_KEYSTORE_PLAY: ${{ secrets.SIGNING_KEYSTORE }}
-    SIGNING_PROPERTIES_PLAY: ${{ secrets.SIGNING_PROPERTIES }}
+    SIGNING_KEYSTORE: ${{ secrets.SIGNING_KEYSTORE }}
+    SIGNING_PROPERTIES: ${{ secrets.SIGNING_PROPERTIES }}
 
 jobs:
     build:
@@ -18,7 +22,7 @@ jobs:
                     distribution: temurin
 
             -   name: Setup Signing
-                run: .github/signing_setup.sh
+                run: chmod +x .github/signing_setup.sh && .github/signing_setup.sh
 
             -   name: Build release APK
                 run: ./gradlew assembleRelease
@@ -28,7 +32,7 @@ jobs:
                 run: echo "VERSION=$(grep -Po '^version=\K.*' gradle.properties)" >> $GITHUB_OUTPUT
 
             -   name: Create Github Release
-                uses: softprops/action-gh-release@v1
+                uses: softprops/action-gh-release@v2
                 with:
                     tag_name: ${{ steps.version.outputs.VERSION }}
                     files: app/build/outputs/apk/release/${{ steps.version.outputs.VERSION }}.apk
