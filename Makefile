@@ -12,6 +12,9 @@ format:
 update-dependencies:
 	@./gradlew versionCatalogUpdate
 
+update-gradle:
+	@./gradlew wrapper --gradle-version latest
+
 # ==============
 # Building
 # ==============
