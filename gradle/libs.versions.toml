@@ -22,7 +22,7 @@ lifecycle = "2.9.1"
 lifecycleViewmodelNavigation3 = "1.0.0-alpha02"
 # @keep
 minSdk = "30"
-nav3Core = "1.0.0-alpha04"
+nav3Core = "1.0.0"
 protobuf = "4.31.1"
 protobuf-plugin = "0.9.5"
 room = "2.7.2"
