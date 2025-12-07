@@ -19,7 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 @Singleton
 internal class PreferencesRepositoryImpl @Inject constructor(
     dataStore: DataStore<Preferences>,
-    @GlobalScope(AppDispatcher.Default) private val defaultScope: CoroutineScope
+    @param:GlobalScope(AppDispatcher.Default) private val defaultScope: CoroutineScope
 ) : PreferencesDataStoreRepository(dataStore),
     PreferencesRepository {
 

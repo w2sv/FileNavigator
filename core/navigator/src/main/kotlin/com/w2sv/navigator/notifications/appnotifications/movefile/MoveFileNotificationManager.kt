@@ -53,7 +53,7 @@ internal class MoveFileNotificationManager @Inject constructor(
     @ApplicationContext context: Context,
     notificationManager: NotificationManager,
     navigatorConfigDataSource: NavigatorConfigDataSource,
-    @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
+    @param:GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
     private val batchMoveNotificationManager: BatchMoveNotificationManager
 ) : SummarizedMultiInstanceNotificationManager<MoveFileNotificationManager.Args>(
     appNotificationChannel = AppNotificationChannel.NewNavigatableFile,

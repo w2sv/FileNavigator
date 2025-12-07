@@ -43,6 +43,7 @@ androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-tooling" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-tooling" }
+androidx-compose-material-icons = "androidx.compose.material:material-icons-core:1.7.8"
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose-tooling" }
 androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose-tooling" }
@@ -50,7 +51,6 @@ androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", versi
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-tooling" }
 androidx-compose-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-core-ktx = "androidx.core:core-ktx:1.17.0"
-androidx-compose-material-icons = "androidx.compose.material:material-icons-core:1.7.8"
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }

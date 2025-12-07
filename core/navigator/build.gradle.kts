@@ -4,6 +4,12 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
+    }
+}
+
 android {
     buildFeatures {
         viewBinding = true

@@ -5,7 +5,6 @@ import android.os.Handler
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
 import com.w2sv.common.util.filterKeysByValueToSet
-import com.w2sv.common.util.logIdentifier
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType

@@ -15,10 +15,10 @@ import slimber.log.i
 
 internal class FileObserverFactory @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
-    @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
+    @param:GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
     private val mediaFileObserverFactory: MediaFileObserver.Factory,
     private val nonMediaFileObserverFactory: NonMediaFileObserver.Factory,
-    @FileObserverHandlerThread private val handlerThread: HandlerThread
+    @param:FileObserverHandlerThread private val handlerThread: HandlerThread
 ) {
     private val navigatorConfigStateFlow by lazy {
         navigatorConfigDataSource.navigatorConfig.stateInWithBlockingInitial(scope)
