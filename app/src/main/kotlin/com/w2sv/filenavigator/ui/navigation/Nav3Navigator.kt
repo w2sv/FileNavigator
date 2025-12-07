@@ -4,7 +4,7 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 
 /**
- * Generic navigator methods/properties to aren't specific to the FileNavigator app navigation.
+ * Generic navigator methods/properties that aren't specific to the FileNavigator app navigation.
  */
 abstract class Nav3Navigator(private val backStack: NavBackStack) {
 
