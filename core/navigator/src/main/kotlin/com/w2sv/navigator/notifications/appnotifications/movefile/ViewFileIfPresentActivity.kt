@@ -40,8 +40,7 @@ internal class ViewFileIfPresentActivity : LoggingComponentActivity() {
     }
 
     @Parcelize
-    data class Args(val mediaUri: MediaUri, val mimeType: String, val absPath: String) :
-        Parcelable {
+    data class Args(val mediaUri: MediaUri, val mimeType: String, val absPath: String) : Parcelable {
 
         constructor(moveFile: MoveFile) : this(
             mediaUri = moveFile.mediaUri,

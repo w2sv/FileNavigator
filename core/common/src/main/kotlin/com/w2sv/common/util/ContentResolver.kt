@@ -29,7 +29,8 @@ fun ContentResolver.takePersistableReadAndWriteUriPermission(treeUri: Uri) {
 }
 
 fun Uri.hasReadAndWritePermission(context: Context): Boolean =
-    hasPermission(context, Intent.FLAG_GRANT_READ_URI_PERMISSION) && hasPermission(
-        context,
-        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-    )
+    hasPermission(context, Intent.FLAG_GRANT_READ_URI_PERMISSION) &&
+        hasPermission(
+            context,
+            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        )

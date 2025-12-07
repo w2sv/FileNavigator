@@ -4,10 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.w2sv.core.common.R
 
-enum class SourceType(
-    @StringRes val labelRes: Int,
-    @DrawableRes val iconRes: Int
-) {
+enum class SourceType(@StringRes val labelRes: Int, @DrawableRes val iconRes: Int) {
     Camera(
         R.string.camera,
         R.drawable.ic_camera_24

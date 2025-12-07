@@ -24,7 +24,9 @@ sealed interface PresetFileType : StaticFileType {
             is ExtensionConfigurable -> toFileType()
         }
 
-    sealed interface ExtensionSet : PresetFileType, StaticFileType.ExtensionSet {
+    sealed interface ExtensionSet :
+        PresetFileType,
+        StaticFileType.ExtensionSet {
         fun toFileType(@ColorInt color: Int = EMPTY_COLOR_INT): PresetWrappingFileType.ExtensionSet =
             PresetWrappingFileType.ExtensionSet(
                 presetFileType = this,
@@ -35,7 +37,9 @@ sealed interface PresetFileType : StaticFileType {
             )
     }
 
-    sealed interface ExtensionConfigurable : PresetFileType, StaticFileType.ExtensionConfigurable {
+    sealed interface ExtensionConfigurable :
+        PresetFileType,
+        StaticFileType.ExtensionConfigurable {
         fun toFileType(
             @ColorInt color: Int = EMPTY_COLOR_INT,
             excludedExtensions: Set<String> = emptySet()
@@ -65,21 +69,25 @@ sealed interface PresetFileType : StaticFileType {
         }
     }
 
-    sealed interface NonMedia : PresetFileType, StaticFileType.NonMedia {
+    sealed interface NonMedia :
+        PresetFileType,
+        StaticFileType.NonMedia {
 
         sealed class ExtensionSet(
             @StringRes override val labelRes: Int,
             @DrawableRes override val iconRes: Int,
             @ColorInt override val defaultColorInt: Int,
             override val fileExtensions: Collection<String>
-        ) : NonMedia, PresetFileType.ExtensionSet
+        ) : NonMedia,
+            PresetFileType.ExtensionSet
 
         sealed class ExtensionConfigurable(
             @StringRes override val labelRes: Int,
             @DrawableRes override val iconRes: Int,
             @ColorInt override val defaultColorInt: Int,
             override val defaultFileExtensions: Set<String>
-        ) : NonMedia, PresetFileType.ExtensionConfigurable {
+        ) : NonMedia,
+            PresetFileType.ExtensionConfigurable {
             companion object {
                 @JvmStatic
                 val values: List<ExtensionConfigurable>

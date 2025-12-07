@@ -59,8 +59,7 @@ internal abstract class FileObserver(
     handler: Handler,
     blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>,
     private val scope: CoroutineScope
-) :
-    ContentObserver(handler) {
+) : ContentObserver(handler) {
 
     private val mediaIdBlacklist = EvictingQueue.create<MediaId>(3)
     private var moveFileWithProcedureJob: MoveFileWithProcedureJob? = null

@@ -43,11 +43,7 @@ private fun PermissionCardPrev() {
 }
 
 @Immutable
-data class PermissionCardProperties(
-    @DrawableRes val iconRes: Int,
-    @StringRes val textRes: Int,
-    val onGrantButtonClick: () -> Unit
-)
+data class PermissionCardProperties(@DrawableRes val iconRes: Int, @StringRes val textRes: Int, val onGrantButtonClick: () -> Unit)
 
 @Composable
 fun PermissionCard(properties: PermissionCardProperties, modifier: Modifier = Modifier) {

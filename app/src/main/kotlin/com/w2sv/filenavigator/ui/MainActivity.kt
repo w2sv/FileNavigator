@@ -53,8 +53,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private class SwipeRightSplashScreenExitAnimation(private val onAnimationEnd: () -> Unit = {}) :
-    SplashScreen.OnExitAnimationListener {
+private class SwipeRightSplashScreenExitAnimation(private val onAnimationEnd: () -> Unit = {}) : SplashScreen.OnExitAnimationListener {
     override fun onSplashScreenExit(splashScreenViewProvider: SplashScreenViewProvider) {
         ObjectAnimator.ofFloat(
             splashScreenViewProvider.view,

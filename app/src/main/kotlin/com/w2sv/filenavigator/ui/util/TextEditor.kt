@@ -50,15 +50,14 @@ class StatefulTextEditor<T : InputInvalidityReason> private constructor(
     initialText: String,
     processInput: (String) -> String,
     findInvalidityReason: (String) -> T?
-) :
-    State<String> by mutableState,
-    TextEditor<T>(
-        initialValue = initialText,
-        cleanseInput = processInput,
-        findInvalidityReason = findInvalidityReason,
-        getValue = { mutableState.value },
-        setValue = { mutableState.value = it }
-    ) {
+) : TextEditor<T>(
+    initialValue = initialText,
+    cleanseInput = processInput,
+    findInvalidityReason = findInvalidityReason,
+    getValue = { mutableState.value },
+    setValue = { mutableState.value = it }
+),
+    State<String> by mutableState {
 
     constructor(initialText: String = "", processInput: (String) -> String = { it }, findInvalidityReason: (String) -> T? = { null }) :
         this(

@@ -122,8 +122,8 @@ private fun rememberMoveEntryRowOnClick(
     launchHistoryEntryDeletion: (MovedFile) -> Unit,
     context: Context = LocalContext.current,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
-): suspend (MovedFile, Boolean) -> Unit {
-    return remember {
+): suspend (MovedFile, Boolean) -> Unit =
+    remember {
         { movedFile, fileExists ->
             if (fileExists) {
                 snackbarHostState.currentSnackbarData?.dismiss()
@@ -145,7 +145,6 @@ private fun rememberMoveEntryRowOnClick(
             }
         }
     }
-}
 
 @Composable
 private fun HistoryDeletionDialog(closeDialog: () -> Unit, onConfirmed: () -> Unit) {

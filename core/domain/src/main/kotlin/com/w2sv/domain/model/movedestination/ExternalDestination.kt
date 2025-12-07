@@ -8,7 +8,8 @@ data class ExternalDestination(
     override val documentUri: DocumentUri,
     override val providerPackageName: String?,
     override val providerAppLabel: String?
-) : ExternalDestinationApi, FileDestinationApi {
+) : ExternalDestinationApi,
+    FileDestinationApi {
 
     override fun uiRepresentation(context: Context): String =
         providerAppLabel

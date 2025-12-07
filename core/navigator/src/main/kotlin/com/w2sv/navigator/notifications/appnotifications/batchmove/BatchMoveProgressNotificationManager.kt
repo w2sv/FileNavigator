@@ -28,16 +28,8 @@ internal class BatchMoveProgressNotificationManager @Inject constructor(
     appNotificationId = AppNotificationId.MoveProgress
 ) {
     sealed interface BuilderArgs {
-        data class MoveProgress(
-            val current: Int,
-            val max: Int
-        ) : BuilderArgs
-
-        data class MoveResults(
-            val moveResults: List<MoveResult>,
-            val destination: MoveDestination.Directory
-        ) :
-            BuilderArgs
+        data class MoveProgress(val current: Int, val max: Int) : BuilderArgs
+        data class MoveResults(val moveResults: List<MoveResult>, val destination: MoveDestination.Directory) : BuilderArgs
     }
 
     override fun getBuilder(args: BuilderArgs): AppNotificationManager<BuilderArgs>.Builder =

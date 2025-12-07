@@ -134,7 +134,8 @@ fun PresetFileTypeConfigurationDialog(
             confirmButtonEnabled = remember { derivedStateOf { editedFileType != fileType } }.value,
             onConfirmButtonPress = { saveFileType(editedFileType) }
         ) {
-            Column { // To prevent spacing in between text and chip flow row introduced by FileTypeConfigurationDialog
+            Column {
+                // To prevent spacing in between text and chip flow row introduced by FileTypeConfigurationDialog
                 Text(
                     text = stringResource(R.string.file_extensions).colonSuffixed(),
                     style = MaterialTheme.typography.dialogSectionLabel,

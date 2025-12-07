@@ -213,8 +213,8 @@ internal class MoveFileNotificationManager @Inject constructor(
                     )
                 )
 
-            private fun getDeleteFileAction(requestCode: Int): NotificationCompat.Action {
-                return NotificationCompat.Action(
+            private fun getDeleteFileAction(requestCode: Int): NotificationCompat.Action =
+                NotificationCompat.Action(
                     R.drawable.ic_delete_24,
                     context.getString(R.string.delete),
                     PendingIntent.getActivity(
@@ -224,7 +224,6 @@ internal class MoveFileNotificationManager @Inject constructor(
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )
-            }
         }
 
     override fun buildSummaryNotification(): Notification =

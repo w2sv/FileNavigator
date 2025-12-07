@@ -3,7 +3,9 @@ package com.w2sv.domain.model.filetype
 import android.os.Parcelable
 import com.w2sv.common.util.logIdentifier
 
-sealed interface FileType : StaticFileType.ExtensionSet, Parcelable {
+sealed interface FileType :
+    StaticFileType.ExtensionSet,
+    Parcelable {
     val colorInt: Int
 
     val asExtensionConfigurableTypeOrNull: PresetWrappingFileType.ExtensionConfigurable?

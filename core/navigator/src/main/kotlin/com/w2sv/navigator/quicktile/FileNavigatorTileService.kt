@@ -87,7 +87,8 @@ internal class FileNavigatorTileService : TileService() {
                     setOnShowListener {
                         scope.launchDelayed(
                             250
-                        ) { // Add small delay to make the dialog visible for a bit longer than merely a couple of milliseconds for better UX
+                        ) {
+                            // Add small delay to make the dialog visible for a bit longer than merely a couple of milliseconds for better UX
                             FileNavigator.start(this@FileNavigatorTileService)
                             dismiss()
                         }

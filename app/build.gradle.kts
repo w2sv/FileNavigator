@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -18,9 +17,6 @@ android {
 
         versionCode = project.property("versionCode").toString().toInt()
         versionName = version.toString()
-
-        // Name built bundles "{versionName}-{buildFlavor}.aab"
-//        setProperty("archivesBaseName", versionName)
     }
     signingConfigs {
         create("release") {

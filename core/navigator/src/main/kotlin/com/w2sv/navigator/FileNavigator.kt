@@ -91,8 +91,8 @@ class FileNavigator : UnboundService() {
 
     private var activeFileObservers: List<FileObserver>? = null
 
-    private fun getRegisteredFileObservers(): List<FileObserver> {
-        return fileObserverFactory.invoke()
+    private fun getRegisteredFileObservers(): List<FileObserver> =
+        fileObserverFactory.invoke()
             .onEach { observer ->
                 contentResolver.registerContentObserver(
                     observer.mediaType.readUri!!,
@@ -101,7 +101,6 @@ class FileNavigator : UnboundService() {
                 )
             }
             .log { "Registered ${it.size} FileObserver(s)" }
-    }
 
     private fun stop() {
         i { "Stopping FileNavigator" }

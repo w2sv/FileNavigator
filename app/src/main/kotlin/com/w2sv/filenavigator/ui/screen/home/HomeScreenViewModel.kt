@@ -19,8 +19,7 @@ class HomeScreenViewModel @Inject constructor(
     private val movedFileRepository: MovedFileRepository,
     getMoveHistoryUseCase: GetMoveHistoryUseCase,
     val navigatorIsRunning: FileNavigator.IsRunning
-) :
-    LifecycleLoggingViewModel() {
+) : LifecycleLoggingViewModel() {
 
     val moveHistory = getMoveHistoryUseCase
         .invoke()

@@ -46,10 +46,7 @@ import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.navigator.FileNavigator
 
 @Immutable
-private data class NavigatorStatusUiData(
-    val statusText: StatusText,
-    val toggleButton: NavigatorToggleButton
-) {
+private data class NavigatorStatusUiData(val statusText: StatusText, val toggleButton: NavigatorToggleButton) {
     companion object {
         val map = mapOf(
             false to NavigatorStatusUiData(

@@ -8,10 +8,8 @@ internal sealed class MoveResult(val cancelMoveFileNotification: Boolean) {
 
     data object Success : MoveResult(true)
 
-    sealed class Failure(
-        cancelMoveFileNotification: Boolean,
-        @StringRes val explanationStringRes: Int?
-    ) : MoveResult(cancelMoveFileNotification) {
+    sealed class Failure(cancelMoveFileNotification: Boolean, @StringRes val explanationStringRes: Int?) :
+        MoveResult(cancelMoveFileNotification) {
 
         infix fun bundleWith(notificationResources: NotificationResources?): Bundle.PreCheckFailure =
             Bundle.PreCheckFailure(this, notificationResources)
@@ -50,14 +48,8 @@ internal sealed class MoveResult(val cancelMoveFileNotification: Boolean) {
 
     sealed interface Bundle {
 
-        data class PreCheckFailure(
-            val moveFailure: Failure,
-            val notificationResources: NotificationResources?
-        ) : Bundle
+        data class PreCheckFailure(val moveFailure: Failure, val notificationResources: NotificationResources?) : Bundle
 
-        data class PostMoveBundleCreation(
-            val moveResult: MoveResult,
-            val moveBundle: AnyMoveBundle
-        ) : Bundle
+        data class PostMoveBundleCreation(val moveResult: MoveResult, val moveBundle: AnyMoveBundle) : Bundle
     }
 }

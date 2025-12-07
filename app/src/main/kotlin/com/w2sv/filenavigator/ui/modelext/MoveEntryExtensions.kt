@@ -10,15 +10,16 @@ import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import slimber.log.e
 
-fun MovedFile.exists(context: Context): Boolean {
-    return try {
+fun MovedFile.exists(context: Context): Boolean =
+    try {
+        // prints "java.lang.IllegalArgumentException: Failed to determine if ... is child of ...:
+        // java.io.FileNotFoundException: Missing file for ... at ..." to console without actually raising it
         documentUri
             .documentFile(context)
-            .exists() // prints "java.lang.IllegalArgumentException: Failed to determine if ... is child of ...: java.io.FileNotFoundException: Missing file for ... at ..." to console without actually raising it
+            .exists()
     } catch (_: IllegalArgumentException) {
         false
     }
-}
 
 suspend fun MovedFile.launchViewMovedFileActivity(context: Context, showSnackbarOnError: suspend (SnackbarVisuals) -> Unit) {
     try {

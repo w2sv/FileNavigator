@@ -66,7 +66,8 @@ internal class BatchMoveNotificationManager @Inject constructor(
                         PendingIntentRequestCode.MoveAction.ordinal,
                         AbstractDestinationPickerActivity.makeRestartActivityIntent<BatchMoveDestinationPickerActivity>(
                             BatchMoveDestinationPickerActivity.Args(
-                                moveFilesWithNotificationResources = args.map { // TODO: optimizable?
+                                moveFilesWithNotificationResources = args.map {
+                                    // TODO: optimizable?
                                     BatchMoveDestinationPickerActivity.MoveFileWithNotificationResources(
                                         it.moveFile,
                                         it.notificationResources
@@ -119,7 +120,8 @@ internal class BatchMoveNotificationManager @Inject constructor(
                         requestCode,
                         BatchMoveBroadcastReceiver.getIntent(
                             args = BatchMoveBroadcastReceiver.Args(
-                                batchMoveBundles = args.map { // TODO: optimizable?
+                                batchMoveBundles = args.map {
+                                    // TODO: optimizable?
                                     MoveBundle.QuickMove(
                                         file = it.moveFile,
                                         destinationSelectionManner = DestinationSelectionManner.Quick(

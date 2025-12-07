@@ -8,9 +8,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-internal class RoomMovedFileRepository @Inject constructor(
-    private val movedFileDao: MovedFileDao
-) : MovedFileRepository {
+internal class RoomMovedFileRepository @Inject constructor(private val movedFileDao: MovedFileDao) : MovedFileRepository {
 
     override suspend fun insert(file: MovedFile) {
         movedFileDao.insert(MovedFileEntity(file))

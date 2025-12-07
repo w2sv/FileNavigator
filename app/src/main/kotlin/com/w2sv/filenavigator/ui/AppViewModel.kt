@@ -15,10 +15,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class AppViewModel @Inject constructor(
-    private val preferencesRepository: PreferencesRepository,
-    @ApplicationContext context: Context
-) :
+class AppViewModel @Inject constructor(private val preferencesRepository: PreferencesRepository, @ApplicationContext context: Context) :
     LifecycleLoggingViewModel() {
 
     val permissions = AppPermissions(preferencesRepository, viewModelScope, context)

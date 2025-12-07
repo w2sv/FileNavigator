@@ -9,8 +9,7 @@ import javax.inject.Inject
 import slimber.log.i
 
 @AndroidEntryPoint
-internal class PowerSaveModeChangedReceiver :
-    SystemBroadcastReceiver(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) {
+internal class PowerSaveModeChangedReceiver : SystemBroadcastReceiver(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) {
 
     @Inject
     internal lateinit var powerManager: PowerManager

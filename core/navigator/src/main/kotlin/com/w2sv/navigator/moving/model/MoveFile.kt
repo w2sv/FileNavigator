@@ -16,11 +16,8 @@ import com.w2sv.navigator.observing.model.MediaStoreFileData
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-internal data class MoveFile(
-    val mediaUri: MediaUri,
-    val mediaStoreFileData: MediaStoreFileData,
-    val fileAndSourceType: FileAndSourceType
-) : Parcelable {
+internal data class MoveFile(val mediaUri: MediaUri, val mediaStoreFileData: MediaStoreFileData, val fileAndSourceType: FileAndSourceType) :
+    Parcelable {
 
     fun mediaFile(context: Context): MediaFile? =
         MediaStoreCompat.fromMediaId(

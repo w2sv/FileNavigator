@@ -13,10 +13,7 @@ private const val SEEN_FILES_BUFFER_SIZE = 5
 internal class MediaStoreDataProducer @Inject constructor() {
 
     sealed interface Result {
-        data class Success(
-            val data: MediaStoreFileData,
-            val isUpdateOfAlreadySeenFile: Boolean
-        ) : Result
+        data class Success(val data: MediaStoreFileData, val isUpdateOfAlreadySeenFile: Boolean) : Result
 
         sealed interface Failure : Result
 

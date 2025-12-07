@@ -10,7 +10,9 @@ sealed interface PresetWrappingFileType<T : PresetFileType> : FileType {
     val presetFileType: T
 
     data class ExtensionSet(override val presetFileType: PresetFileType.ExtensionSet, @ColorInt override val colorInt: Int) :
-        StaticFileType.ExtensionSet by presetFileType, FileType, PresetWrappingFileType<PresetFileType.ExtensionSet> {
+        StaticFileType.ExtensionSet by presetFileType,
+        FileType,
+        PresetWrappingFileType<PresetFileType.ExtensionSet> {
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             parcel.writeInt(presetFileType.ordinal)
@@ -36,7 +38,9 @@ sealed interface PresetWrappingFileType<T : PresetFileType> : FileType {
         override val presetFileType: PresetFileType.ExtensionConfigurable,
         @ColorInt override val colorInt: Int,
         val excludedExtensions: Set<String>
-    ) : StaticFileType.ExtensionConfigurable by presetFileType, FileType, PresetWrappingFileType<PresetFileType.ExtensionConfigurable> {
+    ) : StaticFileType.ExtensionConfigurable by presetFileType,
+        FileType,
+        PresetWrappingFileType<PresetFileType.ExtensionConfigurable> {
 
         override val fileExtensions by lazy {
             defaultFileExtensions - excludedExtensions

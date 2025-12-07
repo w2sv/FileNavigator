@@ -77,8 +77,5 @@ internal class BatchMoveDestinationPickerActivity : AbstractDestinationPickerAct
     ) : AbstractDestinationPickerActivity.Args
 
     @Parcelize
-    data class MoveFileWithNotificationResources(
-        val moveFile: MoveFile,
-        val notificationResources: NotificationResources
-    ) : Parcelable
+    data class MoveFileWithNotificationResources(val moveFile: MoveFile, val notificationResources: NotificationResources) : Parcelable
 }

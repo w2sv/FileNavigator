@@ -89,9 +89,7 @@ internal class BatchMoveBroadcastReceiver : LoggingBroadcastReceiver() {
     }
 
     @Parcelize
-    data class Args(
-        val batchMoveBundles: List<MoveBundle.Batchable<*>>
-    ) : Parcelable {
+    data class Args(val batchMoveBundles: List<MoveBundle.Batchable<*>>) : Parcelable {
 
         val destination: MoveDestination.Directory
             get() = batchMoveBundles.first().destination

@@ -17,15 +17,13 @@ internal typealias AnyMoveBundle = MoveBundle<*, *>
 /**
  * Bundle of all the data required for the move operation and all downstream actions.
  */
-internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSelectionManner> :
-    Parcelable {
+internal sealed interface MoveBundle<MD : MoveDestination, DSM : DestinationSelectionManner> : Parcelable {
 
     val file: MoveFile
     val destination: MD
     val destinationSelectionManner: DSM
 
-    sealed interface Batchable<Mode : DestinationSelectionManner.NotificationBased> :
-        MoveBundle<MoveDestination.Directory, Mode> {
+    sealed interface Batchable<Mode : DestinationSelectionManner.NotificationBased> : MoveBundle<MoveDestination.Directory, Mode> {
 
         /**
          * Whether this MoveBundle is part of a batch move operation.

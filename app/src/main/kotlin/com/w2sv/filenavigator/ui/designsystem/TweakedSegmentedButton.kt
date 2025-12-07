@@ -111,14 +111,13 @@ private val IconSpacing = 8.dp
  * @param active whether the [SegmentedButton] item is checked or not
  */
 @Stable
-internal fun SegmentedButtonColors.borderColor(enabled: Boolean, active: Boolean): Color {
-    return when {
+internal fun SegmentedButtonColors.borderColor(enabled: Boolean, active: Boolean): Color =
+    when {
         enabled && active -> activeBorderColor
         enabled && !active -> inactiveBorderColor
         !enabled && active -> disabledActiveBorderColor
         else -> disabledInactiveBorderColor
     }
-}
 
 /**
  * Represents the content color passed to the items
@@ -127,14 +126,13 @@ internal fun SegmentedButtonColors.borderColor(enabled: Boolean, active: Boolean
  * @param checked whether the [SegmentedButton] item is checked or not
  */
 @Stable
-internal fun SegmentedButtonColors.contentColor(enabled: Boolean, checked: Boolean): Color {
-    return when {
+internal fun SegmentedButtonColors.contentColor(enabled: Boolean, checked: Boolean): Color =
+    when {
         enabled && checked -> activeContentColor
         enabled && !checked -> inactiveContentColor
         !enabled && checked -> disabledActiveContentColor
         else -> disabledInactiveContentColor
     }
-}
 
 /**
  * Represents the container color passed to the items
@@ -143,14 +141,13 @@ internal fun SegmentedButtonColors.contentColor(enabled: Boolean, checked: Boole
  * @param active whether the [SegmentedButton] item is active or not
  */
 @Stable
-internal fun SegmentedButtonColors.containerColor(enabled: Boolean, active: Boolean): Color {
-    return when {
+internal fun SegmentedButtonColors.containerColor(enabled: Boolean, active: Boolean): Color =
+    when {
         enabled && active -> activeContainerColor
         enabled && !active -> inactiveContainerColor
         !enabled && active -> disabledActiveContainerColor
         else -> disabledInactiveContainerColor
     }
-}
 
 @Composable
 private fun SegmentedButtonContent(icon: @Composable () -> Unit, content: @Composable () -> Unit) {
@@ -172,9 +169,7 @@ private fun SegmentedButtonContent(icon: @Composable () -> Unit, content: @Compo
     }
 }
 
-internal class SegmentedButtonContentMeasurePolicy(
-    val scope: CoroutineScope
-) : MultiContentMeasurePolicy {
+internal class SegmentedButtonContentMeasurePolicy(val scope: CoroutineScope) : MultiContentMeasurePolicy {
     var animatable: Animatable<Int, AnimationVector1D>? = null
     private var initialOffset: Int? = null
 

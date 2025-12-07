@@ -123,9 +123,10 @@ data class NavigatorConfig(
         fileType: FileType,
         sourceType: SourceType,
         modifyAutoMoveConfig: (AutoMoveConfig) -> AutoMoveConfig
-    ) = updateSourceConfig(fileType, sourceType) {
-        it.copy(autoMoveConfig = modifyAutoMoveConfig(it.autoMoveConfig))
-    }
+    ) =
+        updateSourceConfig(fileType, sourceType) {
+            it.copy(autoMoveConfig = modifyAutoMoveConfig(it.autoMoveConfig))
+        }
 
     companion object {
         val default by lazy {

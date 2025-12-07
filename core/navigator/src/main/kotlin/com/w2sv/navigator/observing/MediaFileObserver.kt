@@ -32,17 +32,16 @@ internal class MediaFileObserver @AssistedInject constructor(
     @ApplicationContext context: Context,
     blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>,
     @GlobalScope(AppDispatcher.IO) scope: CoroutineScope
-) :
-    FileObserver(
-        mediaType = fileType.mediaType,
-        context = context,
-        moveFileNotificationManager = moveFileNotificationManager,
-        mediaStoreDataProducer = mediaStoreDataProducer,
-        getAutoMoveConfig = { _, sourceType -> sourceTypeConfigMapStateFlow.value.getValue(sourceType).autoMoveConfig },
-        handler = handler,
-        blacklistedMediaUris = blacklistedMediaUris,
-        scope = scope
-    ) {
+) : FileObserver(
+    mediaType = fileType.mediaType,
+    context = context,
+    moveFileNotificationManager = moveFileNotificationManager,
+    mediaStoreDataProducer = mediaStoreDataProducer,
+    getAutoMoveConfig = { _, sourceType -> sourceTypeConfigMapStateFlow.value.getValue(sourceType).autoMoveConfig },
+    handler = handler,
+    blacklistedMediaUris = blacklistedMediaUris,
+    scope = scope
+) {
 
     @AssistedFactory
     interface Factory {

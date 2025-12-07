@@ -16,8 +16,7 @@ import kotlinx.coroutines.flow.map
 
 internal class NavigatorConfigDataSourceImpl @Inject constructor(
     private val navigatorConfigProtoDataStore: DataStore<NavigatorConfigProto>
-) :
-    NavigatorConfigDataSource {
+) : NavigatorConfigDataSource {
 
     override val navigatorConfig: DataStoreFlow<NavigatorConfig> = DataStoreFlow(
         navigatorConfigProtoDataStore.data.map { it.toExternal() },

@@ -20,8 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 internal class PreferencesRepositoryImpl @Inject constructor(
     dataStore: DataStore<Preferences>,
     @GlobalScope(AppDispatcher.Default) private val defaultScope: CoroutineScope
-) :
-    PreferencesDataStoreRepository(dataStore),
+) : PreferencesDataStoreRepository(dataStore),
     PreferencesRepository {
 
     override val theme = enumDataStoreFlow(

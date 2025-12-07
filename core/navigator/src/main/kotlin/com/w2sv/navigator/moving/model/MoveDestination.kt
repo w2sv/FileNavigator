@@ -20,7 +20,9 @@ import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
 
-internal sealed interface MoveDestination : Parcelable, MoveDestinationApi {
+internal sealed interface MoveDestination :
+    Parcelable,
+    MoveDestinationApi {
 
     val isFile get() = this is File
     val isExternal get() = this is ExternalDestinationApi

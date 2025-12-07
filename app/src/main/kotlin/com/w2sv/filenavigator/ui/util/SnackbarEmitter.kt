@@ -14,10 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Stable
-open class SnackbarEmitter(
-    val snackbarHostState: SnackbarHostState,
-    private val context: Context
-) {
+open class SnackbarEmitter(val snackbarHostState: SnackbarHostState, private val context: Context) {
     fun dismissCurrentAndShow(scope: CoroutineScope, makeSnackbar: Context.() -> SnackbarVisuals) {
         scope.launch { dismissCurrentAndShowSuspending(makeSnackbar) }
     }
@@ -35,36 +32,31 @@ open class SnackbarEmitter(
 fun rememberSnackbarEmitter(
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     context: Context = LocalContext.current
-): SnackbarEmitter {
-    return remember(snackbarHostState) {
+): SnackbarEmitter =
+    remember(snackbarHostState) {
         SnackbarEmitter(
             snackbarHostState = snackbarHostState,
             context = context
         )
     }
-}
 
 @Composable
 fun rememberScopedSnackbarEmitter(
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current
-): ScopedSnackbarEmitter {
-    return remember(snackbarHostState, scope) {
+): ScopedSnackbarEmitter =
+    remember(snackbarHostState, scope) {
         ScopedSnackbarEmitter(
             snackbarHostState = snackbarHostState,
             scope = scope,
             context = context
         )
     }
-}
 
 @Stable
-class ScopedSnackbarEmitter(
-    snackbarHostState: SnackbarHostState,
-    context: Context,
-    private val scope: CoroutineScope
-) : SnackbarEmitter(snackbarHostState, context) {
+class ScopedSnackbarEmitter(snackbarHostState: SnackbarHostState, context: Context, private val scope: CoroutineScope) :
+    SnackbarEmitter(snackbarHostState, context) {
 
     fun dismissCurrentAndShow(makeSnackbar: Context.() -> SnackbarVisuals) {
         dismissCurrentAndShow(scope, makeSnackbar)

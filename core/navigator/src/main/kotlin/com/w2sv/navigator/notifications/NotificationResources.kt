@@ -7,10 +7,7 @@ import com.w2sv.androidutils.os.getParcelableCompat
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-internal data class NotificationResources(
-    val id: Int,
-    val managerClassName: String
-) : Parcelable {
+internal data class NotificationResources(val id: Int, val managerClassName: String) : Parcelable {
 
     fun pendingIntentRequestCodes(count: Int): List<Int> =
         (id until id + count).toList()

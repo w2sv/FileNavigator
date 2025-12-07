@@ -38,9 +38,7 @@ fun rememberDrawerRepelledAnimationState(drawerState: DrawerState): DrawerRepell
 }
 
 @Stable
-class DrawerRepelledAnimationState(
-    private val getDrawerVisibilityPercentage: () -> Float
-) {
+class DrawerRepelledAnimationState(private val getDrawerVisibilityPercentage: () -> Float) {
     val drawerVisibilityPercentage: Float
         get() = getDrawerVisibilityPercentage()
 

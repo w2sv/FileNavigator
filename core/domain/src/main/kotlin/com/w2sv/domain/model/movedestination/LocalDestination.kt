@@ -8,8 +8,7 @@ import com.w2sv.common.util.DocumentUri
 import com.w2sv.core.common.R
 
 @JvmInline
-value class LocalDestination(override val documentUri: DocumentUri) :
-    LocalDestinationApi {
+value class LocalDestination(override val documentUri: DocumentUri) : LocalDestinationApi {
 
     override val isVolumeRoot: Boolean
         get() = documentUri.isVolumeRoot
