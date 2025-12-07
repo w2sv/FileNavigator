@@ -24,7 +24,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.w2sv.androidutils.openAppSettings
 import com.w2sv.common.util.goToManageExternalStorageSettings
-import com.w2sv.composed.isPortraitModeActive
+import com.w2sv.composed.core.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.AppViewModel

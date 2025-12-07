@@ -14,7 +14,7 @@ interface Navigator {
     val currentScreen: NavKey
 }
 
-class NavigatorImpl(backStack: NavBackStack) : Navigator, Nav3Navigator(backStack) {
+class NavigatorImpl(backStack: NavBackStack<Screen>) : Navigator, Nav3Navigator<Screen>(backStack) {
     override fun toAppSettings() =
         launchSingleTop(Screen.AppSettings)
     override fun toRequiredPermissions() =

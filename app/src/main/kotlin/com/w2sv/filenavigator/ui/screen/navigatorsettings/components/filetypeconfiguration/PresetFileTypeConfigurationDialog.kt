@@ -32,9 +32,9 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.colonSuffixed
-import com.w2sv.composed.OnChange
-import com.w2sv.composed.colorSaver
-import com.w2sv.composed.rememberStyledTextResource
+import com.w2sv.composed.core.OnChange
+import com.w2sv.composed.core.colorSaver
+import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType

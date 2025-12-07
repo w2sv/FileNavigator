@@ -34,8 +34,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
-import com.w2sv.composed.OnLifecycleEvent
-import com.w2sv.composed.extensions.thenIf
+import com.w2sv.composed.core.OnLifecycleEvent
+import com.w2sv.composed.core.extensions.thenIf
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter

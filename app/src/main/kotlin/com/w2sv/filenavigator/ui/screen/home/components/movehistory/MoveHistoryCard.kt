@@ -32,9 +32,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
+import com.w2sv.composed.material3.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals

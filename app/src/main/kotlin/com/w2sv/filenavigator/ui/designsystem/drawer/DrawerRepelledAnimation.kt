@@ -10,8 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import com.w2sv.composed.OnChange
-import com.w2sv.composed.extensions.rememberVisibilityPercentage
+import com.w2sv.composed.core.OnChange
+import com.w2sv.composed.material3.extensions.rememberVisibilityPercentage
 
 internal enum class DrawerRepelledAnimationContentMovement(val translationMultiplier: Int) {
     Repelling(1),

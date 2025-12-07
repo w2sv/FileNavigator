@@ -12,8 +12,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.w2sv.composed.CollectFromFlow
-import com.w2sv.composed.OnChange
+import com.w2sv.composed.core.CollectFromFlow
+import com.w2sv.composed.core.OnChange
 import kotlinx.coroutines.flow.Flow
 
 @Composable

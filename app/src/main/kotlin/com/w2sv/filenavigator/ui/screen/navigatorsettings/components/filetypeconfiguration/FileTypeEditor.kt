@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import com.w2sv.common.util.containsSpecialCharacter
-import com.w2sv.composed.OnChange
-import com.w2sv.composed.rememberStyledTextResource
+import com.w2sv.composed.core.OnChange
+import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType

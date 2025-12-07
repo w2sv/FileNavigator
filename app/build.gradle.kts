@@ -81,6 +81,7 @@ android {
                 "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
                 "-opt-in=androidx.compose.foundation.layout.ExperimentalLayoutApi",
                 "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+                "-Xannotation-default-target=param-property",
                 "-Xwhen-guards"
             )
         }
@@ -113,7 +114,8 @@ dependencies {
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.w2sv.kotlinutils)
     implementation(libs.w2sv.reversiblestate)
-    implementation(libs.w2sv.composed)
+    implementation(libs.w2sv.composed.core)
+    implementation(libs.w2sv.composed.material3)
     implementation(libs.w2sv.composed.permissions)
     implementation(libs.w2sv.colorpicker)
 
@@ -135,6 +137,7 @@ dependencies {
     implementation(libs.androidx.compose.viewmodel)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material.icons)
     implementation(libs.androidx.lifecycle.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 

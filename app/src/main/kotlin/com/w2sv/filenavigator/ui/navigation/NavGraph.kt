@@ -5,12 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.w2sv.composed.OnChange
+import com.w2sv.composed.core.OnChange
 import com.w2sv.filenavigator.ui.screen.appsettings.AppSettingsScreen
 import com.w2sv.filenavigator.ui.screen.home.HomeScreen
 import com.w2sv.filenavigator.ui.screen.missingpermissions.RequiredPermissionsScreen
@@ -25,7 +23,10 @@ fun NavGraph(anyPermissionMissing: Boolean) {
         NavDisplay(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
-            entryDecorators = listOf(rememberSavedStateNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
             transitionSpec = {
                 ContentTransform(
                     NavAnimation.NonPop.enter(),

@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.composed.rememberStyledTextResource
+import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.AppViewModel
 import com.w2sv.filenavigator.ui.designsystem.DialogButton

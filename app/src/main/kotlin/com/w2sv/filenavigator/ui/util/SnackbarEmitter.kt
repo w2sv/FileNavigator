@@ -8,7 +8,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import com.w2sv.composed.extensions.dismissCurrentSnackbarAndShow
+import com.w2sv.composed.material3.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

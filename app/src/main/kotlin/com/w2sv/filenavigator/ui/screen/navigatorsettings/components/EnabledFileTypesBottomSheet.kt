@@ -29,6 +29,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -53,9 +54,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.common.util.syncMapKeys
-import com.w2sv.composed.OnChange
-import com.w2sv.composed.extensions.thenIf
-import com.w2sv.composed.extensions.toMutableStateMap
+import com.w2sv.composed.core.OnChange
+import com.w2sv.composed.core.extensions.thenIf
+import com.w2sv.composed.core.extensions.toMutableStateMap
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
@@ -191,7 +192,7 @@ private fun DeleteCustomFileTypeTooltipBox(deleteCustomFileType: () -> Unit, con
     val tooltipState = rememberTooltipState()
 
     TooltipBox(
-        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = {
             DeletionTooltip(
                 onClick = {
@@ -274,7 +275,12 @@ private fun UsedFileTypesBottomSheetPrev() {
             deleteCustomFileType = {},
             showFileTypeCreationDialog = {},
             onDismissRequest = {},
-            sheetState = SheetState(initialValue = SheetValue.Expanded, skipPartiallyExpanded = true, density = LocalDensity.current)
+            sheetState = SheetState(
+                initialValue = SheetValue.Expanded,
+                skipPartiallyExpanded = true,
+                positionalThreshold = { 0.5f },
+                velocityThreshold = { 0.5f }
+            )
         )
     }
 }

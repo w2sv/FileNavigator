@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -96,7 +97,7 @@ fun SwitchItemRow(
         modifier = modifier,
         explanation = explanation
     ) {
-        UnpaddedSwitch(
+        Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
             modifier = Modifier.padding(start = ItemRowDefaults.SwitchStartPadding)
