@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -19,7 +20,7 @@ android {
         versionName = version.toString()
 
         // Name built bundles "{versionName}-{buildFlavor}.aab"
-        setProperty("archivesBaseName", versionName)
+//        setProperty("archivesBaseName", versionName)
     }
     signingConfigs {
         create("release") {
@@ -72,15 +73,17 @@ android {
         // Disable dependency metadata when building APKs for fdroid reproducibility
         includeInApk = false
     }
-    kotlinOptions {
-        freeCompilerArgs += listOf(
-            "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
-            "-opt-in=kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi",
-            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-            "-opt-in=androidx.compose.foundation.layout.ExperimentalLayoutApi",
-            "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-            "-Xwhen-guards"
-        )
+    kotlin {
+        compilerOptions {
+            freeCompilerArgs.addAll(
+                "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
+                "-opt-in=kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi",
+                "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+                "-opt-in=androidx.compose.foundation.layout.ExperimentalLayoutApi",
+                "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+                "-Xwhen-guards"
+            )
+        }
     }
 }
 
