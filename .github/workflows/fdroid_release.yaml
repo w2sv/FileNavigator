@@ -59,13 +59,24 @@ jobs:
                     include-compare: true
                     semver: false
 
-            # Create GitHub Release and attach APK
-            -   name: Create GitHub Release
-                uses: softprops/action-gh-release@v2
+            # Create GitHub Release
+            -   name: Create Release
+                id: create_release
+                uses: actions/create-release@v1
                 with:
-                    tag_name: ${{ github.ref_name }}
-                    name: ${{ github.ref_name }}
-                    files: ${{ steps.sign_apk.outputs.signedReleaseFile }}
-                    body: ${{ steps.build_changelog.outputs.changelog }} &#x20;
+                    tag_name: ${{ github.ref }}
+                    release_name: ${{ github.ref }}
+                    body: ${{ steps.changelog.outputs.changelog }} &#x20;
                 env:
                     GITHUB_TOKEN: ${{ github.token }}
+
+            # Upload APK
+            -   name: Upload APK
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ github.token }}
+                with:
+                    upload_url: ${{ steps.create_release.outputs.upload_url }}
+                    asset_path: ${{ steps.sign_apk.outputs.signedReleaseFile }}
+                    asset_name: ${{ github.ref }}.apk
+                    asset_content_type: application/zip
