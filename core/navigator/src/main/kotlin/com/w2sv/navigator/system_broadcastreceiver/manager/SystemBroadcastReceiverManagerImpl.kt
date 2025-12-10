@@ -13,19 +13,19 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import slimber.log.i
 
-internal class NavigatorConfigControlledSystemBroadcastReceiverManagerImpl @Inject constructor(
+internal class SystemBroadcastReceiverManagerImpl @Inject constructor(
     private val navigatorConfigDataSource: NavigatorConfigDataSource,
     private val bootCompletedReceiver: BootCompletedReceiver,
     private val powerSaveModeChangedReceiver: PowerSaveModeChangedReceiver
-) : NavigatorConfigControlledSystemBroadcastReceiverManager {
+) : SystemBroadcastReceiverManager {
 
-    override fun toggleReceiversOnStatusChange(collectionScope: CoroutineScope, context: Context) {
+    override fun launchReceiverTogglingOnNavigatorConfigChange(flowCollectionScope: CoroutineScope, context: Context) {
         val flowToReceiver = mapOf(
             navigatorConfigDataSource.navigatorConfig.map { it.disableOnLowBattery } to powerSaveModeChangedReceiver,
             navigatorConfigDataSource.navigatorConfig.map { it.startOnBoot } to bootCompletedReceiver
         )
         flowToReceiver.forEach { (flow, receiver) ->
-            flow.distinctUntilChanged().collectOn(collectionScope, Dispatchers.IO) { register ->
+            flow.distinctUntilChanged().collectOn(flowCollectionScope, Dispatchers.Default) { register ->
                 i { "Toggling ${receiver.logIdentifier} to $register based on respective control flow emission" }
                 receiver.toggle(register, context)
             }

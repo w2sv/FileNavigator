@@ -1,7 +1,7 @@
 package com.w2sv.navigator.system_broadcastreceiver.di
 
-import com.w2sv.navigator.system_broadcastreceiver.manager.NavigatorConfigControlledSystemBroadcastReceiverManager
-import com.w2sv.navigator.system_broadcastreceiver.manager.NavigatorConfigControlledSystemBroadcastReceiverManagerImpl
+import com.w2sv.navigator.system_broadcastreceiver.manager.SystemBroadcastReceiverManager
+import com.w2sv.navigator.system_broadcastreceiver.manager.SystemBroadcastReceiverManagerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,6 +13,6 @@ internal interface SystemBroadcastReceiverBinderModule {
 
     @Binds
     fun navigatorConfigControlledSystemBroadcastReceiverManager(
-        impl: NavigatorConfigControlledSystemBroadcastReceiverManagerImpl
-    ): NavigatorConfigControlledSystemBroadcastReceiverManager
+        impl: SystemBroadcastReceiverManagerImpl
+    ): SystemBroadcastReceiverManager
 }

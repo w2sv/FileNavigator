@@ -8,7 +8,7 @@ import com.w2sv.filenavigator.ui.util.LifecycleLoggingViewModel
 import com.w2sv.filenavigator.ui.util.MakeSnackbarVisualsEmitter
 import com.w2sv.filenavigator.ui.util.MakeSnackbarVisualsEmitterImpl
 import com.w2sv.navigator.FileNavigator
-import com.w2sv.navigator.system_broadcastreceiver.manager.NavigatorConfigControlledSystemBroadcastReceiverManager
+import com.w2sv.navigator.system_broadcastreceiver.manager.SystemBroadcastReceiverManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -19,13 +19,13 @@ import kotlinx.coroutines.launch
 class NavigatorSettingsScreenViewModel @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
     val navigatorIsRunning: FileNavigator.IsRunning,
-    navigatorConfigControlledSystemBroadcastReceiverManager: NavigatorConfigControlledSystemBroadcastReceiverManager,
+    systemBroadcastReceiverManager: SystemBroadcastReceiverManager,
     @ApplicationContext context: Context
 ) : LifecycleLoggingViewModel(),
     MakeSnackbarVisualsEmitter by MakeSnackbarVisualsEmitterImpl() {
 
     init {
-        navigatorConfigControlledSystemBroadcastReceiverManager.toggleReceiversOnStatusChange(
+        systemBroadcastReceiverManager.launchReceiverTogglingOnNavigatorConfigChange(
             viewModelScope,
             context
         )
