@@ -2,14 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Critical Permissions -->
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
+        tools:ignore="AllFilesAccessPolicy,ScopedStorage" />
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- System Permissions -> granted automatically -->
-
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -17,7 +17,6 @@
     <application>
 
         <!-- Services -->
-
         <service
             android:name="com.w2sv.navigator.FileNavigator"
             android:foregroundServiceType="specialUse">
@@ -42,7 +41,6 @@
         </service>
 
         <!-- Exported System Broadcast Receivers -->
-
         <receiver
             android:name="com.w2sv.navigator.system_broadcastreceiver.PowerSaveModeChangedReceiver"
             android:exported="true">
@@ -60,14 +58,12 @@
         </receiver>
 
         <!-- Non-exported Broadcast Receivers -->
-
         <receiver android:name="com.w2sv.navigator.moving.MoveBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.notifications.CleanupNotificationResourcesBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.moving.batch.BatchMoveBroadcastReceiver" />
         <receiver android:name="com.w2sv.navigator.moving.batch.CancelBatchMoveBroadcastReceiver" />
 
         <!-- Activities -->
-
         <activity
             android:name="com.w2sv.navigator.notifications.appnotifications.movefile.FileDestinationPickerActivity"
             android:taskAffinity="com.w2sv.filenavigator.moving"
