@@ -7,36 +7,34 @@ import com.w2sv.common.util.LoggingBroadcastReceiver
 import com.w2sv.common.util.logIdentifier
 import slimber.log.i
 
-abstract class SystemBroadcastReceiver(private val action: String) : LoggingBroadcastReceiver() {
+abstract class DynamicBroadcastReceiver(private val action: String) : LoggingBroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
 
-        if (intent.action != action) return
-
-        onReceiveMatchingIntent(context, intent)
+        if (intent.action == action) {
+            onReceiveMatchingIntent(context, intent)
+        }
     }
 
-    protected abstract fun onReceiveMatchingIntent(context: Context, intent: Intent)
+    abstract fun onReceiveMatchingIntent(context: Context, intent: Intent)
 
-    fun toggle(register: Boolean, context: Context) {
+    fun setRegistered(register: Boolean, context: Context) {
         try {
             if (register) {
                 register(context)
             } else {
                 unregister(context)
             }
-        } catch (_: IllegalArgumentException) { // Thrown upon attempting to unregister unregistered receiver
+        } catch (_: IllegalArgumentException) {
+            // Thrown when attempting to unregister an already unregistered receiver
         }
     }
 
     fun register(context: Context) {
         context.registerReceiver(
             this,
-            IntentFilter()
-                .apply {
-                    addAction(action)
-                }
+            IntentFilter(action)
         )
         i { "Registered $logIdentifier" }
     }
