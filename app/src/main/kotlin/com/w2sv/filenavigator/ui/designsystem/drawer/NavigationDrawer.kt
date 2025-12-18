@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.designsystem.drawer
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +31,7 @@ import com.w2sv.core.common.R
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.ui.designsystem.SystemBarsIgnoringVisibilityPaddedColumn
 import com.w2sv.filenavigator.ui.designsystem.emptyWindowInsets
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @Composable
@@ -37,6 +40,12 @@ fun NavigationDrawer(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
+    val scope = rememberCoroutineScope()
+
+    BackHandler(enabled = state.isOpen) {
+        scope.launch { state.close() }
+    }
+
     ModalNavigationDrawer(
         modifier = modifier,
         drawerContent = {
@@ -78,7 +87,7 @@ private val horizontalPadding = 24.dp
 @Composable
 private fun Header(modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        AppLogoWCircularBackground()
+        AppLogoWithCircularBackground()
         Spacer(modifier = Modifier.height(18.dp))
         Text(
             text = stringResource(id = R.string.version).format(BuildConfig.VERSION_NAME),
@@ -90,7 +99,7 @@ private fun Header(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun AppLogoWCircularBackground(modifier: Modifier = Modifier) {
+private fun AppLogoWithCircularBackground(modifier: Modifier = Modifier) {
     Icon(
         painter = painterResource(id = R.drawable.ic_app_foreground_108),
         contentDescription = null,

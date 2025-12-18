@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.home
 
 import android.annotation.SuppressLint
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,32 +33,22 @@ import com.w2sv.filenavigator.ui.screen.home.components.movehistory.MoveHistoryC
 import com.w2sv.filenavigator.ui.screen.home.components.statusdisplay.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    scope: CoroutineScope = rememberCoroutineScope(),
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
-    BackHandler(enabled = drawerState.isOpen) {
-        scope.launch { drawerState.close() }
-    }
+    val scope = rememberCoroutineScope()
 
     NavigationDrawer(state = drawerState) {
         Scaffold(
-            snackbarHost = {
-                AppSnackbarHost()
-            },
+            snackbarHost = { AppSnackbarHost() },
             topBar = {
                 NavigationDrawerScreenTopAppBar(
                     title = stringResource(id = R.string.app_name),
-                    onNavigationIconClick = {
-                        scope.launch {
-                            drawerState.open()
-                        }
-                    }
+                    onNavigationIconClick = { scope.launch { drawerState.open() } }
                 )
             }
         ) { paddingValues ->
