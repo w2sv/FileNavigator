@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.home.components.movehistory
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -20,7 +21,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,8 +32,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.material3.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.MovedFile
@@ -44,62 +42,43 @@ import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
-import com.w2sv.filenavigator.ui.screen.home.HomeScreenViewModel
+import com.w2sv.filenavigator.ui.screen.home.MoveHistoryState
 import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun MoveHistoryCard(modifier: Modifier = Modifier, homeScreenVM: HomeScreenViewModel = hiltViewModel()) {
-    val moveHistory by homeScreenVM.moveHistory.collectAsStateWithLifecycle()
-
-    val moveHistoryIsEmpty by remember {
-        derivedStateOf { moveHistory.isEmpty() }
-    }
+fun MoveHistoryCard(state: MoveHistoryState, modifier: Modifier = Modifier) {
     var showHistoryDeletionDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
     if (showHistoryDeletionDialog) {
         HistoryDeletionDialog(
             closeDialog = { showHistoryDeletionDialog = false },
-            onConfirmed = homeScreenVM::launchHistoryDeletion
+            onConfirmed = state.deleteAll
         )
     }
 
-    HomeScreenCard(modifier) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.move_history),
-                style = MaterialTheme.typography.headlineMedium
-            )
+    MoveHistoryCard(
+        state = state,
+        showDeletionDialog = { showHistoryDeletionDialog = true },
+        modifier = modifier
+    )
+}
 
-            AnimatedVisibility(visible = !moveHistoryIsEmpty) {
-                MoreIconButtonWithDropdownMenu {
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_delete_history_24),
-                                contentDescription = null
-                            )
-                        },
-                        text = { Text(stringResource(R.string.delete_move_history_dropdown_menu_item_label)) },
-                        onClick = {
-                            collapseMenu()
-                            showHistoryDeletionDialog = true
-                        }
-                    )
-                }
-            }
-        }
+@Composable
+private fun MoveHistoryCard(state: MoveHistoryState, showDeletionDialog: () -> Unit, modifier: Modifier = Modifier) {
+    HomeScreenCard(modifier) {
+        HeaderRow(
+            showDropdownMenuButton = !state.historyEmpty,
+            showDeletionDialog = showDeletionDialog,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         AnimatedContent(
-            targetState = moveHistoryIsEmpty,
+            targetState = state.historyEmpty,
             label = "",
             modifier = Modifier
                 .weight(0.8f)
@@ -109,8 +88,40 @@ fun MoveHistoryCard(modifier: Modifier = Modifier, homeScreenVM: HomeScreenViewM
                 NoHistoryPlaceHolder()
             } else {
                 MoveHistory(
-                    history = moveHistory.toImmutableList(),
-                    onRowClick = rememberMoveEntryRowOnClick(homeScreenVM::launchEntryDeletion)
+                    history = state.history,
+                    onRowClick = rememberMoveEntryRowOnClick(state.deleteEntry)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun HeaderRow(showDropdownMenuButton: Boolean, showDeletionDialog: () -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = stringResource(R.string.move_history),
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        AnimatedVisibility(visible = showDropdownMenuButton) {
+            MoreIconButtonWithDropdownMenu {
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_delete_history_24),
+                            contentDescription = null
+                        )
+                    },
+                    text = { Text(stringResource(R.string.delete_move_history_dropdown_menu_item_label)) },
+                    onClick = {
+                        collapseMenu()
+                        showDeletionDialog()
+                    }
                 )
             }
         }
@@ -127,7 +138,22 @@ private fun rememberMoveEntryRowOnClick(
         { movedFile, fileExists ->
             if (fileExists) {
                 snackbarHostState.currentSnackbarData?.dismiss()
-                movedFile.launchViewMovedFileActivity(context, showSnackbarOnError = { snackbarHostState.showSnackbar(it) })
+                movedFile.launchViewMovedFileActivity(
+                    context = context,
+                    onError = { e ->
+                        snackbarHostState.showSnackbar(
+                            AppSnackbarVisuals(
+                                message = context.getString(
+                                    when (e) {
+                                        is ActivityNotFoundException -> R.string.provider_does_not_support_file_viewing
+                                        else -> R.string.can_t_view_file_from_within_file_navigator
+                                    }
+                                ),
+                                kind = SnackbarKind.Error
+                            )
+                        )
+                    }
+                )
             } else {
                 snackbarHostState.dismissCurrentSnackbarAndShow(
                     AppSnackbarVisuals(

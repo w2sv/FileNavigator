@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.core.isPortraitModeActive
@@ -29,16 +30,45 @@ import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.drawer.NavigationDrawer
 import com.w2sv.filenavigator.ui.designsystem.drawer.drawerRepelledAnimation
 import com.w2sv.filenavigator.ui.designsystem.drawer.rememberDrawerRepelledAnimationState
+import com.w2sv.filenavigator.ui.navigation.WithNavigatorMock
 import com.w2sv.filenavigator.ui.screen.home.components.movehistory.MoveHistoryCard
 import com.w2sv.filenavigator.ui.screen.home.components.statusdisplay.NavigatorStatusCard
+import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(
-    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    viewModel: HomeScreenViewModel = hiltViewModel()
+fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
+    val navigatorIsRunning by viewModel.navigatorIsRunning.collectAsStateWithLifecycle()
+    val moveHistoryState = MoveHistoryState.remember(viewModel)
+
+    HomeScreen(navigatorIsRunning = navigatorIsRunning, moveHistoryState = moveHistoryState)
+}
+
+@Preview
+@Composable
+private fun HomeScreenPrev() {
+    WithNavigatorMock {
+        AppTheme {
+            HomeScreen(
+                navigatorIsRunning = true,
+                moveHistoryState = MoveHistoryState(
+                    history = persistentListOf(),
+                    deleteAll = {},
+                    deleteEntry = {}
+                )
+            )
+        }
+    }
+}
+
+@Composable
+private fun HomeScreen(
+    navigatorIsRunning: Boolean,
+    moveHistoryState: MoveHistoryState,
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 ) {
     val scope = rememberCoroutineScope()
 
@@ -63,13 +93,11 @@ fun HomeScreen(
                         animationBoxHeight = LocalConfiguration.current.screenHeightDp
                     )
 
-            val navigatorIsRunning by viewModel.navigatorIsRunning.collectAsStateWithLifecycle()
-
             val statusDisplayCard: ModifierReceivingComposable = rememberMovableContentOf {
                 NavigatorStatusCard(navigatorIsRunning = navigatorIsRunning, modifier = it)
             }
             val moveHistoryCard: ModifierReceivingComposable = rememberMovableContentOf {
-                MoveHistoryCard(it)
+                MoveHistoryCard(state = moveHistoryState, modifier = it)
             }
 
             when (isPortraitModeActive) {
