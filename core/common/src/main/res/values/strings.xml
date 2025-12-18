@@ -176,5 +176,4 @@
     <string name="enter_a_file_extension">Enter a file extension</string>
     <string name="can_t_view_file_from_within_file_navigator">Can\'t view this file from within File Navigator.</string>
     <string name="navigator">Navigator</string>
-    <string name="status">Status:</string>
 </resources>

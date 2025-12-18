@@ -33,14 +33,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.navigation.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
+import com.w2sv.filenavigator.ui.navigation.PreviewNavigator
 import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.AppColor
+import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DEFAULT_ANIMATION_DURATION
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.navigator.FileNavigator
@@ -97,9 +100,9 @@ fun NavigatorStatusCard(
         NavigatorStatusUiData.map.getValue(navigatorIsRunning)
     }
 
-    HomeScreenCard(modifier, verticalArrangement = Arrangement.spacedBy(18.dp)) {
+    HomeScreenCard(modifier, verticalArrangement = Arrangement.spacedBy(24.dp)) {
         with(navigatorStatusUiData) {
-            HeaderWithStatusRow(statusText)
+            HeaderWithStatus(statusText)
             ButtonRow(
                 toggleButton,
                 onSettingsButtonClick = { navigator.toNavigatorSettings() },
@@ -109,16 +112,16 @@ fun NavigatorStatusCard(
     }
 }
 
-// @Preview
-// @Composable
-// private fun Prev() {
-//    AppTheme {
-//        NavigatorStatusCard(navigatorIsRunning = true, destinationsNavigator = EmptyDestinationsNavigator)
-//    }
-// }
+@Preview
+@Composable
+private fun Prev() {
+    AppTheme {
+        NavigatorStatusCard(navigatorIsRunning = true, navigator = PreviewNavigator())
+    }
+}
 
 @Composable
-private fun HeaderWithStatusRow(statusText: StatusText, modifier: Modifier = Modifier) {
+private fun HeaderWithStatus(statusText: StatusText, modifier: Modifier = Modifier) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Text(
             text = stringResource(R.string.navigator),
@@ -127,20 +130,14 @@ private fun HeaderWithStatusRow(statusText: StatusText, modifier: Modifier = Mod
         VerticalDivider(
             modifier = Modifier
                 .height(16.dp)
-                .padding(horizontal = 8.dp),
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.onSurface
+                .padding(horizontal = 12.dp),
+            color = MaterialTheme.colorScheme.onSurface,
+            thickness = Dp.Hairline
         )
-        val statusTextStyle = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp)
-        Text(
-            text = stringResource(R.string.status),
-            style = statusTextStyle
-        )
-        Spacer(modifier = Modifier.width(4.dp))
         UpSlidingAnimatedContent(targetState = statusText) {
             Text(
                 text = stringResource(id = it.textRes),
-                style = statusTextStyle.copy(fontWeight = FontWeight.SemiBold),
+                style = MaterialTheme.typography.headlineMedium,
                 color = it.color
             )
         }
@@ -155,7 +152,6 @@ private fun ButtonRow(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(24.dp),
         modifier = modifier
     ) {
         val buttonHeight = 65.dp
@@ -163,11 +159,14 @@ private fun ButtonRow(
             properties = toggleButton,
             modifier = Modifier
                 .height(buttonHeight)
-                .width(180.dp)
+                .weight(0.5f)
         )
+        Spacer(modifier = Modifier.weight(0.05f))
         FilledTonalButton(
             onClick = onSettingsButtonClick,
-            modifier = Modifier.height(buttonHeight)
+            modifier = Modifier
+                .height(buttonHeight)
+                .weight(0.3f)
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(

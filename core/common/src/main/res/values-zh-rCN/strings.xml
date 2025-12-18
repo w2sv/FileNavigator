@@ -169,5 +169,4 @@
     <string name="enter_a_file_extension">输入文件扩展名</string>
     <string name="can_t_view_file_from_within_file_navigator">无法从文件导航器查看文</string>
     <string name="navigator">Navigator</string>
-    <string name="status">状态:</string>
 </resources>
