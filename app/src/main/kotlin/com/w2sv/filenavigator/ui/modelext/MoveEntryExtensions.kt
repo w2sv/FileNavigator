@@ -1,13 +1,8 @@
 package com.w2sv.filenavigator.ui.modelext
 
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import androidx.compose.material3.SnackbarVisuals
-import com.w2sv.core.common.R
 import com.w2sv.domain.model.MovedFile
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
-import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import slimber.log.e
 
 fun MovedFile.exists(context: Context): Boolean =
@@ -21,7 +16,7 @@ fun MovedFile.exists(context: Context): Boolean =
         false
     }
 
-suspend fun MovedFile.launchViewMovedFileActivity(context: Context, showSnackbarOnError: suspend (SnackbarVisuals) -> Unit) {
+suspend fun MovedFile.launchViewMovedFileActivity(context: Context, onError: suspend (Throwable) -> Unit) {
     try {
         context.startActivity(
             Intent()
@@ -47,16 +42,6 @@ suspend fun MovedFile.launchViewMovedFileActivity(context: Context, showSnackbar
         )
     } catch (e: Throwable) {
         e { e.toString() }
-        showSnackbarOnError(
-            AppSnackbarVisuals(
-                message = context.getString(
-                    when (e) {
-                        is ActivityNotFoundException -> R.string.provider_does_not_support_file_viewing
-                        else -> R.string.can_t_view_file_from_within_file_navigator
-                    }
-                ),
-                kind = SnackbarKind.Error
-            )
-        )
+        onError(e)
     }
 }

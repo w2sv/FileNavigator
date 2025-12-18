@@ -1,5 +1,7 @@
 package com.w2sv.filenavigator.ui.navigation
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -19,12 +21,19 @@ class NavigatorImpl(backStack: NavBackStack<Screen>) :
     Navigator {
     override fun toAppSettings() =
         launchSingleTop(Screen.AppSettings)
+
     override fun toRequiredPermissions() =
         clearAndLaunch(Screen.RequiredPermissions)
+
     override fun leaveRequiredPermissions() =
         clearAndLaunch(Screen.Home)
+
     override fun toNavigatorSettings() =
         launchSingleTop(Screen.NavigatorSettings)
+}
+
+val LocalNavigator = staticCompositionLocalOf<Navigator> {
+    noCompositionLocalProvidedFor("LocalNavigator")
 }
 
 class PreviewNavigator : Navigator {
@@ -36,6 +45,7 @@ class PreviewNavigator : Navigator {
     override val currentScreen: NavKey = Screen.Home
 }
 
-val LocalNavigator = staticCompositionLocalOf<Navigator> {
-    noCompositionLocalProvidedFor("LocalNavigator")
+@Composable
+fun WithNavigatorMock(content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalNavigator provides PreviewNavigator(), content)
 }
