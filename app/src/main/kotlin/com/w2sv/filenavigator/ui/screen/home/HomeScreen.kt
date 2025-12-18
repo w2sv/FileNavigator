@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.screen.home
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,27 +13,29 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.core.isPortraitModeActive
+import com.w2sv.composed.material3.extensions.rememberVisibilityProgress
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.NavigationDrawerScreenTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.Padding
-import com.w2sv.filenavigator.ui.designsystem.drawer.NavigationDrawer
-import com.w2sv.filenavigator.ui.designsystem.drawer.drawerRepelledAnimation
-import com.w2sv.filenavigator.ui.designsystem.drawer.rememberDrawerRepelledAnimationState
-import com.w2sv.filenavigator.ui.navigation.WithNavigatorMock
+import com.w2sv.filenavigator.ui.designsystem.drawer.HomeScreenNavigationDrawer
+import com.w2sv.filenavigator.ui.designsystem.drawer.drawerDisplaced
 import com.w2sv.filenavigator.ui.screen.home.components.movehistory.MoveHistoryCard
 import com.w2sv.filenavigator.ui.screen.home.components.statusdisplay.NavigatorStatusCard
-import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
+import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
@@ -50,17 +51,15 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
 @Preview
 @Composable
 private fun HomeScreenPrev() {
-    WithNavigatorMock {
-        AppTheme {
-            HomeScreen(
-                navigatorIsRunning = true,
-                moveHistoryState = MoveHistoryState(
-                    history = persistentListOf(),
-                    deleteAll = {},
-                    deleteEntry = {}
-                )
+    PreviewOf {
+        HomeScreen(
+            navigatorIsRunning = true,
+            moveHistoryState = MoveHistoryState(
+                history = persistentListOf(),
+                deleteAll = {},
+                deleteEntry = {}
             )
-        }
+        )
     }
 }
 
@@ -71,8 +70,10 @@ private fun HomeScreen(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 ) {
     val scope = rememberCoroutineScope()
+    var contentWidthPx by remember { mutableIntStateOf(0) }
+    val drawerVisibilityProgress by drawerState.rememberVisibilityProgress()
 
-    NavigationDrawer(state = drawerState) {
+    HomeScreenNavigationDrawer(state = drawerState) {
         Scaffold(
             snackbarHost = { AppSnackbarHost() },
             topBar = {
@@ -80,17 +81,16 @@ private fun HomeScreen(
                     title = stringResource(id = R.string.app_name),
                     onNavigationIconClick = { scope.launch { drawerState.open() } }
                 )
-            }
+            },
+            modifier = Modifier.onSizeChanged { contentWidthPx = it.width }
         ) { paddingValues ->
-            @SuppressLint("ConfigurationScreenWidthHeight")
             val sharedModifier =
                 Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .drawerRepelledAnimation(
-                        state = rememberDrawerRepelledAnimationState(drawerState = drawerState),
-                        animationBoxWidth = LocalConfiguration.current.screenWidthDp,
-                        animationBoxHeight = LocalConfiguration.current.screenHeightDp
+                    .drawerDisplaced(
+                        visibilityProgress = drawerVisibilityProgress,
+                        animationBoxWidthPx = contentWidthPx.toFloat()
                     )
 
             val statusDisplayCard: ModifierReceivingComposable = rememberMovableContentOf {
@@ -146,7 +146,7 @@ private fun LandscapeMode(
     ) {
         statusDisplayCard(
             Modifier
-                .fillMaxWidth(0.4f)
+                .fillMaxWidth(0.45f)
         )
         moveHistoryCard(
             Modifier
