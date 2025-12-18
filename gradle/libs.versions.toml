@@ -30,7 +30,7 @@ room = "2.8.4"
 triplet-play = "3.12.2"
 versionCatalogUpdate = "1.0.1"
 versions = "0.53.0"
-w2sv-composed = "0.1.0"
+w2sv-composed = "0.1.1"
 w2sv-datastoreutils = "0.0.8"
 w2sv-kotlinutils = "0.1.11"
 
