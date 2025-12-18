@@ -72,6 +72,7 @@ private fun NavigationDrawerSheet(closeDrawer: suspend () -> Unit, modifier: Mod
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = horizontalPadding)
+                    .padding(top = 16.dp)
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             NavigationDrawerSheetItemColumn(
