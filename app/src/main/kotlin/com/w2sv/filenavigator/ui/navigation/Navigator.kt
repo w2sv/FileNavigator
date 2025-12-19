@@ -2,6 +2,7 @@ package com.w2sv.filenavigator.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -16,6 +17,7 @@ interface Navigator {
     val currentScreen: NavKey
 }
 
+@Stable
 class NavigatorImpl(backStack: NavBackStack<Screen>) :
     Nav3Navigator<Screen>(backStack),
     Navigator {

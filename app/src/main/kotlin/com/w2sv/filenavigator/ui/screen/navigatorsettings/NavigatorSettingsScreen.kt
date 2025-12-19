@@ -1,10 +1,7 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
 import android.content.Context
-import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterExitState
-import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -26,7 +23,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,13 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.core.CollectLatestFromFlow
-import com.w2sv.composed.core.OnChange
-import com.w2sv.composed.core.OnDispose
 import com.w2sv.composed.core.isLandscapeModeActive
 import com.w2sv.composed.material3.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
@@ -64,40 +60,27 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.EnabledFile
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeCreationDialog
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.FileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.PresetFileTypeConfigurationDialog
+import com.w2sv.filenavigator.ui.state.ReversibleNavigatorConfig
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
+import com.w2sv.filenavigator.ui.util.OnVisibilityStateChange
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
-private sealed interface FileTypeConfigurationDialog : Parcelable {
-
-    @Parcelize
-    data object CreateType : FileTypeConfigurationDialog
-
-    @Parcelize
-    @JvmInline
-    value class ConfigureCustomType(val fileType: CustomFileType) : FileTypeConfigurationDialog
-
-    @Parcelize
-    @JvmInline
-    value class ConfigurePresetType(val fileType: AnyPresetWrappingFileType) : FileTypeConfigurationDialog
-}
 
 @Composable
 fun NavigatorSettingsScreen(
     navigatorVM: NavigatorSettingsScreenViewModel = hiltViewModel(),
-    context: Context = LocalContext.current,
-    scope: CoroutineScope = rememberCoroutineScope(),
-    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
-    navigator: Navigator = LocalNavigator.current
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
+    val context = LocalContext.current
+
     CollectLatestFromFlow(
         flow = navigatorVM.makeSnackbarVisuals,
         key1 = snackbarHostState
@@ -105,20 +88,90 @@ fun NavigatorSettingsScreen(
         snackbarHostState.dismissCurrentSnackbarAndShow(makeSnackbarVisuals(context))
     }
 
-    var fabButtonRowIsShowing by remember {
-        mutableStateOf(false)
-    }
-
     AutoMoveIntroductionDialogIfNotYetShown()
 
-    var showUsedFileTypesBottomSheet by rememberSaveable {
-        mutableStateOf(false)
-    }
-    var fileTypeConfigurationDialog by rememberSaveable {
-        mutableStateOf<FileTypeConfigurationDialog?>(null)
+    var showFileTypesBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var fileTypeConfigurationDialog by rememberSaveable { mutableStateOf<FileTypeConfigurationDialog?>(null) }
+
+    val navigatorConfig by navigatorVM.reversibleConfig.collectAsStateWithLifecycle()
+    val configurationHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
+
+    NavigatorSettingsScreen(
+        navigatorConfig = navigatorConfig,
+        reversibleNavigatorConfig = navigatorVM.reversibleConfig,
+        configurationHasChanged = configurationHasChanged,
+        resetConfiguration = navigatorVM.reversibleConfig::reset,
+        launchConfigSync = navigatorVM::launchConfigSync,
+        showFileTypesBottomSheet = { showFileTypesBottomSheet = true },
+        showFileTypeConfigurationDialog = { fileType ->
+            fileTypeConfigurationDialog = when (fileType) {
+                is AnyPresetWrappingFileType -> FileTypeConfigurationDialog.ConfigurePresetType(fileType)
+                is CustomFileType -> FileTypeConfigurationDialog.ConfigureCustomType(fileType)
+            }
+        }
+    )
+
+    if (showFileTypesBottomSheet) {
+        EnabledFileTypesBottomSheet(
+            fileTypeEnablementMap = remember(navigatorConfig) {
+                navigatorConfig
+                    .fileTypeConfigMap
+                    .mapValues { it.value.enabled }
+                    .toImmutableMap()
+            },
+            applyFileTypeEnablementMap = navigatorVM.reversibleConfig::applyFileTypeEnablementMap,
+            onDismissRequest = { showFileTypesBottomSheet = false },
+            deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
+            showFileTypeCreationDialog = { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType }
+        )
     }
 
-    val configurationHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
+    fileTypeConfigurationDialog?.let { dialog ->
+        val closeDialog = { fileTypeConfigurationDialog = null }
+
+        when (dialog) {
+            FileTypeConfigurationDialog.CreateType -> CustomFileTypeCreationDialog(
+                fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
+                onDismissRequest = closeDialog,
+                createFileType = navigatorVM.reversibleConfig::createCustomFileType,
+                excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension
+            )
+
+            is FileTypeConfigurationDialog.ConfigureCustomType -> CustomFileTypeConfigurationDialog(
+                fileType = dialog.fileType,
+                fileTypes = remember { (navigatorConfig.fileTypes - dialog.fileType).toImmutableSet() },
+                onDismissRequest = closeDialog,
+                saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
+                excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension
+            )
+
+            is FileTypeConfigurationDialog.ConfigurePresetType -> PresetFileTypeConfigurationDialog(
+                fileType = dialog.fileType,
+                saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
+                customFileTypes = navigatorConfig.fileTypes.filterIsInstance<CustomFileType>().toImmutableSet(),
+                excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension,
+                deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
+                onDismissRequest = closeDialog
+            )
+        }
+    }
+}
+
+@Composable
+private fun NavigatorSettingsScreen(
+    navigatorConfig: NavigatorConfig,
+    reversibleNavigatorConfig: ReversibleNavigatorConfig,
+    configurationHasChanged: Boolean,
+    resetConfiguration: () -> Unit,
+    launchConfigSync: () -> Job,
+    showFileTypesBottomSheet: () -> Unit,
+    showFileTypeConfigurationDialog: (FileType) -> Unit,
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
+    navigator: Navigator = LocalNavigator.current
+) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var fabButtonRowIsShowing by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -130,28 +183,25 @@ fun NavigatorSettingsScreen(
         floatingActionButton = {
             ConfigurationButtonRow(
                 configurationHasChanged = configurationHasChanged,
-                resetConfiguration = remember { navigatorVM.reversibleConfig::reset },
-                syncConfiguration = remember {
-                    {
-                        navigatorVM
-                            .launchConfigSync()
-                            .invokeOnCompletion {
-                                scope.launch {
-                                    // Show 'Applied navigator settings' snackbar only when fab buttons have disappeared
-                                    snapshotFlow { fabButtonRowIsShowing }
-                                        .filter { !it }
-                                        .take(1)
-                                        .collect {
-                                            snackbarHostState.dismissCurrentSnackbarAndShow(
-                                                AppSnackbarVisuals(
-                                                    message = context.getString(R.string.applied_navigator_settings),
-                                                    kind = SnackbarKind.Success
-                                                )
+                resetConfiguration = resetConfiguration,
+                syncConfiguration = {
+                    launchConfigSync()
+                        .invokeOnCompletion {
+                            // Show 'Applied navigator settings' snackbar only when fab buttons have disappeared
+                            scope.launch {
+                                snapshotFlow { fabButtonRowIsShowing }
+                                    .filter { !it }
+                                    .take(1)
+                                    .collect {
+                                        snackbarHostState.dismissCurrentSnackbarAndShow(
+                                            AppSnackbarVisuals(
+                                                message = context.getString(R.string.applied_navigator_settings),
+                                                kind = SnackbarKind.Success
                                             )
-                                        }
-                                }
+                                        )
+                                    }
                             }
-                    }
+                        }
                 },
                 onVisibilityStateChange = { fabButtonRowIsShowing = it },
                 modifier = Modifier
@@ -164,68 +214,16 @@ fun NavigatorSettingsScreen(
         },
         snackbarHost = { AppSnackbarHost() }
     ) { paddingValues ->
-        val navigatorConfig by navigatorVM.reversibleConfig.collectAsStateWithLifecycle()
-
         NavigatorConfigurationColumn(
             config = navigatorConfig,
-            reversibleConfig = navigatorVM.reversibleConfig,
-            showUsedFileTypesBottomSheet = remember { { showUsedFileTypesBottomSheet = true } },
-            showFileTypeConfigurationDialog = { fileType ->
-                fileTypeConfigurationDialog = when (fileType) {
-                    is AnyPresetWrappingFileType -> FileTypeConfigurationDialog.ConfigurePresetType(fileType)
-                    is CustomFileType -> FileTypeConfigurationDialog.ConfigureCustomType(fileType)
-                }
-            },
+            reversibleConfig = reversibleNavigatorConfig,
+            showFileTypesBottomSheet = showFileTypesBottomSheet,
+            showFileTypeConfigurationDialog = showFileTypeConfigurationDialog,
             modifier = Modifier
                 .padding(top = paddingValues.calculateTopPadding())
                 .padding(horizontal = Padding.defaultHorizontal)
                 .fillMaxSize()
         )
-
-        if (showUsedFileTypesBottomSheet) {
-            EnabledFileTypesBottomSheet(
-                fileTypeEnablementMap = remember(navigatorConfig) {
-                    navigatorConfig
-                        .fileTypeConfigMap
-                        .mapValues { it.value.enabled }
-                        .toImmutableMap()
-                },
-                applyFileTypeEnablementMap = navigatorVM.reversibleConfig::applyFileTypeEnablementMap,
-                onDismissRequest = remember { { showUsedFileTypesBottomSheet = false } },
-                deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
-                showFileTypeCreationDialog = remember { { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType } }
-            )
-        }
-
-        fileTypeConfigurationDialog?.let { dialog ->
-            val closeDialog = remember { { fileTypeConfigurationDialog = null } }
-
-            when (dialog) {
-                FileTypeConfigurationDialog.CreateType -> CustomFileTypeCreationDialog(
-                    fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
-                    onDismissRequest = closeDialog,
-                    createFileType = navigatorVM.reversibleConfig::createCustomFileType,
-                    excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension
-                )
-
-                is FileTypeConfigurationDialog.ConfigureCustomType -> CustomFileTypeConfigurationDialog(
-                    fileType = dialog.fileType,
-                    fileTypes = remember { (navigatorConfig.fileTypes - dialog.fileType).toImmutableSet() },
-                    onDismissRequest = closeDialog,
-                    saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
-                    excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension
-                )
-
-                is FileTypeConfigurationDialog.ConfigurePresetType -> PresetFileTypeConfigurationDialog(
-                    fileType = dialog.fileType,
-                    saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
-                    customFileTypes = navigatorConfig.fileTypes.filterIsInstance<CustomFileType>().toImmutableSet(),
-                    excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension,
-                    deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
-                    onDismissRequest = closeDialog
-                )
-            }
-        }
     }
 }
 
@@ -270,19 +268,6 @@ private fun ConfigurationButtonRow(
                 onClick = syncConfiguration
             )
         }
-    }
-}
-
-@Composable
-@Stable
-fun OnVisibilityStateChange(transition: Transition<*>, callback: (Boolean) -> Unit) {
-    OnChange(transition.targetState) {
-        if (it != EnterExitState.PostExit) {
-            callback(true)
-        }
-    }
-    OnDispose {
-        callback(false)
     }
 }
 
