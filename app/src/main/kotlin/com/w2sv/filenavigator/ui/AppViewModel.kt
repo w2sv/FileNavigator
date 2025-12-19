@@ -24,7 +24,7 @@ class AppViewModel @Inject constructor(private val preferencesRepository: Prefer
         // Stop FileNavigator when any permission missing
         permissions.anyMissing.collectOn(viewModelScope) {
             if (it) {
-                FileNavigator.Companion.stop(context)
+                FileNavigator.stop(context)
             }
         }
     }
@@ -35,7 +35,7 @@ class AppViewModel @Inject constructor(private val preferencesRepository: Prefer
 
     val theme = preferencesRepository.theme.stateIn(
         viewModelScope,
-        SharingStarted.Companion.WhileSubscribed()
+        SharingStarted.WhileSubscribed()
     )
 
     fun saveTheme(theme: Theme) {
@@ -46,7 +46,7 @@ class AppViewModel @Inject constructor(private val preferencesRepository: Prefer
 
     val useAmoledBlackTheme = preferencesRepository.useAmoledBlackTheme.stateIn(
         viewModelScope,
-        SharingStarted.Companion.WhileSubscribed()
+        SharingStarted.WhileSubscribed()
     )
 
     fun saveUseAmoledBlackTheme(value: Boolean) {
@@ -57,7 +57,7 @@ class AppViewModel @Inject constructor(private val preferencesRepository: Prefer
 
     val useDynamicColors = preferencesRepository.useDynamicColors.stateIn(
         viewModelScope,
-        SharingStarted.Companion.WhileSubscribed()
+        SharingStarted.WhileSubscribed()
     )
 
     fun saveUseDynamicColors(value: Boolean) {
@@ -72,7 +72,7 @@ class AppViewModel @Inject constructor(private val preferencesRepository: Prefer
 
     val showStorageVolumeNames = preferencesRepository.showStorageVolumeNames.stateIn(
         viewModelScope,
-        SharingStarted.Companion.WhileSubscribed()
+        SharingStarted.WhileSubscribed()
     )
 
     fun saveShowStorageVolumeNames(value: Boolean) {
@@ -83,7 +83,7 @@ class AppViewModel @Inject constructor(private val preferencesRepository: Prefer
 
     val showAutoMoveIntroduction = preferencesRepository.showAutoMoveIntroduction.stateIn(
         viewModelScope,
-        SharingStarted.Companion.Eagerly
+        SharingStarted.Eagerly
     )
 
     fun saveShowAutoMoveIntroduction(value: Boolean) {
