@@ -1,7 +1,5 @@
 package com.w2sv.filenavigator.ui.navigation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation3.runtime.NavBackStack
@@ -45,9 +43,4 @@ class PreviewNavigator : Navigator {
     override fun toNavigatorSettings() {}
     override fun popBackStack() {}
     override val currentScreen: NavKey = Screen.Home
-}
-
-@Composable
-fun WithNavigatorMock(content: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalNavigator provides PreviewNavigator(), content)
 }
