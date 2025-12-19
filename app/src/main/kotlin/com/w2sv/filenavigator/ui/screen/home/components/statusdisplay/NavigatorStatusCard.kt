@@ -47,10 +47,7 @@ import com.w2sv.filenavigator.ui.theme.DEFAULT_ANIMATION_DURATION
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.navigator.FileNavigator
 
-private enum class NavigatorStatusCardData(
-    val statusText: StatusText,
-    val toggleButton: ToggleButton
-) {
+private enum class NavigatorStatusCardData(val statusText: StatusText, val toggleButton: ToggleButton) {
     IsInactive(
         statusText = StatusText(
             textRes = R.string.inactive,
@@ -78,12 +75,7 @@ private enum class NavigatorStatusCardData(
 
     data class StatusText(@StringRes val textRes: Int, val color: Color)
 
-    data class ToggleButton(
-        val color: Color,
-        @DrawableRes val iconRes: Int,
-        @StringRes val labelRes: Int,
-        val onClick: (Context) -> Unit
-    )
+    data class ToggleButton(val color: Color, @DrawableRes val iconRes: Int, @StringRes val labelRes: Int, val onClick: (Context) -> Unit)
 
     companion object {
         operator fun invoke(isRunning: Boolean): NavigatorStatusCardData =

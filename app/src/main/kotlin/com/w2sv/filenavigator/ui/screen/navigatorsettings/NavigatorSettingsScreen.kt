@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -68,7 +67,6 @@ import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.OnVisibilityStateChange
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take

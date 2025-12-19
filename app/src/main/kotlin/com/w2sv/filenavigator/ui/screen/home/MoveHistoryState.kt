@@ -10,11 +10,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 @Stable
-data class MoveHistoryState(
-    val history: ImmutableList<MovedFile>,
-    val deleteAll: () -> Unit,
-    val deleteEntry: (MovedFile) -> Unit
-) {
+data class MoveHistoryState(val history: ImmutableList<MovedFile>, val deleteAll: () -> Unit, val deleteEntry: (MovedFile) -> Unit) {
     val historyEmpty by threadUnsafeLazy { history.isEmpty() }
 
     companion object {

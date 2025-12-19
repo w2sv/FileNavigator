@@ -37,7 +37,7 @@ class AppPermissions(
     val postNotificationsRequested: StateFlow<Boolean> =
         preferencesRepository.postNotificationsPermissionRequested.stateIn(
             coroutineScope,
-            SharingStarted.Companion.Eagerly
+            SharingStarted.Eagerly
         )
 
     fun savePostNotificationsRequested() {

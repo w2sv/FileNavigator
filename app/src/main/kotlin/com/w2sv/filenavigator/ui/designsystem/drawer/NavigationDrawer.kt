@@ -31,8 +31,8 @@ import com.w2sv.core.common.R
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.ui.designsystem.SystemBarsIgnoringVisibilityPaddedColumn
 import com.w2sv.filenavigator.ui.designsystem.emptyWindowInsets
-import kotlinx.coroutines.launch
 import java.time.LocalDate
+import kotlinx.coroutines.launch
 
 @Composable
 fun NavigationDrawer(
