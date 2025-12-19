@@ -25,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,47 +47,49 @@ import com.w2sv.filenavigator.ui.theme.DEFAULT_ANIMATION_DURATION
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.navigator.FileNavigator
 
-@Immutable
-private data class NavigatorStatusUiData(val statusText: StatusText, val toggleButton: NavigatorToggleButton) {
-    companion object {
-        val map = mapOf(
-            false to NavigatorStatusUiData(
-                statusText = StatusText(
-                    textRes = R.string.inactive,
-                    color = AppColor.error
-                ),
-                toggleButton = NavigatorToggleButton(
-                    color = AppColor.success,
-                    iconRes = R.drawable.ic_start_24,
-                    labelRes = R.string.start,
-                    onClick = { FileNavigator.start(it) }
-                )
-            ),
-            true to NavigatorStatusUiData(
-                statusText = StatusText(
-                    textRes = R.string.active,
-                    color = AppColor.success
-                ),
-                toggleButton = NavigatorToggleButton(
-                    color = AppColor.error,
-                    iconRes = R.drawable.ic_stop_24,
-                    labelRes = R.string.stop,
-                    onClick = { FileNavigator.stop(it) }
-                )
-            )
+private enum class NavigatorStatusCardData(
+    val statusText: StatusText,
+    val toggleButton: ToggleButton
+) {
+    IsInactive(
+        statusText = StatusText(
+            textRes = R.string.inactive,
+            color = AppColor.error
+        ),
+        toggleButton = ToggleButton(
+            color = AppColor.success,
+            iconRes = R.drawable.ic_start_24,
+            labelRes = R.string.start,
+            onClick = { FileNavigator.start(it) }
         )
+    ),
+    IsRunning(
+        statusText = StatusText(
+            textRes = R.string.active,
+            color = AppColor.success
+        ),
+        toggleButton = ToggleButton(
+            color = AppColor.error,
+            iconRes = R.drawable.ic_stop_24,
+            labelRes = R.string.stop,
+            onClick = { FileNavigator.stop(it) }
+        )
+    );
+
+    data class StatusText(@StringRes val textRes: Int, val color: Color)
+
+    data class ToggleButton(
+        val color: Color,
+        @DrawableRes val iconRes: Int,
+        @StringRes val labelRes: Int,
+        val onClick: (Context) -> Unit
+    )
+
+    companion object {
+        operator fun invoke(isRunning: Boolean): NavigatorStatusCardData =
+            if (isRunning) IsRunning else IsInactive
     }
 }
-
-private data class StatusText(@StringRes val textRes: Int, val color: Color)
-
-@Immutable
-private data class NavigatorToggleButton(
-    val color: Color,
-    @DrawableRes val iconRes: Int,
-    @StringRes val labelRes: Int,
-    val onClick: (Context) -> Unit
-)
 
 @Composable
 fun NavigatorStatusCard(
@@ -96,19 +97,15 @@ fun NavigatorStatusCard(
     modifier: Modifier = Modifier,
     navigator: Navigator = LocalNavigator.current
 ) {
-    val navigatorStatusUiData = remember(navigatorIsRunning) {
-        NavigatorStatusUiData.map.getValue(navigatorIsRunning)
-    }
+    val uiData = remember(navigatorIsRunning) { NavigatorStatusCardData(navigatorIsRunning) }
 
     HomeScreenCard(modifier, verticalArrangement = Arrangement.spacedBy(24.dp)) {
-        with(navigatorStatusUiData) {
-            HeaderWithStatus(statusText)
-            ButtonRow(
-                toggleButton,
-                onSettingsButtonClick = { navigator.toNavigatorSettings() },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        HeaderWithStatus(uiData.statusText)
+        ButtonRow(
+            toggleButton = uiData.toggleButton,
+            onSettingsButtonClick = { navigator.toNavigatorSettings() },
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -121,7 +118,7 @@ private fun Prev() {
 }
 
 @Composable
-private fun HeaderWithStatus(statusText: StatusText, modifier: Modifier = Modifier) {
+private fun HeaderWithStatus(statusText: NavigatorStatusCardData.StatusText, modifier: Modifier = Modifier) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Text(
             text = stringResource(R.string.navigator),
@@ -146,7 +143,7 @@ private fun HeaderWithStatus(statusText: StatusText, modifier: Modifier = Modifi
 
 @Composable
 private fun ButtonRow(
-    toggleButton: NavigatorToggleButton,
+    toggleButton: NavigatorStatusCardData.ToggleButton,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -180,7 +177,7 @@ private fun ButtonRow(
 }
 
 @Composable
-private fun NavigatorToggleButton(properties: NavigatorToggleButton, modifier: Modifier = Modifier) {
+private fun NavigatorToggleButton(properties: NavigatorStatusCardData.ToggleButton, modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     Button(
