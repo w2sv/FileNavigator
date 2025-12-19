@@ -129,7 +129,7 @@ fun rememberSelectAutoMoveDestination(onDestinationSelected: (LocalDestinationAp
 fun NavigatorConfigurationColumn(
     config: NavigatorConfig,
     reversibleConfig: ReversibleNavigatorConfig,
-    showUsedFileTypesBottomSheet: () -> Unit,
+    showFileTypesBottomSheet: () -> Unit,
     showFileTypeConfigurationDialog: (FileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -141,7 +141,7 @@ fun NavigatorConfigurationColumn(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 SectionHeader(text = stringResource(id = R.string.navigated_file_types))
-                FilledTonalIconButton(onClick = showUsedFileTypesBottomSheet) {
+                FilledTonalIconButton(onClick = showFileTypesBottomSheet) {
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = stringResource(R.string.configure_the_used_file_types)

@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration
 
+import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -49,10 +50,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.colonSuffixed
 import com.w2sv.core.common.R
+import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
+import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.HighlightedDialogButton
 import com.w2sv.filenavigator.ui.theme.dialogSectionLabel
 import com.w2sv.filenavigator.ui.util.CharSequenceText
+import kotlinx.parcelize.Parcelize
 
 @Composable
 fun ColorPickerDialogOverlaidFileTypeConfigurationDialog(
@@ -230,4 +234,19 @@ fun RemoveExtensionFromFileTypeButton(
     ) {
         CharSequenceText(text)
     }
+}
+
+@Parcelize
+sealed interface FileTypeConfigurationDialog : Parcelable {
+
+    @Parcelize
+    data object CreateType : FileTypeConfigurationDialog
+
+    @Parcelize
+    @JvmInline
+    value class ConfigureCustomType(val fileType: CustomFileType) : FileTypeConfigurationDialog
+
+    @Parcelize
+    @JvmInline
+    value class ConfigurePresetType(val fileType: AnyPresetWrappingFileType) : FileTypeConfigurationDialog
 }
