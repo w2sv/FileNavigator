@@ -16,7 +16,7 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.NavigatorSettingsScree
 
 @Composable
 fun NavGraph(anyPermissionMissing: Boolean) {
-    val backStack = rememberNavBackStack(Screen.initial(anyPermissionMissing))
+    val backStack = rememberNavBackStack<Screen>(Screen.NavigatorSettings)
     val navigator = remember(backStack) { NavigatorImpl(backStack) }
 
     CompositionLocalProvider(LocalNavigator provides navigator) {
