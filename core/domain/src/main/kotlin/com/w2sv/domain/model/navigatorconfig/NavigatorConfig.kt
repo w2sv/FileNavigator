@@ -56,14 +56,8 @@ data class NavigatorConfig(
     // Copying with modifications
     // ================
 
-    fun applyFileTypeEnablementMap(map: Map<FileType, Boolean>): NavigatorConfig =
-        copy(
-            fileTypeConfigMap = fileTypeConfigMap.copy {
-                map.forEach { (fileType, enabled) ->
-                    update(fileType) { it.copy(enabled = enabled) }
-                }
-            }
-        )
+    fun toggleFileTypeEnablement(fileType: FileType): NavigatorConfig =
+        copy(fileTypeConfigMap = fileTypeConfigMap.copy { update(fileType) { it.copy(enabled = !it.enabled) } })
 
     /**
      * Adds [type] to the configuration with a default [FileTypeConfig], with [FileTypeConfig.enabled] set to [enabled].

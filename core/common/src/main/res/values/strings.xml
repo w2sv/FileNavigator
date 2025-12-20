@@ -69,11 +69,11 @@
     <string name="couldn_t_delete"><![CDATA[Couldn\'t delete <b>%1$s</b>]]></string>
 
     <string name="grant">Grant</string>
-    <string name="select_at_least_one_file_type">Select at least one file type.</string>
+    <string name="leave_at_least_one_file_type_selected">Leave at least one file type selected.</string>
     <string name="apply">Apply</string>
     <string name="disable_navigator_on_low_battery">Disable navigator on low battery</string>
     <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">Leave at least one file source selected or disable the entire file type.</string>
-    <string name="select_navigated_file_types">Select Navigated File Types</string>
+    <string name="select_file_types">Select File Types</string>
     <string name="_default">Default</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>

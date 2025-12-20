@@ -46,8 +46,8 @@ class ReversibleNavigatorConfig(
         makeSnackbarVisuals = makeSnackbarVisuals
     )
 
-    fun applyFileTypeEnablementMap(map: Map<FileType, Boolean>) {
-        update { it.applyFileTypeEnablementMap(map) }
+    fun toggleFileTypeEnablement(fileType: FileType) {
+        update { it.toggleFileTypeEnablement(fileType) }
     }
 
     fun onFileSourceCheckedChange(
