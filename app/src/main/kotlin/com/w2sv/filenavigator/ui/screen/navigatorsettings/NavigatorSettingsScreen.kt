@@ -8,19 +8,25 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -39,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.core.CollectLatestFromFlow
-import com.w2sv.composed.core.isLandscapeModeActive
 import com.w2sv.composed.material3.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
@@ -47,15 +51,13 @@ import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.Padding
-import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.navigation.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AutoMoveIntroductionDialogIfNotYetShown
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.FileTypeSelectionBottomSheet
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.FileTypeSelectionBottomSheetContent
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeCreationDialog
@@ -68,8 +70,6 @@ import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.OnVisibilityStateChange
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
 @Composable
@@ -88,38 +88,37 @@ fun NavigatorSettingsScreen(
 
     AutoMoveIntroductionDialogIfNotYetShown()
 
-    var showFileTypesBottomSheet by rememberSaveable { mutableStateOf(true) }
     var fileTypeConfigurationDialog by rememberSaveable { mutableStateOf<FileTypeConfigurationDialog?>(null) }
 
     val navigatorConfig by navigatorVM.reversibleConfig.collectAsStateWithLifecycle()
     val configurationHasChanged by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true).apply { rememberCoroutineScope().launch { expand() } }
+    val scaffoldState = rememberBottomSheetScaffoldState(snackbarHostState = snackbarHostState, bottomSheetState = bottomSheetState)
 
     NavigatorSettingsScreen(
         navigatorConfig = navigatorConfig,
         reversibleNavigatorConfig = navigatorVM.reversibleConfig,
+        scaffoldState = scaffoldState,
         configurationHasChanged = configurationHasChanged,
         resetConfiguration = navigatorVM.reversibleConfig::reset,
         launchConfigSync = navigatorVM::launchConfigSync,
-        showFileTypesBottomSheet = { showFileTypesBottomSheet = true },
         showFileTypeConfigurationDialog = { fileType ->
             fileTypeConfigurationDialog = when (fileType) {
                 is AnyPresetWrappingFileType -> FileTypeConfigurationDialog.ConfigurePresetType(fileType)
                 is CustomFileType -> FileTypeConfigurationDialog.ConfigureCustomType(fileType)
             }
+        },
+        sheetContent = {
+            FileTypeSelectionBottomSheetContent(
+                rememberFileTypeSelectionState(
+                    navigatorConfig = navigatorConfig,
+                    toggleSelection = navigatorVM.reversibleConfig::toggleFileTypeEnablement,
+                    deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType
+                ),
+                showFileTypeCreationDialog = { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType }
+            )
         }
     )
-
-    if (showFileTypesBottomSheet) {
-        FileTypeSelectionBottomSheet(
-            state = rememberFileTypeSelectionState(
-                navigatorConfig = navigatorConfig,
-                toggleSelection = navigatorVM.reversibleConfig::toggleFileTypeEnablement,
-                deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType
-            ),
-            onDismissRequest = { showFileTypesBottomSheet = false },
-            showFileTypeCreationDialog = { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType }
-        )
-    }
 
     fileTypeConfigurationDialog?.let { dialog ->
         val closeDialog = { fileTypeConfigurationDialog = null }
@@ -156,63 +155,35 @@ fun NavigatorSettingsScreen(
 private fun NavigatorSettingsScreen(
     navigatorConfig: NavigatorConfig,
     reversibleNavigatorConfig: ReversibleNavigatorConfig,
+    scaffoldState: BottomSheetScaffoldState,
     configurationHasChanged: Boolean,
     resetConfiguration: () -> Unit,
     launchConfigSync: () -> Job,
-    showFileTypesBottomSheet: () -> Unit,
     showFileTypeConfigurationDialog: (FileType) -> Unit,
+    sheetContent: @Composable ColumnScope.() -> Unit,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     navigator: Navigator = LocalNavigator.current
 ) {
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-    var fabButtonRowIsShowing by remember { mutableStateOf(false) }
 
-    Scaffold(
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
         topBar = {
             BackArrowTopAppBar(
                 title = stringResource(id = R.string.navigator_settings),
                 onBack = navigator::popBackStack
             )
         },
-        floatingActionButton = {
-            ConfigurationButtonRow(
-                configurationHasChanged = configurationHasChanged,
-                resetConfiguration = resetConfiguration,
-                syncConfiguration = {
-                    launchConfigSync()
-                        .invokeOnCompletion {
-                            // Show 'Applied navigator settings' snackbar only when fab buttons have disappeared
-                            scope.launch {
-                                snapshotFlow { fabButtonRowIsShowing }
-                                    .filter { !it }
-                                    .take(1)
-                                    .collect {
-                                        snackbarHostState.dismissCurrentSnackbarAndShow(
-                                            AppSnackbarVisuals(
-                                                message = context.getString(R.string.applied_navigator_settings),
-                                                kind = SnackbarKind.Success
-                                            )
-                                        )
-                                    }
-                            }
-                        }
-                },
-                onVisibilityStateChange = { fabButtonRowIsShowing = it },
-                modifier = Modifier
-                    .padding(
-                        top = 8.dp, // Snackbar padding
-                        end = if (isLandscapeModeActive) 38.dp else 0.dp
-                    )
-                    .height(70.dp)
-            )
-        },
-        snackbarHost = { AppSnackbarHost() }
+        snackbarHost = { AppSnackbarHost() },
+        sheetContent = sheetContent,
+        sheetContainerColor = colorScheme.surfaceContainerLowest,
+//        sheetTonalElevation = 32.dp,
+//        sheetShadowElevation = 32.dp
     ) { paddingValues ->
         NavigatorConfigurationColumn(
             config = navigatorConfig,
             reversibleConfig = reversibleNavigatorConfig,
-            showFileTypesBottomSheet = showFileTypesBottomSheet,
+            showFileTypesBottomSheet = { scope.launch { scaffoldState.bottomSheetState.expand() } },
             showFileTypeConfigurationDialog = showFileTypeConfigurationDialog,
             modifier = Modifier
                 .padding(top = paddingValues.calculateTopPadding())
