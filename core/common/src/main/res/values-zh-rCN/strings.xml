@@ -64,11 +64,11 @@
     <string name="successfully_deleted"><![CDATA[成功删除 <b>%1$s</b>]]></string>
     <string name="couldn_t_delete"><![CDATA[无法删除 <b>%1$s</b>]]></string>
     <string name="grant">授予权限</string>
-    <string name="select_at_least_one_file_type">至少选择一种文件类型</string>
+    <string name="leave_at_least_one_file_type_selected">至少保留一种文件类型</string>
     <string name="apply">应用</string>
     <string name="disable_navigator_on_low_battery">低电量时自动禁用分类导航程序</string>
     <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">除非禁用此文件类型，请至少选择一个文件源</string>
-    <string name="select_navigated_file_types"> 选择将要进行分类整理的文件类型</string>
+    <string name="select_file_types"> 选择将要进行分类整理的文件类型</string>
     <string name="_default">默认</string>
     <string name="dark">暗色背景</string>
     <string name="light">亮色背景</string>

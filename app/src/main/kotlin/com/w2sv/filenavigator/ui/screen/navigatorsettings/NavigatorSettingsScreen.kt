@@ -55,17 +55,17 @@ import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.navigation.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.AutoMoveIntroductionDialogIfNotYetShown
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.EnabledFileTypesBottomSheet
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.FileTypeSelectionBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.NavigatorConfigurationColumn
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.CustomFileTypeCreationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.FileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration.PresetFileTypeConfigurationDialog
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.components.rememberFileTypeSelectionState
 import com.w2sv.filenavigator.ui.state.ReversibleNavigatorConfig
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.OnVisibilityStateChange
-import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
@@ -110,16 +110,13 @@ fun NavigatorSettingsScreen(
     )
 
     if (showFileTypesBottomSheet) {
-        EnabledFileTypesBottomSheet(
-            fileTypeEnablementMap = remember(navigatorConfig) {
-                navigatorConfig
-                    .fileTypeConfigMap
-                    .mapValues { it.value.enabled }
-                    .toImmutableMap()
-            },
-            applyFileTypeEnablementMap = navigatorVM.reversibleConfig::applyFileTypeEnablementMap,
+        FileTypeSelectionBottomSheet(
+            state = rememberFileTypeSelectionState(
+                navigatorConfig = navigatorConfig,
+                toggleSelection = navigatorVM.reversibleConfig::toggleFileTypeEnablement,
+                deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType
+            ),
             onDismissRequest = { showFileTypesBottomSheet = false },
-            deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
             showFileTypeCreationDialog = { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType }
         )
     }
