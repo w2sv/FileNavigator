@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.home.components
+package com.w2sv.filenavigator.ui.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

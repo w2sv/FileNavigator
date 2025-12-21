@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.configlist
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,6 +34,7 @@ import com.w2sv.domain.usecase.PreviewMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
+import com.w2sv.filenavigator.ui.designsystem.SubDirectoryIcon
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.theme.AppTheme
@@ -144,9 +145,7 @@ private fun FileTypeRow(
                         collapseMenu()
                         setSourceAutoMoveConfigs()
                     },
-                    leadingIcon = {
-                        SubDirectoryIcon()
-                    }
+                    leadingIcon = { SubDirectoryIcon() }
                 )
             }
         }

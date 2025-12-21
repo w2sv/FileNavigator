@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.home.components.statusdisplay
+package com.w2sv.filenavigator.ui.screen.home.statusdisplay
 
 import android.content.Context
 import androidx.annotation.DrawableRes
@@ -40,7 +40,7 @@ import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.navigation.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.navigation.PreviewNavigator
-import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
+import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DEFAULT_ANIMATION_DURATION
@@ -91,7 +91,10 @@ fun NavigatorStatusCard(
 ) {
     val uiData = remember(navigatorIsRunning) { NavigatorStatusCardData(navigatorIsRunning) }
 
-    HomeScreenCard(modifier, verticalArrangement = Arrangement.spacedBy(24.dp)) {
+    HomeScreenCard(
+        modifier,
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
         HeaderWithStatus(uiData.statusText)
         ButtonRow(
             toggleButton = uiData.toggleButton,

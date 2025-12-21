@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.home.components.movehistory
+package com.w2sv.filenavigator.ui.screen.home.movehistory
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -42,8 +42,8 @@ import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
+import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
 import com.w2sv.filenavigator.ui.screen.home.MoveHistoryState
-import com.w2sv.filenavigator.ui.screen.home.components.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 
 @Composable

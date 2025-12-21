@@ -32,8 +32,8 @@ import com.w2sv.filenavigator.ui.designsystem.NavigationDrawerScreenTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.drawer.HomeScreenNavigationDrawer
 import com.w2sv.filenavigator.ui.designsystem.drawer.drawerDisplaced
-import com.w2sv.filenavigator.ui.screen.home.components.movehistory.MoveHistoryCard
-import com.w2sv.filenavigator.ui.screen.home.components.statusdisplay.NavigatorStatusCard
+import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryCard
+import com.w2sv.filenavigator.ui.screen.home.statusdisplay.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
