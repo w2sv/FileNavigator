@@ -8,13 +8,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 internal sealed interface Namespace {
-    object Auto: Namespace
+    object Auto : Namespace
 
     @JvmInline
-    value class Manual(val namespace: String): Namespace
+    value class Manual(val namespace: String) : Namespace
 }
 
-internal fun Project.applyBaseConfig(namespace: Namespace = Namespace.Auto) {
+internal fun Project.applyBaseConfig(excludeMetaInfResources: Boolean = true, namespace: Namespace = Namespace.Auto) {
     pluginManager.applyPlugins("ktlint", catalog = catalog)
 
     extensions.apply {
@@ -46,10 +46,8 @@ internal fun Project.applyBaseConfig(namespace: Namespace = Namespace.Auto) {
                 }
                 animationsDisabled = true
             }
-            packagingOptions {
-                resources {
-                    excludes.add("/META-INF/*")
-                }
+            if (excludeMetaInfResources) {
+                packagingOptions.resources.excludes.add("/META-INF/*")
             }
         }
     }
