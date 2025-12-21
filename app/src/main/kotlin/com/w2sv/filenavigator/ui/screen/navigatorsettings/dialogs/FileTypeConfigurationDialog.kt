@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.navigatorsettings.components.filetypeconfiguration
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes

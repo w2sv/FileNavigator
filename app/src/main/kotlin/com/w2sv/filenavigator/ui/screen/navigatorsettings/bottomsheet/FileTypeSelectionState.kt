@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.navigatorsettings.components
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
