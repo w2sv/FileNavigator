@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.navigatorsettings.configlist
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.list
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +36,7 @@ import com.w2sv.filenavigator.ui.util.orOnSurfaceDisabledIf
 import kotlinx.collections.immutable.ImmutableMap
 
 @Composable
-fun SourcesSurface(
+fun FileTypeSourcesSettingsSurface(
     fileType: FileType,
     sourceTypeConfigMap: ImmutableMap<SourceType, SourceConfig>,
     onSourceCheckedChange: (SourceType, Boolean) -> Unit,
@@ -70,7 +70,7 @@ fun SourcesSurface(
                         } else {
                             setSourceAutoMoveConfig(
                                 sourceType,
-                                autoMoveConfig.copy(enable)
+                                autoMoveConfig.copy(enabled = enable)
                             )
                         }
                     },

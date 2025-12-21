@@ -26,7 +26,7 @@ import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
-import com.w2sv.filenavigator.ui.designsystem.DefaultItemRowIcon
+import com.w2sv.filenavigator.ui.designsystem.ItemRowIcon
 import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRow
 import com.w2sv.filenavigator.ui.designsystem.Padding
@@ -68,7 +68,7 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
     ) {
         SettingsCard(title = stringResource(R.string.general)) {
             SwitchItemRow(
-                icon = { ItemRowIcon(res = R.drawable.ic_storage_24) },
+                icon = { AppSettingsItemRowIcon(res = R.drawable.ic_storage_24) },
                 labelRes = R.string.show_storage_volume_names,
                 checked = appPreferences.showStorageVolumeNames(),
                 onCheckedChange = appPreferences.setShowStorageVolumeNames,
@@ -78,7 +78,7 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
         SettingsCard(title = stringResource(id = R.string.appearance)) {
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.VerticalItemRow), modifier = Modifier.animateContentSize()) {
                 ItemRow(
-                    icon = { ItemRowIcon(res = R.drawable.ic_nightlight_24) },
+                    icon = { AppSettingsItemRowIcon(res = R.drawable.ic_nightlight_24) },
                     labelRes = R.string.theme,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -90,7 +90,7 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
                 }
                 if (dynamicColorsSupported) {
                     SwitchItemRow(
-                        icon = { ItemRowIcon(res = R.drawable.ic_palette_24) },
+                        icon = { AppSettingsItemRowIcon(res = R.drawable.ic_palette_24) },
                         labelRes = R.string.dynamic_colors,
                         checked = appPreferences.useDynamicColors(),
                         onCheckedChange = appPreferences.setUseDynamicColors,
@@ -100,7 +100,7 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
                 // Leave at the end for Modifier.animateContentSize() to animate it in and out
                 if (LocalUseDarkTheme.current) {
                     SwitchItemRow(
-                        icon = { ItemRowIcon(res = R.drawable.ic_contrast_24) },
+                        icon = { AppSettingsItemRowIcon(res = R.drawable.ic_contrast_24) },
                         labelRes = R.string.amoled_black,
                         checked = appPreferences.useAmoledBlackTheme(),
                         onCheckedChange = appPreferences.setUseAmoledBlackTheme,
@@ -113,8 +113,8 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
 }
 
 @Composable
-private fun ItemRowIcon(@DrawableRes res: Int) {
-    DefaultItemRowIcon(
+private fun AppSettingsItemRowIcon(@DrawableRes res: Int) {
+    ItemRowIcon(
         res = res,
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(IconSize.Big)

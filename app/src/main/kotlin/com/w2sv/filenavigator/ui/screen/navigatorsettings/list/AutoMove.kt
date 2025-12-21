@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.navigatorsettings.configlist
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.list
 
 import android.content.Context
 import android.net.Uri

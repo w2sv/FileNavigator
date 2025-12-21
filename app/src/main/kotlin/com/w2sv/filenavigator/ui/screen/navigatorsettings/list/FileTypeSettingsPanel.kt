@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.navigatorsettings.configlist
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.list
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -30,19 +29,17 @@ import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
-import com.w2sv.domain.usecase.PreviewMoveDestinationPathConverter
-import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
 import com.w2sv.filenavigator.ui.designsystem.SubDirectoryIcon
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.modelext.stringResource
-import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.util.PreviewOf
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
 
 @Composable
-fun FileTypeAccordion(
+fun FileTypeSettingsPanel(
     fileType: FileType,
     setSourceAutoMoveConfigs: ((AutoMoveConfig) -> Unit)?,
     sourceTypeConfigMap: ImmutableMap<SourceType, SourceConfig>,
@@ -52,12 +49,12 @@ fun FileTypeAccordion(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        Header(
+        FileTypeSurface(
             fileType = fileType,
             setSourceAutoMoveConfigs = setSourceAutoMoveConfigs,
             showFileTypeConfigurationDialog = showFileTypeConfigurationDialog
         )
-        SourcesSurface(
+        FileTypeSourcesSettingsSurface(
             fileType = fileType,
             sourceTypeConfigMap = sourceTypeConfigMap,
             onSourceCheckedChange = onSourceCheckedChange,
@@ -68,24 +65,22 @@ fun FileTypeAccordion(
 
 @Preview
 @Composable
-private fun FileTypeAccordionPrev() {
-    AppTheme {
+private fun FileTypeSettingsPanelPrev() {
+    PreviewOf {
         val imageFileType = PresetFileType.Image.toDefaultFileType()
-        CompositionLocalProvider(LocalMoveDestinationPathConverter provides PreviewMoveDestinationPathConverter()) {
-            FileTypeAccordion(
-                fileType = imageFileType,
-                setSourceAutoMoveConfigs = {},
-                sourceTypeConfigMap = NavigatorConfig.default.fileTypeConfig(imageFileType).sourceTypeConfigMap.toImmutableMap(),
-                onSourceCheckedChange = { _, _ -> },
-                setSourceAutoMoveConfig = { _, _ -> },
-                showFileTypeConfigurationDialog = {}
-            )
-        }
+        FileTypeSettingsPanel(
+            fileType = imageFileType,
+            setSourceAutoMoveConfigs = {},
+            sourceTypeConfigMap = NavigatorConfig.default.fileTypeConfig(imageFileType).sourceTypeConfigMap.toImmutableMap(),
+            onSourceCheckedChange = { _, _ -> },
+            setSourceAutoMoveConfig = { _, _ -> },
+            showFileTypeConfigurationDialog = {}
+        )
     }
 }
 
 @Composable
-private fun Header(
+private fun FileTypeSurface(
     fileType: FileType,
     setSourceAutoMoveConfigs: ((AutoMoveConfig) -> Unit)?,
     showFileTypeConfigurationDialog: (FileType) -> Unit,
@@ -106,7 +101,7 @@ private fun Header(
             .fillMaxWidth()
             .height(52.dp)
     ) {
-        FileTypeRow(
+        FileTypeSurfaceContent(
             fileType = fileType,
             setSourceAutoMoveConfigs = selectAutoMoveDestination?.let { { it.launch(null) } },
             showFileTypeConfigurationDialog = showFileTypeConfigurationDialog
@@ -115,7 +110,7 @@ private fun Header(
 }
 
 @Composable
-private fun FileTypeRow(
+private fun FileTypeSurfaceContent(
     fileType: FileType,
     setSourceAutoMoveConfigs: (() -> Unit)?,
     showFileTypeConfigurationDialog: (FileType) -> Unit,
@@ -157,18 +152,3 @@ private fun FileTypeRow(
         }
     }
 }
-
-// @Preview
-// @Composable
-// private fun AutoMoveRowPrev() {
-//    AppTheme {
-//        Surface(
-//            tonalElevation = 2.dp,
-//            shape = MaterialTheme.shapes.small,
-//            modifier = Modifier
-//                .fillMaxWidth()
-//        ) {
-//            AutoMoveRow(destinationPath = "/path/component/somefolder")
-//        }
-//    }
-// }

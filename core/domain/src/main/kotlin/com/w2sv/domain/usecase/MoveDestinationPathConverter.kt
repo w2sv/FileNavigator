@@ -7,10 +7,10 @@ import com.w2sv.domain.model.movedestination.ExternalDestinationApi
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
 import com.w2sv.domain.repository.PreferencesRepository
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
+import javax.inject.Inject
+import javax.inject.Singleton
 
 interface MoveDestinationPathConverter {
     operator fun invoke(moveDestination: MoveDestinationApi, context: Context): String
@@ -35,7 +35,7 @@ class PreviewMoveDestinationPathConverter : MoveDestinationPathConverter {
                 )
             }
 
-            else -> throw IllegalArgumentException()
+            else -> error("")
         }
 }
 

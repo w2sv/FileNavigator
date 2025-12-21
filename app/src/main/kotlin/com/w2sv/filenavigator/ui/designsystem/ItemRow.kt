@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,8 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.util.CharSequenceText
 
@@ -48,9 +52,11 @@ fun ItemRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(text = stringResource(id = labelRes))
             explanation?.let {
-                Explanation(
+                CharSequenceText(
                     text = it,
-                    modifier = Modifier.padding(top = ItemRowDefaults.ExplanationTopPadding)
+                    color = MaterialTheme.colorScheme.onSurfaceVariantDecreasedAlpha,
+                    modifier = Modifier.padding(top = ItemRowDefaults.ExplanationTopPadding),
+                    fontSize = 14.sp
                 )
             }
         }
@@ -59,17 +65,7 @@ fun ItemRow(
 }
 
 @Composable
-private fun Explanation(text: CharSequence, modifier: Modifier = Modifier) {
-    CharSequenceText(
-        text = text,
-        color = MaterialTheme.colorScheme.onSurfaceVariantDecreasedAlpha,
-        modifier = modifier,
-        fontSize = 14.sp
-    )
-}
-
-@Composable
-fun DefaultItemRowIcon(
+fun ItemRowIcon(
     @DrawableRes res: Int,
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current
@@ -100,7 +96,25 @@ fun SwitchItemRow(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
-            modifier = Modifier.padding(start = ItemRowDefaults.SwitchStartPadding)
+            modifier = Modifier
+                .padding(start = ItemRowDefaults.SwitchStartPadding)
+                .offset(y = (-8).dp) // Circumvent inherent Switch top padding to align switch with the rest of the item row
         )
+    }
+}
+
+@Preview
+@Composable
+private fun SwitchItemRowPrev() {
+    AppTheme {
+        Surface {
+            SwitchItemRow(
+                icon = { ItemRowIcon(com.w2sv.core.common.R.drawable.ic_palette_24) },
+                labelRes = com.w2sv.core.common.R.string.appearance,
+                checked = true,
+                onCheckedChange = {},
+                explanation = stringResource(com.w2sv.core.common.R.string.show_storage_volume_names_explanation)
+            )
+        }
     }
 }

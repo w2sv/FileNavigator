@@ -54,15 +54,16 @@ import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.navigation.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.AutoMoveIntroductionDialogIfNotYetShown
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.FileTypeSelectionBottomSheet
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.configlist.NavigatorConfigurationColumn
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.rememberFileTypeSelectionState
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.AutoMoveIntroductionDialogIfNotYetShown
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.CustomFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.CustomFileTypeCreationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.FileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.PresetFileTypeConfigurationDialog
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.rememberFileTypeSelectionState
-import com.w2sv.filenavigator.ui.state.ReversibleNavigatorConfig
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.NavigatorConfigActions
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.NavigatorConfigActionsImpl
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.NavigatorSettingsList
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.OnVisibilityStateChange
@@ -96,7 +97,7 @@ fun NavigatorSettingsScreen(
 
     NavigatorSettingsScreen(
         navigatorConfig = navigatorConfig,
-        reversibleNavigatorConfig = navigatorVM.reversibleConfig,
+        navigatorConfigActions = remember(navigatorVM.reversibleConfig) { NavigatorConfigActionsImpl(navigatorVM.reversibleConfig) },
         configurationHasChanged = configurationHasChanged,
         resetConfiguration = navigatorVM.reversibleConfig::reset,
         launchConfigSync = navigatorVM::launchConfigSync,
@@ -155,7 +156,7 @@ fun NavigatorSettingsScreen(
 @Composable
 private fun NavigatorSettingsScreen(
     navigatorConfig: NavigatorConfig,
-    reversibleNavigatorConfig: ReversibleNavigatorConfig,
+    navigatorConfigActions: NavigatorConfigActions,
     configurationHasChanged: Boolean,
     resetConfiguration: () -> Unit,
     launchConfigSync: () -> Job,
@@ -209,9 +210,9 @@ private fun NavigatorSettingsScreen(
         },
         snackbarHost = { AppSnackbarHost() }
     ) { paddingValues ->
-        NavigatorConfigurationColumn(
+        NavigatorSettingsList(
             config = navigatorConfig,
-            reversibleConfig = reversibleNavigatorConfig,
+            actions = navigatorConfigActions,
             showFileTypesBottomSheet = showFileTypesBottomSheet,
             showFileTypeConfigurationDialog = showFileTypeConfigurationDialog,
             modifier = Modifier
