@@ -49,11 +49,7 @@ class AppPermissions(
         }
     }
 
-    val anyMissing: StateFlow<Boolean> = if (BuildConfig.BENCHMARK) {
-        MutableStateFlow(false)
-    } else {
-        combineStates(postNotificationsGranted, manageAllFilesGranted) { permissions ->
-            permissions.any { !it }
-        }
+    val anyMissing: StateFlow<Boolean> = combineStates(postNotificationsGranted, manageAllFilesGranted) { permissions ->
+        permissions.any { !it }
     }
 }
