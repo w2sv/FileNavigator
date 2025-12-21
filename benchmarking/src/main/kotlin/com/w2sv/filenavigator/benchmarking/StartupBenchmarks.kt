@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator
+package com.w2sv.filenavigator.benchmarking
 
 import androidx.benchmark.macro.BaselineProfileMode
 import androidx.benchmark.macro.CompilationMode

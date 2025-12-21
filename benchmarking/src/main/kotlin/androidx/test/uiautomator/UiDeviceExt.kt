@@ -1,8 +1,5 @@
-package com.w2sv.filenavigator
+package androidx.test.uiautomator
 
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.Direction
-import androidx.test.uiautomator.UiDevice
 import java.io.ByteArrayOutputStream
 
 private fun UiDevice.dumpWindowHierarchy(): String {

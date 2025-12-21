@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.VariantDimension
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -17,6 +18,8 @@ android {
 
         versionCode = project.property("versionCode").toString().toInt()
         versionName = version.toString()
+
+        buildBenchmarkConfigField(false)
     }
     signingConfigs {
         create("release") {
@@ -44,6 +47,17 @@ android {
                 "proguard-rules.pro"
             )
             // isDebuggable = true
+        }
+        create("benchmark") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+
+            buildBenchmarkConfigField(true)
+
+            // strongly recommended for benchmarks
+            isDebuggable = false
+            isMinifyEnabled = true
         }
     }
     buildFeatures {
@@ -82,6 +96,10 @@ android {
             )
         }
     }
+}
+
+private fun VariantDimension.buildBenchmarkConfigField(value: Boolean) {
+    buildConfigField("Boolean", "BENCHMARK", if (value) "true" else "false")
 }
 
 androidComponents {

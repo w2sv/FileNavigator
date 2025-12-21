@@ -6,6 +6,7 @@ import com.w2sv.androidutils.hasPermission
 import com.w2sv.androidutils.os.postNotificationsPermissionRequired
 import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.domain.repository.PreferencesRepository
+import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.kotlinutils.coroutines.flow.combineStates
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,7 +49,11 @@ class AppPermissions(
         }
     }
 
-    val anyMissing: StateFlow<Boolean> = combineStates(
-        listOf(postNotificationsGranted, manageAllFilesGranted)
-    ) { permissions -> permissions.any { !it } }
+    val anyMissing: StateFlow<Boolean> = if (BuildConfig.BENCHMARK) {
+        MutableStateFlow(false)
+    } else {
+        combineStates(postNotificationsGranted, manageAllFilesGranted) { permissions ->
+            permissions.any { !it }
+        }
+    }
 }
