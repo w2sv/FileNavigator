@@ -19,7 +19,7 @@ fun LazyListScope.fileTypeSettingsList(
     config: NavigatorConfig,
     fileTypeConfigActions: NavigatorConfigActions,
     showFileTypesBottomSheet: () -> Unit,
-    showFileTypeConfigurationDialog: (FileType) -> Unit,
+    showFileTypeConfigurationDialog: (FileType) -> Unit
 ) {
     item {
         NavigatorSettingsListSectionHeader(
@@ -40,9 +40,13 @@ fun LazyListScope.fileTypeSettingsList(
 
         FileTypeSettingsPanel(
             fileType = fileType,
-            setSourceAutoMoveConfigs = if (fileType.isMediaType) { autoMoveConfig ->
-                fileTypeConfigActions.setAutoMoveConfigs(fileType = fileType, config = autoMoveConfig)
-            } else null,
+            setSourceAutoMoveConfigs = if (fileType.isMediaType) {
+                { autoMoveConfig ->
+                    fileTypeConfigActions.setAutoMoveConfigs(fileType = fileType, config = autoMoveConfig)
+                }
+            } else {
+                null
+            },
             sourceTypeConfigMap = config.fileTypeConfig(fileType).sourceTypeConfigMap.toImmutableMap(),
             onSourceCheckedChange = { sourceType, checkedNew ->
                 fileTypeConfigActions.toggleSource(

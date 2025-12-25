@@ -31,10 +31,7 @@ class NavigatorConfigActionsImpl(private val reversibleConfig: ReversibleNavigat
         update { it.updateAutoMoveConfig(fileType, sourceType) { config } }
     }
 
-    override fun setAutoMoveConfigs(
-        fileType: FileType,
-        config: AutoMoveConfig
-    ) {
+    override fun setAutoMoveConfigs(fileType: FileType, config: AutoMoveConfig) {
         update {
             it.updateAutoMoveConfigs(
                 fileType = fileType,

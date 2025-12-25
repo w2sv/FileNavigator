@@ -26,9 +26,9 @@ import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.LocalUseDarkTheme
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
-import com.w2sv.filenavigator.ui.designsystem.ItemRowIcon
 import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRow
+import com.w2sv.filenavigator.ui.designsystem.ItemRowIcon
 import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.Spacing
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow

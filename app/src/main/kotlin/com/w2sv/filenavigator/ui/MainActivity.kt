@@ -11,7 +11,6 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.setValue
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
@@ -45,6 +44,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val permissionMissing by appVM.permissions.anyMissing.collectAsStateWithLifecycle()
+
             @Suppress("KotlinConstantConditions", "SimplifyBooleanWithConstants")
             val startScreen = remember {
                 when {

@@ -39,11 +39,12 @@ fun rememberAutoMoveDestinationPath(
     destination: LocalDestinationApi?,
     context: Context = LocalContext.current,
     moveDestinationPathConverter: MoveDestinationPathConverter = LocalMoveDestinationPathConverter.current
-): State<String?> = remember(destination) {
-    mutableStateOf(
-        destination?.let { moveDestinationPathConverter.invoke(it, context) }
-    )
-}
+): State<String?> =
+    remember(destination) {
+        mutableStateOf(
+            destination?.let { moveDestinationPathConverter.invoke(it, context) }
+        )
+    }
 
 @Composable
 fun AutoMoveRow(

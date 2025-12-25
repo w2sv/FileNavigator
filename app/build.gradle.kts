@@ -102,7 +102,6 @@ private fun retrieveStartScreenFromLocalProperties(default: String = ""): String
     }
 }
 
-
 private fun VariantDimension.buildStartScreenConfigField(value: String = "") {
     buildConfigField(
         "String",

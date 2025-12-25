@@ -37,7 +37,7 @@ fun NavigatorSettingsList(
     showFileTypesBottomSheet: () -> Unit,
     showFileTypeConfigurationDialog: (FileType) -> Unit,
     modifier: Modifier = Modifier,
-    state: LazyListState = rememberLazyListState(),
+    state: LazyListState = rememberLazyListState()
 ) {
     LazyColumn(
         modifier = modifier,
@@ -98,20 +98,21 @@ private fun Prev(firstVisibleItemIndex: Int) {
                         fileType: FileType,
                         sourceType: SourceType,
                         enabled: Boolean
-                    ) = Unit
+                    ) =
+                        Unit
 
                     override fun setAutoMoveConfig(
                         fileType: FileType,
                         sourceType: SourceType,
                         config: AutoMoveConfig
-                    ) = Unit
+                    ) =
+                        Unit
 
-                    override fun setAutoMoveConfigs(
-                        fileType: FileType,
-                        config: AutoMoveConfig
-                    ) = Unit
+                    override fun setAutoMoveConfigs(fileType: FileType, config: AutoMoveConfig) =
+                        Unit
 
-                    override fun update(function: (NavigatorConfig) -> NavigatorConfig) = Unit
+                    override fun update(function: (NavigatorConfig) -> NavigatorConfig) =
+                        Unit
                 },
                 showFileTypesBottomSheet = {},
                 showFileTypeConfigurationDialog = {},

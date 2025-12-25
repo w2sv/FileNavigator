@@ -20,10 +20,7 @@ interface NavigatorConfigActions {
         config: AutoMoveConfig
     )
 
-    fun setAutoMoveConfigs(
-        fileType: FileType,
-        config: AutoMoveConfig
-    )
+    fun setAutoMoveConfigs(fileType: FileType, config: AutoMoveConfig)
 
     fun update(function: (NavigatorConfig) -> NavigatorConfig)
 }
