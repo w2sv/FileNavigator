@@ -16,9 +16,4 @@ sealed class Screen : NavKey {
 
     @Serializable
     object NavigatorSettings : Screen()
-
-    companion object {
-        fun initial(anyPermissionMissing: Boolean): Screen =
-            if (anyPermissionMissing) RequiredPermissions else Home
-    }
 }

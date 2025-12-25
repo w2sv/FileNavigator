@@ -15,9 +15,17 @@ import com.w2sv.filenavigator.ui.screen.missingpermissions.RequiredPermissionsSc
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.NavigatorSettingsScreen
 
 @Composable
-fun NavGraph(anyPermissionMissing: Boolean) {
-    val backStack = rememberNavBackStack(Screen.initial(anyPermissionMissing))
+fun NavGraph(startScreen: Screen, permissionMissing: () -> Boolean) {
+    val backStack = rememberNavBackStack(startScreen)
     val navigator = remember(backStack) { NavigatorImpl(backStack) }
+
+    // Navigate to or away from Screen.RequiredPermissions when respective conditions met
+    OnChange(permissionMissing()) {
+        when {
+            it && navigator.currentScreen !is Screen.RequiredPermissions -> navigator.toRequiredPermissions()
+            !it && navigator.currentScreen is Screen.RequiredPermissions -> navigator.leaveRequiredPermissions()
+        }
+    }
 
     CompositionLocalProvider(LocalNavigator provides navigator) {
         NavDisplay(
@@ -54,13 +62,5 @@ fun NavGraph(anyPermissionMissing: Boolean) {
                 }
             }
         )
-
-        // Navigate to or away from Screen.RequiredPermissions when respective conditions met
-        OnChange(anyPermissionMissing) {
-            when {
-                it && navigator.currentScreen !is Screen.RequiredPermissions -> navigator.toRequiredPermissions()
-                !it && navigator.currentScreen is Screen.RequiredPermissions -> navigator.leaveRequiredPermissions()
-            }
-        }
     }
 }

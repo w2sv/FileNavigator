@@ -12,12 +12,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.navigation.NavGraph
+import com.w2sv.filenavigator.ui.navigation.Screen
 import com.w2sv.filenavigator.ui.state.rememberPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.activityViewModel
 
 @Composable
 fun AppUi(
+    startScreen: Screen,
+    permissionMissing: () -> Boolean,
     setSystemBarStyles: (SystemBarStyle, SystemBarStyle) -> Unit,
     triggerStatusBarStyleUpdate: Boolean,
     moveDestinationPathConverter: MoveDestinationPathConverter,
@@ -27,7 +30,6 @@ fun AppUi(
     val useDarkTheme = rememberUseDarkTheme(theme = theme)
     val useAmoledBlackTheme by appVM.useAmoledBlackTheme.collectAsStateWithLifecycle()
     val useDynamicColors by appVM.useDynamicColors.collectAsStateWithLifecycle()
-    val anyPermissionMissing by appVM.permissions.anyMissing.collectAsStateWithLifecycle()
 
     CompositionLocalProvider(
         LocalUseDarkTheme provides useDarkTheme,
@@ -56,7 +58,7 @@ fun AppUi(
                 )
             }
 
-            NavGraph(anyPermissionMissing = anyPermissionMissing)
+            NavGraph(startScreen = startScreen, permissionMissing = permissionMissing)
         }
     }
 }

@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.VariantDimension
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -35,6 +36,7 @@ android {
     buildTypes {
         getByName("debug") {
             applicationIdSuffix = ".debug"
+            buildStartScreenConfigField(retrieveStartScreenFromLocalProperties())
         }
         getByName("release") {
             isMinifyEnabled = true
@@ -43,6 +45,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildStartScreenConfigField()
             // isDebuggable = true
         }
     }
@@ -82,6 +85,30 @@ android {
             )
         }
     }
+}
+
+private fun retrieveStartScreenFromLocalProperties(default: String = ""): String {
+    val fileName = "local.properties"
+    val propertyName = "startScreen"
+
+    return try {
+        val props = Properties().apply {
+            load(FileInputStream(rootProject.file(fileName)))
+        }
+        props.getProperty(propertyName) ?: error("Couldn't find property '$propertyName' in $fileName")
+    } catch (e: Exception) {
+        logger.warn(e.message)
+        default
+    }
+}
+
+
+private fun VariantDimension.buildStartScreenConfigField(value: String = "") {
+    buildConfigField(
+        "String",
+        "START_SCREEN",
+        "\"$value\""
+    )
 }
 
 androidComponents {
