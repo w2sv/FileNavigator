@@ -10,10 +10,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.ui.unit.IntOffset
+import com.w2sv.kotlinutils.threadUnsafeLazy
 
 private const val ANIMATION_DURATION = 300
 
 object NavAnimation {
+
+    private val easing by threadUnsafeLazy { CubicBezierEasing(0.2f, 0.0f, 0.0f, 1.0f) }
 
     object NonPop {
 
@@ -25,20 +28,27 @@ object NavAnimation {
 
         fun exit() =
             slideOutHorizontally(
-                targetOffsetX = { -it / 2 },
+                targetOffsetX = { -it },
                 animationSpec = slideAnimationSpec
-            ) + fadeOut(animationSpec = fadeAnimationSpec)
+            ) + fadeOut(
+                animationSpec = fadeAnimationSpec,
+                targetAlpha = 0.55f
+            )
 
-        private val slideAnimationSpec: FiniteAnimationSpec<IntOffset> = tween(
-            durationMillis = (ANIMATION_DURATION * 1.5).toInt(),
-            easing = CubicBezierEasing(0.4f, 0.0f, 0.2f, 1f)
-        )
+        private val slideAnimationSpec: FiniteAnimationSpec<IntOffset> by threadUnsafeLazy {
+            tween(
+                durationMillis = (ANIMATION_DURATION * 1.5).toInt(),
+                easing = easing
+            )
+        }
 
-        private val fadeAnimationSpec: FiniteAnimationSpec<Float> = tween(
-            durationMillis = ANIMATION_DURATION,
-            delayMillis = ANIMATION_DURATION / 4,
-            easing = LinearOutSlowInEasing
-        )
+        private val fadeAnimationSpec: FiniteAnimationSpec<Float> by threadUnsafeLazy {
+            tween(
+                durationMillis = ANIMATION_DURATION,
+                delayMillis = ANIMATION_DURATION / 4,
+                easing = LinearOutSlowInEasing
+            )
+        }
     }
 
     object Pop {
@@ -51,19 +61,26 @@ object NavAnimation {
 
         fun exit() =
             slideOutHorizontally(
-                targetOffsetX = { it / 2 },
+                targetOffsetX = { it },
                 animationSpec = slideAnimationSpec
-            ) + fadeOut(animationSpec = fadeAnimationSpec)
+            ) + fadeOut(
+                animationSpec = fadeAnimationSpec,
+                targetAlpha = 0.65f
+            )
 
-        private val slideAnimationSpec: FiniteAnimationSpec<IntOffset> = tween(
-            durationMillis = (ANIMATION_DURATION * 1.2).toInt(),
-            easing = CubicBezierEasing(0.6f, 0.05f, 0.19f, 0.95f)
-        )
+        private val slideAnimationSpec: FiniteAnimationSpec<IntOffset> by threadUnsafeLazy {
+            tween(
+                durationMillis = (ANIMATION_DURATION * 1.2).toInt(),
+                easing = easing
+            )
+        }
 
-        private val fadeAnimationSpec: FiniteAnimationSpec<Float> = tween(
-            durationMillis = ANIMATION_DURATION / 2,
-            delayMillis = ANIMATION_DURATION / 4,
-            easing = LinearEasing
-        )
+        private val fadeAnimationSpec: FiniteAnimationSpec<Float> by threadUnsafeLazy {
+            tween(
+                durationMillis = ANIMATION_DURATION / 2,
+                delayMillis = ANIMATION_DURATION / 4,
+                easing = LinearEasing
+            )
+        }
     }
 }
