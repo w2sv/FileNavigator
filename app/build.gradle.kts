@@ -182,6 +182,8 @@ dependencies {
     implementation(libs.w2sv.simplestorage)
     lintChecks(libs.compose.lint.checks)
     implementation(libs.textflow)
+    // Workaround for https://github.com/google/dagger/issues/5059
+    ksp(libs.kotlin.metadata.jvm)
 
     // Unit Test
     testImplementation(libs.bundles.unitTest)

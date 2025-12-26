@@ -1,7 +1,7 @@
 [versions]
-agp = "8.13.1"
+agp = "8.13.2"
 androidx-test = "1.7.0"
-androidxActivity = "1.12.1"
+androidxActivity = "1.12.2"
 baselineprofile = "1.4.1"
 benchmarkMacroJunit4 = "1.4.1"
 # @keep
@@ -12,12 +12,12 @@ compose-tooling = "1.10.0"
 hilt = "2.57.2"
 hiltNavigationCompose = "1.3.0"
 junit = "4.13.2"
-kotlin = "2.2.21"
-kotlinSerialization = "2.2.21"
+kotlin = "2.3.0"
+kotlinSerialization = "2.3.0"
 kotlinxCollectionsImmutable = "0.4.0"
 kotlinxCoroutines = "1.10.2"
 kotlinxSerializationCore = "1.9.0"
-ksp = "2.3.3"
+ksp = "2.3.4"
 ktlint = "14.0.1"
 lifecycle = "2.10.0"
 lifecycleViewmodelNavigation3 = "2.10.0"
@@ -25,11 +25,12 @@ lifecycleViewmodelNavigation3 = "2.10.0"
 minSdk = "30"
 nav3Core = "1.1.0-alpha01"
 protobuf = "4.33.2"
-protobuf-plugin = "0.9.5"
+protobuf-plugin = "0.9.6"
 room = "2.8.4"
-triplet-play = "3.12.2"
+triplet-play = "3.13.0"
 versionCatalogUpdate = "1.0.1"
 versions = "0.53.0"
+# @pin
 w2sv-composed = "0.1.1"
 w2sv-datastoreutils = "0.0.8"
 w2sv-kotlinutils = "0.1.11"
@@ -72,6 +73,8 @@ google-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", ver
 junit = { module = "junit:junit", version.ref = "junit" }
 # @keep
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+# Required only for https://github.com/google/dagger/issues/5059
+kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
