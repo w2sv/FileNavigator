@@ -13,6 +13,7 @@ import com.w2sv.core.common.R
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.filenavigator.ui.designsystem.ItemRowIcon
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
 
 private enum class MoreListItem(
     @DrawableRes val iconRes: Int,

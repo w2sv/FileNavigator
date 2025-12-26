@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -61,12 +60,13 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.CustomFileType
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.CustomFileTypeCreationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.FileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.PresetFileTypeConfigurationDialog
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.NavigatorConfigActions
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.NavigatorConfigActionsImpl
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActionsImpl
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.PreviewNavigatorConfigActions
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.NavigatorSettingsList
-import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.OnVisibilityStateChange
+import com.w2sv.filenavigator.ui.util.PreviewOf
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
@@ -287,12 +287,16 @@ private fun ConfigurationFABButton(
 
 @Preview
 @Composable
-private fun ConfigurationFABButtonPrev() {
-    AppTheme {
-        ConfigurationFABButton(
-            imageVector = Icons.Default.Clear,
-            text = stringResource(id = R.string.discard),
-            onClick = { }
+private fun Prev() {
+    PreviewOf {
+        NavigatorSettingsScreen(
+            navigatorConfig = NavigatorConfig.default,
+            navigatorConfigActions = PreviewNavigatorConfigActions,
+            configurationHasChanged = true,
+            resetConfiguration = {},
+            launchConfigSync = { Job() },
+            showFileTypesBottomSheet = {},
+            showFileTypeConfigurationDialog = {}
         )
     }
 }

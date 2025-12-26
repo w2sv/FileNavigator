@@ -19,10 +19,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.w2sv.domain.model.filetype.FileType
-import com.w2sv.domain.model.filetype.SourceType
-import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.filenavigator.ui.designsystem.Padding
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.PreviewNavigatorConfigActions
 import com.w2sv.filenavigator.ui.util.PreviewOf
 
 object NavigatorSettingsListDefaults {
@@ -93,27 +93,7 @@ private fun Prev(firstVisibleItemIndex: Int) {
         Surface(modifier = Modifier.fillMaxSize()) {
             NavigatorSettingsList(
                 config = NavigatorConfig.default,
-                actions = object : NavigatorConfigActions {
-                    override fun toggleSource(
-                        fileType: FileType,
-                        sourceType: SourceType,
-                        enabled: Boolean
-                    ) =
-                        Unit
-
-                    override fun setAutoMoveConfig(
-                        fileType: FileType,
-                        sourceType: SourceType,
-                        config: AutoMoveConfig
-                    ) =
-                        Unit
-
-                    override fun setAutoMoveConfigs(fileType: FileType, config: AutoMoveConfig) =
-                        Unit
-
-                    override fun update(function: (NavigatorConfig) -> NavigatorConfig) =
-                        Unit
-                },
+                actions = PreviewNavigatorConfigActions,
                 showFileTypesBottomSheet = {},
                 showFileTypeConfigurationDialog = {},
                 modifier = Modifier

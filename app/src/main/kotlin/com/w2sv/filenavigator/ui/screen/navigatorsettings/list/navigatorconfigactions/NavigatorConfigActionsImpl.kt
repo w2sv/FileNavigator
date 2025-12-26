@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.navigatorsettings.list
+package com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions
 
 import androidx.compose.runtime.Stable
 import com.w2sv.domain.model.filetype.FileType
