@@ -1,4 +1,6 @@
+import com.android.build.api.dsl.ApkSigningConfig
 import com.android.build.api.dsl.VariantDimension
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -15,23 +17,8 @@ plugins {
 android {
     defaultConfig {
         applicationId = namespace
-
         versionCode = project.property("versionCode").toString().toInt()
         versionName = version.toString()
-    }
-    signingConfigs {
-        create("release") {
-            val keystorePropertiesFile = rootProject.file("keystore.properties")
-            if (keystorePropertiesFile.exists()) {
-                val keystoreProperties = Properties().apply { load(FileInputStream(keystorePropertiesFile)) }
-                storeFile = rootProject.file("keys.jks")
-                storePassword = keystoreProperties["storePassword"] as String
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
-            } else {
-                println("${keystorePropertiesFile.path} does not exist")
-            }
-        }
     }
     buildTypes {
         getByName("debug") {
@@ -41,11 +28,12 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = releaseSigningConfigOrNull()
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildStartScreenConfigField()
+            buildStartScreenConfigField("")
             // isDebuggable = true
         }
     }
@@ -87,6 +75,21 @@ android {
     }
 }
 
+private fun BaseAppModuleExtension.releaseSigningConfigOrNull(): ApkSigningConfig? {
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    if (keystorePropertiesFile.exists()) {
+        val keystoreProperties = Properties().apply { load(FileInputStream(keystorePropertiesFile)) }
+        return signingConfigs.create("release") {
+            storeFile = rootProject.file("keys.jks")
+            storePassword = keystoreProperties["storePassword"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+        }
+    }
+    logger.warn("Couldn't create signing config; ${keystorePropertiesFile.path} does not exist")
+    return null
+}
+
 private fun retrieveStartScreenFromLocalProperties(default: String = ""): String {
     val fileName = "local.properties"
     val propertyName = "startScreen"
@@ -102,7 +105,7 @@ private fun retrieveStartScreenFromLocalProperties(default: String = ""): String
     }
 }
 
-private fun VariantDimension.buildStartScreenConfigField(value: String = "") {
+private fun VariantDimension.buildStartScreenConfigField(value: String) {
     buildConfigField(
         "String",
         "START_SCREEN",
