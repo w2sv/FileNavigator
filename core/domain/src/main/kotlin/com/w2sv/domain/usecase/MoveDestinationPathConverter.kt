@@ -16,29 +16,6 @@ interface MoveDestinationPathConverter {
     operator fun invoke(moveDestination: MoveDestinationApi, context: Context): String
 }
 
-/**
- * For usage in Compose Previews only.
- */
-class PreviewMoveDestinationPathConverter : MoveDestinationPathConverter {
-    override operator fun invoke(moveDestination: MoveDestinationApi, context: Context): String =
-        when (moveDestination) {
-            is LocalDestinationApi -> {
-                moveDestination.pathRepresentation(
-                    context = context,
-                    includeVolumeName = true
-                )
-            }
-
-            is ExternalDestinationApi -> {
-                moveDestination.uiRepresentation(
-                    context
-                )
-            }
-
-            else -> error("")
-        }
-}
-
 @Singleton
 internal class MoveDestinationPathConverterImpl @Inject constructor(
     preferencesRepository: PreferencesRepository,

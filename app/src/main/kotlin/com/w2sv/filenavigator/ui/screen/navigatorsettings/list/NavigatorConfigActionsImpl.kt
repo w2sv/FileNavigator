@@ -5,7 +5,7 @@ import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
-import com.w2sv.filenavigator.ui.state.ReversibleNavigatorConfig
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.ReversibleNavigatorConfig
 import kotlinx.coroutines.flow.update
 
 @Stable

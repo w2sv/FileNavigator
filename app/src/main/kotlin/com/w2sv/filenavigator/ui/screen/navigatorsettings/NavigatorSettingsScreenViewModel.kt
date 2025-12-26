@@ -3,7 +3,6 @@ package com.w2sv.filenavigator.ui.screen.navigatorsettings
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.filenavigator.ui.state.ReversibleNavigatorConfig
 import com.w2sv.filenavigator.ui.util.LifecycleLoggingViewModel
 import com.w2sv.filenavigator.ui.util.MakeSnackbarVisualsEmitter
 import com.w2sv.filenavigator.ui.util.MakeSnackbarVisualsEmitterImpl

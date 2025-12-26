@@ -66,9 +66,7 @@ fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
     Snackbar(
         action = {
             visuals.action?.let { action ->
-                TextButton(
-                    onClick = action.callback
-                ) {
+                TextButton(onClick = action.callback) {
                     Text(text = action.label, color = SnackbarDefaults.actionColor)
                 }
             }

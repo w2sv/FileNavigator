@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.designsystem.drawer.model
+package com.w2sv.filenavigator.ui.screen.appsettings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -24,19 +24,17 @@ data class AppPreferences(
 @Composable
 fun rememberAppPreferences(appVM: AppViewModel = activityViewModel()): AppPreferences {
     val showStorageVolumeNames by appVM.showStorageVolumeNames.collectAsStateWithLifecycle()
-    val theme by appVM.theme.collectAsStateWithLifecycle()
-    val useAmoledBlackTheme by appVM.useAmoledBlackTheme.collectAsStateWithLifecycle()
-    val useDynamicColors by appVM.useDynamicColors.collectAsStateWithLifecycle()
+    val themeSettings by appVM.themeSettings.collectAsStateWithLifecycle()
 
-    return remember {
+    return remember(appVM) {
         AppPreferences(
             showStorageVolumeNames = { showStorageVolumeNames },
             setShowStorageVolumeNames = appVM::saveShowStorageVolumeNames,
-            theme = { theme },
+            theme = { themeSettings.theme },
             setTheme = appVM::saveTheme,
-            useAmoledBlackTheme = { useAmoledBlackTheme },
+            useAmoledBlackTheme = { themeSettings.useAmoledBlackTheme },
             setUseAmoledBlackTheme = appVM::saveUseAmoledBlackTheme,
-            useDynamicColors = { useDynamicColors },
+            useDynamicColors = { themeSettings.useDynamicColors },
             setUseDynamicColors = appVM::saveUseDynamicColors
         )
     }

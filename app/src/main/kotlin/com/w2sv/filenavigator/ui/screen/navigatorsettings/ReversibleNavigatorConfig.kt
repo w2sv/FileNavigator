@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.state
+package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
 import androidx.compose.runtime.Stable
 import com.w2sv.core.common.R
@@ -36,7 +36,7 @@ class ReversibleNavigatorConfig(
             scope = scope,
             appliedStateFlow = navigatorConfigDataSource.navigatorConfig.stateIn(
                 scope = scope,
-                started = SharingStarted.WhileSubscribed()
+                started = SharingStarted.Companion.WhileSubscribed()
             ),
             syncState = {
                 navigatorConfigDataSource.navigatorConfig.save(it)
@@ -90,7 +90,7 @@ class ReversibleNavigatorConfig(
     }
 
     /**
-     * @param fileType Must be either [CustomFileType] or [PresetWrappingFileType.ExtensionConfigurable]
+     * @param fileType Must be either [CustomFileType] or [com.w2sv.domain.model.filetype.PresetWrappingFileType.ExtensionConfigurable]
      * TODO: test
      */
     fun excludeFileExtension(fileType: FileType, extension: String) {

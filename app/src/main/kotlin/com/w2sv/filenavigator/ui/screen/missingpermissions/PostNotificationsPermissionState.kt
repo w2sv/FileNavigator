@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.state
+package com.w2sv.filenavigator.ui.screen.missingpermissions
 
 import android.Manifest
 import androidx.compose.runtime.Composable

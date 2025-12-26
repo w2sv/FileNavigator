@@ -6,7 +6,7 @@ import androidx.navigation3.runtime.NavKey
 /**
  * Generic navigator methods/properties that aren't specific to the FileNavigator app navigation.
  */
-abstract class Nav3Navigator<T : NavKey>(private val backStack: NavBackStack<T>) {
+abstract class Nav3Navigator<T : NavKey>(val backStack: NavBackStack<T>) {
 
     val currentScreen: T
         get() = backStack.lastOrNull() ?: error("Back stack is empty")

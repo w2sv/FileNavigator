@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.state
+package com.w2sv.filenavigator.ui.sharedstate
 
 import android.Manifest
 import android.content.Context

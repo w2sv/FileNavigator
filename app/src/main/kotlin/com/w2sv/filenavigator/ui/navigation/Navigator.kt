@@ -1,10 +1,10 @@
 package com.w2sv.filenavigator.ui.navigation
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavKey
-import com.w2sv.filenavigator.ui.noCompositionLocalProvidedFor
+import com.w2sv.composed.core.OnChange
 
 interface Navigator {
     fun toAppSettings()
@@ -12,11 +12,12 @@ interface Navigator {
     fun leaveRequiredPermissions()
     fun toNavigatorSettings()
     fun popBackStack()
-    val currentScreen: NavKey
+    val currentScreen: Screen
+    val backStack: List<Screen>
 }
 
 @Stable
-class NavigatorImpl(backStack: NavBackStack<Screen>) :
+private class NavigatorImpl(backStack: NavBackStack<Screen>) :
     Nav3Navigator<Screen>(backStack),
     Navigator {
     override fun toAppSettings() =
@@ -32,15 +33,17 @@ class NavigatorImpl(backStack: NavBackStack<Screen>) :
         launchSingleTop(Screen.NavigatorSettings)
 }
 
-val LocalNavigator = staticCompositionLocalOf<Navigator> {
-    noCompositionLocalProvidedFor("LocalNavigator")
-}
+@Composable
+fun rememberNavigator(startScreen: Screen, permissionMissing: () -> Boolean): Navigator {
+    val backStack = rememberNavBackStack(startScreen)
+    val navigator = remember(backStack) { NavigatorImpl(backStack) }
 
-class PreviewNavigator : Navigator {
-    override fun toAppSettings() {}
-    override fun toRequiredPermissions() {}
-    override fun leaveRequiredPermissions() {}
-    override fun toNavigatorSettings() {}
-    override fun popBackStack() {}
-    override val currentScreen: NavKey = Screen.Home
+    OnChange(permissionMissing()) {
+        when {
+            it && navigator.currentScreen !is Screen.RequiredPermissions -> navigator.toRequiredPermissions()
+            !it && navigator.currentScreen is Screen.RequiredPermissions -> navigator.leaveRequiredPermissions()
+        }
+    }
+
+    return navigator
 }

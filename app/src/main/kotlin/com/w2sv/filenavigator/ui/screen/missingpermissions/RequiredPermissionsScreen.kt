@@ -28,7 +28,6 @@ import com.w2sv.composed.core.isPortraitModeActive
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.AppViewModel
-import com.w2sv.filenavigator.ui.LocalPostNotificationsPermissionState
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.activityViewModel
@@ -40,10 +39,11 @@ private object RequiredPermissionsScreenDefaults {
 }
 
 @Composable
-fun RequiredPermissionsScreen(
-    postNotificationsPermissionState: PermissionState = LocalPostNotificationsPermissionState.current,
-    appViewModel: AppViewModel = activityViewModel()
-) {
+fun RequiredPermissionsScreen(appViewModel: AppViewModel = activityViewModel()) {
+    val postNotificationsPermissionState = rememberPostNotificationsPermissionState(
+        onPermissionResult = { appViewModel.permissions.savePostNotificationsRequested() },
+        onStatusChanged = appViewModel.permissions::setPostNotificationsGranted
+    )
     val manageAllFilesPermissionGranted by appViewModel.permissions.manageAllFilesGranted.collectAsStateWithLifecycle()
 
     val permissionCards = rememberMovablePermissionCards(

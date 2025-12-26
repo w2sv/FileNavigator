@@ -2,44 +2,54 @@ package com.w2sv.filenavigator.ui.theme
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.w2sv.filenavigator.ui.LocalUseDarkTheme
+import com.w2sv.domain.model.Theme
 import com.w2sv.kotlinutils.threadUnsafeLazy
 
 @SuppressLint("NewApi")
 @Composable
 fun AppTheme(
-    useDarkTheme: Boolean = LocalUseDarkTheme.current,
+    useDarkTheme: Boolean = false,
     useAmoledBlackTheme: Boolean = false,
     useDynamicColors: Boolean = false,
     context: Context = LocalContext.current,
     content: @Composable () -> Unit
 ) {
-    MaterialTheme(
-        colorScheme = when {
-            useDynamicColors && useDarkTheme -> dynamicDarkColorScheme(context)
-            useDynamicColors && !useDarkTheme -> dynamicLightColorScheme(context)
-            useDarkTheme -> staticColorSchemeDark
-            else -> staticColorSchemeLight
-        }
-            .run {
-                if (useAmoledBlackTheme && useDarkTheme) {
-                    copy(background = Color.Black, surface = Color.Black, onBackground = Color.White, onSurface = Color.White)
-                } else {
-                    this
-                }
-            },
-        typography = typography
-    ) {
-        content()
+    val colorScheme = when {
+        useDynamicColors && useDarkTheme && useAmoledBlackTheme -> dynamicDarkColorScheme(context).amoledBlack()
+        useDynamicColors && useDarkTheme -> dynamicDarkColorScheme(context)
+        useDynamicColors && !useDarkTheme -> dynamicLightColorScheme(context)
+        useDarkTheme && useAmoledBlackTheme -> staticColorSchemeDark.amoledBlack()
+        useDarkTheme -> staticColorSchemeDark
+        else -> staticColorSchemeLight
     }
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = typography,
+        content = content
+    )
 }
+
+@Composable
+@ReadOnlyComposable
+fun useDarkTheme(theme: Theme): Boolean =
+    when (theme) {
+        Theme.Light -> false
+        Theme.Dark -> true
+        Theme.Default -> isSystemInDarkTheme()
+    }
+
+private fun ColorScheme.amoledBlack(): ColorScheme =
+    copy(background = Color.Black, surface = Color.Black, onBackground = Color.White, onSurface = Color.White)
 
 private val staticColorSchemeDark by threadUnsafeLazy {
     ColorScheme(

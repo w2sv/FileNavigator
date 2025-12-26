@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.androidutils.os.dynamicColorsSupported
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.core.common.R
-import com.w2sv.filenavigator.ui.LocalUseDarkTheme
+import com.w2sv.filenavigator.ui.LocalNavigator
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.IconSize
@@ -33,10 +33,8 @@ import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.designsystem.Spacing
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
 import com.w2sv.filenavigator.ui.designsystem.drawer.ThemeSelectionRow
-import com.w2sv.filenavigator.ui.designsystem.drawer.model.AppPreferences
-import com.w2sv.filenavigator.ui.designsystem.drawer.model.rememberAppPreferences
-import com.w2sv.filenavigator.ui.navigation.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
+import com.w2sv.filenavigator.ui.theme.useDarkTheme
 
 @Composable
 fun AppSettingsScreen(navigator: Navigator = LocalNavigator.current, appPreferences: AppPreferences = rememberAppPreferences()) {
@@ -98,7 +96,7 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
                     )
                 }
                 // Leave at the end for Modifier.animateContentSize() to animate it in and out
-                if (LocalUseDarkTheme.current) {
+                if (useDarkTheme(appPreferences.theme())) {
                     SwitchItemRow(
                         icon = { AppSettingsItemRowIcon(res = R.drawable.ic_contrast_24) },
                         labelRes = R.string.amoled_black,

@@ -37,14 +37,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.core.common.R
-import com.w2sv.filenavigator.ui.navigation.LocalNavigator
+import com.w2sv.filenavigator.ui.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
-import com.w2sv.filenavigator.ui.navigation.PreviewNavigator
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
 import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.theme.DEFAULT_ANIMATION_DURATION
 import com.w2sv.filenavigator.ui.util.Easing
+import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.navigator.FileNavigator
 
 private enum class NavigatorStatusCardData(val statusText: StatusText, val toggleButton: ToggleButton) {
@@ -107,9 +106,7 @@ fun NavigatorStatusCard(
 @Preview
 @Composable
 private fun Prev() {
-    AppTheme {
-        NavigatorStatusCard(navigatorIsRunning = true, navigator = PreviewNavigator())
-    }
+    PreviewOf { NavigatorStatusCard(navigatorIsRunning = true) }
 }
 
 @Composable
