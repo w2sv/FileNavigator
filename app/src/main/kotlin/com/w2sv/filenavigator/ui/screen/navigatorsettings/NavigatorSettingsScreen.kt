@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -17,10 +18,12 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,10 +63,10 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.CustomFileType
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.CustomFileTypeCreationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.FileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.PresetFileTypeConfigurationDialog
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.NavigatorSettingsList
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActionsImpl
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.PreviewNavigatorConfigActions
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.NavigatorSettingsList
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.OnVisibilityStateChange
 import com.w2sv.filenavigator.ui.util.PreviewOf
@@ -177,7 +180,7 @@ private fun NavigatorSettingsScreen(
             )
         },
         floatingActionButton = {
-            ConfigurationButtonRow(
+            FabButtonRow(
                 configurationHasChanged = configurationHasChanged,
                 resetConfiguration = resetConfiguration,
                 syncConfiguration = {
@@ -223,8 +226,35 @@ private fun NavigatorSettingsScreen(
     }
 }
 
+private enum class FabAction(@StringRes val labelRes: Int, val imageVector: ImageVector) {
+    Reset(
+        labelRes = R.string.reset,
+        imageVector = Icons.Default.Refresh
+    ),
+    Apply(
+        labelRes = R.string.apply,
+        imageVector = Icons.Default.Check
+    );
+
+    val containerColor
+        @ReadOnlyComposable
+        @Composable
+        get() = when (this) {
+            Reset -> colorScheme.surfaceContainerHigh
+            Apply -> colorScheme.primaryContainer
+        }
+
+    val contentColor
+        @ReadOnlyComposable
+        @Composable
+        get() = when (this) {
+            Reset -> colorScheme.onSurface
+            Apply -> colorScheme.onPrimaryContainer
+        }
+}
+
 @Composable
-private fun ConfigurationButtonRow(
+private fun FabButtonRow(
     configurationHasChanged: Boolean,
     resetConfiguration: () -> Unit,
     syncConfiguration: () -> Unit,
@@ -247,20 +277,22 @@ private fun ConfigurationButtonRow(
         },
         modifier = modifier
     ) {
-        OnVisibilityStateChange(transition = transition, callback = onVisibilityStateChange)
+        OnVisibilityStateChange(
+            transition = transition,
+            callback = onVisibilityStateChange
+        )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            ConfigurationFABButton(
-                imageVector = Icons.Default.Refresh,
-                text = stringResource(R.string.reset),
+            FabButton(
+                action = FabAction.Reset,
                 onClick = resetConfiguration
             )
-            ConfigurationFABButton(
-                imageVector = Icons.Default.Check,
-                text = stringResource(id = R.string.apply),
+
+            FabButton(
+                action = FabAction.Apply,
                 onClick = syncConfiguration
             )
         }
@@ -268,19 +300,23 @@ private fun ConfigurationButtonRow(
 }
 
 @Composable
-private fun ConfigurationFABButton(
-    imageVector: ImageVector,
-    text: String,
+private fun FabButton(
+    action: FabAction,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    FloatingActionButton(onClick = onClick, modifier = modifier) {
+    FloatingActionButton(
+        onClick = onClick,
+        modifier = modifier,
+        containerColor = action.containerColor,
+        contentColor = action.contentColor
+    ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
-                imageVector = imageVector,
-                contentDescription = text
+                imageVector = action.imageVector,
+                contentDescription = null
             )
-            Text(text = text)
+            Text(text = stringResource(action.labelRes))
         }
     }
 }
@@ -289,6 +325,22 @@ private fun ConfigurationFABButton(
 @Composable
 private fun Prev() {
     PreviewOf {
+        NavigatorSettingsScreen(
+            navigatorConfig = NavigatorConfig.default,
+            navigatorConfigActions = PreviewNavigatorConfigActions,
+            configurationHasChanged = true,
+            resetConfiguration = {},
+            launchConfigSync = { Job() },
+            showFileTypesBottomSheet = {},
+            showFileTypeConfigurationDialog = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PrevDark() {
+    PreviewOf(useDarkTheme = true) {
         NavigatorSettingsScreen(
             navigatorConfig = NavigatorConfig.default,
             navigatorConfigActions = PreviewNavigatorConfigActions,

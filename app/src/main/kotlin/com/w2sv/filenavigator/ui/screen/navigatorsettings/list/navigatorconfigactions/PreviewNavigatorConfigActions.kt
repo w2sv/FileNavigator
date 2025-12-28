@@ -10,14 +10,18 @@ object PreviewNavigatorConfigActions : NavigatorConfigActions {
         fileType: FileType,
         sourceType: SourceType,
         enabled: Boolean
-    ) = Unit
+    ) =
+        Unit
 
     override fun setAutoMoveConfig(
         fileType: FileType,
         sourceType: SourceType,
         config: AutoMoveConfig
-    ) = Unit
+    ) =
+        Unit
 
-    override fun setAutoMoveConfigs(fileType: FileType, config: AutoMoveConfig) = Unit
-    override fun update(function: (NavigatorConfig) -> NavigatorConfig) = Unit
+    override fun setAutoMoveConfigs(fileType: FileType, config: AutoMoveConfig) =
+        Unit
+    override fun update(function: (NavigatorConfig) -> NavigatorConfig) =
+        Unit
 }

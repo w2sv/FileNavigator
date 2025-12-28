@@ -15,10 +15,19 @@ import com.w2sv.filenavigator.ui.navigation.Screen
 import com.w2sv.filenavigator.ui.theme.AppTheme
 
 @Composable
-fun PreviewOf(content: @Composable () -> Unit) {
+fun PreviewOf(
+    useDarkTheme: Boolean = false,
+    useAmoledBlackTheme: Boolean = false,
+    useDynamicColors: Boolean = false,
+    content: @Composable () -> Unit
+) {
     check(LocalInspectionMode.current) { "Calling preview composable outside of preview" }
 
-    AppTheme {
+    AppTheme(
+        useDarkTheme = useDarkTheme,
+        useAmoledBlackTheme = useAmoledBlackTheme,
+        useDynamicColors = useDynamicColors
+    ) {
         CompositionLocalProvider(
             LocalNavigator provides PreviewNavigator(),
             LocalMoveDestinationPathConverter provides PreviewMoveDestinationPathConverter(),
