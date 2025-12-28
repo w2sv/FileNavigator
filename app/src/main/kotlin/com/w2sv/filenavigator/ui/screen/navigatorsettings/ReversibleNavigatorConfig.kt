@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
-import androidx.compose.runtime.Stable
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.update
 
-@Stable
 class ReversibleNavigatorConfig(
     reversibleStateFlow: ReversibleStateFlow<NavigatorConfig>,
     private val makeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit

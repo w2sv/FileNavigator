@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.material3.SnackbarVisuals
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 
 typealias MakeSnackbarVisuals = (Context) -> SnackbarVisuals
 
@@ -14,10 +13,10 @@ interface MakeSnackbarVisualsEmitter {
 }
 
 class MakeSnackbarVisualsEmitterImpl : MakeSnackbarVisualsEmitter {
-    override val makeSnackbarVisuals: SharedFlow<MakeSnackbarVisuals> get() = _makeSnackbarVisuals.asSharedFlow()
-    private val _makeSnackbarVisuals = MutableSharedFlow<MakeSnackbarVisuals>()
+    final override val makeSnackbarVisuals: SharedFlow<MakeSnackbarVisuals>
+        field = MutableSharedFlow<MakeSnackbarVisuals>()
 
     override suspend fun emitMakeSnackbarVisuals(makeSnackbarVisuals: MakeSnackbarVisuals) {
-        _makeSnackbarVisuals.emit(makeSnackbarVisuals)
+        this.makeSnackbarVisuals.emit(makeSnackbarVisuals)
     }
 }

@@ -14,7 +14,6 @@ import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
 import kotlinx.collections.immutable.toImmutableMap
-import slimber.log.i
 
 fun LazyListScope.fileTypeSettingsList(
     config: NavigatorConfig,
@@ -37,8 +36,6 @@ fun LazyListScope.fileTypeSettingsList(
         )
     }
     items(config.sortedEnabledFileTypes, key = { it.ordinal }) { fileType ->
-        i { "Laying out ${fileType.logIdentifier}" }
-
         FileTypeSettingsPanel(
             fileType = fileType,
             setSourceAutoMoveConfigs = if (fileType.isMediaType) {

@@ -17,8 +17,13 @@ import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,7 +32,13 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.filenavigator.ui.theme.AppColor
 import com.w2sv.filenavigator.ui.util.CharSequenceText
 
-val LocalSnackbarHostState = compositionLocalOf { SnackbarHostState() }
+@Stable
+class SnackbarVisibilityState {
+    var isVisible by mutableStateOf(false)
+}
+
+val LocalSnackbarVisibility = staticCompositionLocalOf { SnackbarVisibilityState() }
+val LocalSnackbarHostState = staticCompositionLocalOf { SnackbarHostState() }
 
 @Immutable
 data class SnackbarAction(val label: String, val callback: () -> Unit)
@@ -46,12 +57,9 @@ data class AppSnackbarVisuals(
 }
 
 @Immutable
-sealed class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
-    @Immutable
-    data object Success : SnackbarKind(Icons.Outlined.Check, AppColor.success)
-
-    @Immutable
-    data object Error : SnackbarKind(Icons.Outlined.Warning, AppColor.error)
+enum class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
+    Success(Icons.Outlined.Check, AppColor.success),
+    Error(Icons.Outlined.Warning, AppColor.error)
 }
 
 @Composable
@@ -62,7 +70,12 @@ fun AppSnackbarHost(modifier: Modifier = Modifier, snackbarHostState: SnackbarHo
 }
 
 @Composable
-fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
+fun AppSnackbar(
+    visuals: AppSnackbarVisuals,
+    modifier: Modifier = Modifier,
+    snackbarVisibilityState: SnackbarVisibilityState = LocalSnackbarVisibility.current,
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
+) {
     Snackbar(
         action = {
             visuals.action?.let { action ->
@@ -72,7 +85,17 @@ fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
             }
         },
         modifier = modifier
-    ) { AppSnackbarContent(visuals.kind, visuals.message) }
+    ) {
+        DisposableEffect(Unit) {
+            snackbarVisibilityState.isVisible = true
+            onDispose {
+                if (snackbarHostState.currentSnackbarData == null) {
+                    snackbarVisibilityState.isVisible = false
+                }
+            }
+        }
+        AppSnackbarContent(visuals.kind, visuals.message)
+    }
 }
 
 @Composable
