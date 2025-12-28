@@ -13,7 +13,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -37,6 +38,9 @@ class NavigatorSettingsScreenViewModel @Inject constructor(
             }
     }
 
+    val configChangesHaveBeenApplied: SharedFlow<Unit>
+        field = MutableSharedFlow<Unit>()
+
     val reversibleConfig = ReversibleNavigatorConfig(
         scope = viewModelScope,
         navigatorConfigDataSource = navigatorConfigDataSource,
@@ -49,9 +53,10 @@ class NavigatorSettingsScreenViewModel @Inject constructor(
             if (navigatorIsRunning.value) {
                 FileNavigator.reregisterFileObservers(context)
             }
+            configChangesHaveBeenApplied.emit(Unit)
         }
     )
 
-    fun launchConfigSync(): Job =
+    fun launchConfigSync() =
         viewModelScope.launch { reversibleConfig.sync() }
 }

@@ -30,13 +30,13 @@ class ReversibleNavigatorConfig(
         scope: CoroutineScope,
         navigatorConfigDataSource: NavigatorConfigDataSource,
         makeSnackbarVisuals: (MakeSnackbarVisuals) -> Unit,
-        onStateSynced: () -> Unit
+        onStateSynced: suspend () -> Unit
     ) : this(
         reversibleStateFlow = ReversibleStateFlow(
             scope = scope,
             appliedStateFlow = navigatorConfigDataSource.navigatorConfig.stateIn(
                 scope = scope,
-                started = SharingStarted.Companion.WhileSubscribed()
+                started = SharingStarted.WhileSubscribed()
             ),
             syncState = {
                 navigatorConfigDataSource.navigatorConfig.save(it)

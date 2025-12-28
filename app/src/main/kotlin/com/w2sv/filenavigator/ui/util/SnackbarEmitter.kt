@@ -16,10 +16,10 @@ import kotlinx.coroutines.launch
 @Stable
 open class SnackbarEmitter(val snackbarHostState: SnackbarHostState, private val context: Context) {
     fun dismissCurrentAndShow(scope: CoroutineScope, makeSnackbar: Context.() -> SnackbarVisuals) {
-        scope.launch { dismissCurrentAndShowSuspending(makeSnackbar) }
+        scope.launch { dismissCurrentAndShow(makeSnackbar) }
     }
 
-    suspend fun dismissCurrentAndShowSuspending(makeSnackbar: Context.() -> SnackbarVisuals) {
+    suspend fun dismissCurrentAndShow(makeSnackbar: Context.() -> SnackbarVisuals) {
         snackbarHostState.dismissCurrentSnackbarAndShow(context.run { makeSnackbar() })
     }
 

@@ -69,7 +69,8 @@ android {
                 "-opt-in=androidx.compose.foundation.layout.ExperimentalLayoutApi",
                 "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
                 "-Xannotation-default-target=param-property",
-                "-Xwhen-guards"
+                "-Xwhen-guards",
+                "-XXLanguage:+ExplicitBackingFields"
             )
         }
     }
