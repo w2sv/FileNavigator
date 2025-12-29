@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.filenavigator.ui.util.LifecycleLoggingViewModel
-import com.w2sv.filenavigator.ui.util.MakeSnackbarVisualsEmitter
-import com.w2sv.filenavigator.ui.util.MakeSnackbarVisualsEmitterImpl
+import com.w2sv.filenavigator.ui.util.snackbar.MakeSnackbarVisualsEmitter
+import com.w2sv.filenavigator.ui.util.snackbar.MakeSnackbarVisualsEmitterImpl
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.system_broadcastreceiver.PowerSaveModeChangedReceiver

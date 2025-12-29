@@ -2,6 +2,7 @@ package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,22 +29,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.core.CollectLatestFromFlow
 import com.w2sv.composed.core.OnChange
 import com.w2sv.core.common.R
+import com.w2sv.filenavigator.ui.LocalSnackbarVisibility
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
-import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
-import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarVisibility
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.OnVisibilityStateChange
-import com.w2sv.filenavigator.ui.util.dismissCurrentSnackbar
+import com.w2sv.filenavigator.ui.util.snackbar.rememberSnackbarController
 import kotlinx.coroutines.flow.first
 
-private enum class FabButton(@StringRes val labelRes: Int, val imageVector: ImageVector) {
+private enum class EditingFabButton(@StringRes val labelRes: Int, val imageVector: ImageVector) {
     Reset(
         labelRes = R.string.reset,
         imageVector = Icons.Default.Refresh
@@ -63,7 +62,7 @@ private enum class FabButton(@StringRes val labelRes: Int, val imageVector: Imag
 }
 
 @Composable
-fun FabButtonRow(configEditState: ConfigEditState, modifier: Modifier = Modifier) {
+fun EditingFabButtonRow(configEditState: ConfigEditState, modifier: Modifier = Modifier) {
     var isEditing by remember { mutableStateOf(false) }
     var fabButtonsVisible by remember { mutableStateOf(false) }
 
@@ -74,37 +73,34 @@ fun FabButtonRow(configEditState: ConfigEditState, modifier: Modifier = Modifier
         fabButtonsVisible = { fabButtonsVisible }
     )
 
-    AnimatedVisibility(
+    EditingFabVisibility(
         visible = isEditing,
-        enter = slideInHorizontally(
-            initialOffsetX = { it / 2 },
-            animationSpec = tween(easing = Easing.Anticipate)
-        ) + fadeIn(),
-        exit = slideOutHorizontally(
-            targetOffsetX = { it / 2 },
-            animationSpec = tween(easing = Easing.Anticipate)
-        ) + fadeOut(),
-        modifier = modifier
+        modifier = modifier,
+        onVisibilityChanged = { fabButtonsVisible = it }
     ) {
-        OnVisibilityStateChange(transition) { fabButtonsVisible = it }
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            FabButton(
-                button = FabButton.Reset,
+            EditingFabButton(
+                button = EditingFabButton.Reset,
                 onClick = configEditState.reset
             )
-
-            FabButton(
-                button = FabButton.Apply,
+            EditingFabButton(
+                button = EditingFabButton.Apply,
                 onClick = configEditState.apply
             )
         }
     }
 }
 
+/**
+ * Coordinates visibility between the FABs and snackbars.
+ *
+ * Ensures that FABs and snackbars never overlap by dismissing and waiting for
+ * one to fully disappear before showing the other, while reacting to config
+ * edits and apply confirmations.
+ */
 @Composable
 private fun CoordinateFabsAndSnackbarVisibility(
     configEditState: ConfigEditState,
@@ -112,15 +108,15 @@ private fun CoordinateFabsAndSnackbarVisibility(
     setIsEditing: (Boolean) -> Unit,
     fabButtonsVisible: () -> Boolean
 ) {
-    val snackbarHostState = LocalSnackbarHostState.current
     val snackbarVisibility = LocalSnackbarVisibility.current
-    val context = LocalContext.current
+    val snackbarController = rememberSnackbarController()
 
+    // manipulate isEditing on changes of configEditState.hasChanges
     OnChange(configEditState.hasChanges()) { hasChanges ->
         when {
             !isEditing && hasChanges -> {
                 // Dismiss any snackbar
-                snackbarHostState.dismissCurrentSnackbar()
+                snackbarController.dismissCurrent()
 
                 // Wait for snackbar to disappear
                 suspendUntil { !snackbarVisibility.isVisible }
@@ -131,24 +127,26 @@ private fun CoordinateFabsAndSnackbarVisibility(
         }
     }
 
-    // when changes have been applied, dismiss any currently shown snackbar and show confirmation
-    // snackbar when fab buttons have disappeared
+    // when changes have been applied:
+    // 1. set isEditing to false
+    // 2. dismiss any currently shown snackbar
+    // 3. show confirmation snackbar once fab buttons have disappeared
     CollectLatestFromFlow(configEditState.changesHaveBeenApplied) {
         setIsEditing(false)
 
         // Dismiss any snackbar
-        snackbarHostState.dismissCurrentSnackbar()
+        snackbarController.dismissCurrent()
 
         // Wait for FABs to disappear
         suspendUntil { !fabButtonsVisible() }
 
         // Show confirmation snackbar
-        snackbarHostState.showSnackbar(
+        snackbarController.show {
             AppSnackbarVisuals(
-                message = context.getString(R.string.applied_navigator_settings),
+                message = getString(R.string.applied_navigator_settings),
                 kind = SnackbarKind.Success
             )
-        )
+        }
     }
 }
 
@@ -157,8 +155,32 @@ private suspend fun suspendUntil(condition: () -> Boolean) {
 }
 
 @Composable
-private fun FabButton(
-    button: FabButton,
+private fun EditingFabVisibility(
+    visible: Boolean,
+    onVisibilityChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInHorizontally(
+            initialOffsetX = { it / 2 },
+            animationSpec = tween(easing = Easing.Anticipate)
+        ) + fadeIn(),
+        exit = slideOutHorizontally(
+            targetOffsetX = { it / 2 },
+            animationSpec = tween(easing = Easing.Anticipate)
+        ) + fadeOut(),
+        modifier = modifier
+    ) {
+        OnVisibilityStateChange(transition, onVisibilityChanged)
+        content()
+    }
+}
+
+@Composable
+private fun EditingFabButton(
+    button: EditingFabButton,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

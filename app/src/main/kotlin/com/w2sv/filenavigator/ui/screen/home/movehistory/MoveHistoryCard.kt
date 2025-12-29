@@ -17,7 +17,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -32,19 +31,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.w2sv.composed.material3.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
-import com.w2sv.filenavigator.ui.designsystem.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
-import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
 import com.w2sv.filenavigator.ui.screen.home.MoveHistoryState
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
+import com.w2sv.filenavigator.ui.util.snackbar.SnackbarController
+import com.w2sv.filenavigator.ui.util.snackbar.rememberSnackbarController
 
 @Composable
 fun MoveHistoryCard(state: MoveHistoryState, modifier: Modifier = Modifier) {
@@ -83,7 +81,6 @@ private fun MoveHistoryCard(
 
         AnimatedContent(
             targetState = state.historyEmpty,
-            label = "",
             modifier = Modifier
                 .weight(0.8f)
                 .fillMaxWidth()
@@ -140,18 +137,18 @@ private fun HeaderRow(
 private fun rememberMoveEntryRowOnClick(
     launchHistoryEntryDeletion: (MovedFile) -> Unit,
     context: Context = LocalContext.current,
-    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
+    snackbarController: SnackbarController = rememberSnackbarController(context = context)
 ): suspend (MovedFile, Boolean) -> Unit =
     remember {
         { movedFile, fileExists ->
             if (fileExists) {
-                snackbarHostState.currentSnackbarData?.dismiss()
+                snackbarController.dismissCurrent()
                 movedFile.launchViewMovedFileActivity(
                     context = context,
                     onError = { e ->
-                        snackbarHostState.showSnackbar(
+                        snackbarController.show {
                             AppSnackbarVisuals(
-                                message = context.getString(
+                                message = getString(
                                     when (e) {
                                         is ActivityNotFoundException -> R.string.provider_does_not_support_file_viewing
                                         else -> R.string.can_t_view_file_from_within_file_navigator
@@ -159,23 +156,21 @@ private fun rememberMoveEntryRowOnClick(
                                 ),
                                 kind = SnackbarKind.Error
                             )
-                        )
+                        }
                     }
                 )
             } else {
-                snackbarHostState.dismissCurrentSnackbarAndShow(
+                snackbarController.showReplacing {
                     AppSnackbarVisuals(
-                        message = context.getString(R.string.couldn_t_find_file),
+                        message = getString(R.string.couldn_t_find_file),
                         kind = SnackbarKind.Error,
-                        action = SnackbarAction(
-                            label = context.getString(R.string.delete_entry),
-                            callback = {
-                                launchHistoryEntryDeletion(movedFile)
-                                snackbarHostState.currentSnackbarData?.dismiss()
-                            }
-                        )
+                        actionLabel = getString(R.string.delete_entry),
+                        actionCallback = {
+                            launchHistoryEntryDeletion(movedFile)
+                            snackbarController.dismissCurrent()
+                        }
                     )
-                )
+                }
             }
         }
     }

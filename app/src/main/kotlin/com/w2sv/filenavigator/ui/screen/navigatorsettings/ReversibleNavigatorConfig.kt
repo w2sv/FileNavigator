@@ -9,7 +9,7 @@ import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.util.MakeSnackbarVisuals
+import com.w2sv.filenavigator.ui.util.snackbar.MakeSnackbarVisuals
 import com.w2sv.kotlinutils.copy
 import com.w2sv.reversiblestate.ReversibleState
 import com.w2sv.reversiblestate.ReversibleStateFlow

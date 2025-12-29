@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.util
+package com.w2sv.filenavigator.ui.util.snackbar
 
 import androidx.compose.material3.SnackbarHostState
 

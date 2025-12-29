@@ -30,7 +30,7 @@ fun rememberBorderAnimationState(
     key1: Any? = null,
     key2: Any? = null
 ): BorderAnimationState {
-    val transition = updateTransition(targetState = enabled, label = "")
+    val transition = updateTransition(targetState = enabled)
 
     val borderWidth by transition.animateDp(
         transitionSpec = {
@@ -44,8 +44,7 @@ fun rememberBorderAnimationState(
                     tween(durationMillis = duration)
                 }
             }
-        },
-        label = ""
+        }
     ) { state ->
         if (state) endWidth else startWidth
     }
@@ -62,8 +61,7 @@ fun rememberBorderAnimationState(
                     tween(durationMillis = duration)
                 }
             }
-        },
-        label = ""
+        }
     ) { state ->
         if (state) endColor else startColor
     }
