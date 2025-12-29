@@ -8,7 +8,7 @@ import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 
 @Stable
 interface NavigatorConfigActions {
-    fun toggleSource(
+    fun setSourceTypeEnablement(
         fileType: FileType,
         sourceType: SourceType,
         enabled: Boolean

@@ -12,15 +12,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.composed.core.CollectLatestFromFlow
+import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.core.isLandscapeModeActive
-import com.w2sv.composed.material3.extensions.dismissCurrentSnackbarAndShow
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType
@@ -41,9 +39,10 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.FileTypeConfig
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.PresetFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.NavigatorSettingsList
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActionsImpl
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.PreviewNavigatorConfigActions
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.rememberNavigatorConfigActions
 import com.w2sv.filenavigator.ui.util.PreviewOf
+import com.w2sv.filenavigator.ui.util.snackbar.dismissCurrentSnackbar
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -52,15 +51,6 @@ fun NavigatorSettingsScreen(
     navigatorVM: NavigatorSettingsScreenViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
-    val context = LocalContext.current
-
-    CollectLatestFromFlow(
-        flow = navigatorVM.makeSnackbarVisuals,
-        key1 = snackbarHostState
-    ) { makeSnackbarVisuals ->
-        snackbarHostState.dismissCurrentSnackbarAndShow(makeSnackbarVisuals(context))
-    }
-
     AutoMoveIntroductionDialogIfNotYetShown()
 
     var showFileTypesBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -68,9 +58,11 @@ fun NavigatorSettingsScreen(
 
     val navigatorConfig by navigatorVM.reversibleConfig.collectAsStateWithLifecycle()
 
+    OnChange(navigatorConfig) { snackbarHostState.dismissCurrentSnackbar() }
+
     NavigatorSettingsScreen(
         navigatorConfig = navigatorConfig,
-        navigatorConfigActions = remember(navigatorVM.reversibleConfig) { NavigatorConfigActionsImpl(navigatorVM.reversibleConfig) },
+        navigatorConfigActions = rememberNavigatorConfigActions(),
         configEditState = rememberConfigEditState(navigatorVM),
         showFileTypesBottomSheet = { showFileTypesBottomSheet = true },
         showFileTypeConfigurationDialog = { fileType ->

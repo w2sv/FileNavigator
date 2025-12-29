@@ -67,7 +67,7 @@
     <string name="leave_at_least_one_file_type_selected">至少保留一种文件类型</string>
     <string name="apply">应用</string>
     <string name="disable_navigator_on_low_battery">低电量时自动禁用分类导航程序</string>
-    <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">除非禁用此文件类型，请至少选择一个文件源</string>
+    <string name="source_unselection_warning">除非禁用此文件类型，请至少选择一个文件源</string>
     <string name="select_file_types"> 选择将要进行分类整理的文件类型</string>
     <string name="_default">默认</string>
     <string name="dark">暗色背景</string>
@@ -169,4 +169,5 @@
     <string name="enter_a_file_extension">输入文件扩展名</string>
     <string name="can_t_view_file_from_within_file_navigator">无法从文件导航器查看文</string>
     <string name="navigator">Navigator</string>
+    <string name="disable">禁用</string>
 </resources>

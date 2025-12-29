@@ -36,6 +36,7 @@ import com.w2sv.domain.model.MovedFile
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
+import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
@@ -164,11 +165,13 @@ private fun rememberMoveEntryRowOnClick(
                     AppSnackbarVisuals(
                         message = getString(R.string.couldn_t_find_file),
                         kind = SnackbarKind.Error,
-                        actionLabel = getString(R.string.delete_entry),
-                        actionCallback = {
-                            launchHistoryEntryDeletion(movedFile)
-                            snackbarController.dismissCurrent()
-                        }
+                        action = SnackbarAction(
+                            label = getString(R.string.delete_entry),
+                            callback = {
+                                launchHistoryEntryDeletion(movedFile)
+                                snackbarController.dismissCurrent()
+                            }
+                        )
                     )
                 }
             }

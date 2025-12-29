@@ -31,17 +31,20 @@ import com.w2sv.filenavigator.ui.util.CharSequenceText
 import com.w2sv.filenavigator.ui.util.snackbar.SnackbarVisibility
 
 /**
- * App-specific extension of [SnackbarVisuals], adding [kind] and [actionCallback].
+ * App-specific extension of [SnackbarVisuals], adding [kind] and [action].
  */
 @Immutable
 data class AppSnackbarVisuals(
     override val message: String,
     override val duration: SnackbarDuration = SnackbarDuration.Short,
-    override val actionLabel: String? = null,
-    val actionCallback: () -> Unit = {},
+    val action: SnackbarAction? = null,
     val kind: SnackbarKind? = null,
     override val withDismissAction: Boolean = false
-) : SnackbarVisuals
+) : SnackbarVisuals {
+    override val actionLabel: String? = action?.label
+}
+
+data class SnackbarAction(val label: String, val callback: () -> Unit)
 
 enum class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
     Success(Icons.Outlined.Check, AppColor.success),
@@ -60,9 +63,9 @@ fun AppSnackbarHost(modifier: Modifier = Modifier, snackbarHostState: SnackbarHo
 fun AppSnackbar(visuals: AppSnackbarVisuals, modifier: Modifier = Modifier) {
     Snackbar(
         action = {
-            visuals.actionLabel?.let { label ->
-                TextButton(onClick = visuals.actionCallback) {
-                    Text(text = label, color = SnackbarDefaults.actionColor)
+            visuals.action?.let {
+                TextButton(onClick = it.callback) {
+                    Text(text = it.label, color = SnackbarDefaults.actionColor)
                 }
             }
         },

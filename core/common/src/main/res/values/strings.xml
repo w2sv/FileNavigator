@@ -72,7 +72,7 @@
     <string name="leave_at_least_one_file_type_selected">Leave at least one file type selected.</string>
     <string name="apply">Apply</string>
     <string name="disable_navigator_on_low_battery">Disable navigator on low battery</string>
-    <string name="leave_at_least_one_file_source_selected_or_disable_the_entire_file_type">Leave at least one file source selected or disable the entire file type.</string>
+    <string name="source_unselection_warning">Leave at least one source selected or disable the file type.</string>
     <string name="select_file_types">Select File Types</string>
     <string name="_default">Default</string>
     <string name="dark">Dark</string>
@@ -176,4 +176,5 @@
     <string name="enter_a_file_extension">Enter a file extension</string>
     <string name="can_t_view_file_from_within_file_navigator">Can\'t view this file from within File Navigator.</string>
     <string name="navigator">Navigator</string>
+    <string name="disable">Disable</string>
 </resources>

@@ -14,13 +14,17 @@ import kotlinx.coroutines.launch
  * in a provided [CoroutineScope] for fire-and-forget usage from event handlers.
  */
 @Stable
-class ScopedSnackbarController(private val presenter: SnackbarController, private val scope: CoroutineScope) {
+class ScopedSnackbarController(private val controller: SnackbarController, private val scope: CoroutineScope) {
     fun show(makeSnackbar: Context.() -> SnackbarVisuals) {
-        scope.launch { presenter.show(makeSnackbar = makeSnackbar) }
+        scope.launch { controller.show(makeSnackbar = makeSnackbar) }
     }
 
     fun showReplacing(makeSnackbar: Context.() -> SnackbarVisuals) {
-        scope.launch { presenter.showReplacing(makeSnackbar = makeSnackbar) }
+        scope.launch { controller.showReplacing(makeSnackbar = makeSnackbar) }
+    }
+
+    fun dismissCurrent() {
+        controller.dismissCurrent()
     }
 }
 
@@ -31,7 +35,7 @@ fun rememberScopedSnackbarController(
 ): ScopedSnackbarController =
     remember(presenter, scope) {
         ScopedSnackbarController(
-            presenter = presenter,
+            controller = presenter,
             scope = scope
         )
     }

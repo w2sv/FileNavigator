@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.filenavigator.ui.util.LifecycleLoggingViewModel
-import com.w2sv.filenavigator.ui.util.snackbar.MakeSnackbarVisualsEmitter
-import com.w2sv.filenavigator.ui.util.snackbar.MakeSnackbarVisualsEmitterImpl
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.system_broadcastreceiver.PowerSaveModeChangedReceiver
@@ -24,8 +22,7 @@ class NavigatorSettingsScreenViewModel @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
     val navigatorIsRunning: FileNavigator.IsRunning,
     @ApplicationContext context: Context
-) : LifecycleLoggingViewModel(),
-    MakeSnackbarVisualsEmitter by MakeSnackbarVisualsEmitterImpl() {
+) : LifecycleLoggingViewModel() {
 
     init {
         // Launch registering/unregistering of PowerSaveModeChangedReceiver on change of navigatorConfig.disableOnLowBattery
@@ -44,16 +41,11 @@ class NavigatorSettingsScreenViewModel @Inject constructor(
     val reversibleConfig = ReversibleNavigatorConfig(
         scope = viewModelScope,
         navigatorConfigDataSource = navigatorConfigDataSource,
-        makeSnackbarVisuals = {
-            viewModelScope.launch {
-                emitMakeSnackbarVisuals(it)
-            }
-        },
         onStateSynced = {
+            configChangesHaveBeenApplied.emit(Unit)
             if (navigatorIsRunning.value) {
                 FileNavigator.reregisterFileObservers(context)
             }
-            configChangesHaveBeenApplied.emit(Unit)
         }
     )
 

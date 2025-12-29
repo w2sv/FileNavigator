@@ -101,6 +101,18 @@ data class NavigatorConfig(
             )
         }
 
+    fun updateSourceTypeEnablement(
+        fileType: FileType,
+        sourceType: SourceType,
+        enabled: Boolean
+    ): NavigatorConfig =
+        updateSourceConfig(
+            fileType = fileType,
+            sourceType = sourceType
+        ) {
+            it.copy(enabled = enabled)
+        }
+
     /**
      * Sets all [AutoMoveConfig]s of [fileType]'s [SourceType]'s to [autoMoveConfig].
      */

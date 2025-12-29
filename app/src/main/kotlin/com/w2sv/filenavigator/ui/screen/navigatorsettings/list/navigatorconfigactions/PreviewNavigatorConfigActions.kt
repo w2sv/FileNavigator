@@ -6,7 +6,7 @@ import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 
 object PreviewNavigatorConfigActions : NavigatorConfigActions {
-    override fun toggleSource(
+    override fun setSourceTypeEnablement(
         fileType: FileType,
         sourceType: SourceType,
         enabled: Boolean

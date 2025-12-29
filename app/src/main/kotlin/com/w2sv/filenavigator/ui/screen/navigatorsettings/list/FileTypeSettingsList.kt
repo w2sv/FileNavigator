@@ -47,7 +47,7 @@ fun LazyListScope.fileTypeSettingsList(
             },
             sourceTypeConfigMap = config.fileTypeConfig(fileType).sourceTypeConfigMap.toImmutableMap(),
             onSourceCheckedChange = { sourceType, checkedNew ->
-                fileTypeConfigActions.toggleSource(
+                fileTypeConfigActions.setSourceTypeEnablement(
                     fileType = fileType,
                     sourceType = sourceType,
                     enabled = checkedNew
