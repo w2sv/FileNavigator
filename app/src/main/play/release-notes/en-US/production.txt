@@ -1,6 +1,4 @@
-- Fix auto move to SD card (hopefully)
-- UI improvements: Navigator card, file type settings button, top bars, navigation animations
-- Improve app performance
-- Set release SDK to 36
-- Add chinese translations
-
+- Fix navigator starting on boot despite the respective settings being disabled
+- simplify enabling/disabling file types
+- improve screen change animations
+- lots of other UI and performance improvements
