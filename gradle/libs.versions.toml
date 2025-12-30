@@ -31,7 +31,7 @@ triplet-play = "3.13.0"
 versionCatalogUpdate = "1.0.1"
 versions = "0.53.0"
 # @pin
-w2sv-composed = "0.1.1"
+w2sv-composed = "0.2.0"
 w2sv-datastoreutils = "0.0.8"
 w2sv-kotlinutils = "0.1.11"
 
