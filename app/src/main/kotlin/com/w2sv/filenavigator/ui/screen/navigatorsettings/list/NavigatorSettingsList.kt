@@ -18,16 +18,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.w2sv.composed.core.isPortraitModeActive
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
-import com.w2sv.filenavigator.ui.designsystem.Padding
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.PreviewNavigatorConfigActions
 import com.w2sv.filenavigator.ui.util.PreviewOf
 
 object NavigatorSettingsListDefaults {
     val itemSpacing: Dp = 6.dp
-    val sectionHeaderPaddingVertical: Dp = 12.dp
+    val sectionHeaderPadding = PaddingValues(vertical = 16.dp)
+    val fabBottomPadding: Dp
+        @Composable
+        get() = if (isPortraitModeActive) 140.dp else 90.dp
 }
 
 @Composable
@@ -43,7 +46,7 @@ fun NavigatorSettingsList(
         modifier = modifier,
         state = state,
         verticalArrangement = Arrangement.spacedBy(NavigatorSettingsListDefaults.itemSpacing),
-        contentPadding = PaddingValues(top = NavigatorSettingsListDefaults.itemSpacing, bottom = Padding.fabButtonBottomPadding)
+        contentPadding = PaddingValues(bottom = NavigatorSettingsListDefaults.fabBottomPadding)
     ) {
         fileTypeSettingsList(
             config = config,
@@ -59,7 +62,7 @@ fun NavigatorSettingsList(
 fun NavigatorSettingsListSectionHeader(
     text: String,
     modifier: Modifier = Modifier.fillMaxWidth(),
-    padding: PaddingValues = PaddingValues(vertical = NavigatorSettingsListDefaults.sectionHeaderPaddingVertical),
+    padding: PaddingValues = NavigatorSettingsListDefaults.sectionHeaderPadding,
     endContent: @Composable () -> Unit = {}
 ) {
     Row(

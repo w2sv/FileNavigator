@@ -9,6 +9,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -24,7 +25,7 @@ fun LazyListScope.fileTypeSettingsList(
     item {
         NavigatorSettingsListSectionHeader(
             text = stringResource(id = R.string.navigated_file_types),
-            padding = PaddingValues(),
+            padding = PaddingValues(top = 8.dp, bottom = 4.dp),
             endContent = {
                 FilledTonalIconButton(onClick = showFileTypesBottomSheet) {
                     Icon(

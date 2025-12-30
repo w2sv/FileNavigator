@@ -9,8 +9,4 @@ object Padding {
     val defaultHorizontal: Dp
         @Composable
         get() = if (isPortraitModeActive) 16.dp else 52.dp
-
-    val fabButtonBottomPadding: Dp
-        @Composable
-        get() = if (isPortraitModeActive) 144.dp else 92.dp
 }

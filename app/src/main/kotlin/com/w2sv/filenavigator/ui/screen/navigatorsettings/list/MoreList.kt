@@ -55,6 +55,7 @@ fun LazyListScope.moreItemList(config: NavigatorConfig, actions: NavigatorConfig
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 4.dp)
+                .padding(bottom = 2.dp)
         )
     }
 }
