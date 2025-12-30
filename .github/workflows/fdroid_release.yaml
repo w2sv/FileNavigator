@@ -3,7 +3,7 @@ name: FDroid Release
 on:
     push:
         tags:
-            - "*fdroid*"
+            - '*'
 
 jobs:
     build-release:
@@ -52,7 +52,7 @@ jobs:
             # Build Changelog
             -   name: Build Changelog
                 id: build_changelog
-                uses: ardalanamini/auto-changelog@v3
+                uses: ardalanamini/auto-changelog@v4
                 with:
                     mention-authors: false
                     mention-new-contributors: true
