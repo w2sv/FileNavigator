@@ -3,10 +3,11 @@ package com.w2sv.filenavigator.ui.designsystem.drawer
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsIgnoringVisibility
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -14,7 +15,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -32,10 +33,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.BuildConfig
-import com.w2sv.filenavigator.ui.designsystem.SystemBarsIgnoringVisibilityPaddedColumn
-import com.w2sv.filenavigator.ui.designsystem.emptyWindowInsets
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import java.time.LocalDate
+
+internal object HomeScreenNavigationDrawerTokens {
+    val verticalPadding = PaddingValues(vertical = 16.dp)
+    val horizontalPadding = 24.dp
+    val itemSpacing = 12.dp
+    val headerPadding = PaddingValues(top = 8.dp)
+}
 
 @Composable
 fun HomeScreenNavigationDrawer(
@@ -56,41 +62,26 @@ private fun Sheet(drawerState: DrawerState, modifier: Modifier = Modifier) {
     ModalDrawerSheet(
         drawerState = drawerState,
         modifier = modifier,
-        windowInsets = emptyWindowInsets,
+        windowInsets = WindowInsets(),
         drawerTonalElevation = 1.dp
     ) {
-        SystemBarsIgnoringVisibilityPaddedColumn(
-            modifier = Modifier.verticalScroll(rememberScrollState()),
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .windowInsetsPadding(WindowInsets.systemBarsIgnoringVisibility)
+                .padding(horizontal = HomeScreenNavigationDrawerTokens.horizontalPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Header(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = horizontalPadding)
-                    .padding(top = 16.dp)
+            AppLogoWithCircularBackground(modifier = Modifier.padding(HomeScreenNavigationDrawerTokens.verticalPadding))
+            Text(
+                text = stringResource(id = R.string.version, BuildConfig.VERSION_NAME),
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(bottom = 4.dp)
             )
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-            NavigationDrawerSheetItemColumn(
-                closeDrawer = drawerState::close,
-                modifier = Modifier.padding(horizontal = horizontalPadding)
-            )
+            Text(text = remember { "© 2023 - ${LocalDate.now().year} | w2sv" })
+            HorizontalDivider(modifier = Modifier.padding(HomeScreenNavigationDrawerTokens.verticalPadding))
+            NavigationDrawerItemColumn(closeDrawer = drawerState::close)
         }
-    }
-}
-
-private val horizontalPadding = 24.dp
-
-@Composable
-private fun Header(modifier: Modifier = Modifier) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        AppLogoWithCircularBackground()
-        Spacer(modifier = Modifier.height(18.dp))
-        Text(
-            text = stringResource(id = R.string.version).format(BuildConfig.VERSION_NAME),
-            fontWeight = FontWeight.SemiBold
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(text = remember { "© 2023 - ${LocalDate.now().year} | w2sv" })
     }
 }
 
@@ -99,10 +90,10 @@ private fun AppLogoWithCircularBackground(modifier: Modifier = Modifier) {
     Icon(
         painter = painterResource(id = R.drawable.ic_app_foreground_108),
         contentDescription = null,
-        tint = MaterialTheme.colorScheme.inversePrimary,
+        tint = colorScheme.inversePrimary,
         modifier = modifier
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primary)
+            .background(colorScheme.primary)
     )
 }
 
