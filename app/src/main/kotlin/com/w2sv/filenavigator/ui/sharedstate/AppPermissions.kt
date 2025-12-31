@@ -16,18 +16,18 @@ class AppPermissions(
     private val coroutineScope: CoroutineScope,
     context: Context
 ) {
-    val manageAllFilesGranted: StateFlow<Boolean> get() = _manageAllFilesGranted
-    private val _manageAllFilesGranted = MutableStateFlow(isExternalStorageManger)
+    val manageAllFilesGranted: StateFlow<Boolean>
+        field = MutableStateFlow(isExternalStorageManger)
 
     fun updateManageAllFilesPermission() {
-        _manageAllFilesGranted.value = isExternalStorageManger
+        manageAllFilesGranted.value = isExternalStorageManger
     }
 
-    val postNotificationsGranted: StateFlow<Boolean> get() = _postNotificationsGranted
-    private val _postNotificationsGranted = MutableStateFlow(context.hasPostNotificationsPermission())
+    val postNotificationsGranted: StateFlow<Boolean>
+        field = MutableStateFlow(context.hasPostNotificationsPermission())
 
     fun setPostNotificationsGranted(value: Boolean) {
-        _postNotificationsGranted.value = value
+        postNotificationsGranted.value = value
     }
 
     val postNotificationsRequested: StateFlow<Boolean> =
