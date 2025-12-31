@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.list
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -9,7 +8,6 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -25,7 +23,7 @@ fun LazyListScope.fileTypeSettingsList(
     item {
         NavigatorSettingsListSectionHeader(
             text = stringResource(id = R.string.navigated_file_types),
-            padding = PaddingValues(top = 8.dp, bottom = 4.dp),
+            padding = NavigatorSettingsListTokens.fileTypeSectionHeaderPadding,
             endContent = {
                 FilledTonalIconButton(onClick = showFileTypesBottomSheet) {
                     Icon(

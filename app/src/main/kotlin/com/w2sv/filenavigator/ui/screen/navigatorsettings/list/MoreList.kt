@@ -44,7 +44,12 @@ private enum class MoreListItem(
 }
 
 fun LazyListScope.moreItemList(config: NavigatorConfig, actions: NavigatorConfigActions) {
-    item { NavigatorSettingsListSectionHeader(text = stringResource(id = R.string.more)) }
+    item {
+        NavigatorSettingsListSectionHeader(
+            text = stringResource(id = R.string.more),
+            padding = NavigatorSettingsListTokens.moreSectionHeaderPadding
+        )
+    }
     items(MoreListItem.entries, key = { it }) { item ->
         SwitchItemRow(
             icon = { ItemRowIcon(res = item.iconRes) },

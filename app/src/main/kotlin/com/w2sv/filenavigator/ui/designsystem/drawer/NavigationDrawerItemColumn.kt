@@ -34,7 +34,7 @@ import com.w2sv.common.AppUrl
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.LocalNavigator
 import com.w2sv.filenavigator.ui.designsystem.IconSize
-import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults
+import com.w2sv.filenavigator.ui.designsystem.ItemRowTokens
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import kotlinx.coroutines.CoroutineScope
@@ -223,7 +223,7 @@ private fun Action(
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.constrainAs(label) {
-                start.linkTo(icon.end, margin = ItemRowDefaults.IconTextSpacing)
+                start.linkTo(icon.end, margin = ItemRowTokens.IconTextSpacing)
                 centerVerticallyTo(icon)
             }
         )

@@ -16,25 +16,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.androidutils.os.dynamicColorsSupported
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.core.common.R
+import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.ui.LocalNavigator
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRow
 import com.w2sv.filenavigator.ui.designsystem.ItemRowIcon
-import com.w2sv.filenavigator.ui.designsystem.Padding
-import com.w2sv.filenavigator.ui.designsystem.Spacing
+import com.w2sv.filenavigator.ui.designsystem.PaddingDefaults
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
 import com.w2sv.filenavigator.ui.designsystem.drawer.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.theme.useDarkTheme
+import com.w2sv.filenavigator.ui.util.PreviewOf
 
 @Composable
 fun AppSettingsScreen(navigator: Navigator = LocalNavigator.current, appPreferences: AppPreferences = rememberAppPreferences()) {
@@ -53,7 +54,26 @@ fun AppSettingsScreen(navigator: Navigator = LocalNavigator.current, appPreferen
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = Padding.defaultHorizontal)
+                .padding(horizontal = PaddingDefaults.horizontal)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun Prev() {
+    PreviewOf {
+        AppSettingsScreen(
+            appPreferences = AppPreferences(
+                showStorageVolumeNames = { true },
+                setShowStorageVolumeNames = {},
+                theme = { Theme.Default },
+                setTheme = {},
+                useAmoledBlackTheme = { false },
+                setUseAmoledBlackTheme = {},
+                useDynamicColors = { true },
+                setUseDynamicColors = {}
+            )
         )
     }
 }
@@ -74,11 +94,10 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
             )
         }
         SettingsCard(title = stringResource(id = R.string.appearance)) {
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.VerticalItemRow), modifier = Modifier.animateContentSize()) {
+            Column(verticalArrangement = Arrangement.spacedBy(22.dp), modifier = Modifier.animateContentSize()) {
                 ItemRow(
                     icon = { AppSettingsItemRowIcon(res = R.drawable.ic_nightlight_24) },
-                    labelRes = R.string.theme,
-                    verticalAlignment = Alignment.CenterVertically
+                    labelRes = R.string.theme
                 ) {
                     ThemeSelectionRow(
                         selected = appPreferences.theme(),

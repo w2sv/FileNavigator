@@ -29,7 +29,7 @@ import com.w2sv.composed.material3.extensions.rememberVisibilityProgress
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.NavigationDrawerScreenTopAppBar
-import com.w2sv.filenavigator.ui.designsystem.Padding
+import com.w2sv.filenavigator.ui.designsystem.PaddingDefaults
 import com.w2sv.filenavigator.ui.designsystem.drawer.HomeScreenNavigationDrawer
 import com.w2sv.filenavigator.ui.designsystem.drawer.drawerDisplaced
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryCard
@@ -124,7 +124,7 @@ private fun PortraitMode(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.padding(horizontal = Padding.defaultHorizontal),
+        modifier = modifier.padding(horizontal = PaddingDefaults.horizontal),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

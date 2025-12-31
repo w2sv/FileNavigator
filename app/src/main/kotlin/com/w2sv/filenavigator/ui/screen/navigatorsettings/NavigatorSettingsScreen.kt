@@ -28,7 +28,7 @@ import com.w2sv.filenavigator.ui.LocalNavigator
 import com.w2sv.filenavigator.ui.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.BackArrowTopAppBar
-import com.w2sv.filenavigator.ui.designsystem.Padding
+import com.w2sv.filenavigator.ui.designsystem.PaddingDefaults
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.FileTypeSelectionBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.rememberFileTypeSelectionState
@@ -152,7 +152,7 @@ private fun NavigatorSettingsScreen(
             showFileTypeConfigurationDialog = showFileTypeConfigurationDialog,
             modifier = Modifier
                 .padding(top = paddingValues.calculateTopPadding())
-                .padding(horizontal = Padding.defaultHorizontal)
+                .padding(horizontal = PaddingDefaults.horizontal)
                 .fillMaxSize()
         )
     }
