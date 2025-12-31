@@ -1,9 +1,7 @@
 package com.w2sv.filenavigator.ui.sharedstate
 
-import android.Manifest
 import android.content.Context
-import com.w2sv.androidutils.hasPermission
-import com.w2sv.androidutils.os.postNotificationsPermissionRequired
+import com.w2sv.common.util.hasPostNotificationsPermission
 import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.kotlinutils.coroutines.flow.combineStates
@@ -26,9 +24,7 @@ class AppPermissions(
     }
 
     val postNotificationsGranted: StateFlow<Boolean> get() = _postNotificationsGranted
-    private val _postNotificationsGranted = MutableStateFlow(
-        !postNotificationsPermissionRequired || context.hasPermission(Manifest.permission.POST_NOTIFICATIONS)
-    )
+    private val _postNotificationsGranted = MutableStateFlow(context.hasPostNotificationsPermission())
 
     fun setPostNotificationsGranted(value: Boolean) {
         _postNotificationsGranted.value = value

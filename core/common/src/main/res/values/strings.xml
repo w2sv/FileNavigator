@@ -102,7 +102,6 @@
     <string name="move_history_deletion_dialog_message">Do you want to irretrievably delete your move history?</string>
     <string name="move_history_placeholder">Moved files will appear here</string>
     <string name="return_to_main_screen">Return to main screen</string>
-    <string name="discard">Discard</string>
     <string name="move_history">Move History</string>
     <string name="navigator_settings">Navigator Settings</string>
     <string name="couldn_t_find_file">Couldn\'t find file.</string>

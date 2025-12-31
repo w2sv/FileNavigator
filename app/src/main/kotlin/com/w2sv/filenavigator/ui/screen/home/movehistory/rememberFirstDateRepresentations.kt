@@ -7,10 +7,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.MovedFile
+import kotlinx.collections.immutable.ImmutableList
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import kotlinx.collections.immutable.ImmutableList
 
 /**
  * @param history Chronologically ordered.
@@ -18,11 +18,9 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 fun rememberFirstDateRepresentations(
     history: ImmutableList<MovedFile>,
-    key1: Any? = null,
-    key2: Any? = null,
     context: Context = LocalContext.current
 ): List<String?> =
-    remember(history.size, key1, key2) {
+    remember(history.size, context) {
         firstDateRepresentations(
             history = history,
             getString = { context.getString(it) }
@@ -35,22 +33,21 @@ private fun firstDateRepresentations(
     today: LocalDate = LocalDate.now()
 ): List<String?> {
     var lastDateRepresentation: String? = null
-    return mutableListOf<String?>()
-        .apply {
-            history.forEach { moveEntry ->
-                val representation = getDateRepresentation(
-                    date = moveEntry.moveDateTime.toLocalDate(),
-                    now = today,
-                    getString = getString
-                )
-                if (representation == lastDateRepresentation) {
-                    add(null)
-                } else {
-                    add(representation)
-                    lastDateRepresentation = representation
-                }
+    return buildList {
+        history.forEach { moveEntry ->
+            val representation = getDateRepresentation(
+                date = moveEntry.moveDateTime.toLocalDate(),
+                now = today,
+                getString = getString
+            )
+            if (representation == lastDateRepresentation) {
+                add(null)
+            } else {
+                add(representation)
+                lastDateRepresentation = representation
             }
         }
+    }
 }
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

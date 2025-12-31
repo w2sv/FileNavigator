@@ -6,6 +6,9 @@
     <issue id="LintError" severity="warning" />
     <issue id="MonochromeLauncherIcon" severity="ignore" />
     <issue id="ComposeModifierMissing" severity="ignore" />
-    <issue id="UnsafeOptInUsageError" severity="ignore" />
     <issue id="ModifierParameter" severity="ignore" />
+    <issue id="UnsafeOptInUsageError" severity="ignore" />
+    <issue id="LocalContextGetResourceValueCall" severity="ignore" />
+    <issue id="PluralsCandidate" severity="ignore" />
+    <issue id="GradleDependency" severity="ignore" />
 </lint>

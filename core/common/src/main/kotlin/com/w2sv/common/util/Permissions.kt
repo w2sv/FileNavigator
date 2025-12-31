@@ -1,15 +1,15 @@
 package com.w2sv.common.util
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.provider.Settings
-import androidx.annotation.RequiresApi
+import com.w2sv.androidutils.hasPermission
 import com.w2sv.androidutils.os.manageExternalStoragePermissionRequired
+import com.w2sv.androidutils.os.postNotificationsPermissionRequired
 
-@RequiresApi(Build.VERSION_CODES.R)
 fun goToManageExternalStorageSettings(context: Context) {
     context.startActivity(
         Intent(
@@ -19,5 +19,16 @@ fun goToManageExternalStorageSettings(context: Context) {
     )
 }
 
+/**
+ * @return true for API < 30 where [Manifest.permission.MANAGE_EXTERNAL_STORAGE] didn't yet exist, otherwise checks whether the permission
+ * has been granted.
+ */
 val isExternalStorageManger: Boolean
     get() = !manageExternalStoragePermissionRequired || Environment.isExternalStorageManager()
+
+/**
+ * @return true for API < 33 where [Manifest.permission.POST_NOTIFICATIONS] didn't yet exist, otherwise checks whether the permission has
+ * been granted.
+ */
+fun Context.hasPostNotificationsPermission(): Boolean =
+    !postNotificationsPermissionRequired || hasPermission(Manifest.permission.POST_NOTIFICATIONS)

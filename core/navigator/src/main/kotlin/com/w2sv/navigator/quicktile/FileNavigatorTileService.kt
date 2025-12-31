@@ -1,16 +1,13 @@
 package com.w2sv.navigator.quicktile
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.IntDef
-import com.w2sv.androidutils.hasPermission
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.core.navigator.R
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.kotlinutils.coroutines.launchDelayed
@@ -18,9 +15,9 @@ import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.shared.mainActivityIntent
 import com.w2sv.navigator.shared.mainActivityPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import slimber.log.i
+import javax.inject.Inject
 
 @AndroidEntryPoint
 internal class FileNavigatorTileService : TileService() {
@@ -52,7 +49,7 @@ internal class FileNavigatorTileService : TileService() {
 
             Tile.STATE_INACTIVE -> {
                 // Start navigator if all required permissions are granted, otherwise launch MainActivity, which will invoke the 'Required Permissions' screen
-                if (isExternalStorageManger && hasPermission(Manifest.permission.POST_NOTIFICATIONS)) {
+                if (FileNavigator.necessaryPermissionsGranted(this)) {
                     showDialogAndLaunchNavigator()
                 } else {
                     startMainActivityAndCollapse()

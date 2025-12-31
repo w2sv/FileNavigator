@@ -1,12 +1,11 @@
 package com.w2sv.navigator
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
 import com.w2sv.androidutils.UnboundService
-import com.w2sv.androidutils.hasPermission
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
+import com.w2sv.common.util.hasPostNotificationsPermission
 import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.common.util.log
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
@@ -16,7 +15,6 @@ import com.w2sv.navigator.notifications.appnotifications.FileNavigatorIsRunningN
 import com.w2sv.navigator.observing.FileObserver
 import com.w2sv.navigator.observing.FileObserverFactory
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import slimber.log.e
 import slimber.log.i
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FileNavigator : UnboundService() {
@@ -174,6 +173,6 @@ class FileNavigator : UnboundService() {
          * @return whether the necessary permissions for running the [FileNavigator] are granted.
          */
         fun necessaryPermissionsGranted(context: Context): Boolean =
-            isExternalStorageManger && context.hasPermission(Manifest.permission.POST_NOTIFICATIONS)
+            isExternalStorageManger && context.hasPostNotificationsPermission()
     }
 }
