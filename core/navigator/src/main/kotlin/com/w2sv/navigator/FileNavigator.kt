@@ -15,6 +15,7 @@ import com.w2sv.navigator.notifications.appnotifications.FileNavigatorIsRunningN
 import com.w2sv.navigator.observing.FileObserver
 import com.w2sv.navigator.observing.FileObserverFactory
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import slimber.log.e
 import slimber.log.i
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class FileNavigator : UnboundService() {

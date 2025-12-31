@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
 import androidx.core.net.toUri
@@ -40,7 +39,6 @@ import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRowDefaults
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
-import com.w2sv.filenavigator.ui.util.PreviewOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -181,7 +179,7 @@ fun NavigationDrawerItemColumn(closeDrawer: suspend () -> Unit, modifier: Modifi
                 }
 
                 is DrawerItem.Header -> {
-                    Header(
+                    GroupHeader(
                         titleRes = element.titleRes,
                         modifier = Modifier.padding(HomeScreenNavigationDrawerTokens.headerPadding)
                     )
@@ -191,16 +189,8 @@ fun NavigationDrawerItemColumn(closeDrawer: suspend () -> Unit, modifier: Modifi
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun Prev() {
-    PreviewOf {
-        NavigationDrawerItemColumn({})
-    }
-}
-
-@Composable
-private fun Header(@StringRes titleRes: Int, modifier: Modifier = Modifier) {
+private fun GroupHeader(@StringRes titleRes: Int, modifier: Modifier = Modifier) {
     Text(
         text = stringResource(id = titleRes),
         modifier = modifier,

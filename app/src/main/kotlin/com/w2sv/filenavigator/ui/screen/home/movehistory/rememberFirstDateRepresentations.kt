@@ -7,19 +7,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.MovedFile
-import kotlinx.collections.immutable.ImmutableList
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlinx.collections.immutable.ImmutableList
 
 /**
  * @param history Chronologically ordered.
  */
 @Composable
-fun rememberFirstDateRepresentations(
-    history: ImmutableList<MovedFile>,
-    context: Context = LocalContext.current
-): List<String?> =
+fun rememberFirstDateRepresentations(history: ImmutableList<MovedFile>, context: Context = LocalContext.current): List<String?> =
     remember(history.size, context) {
         firstDateRepresentations(
             history = history,
