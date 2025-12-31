@@ -1,7 +1,7 @@
 package com.w2sv.filenavigator.navigator
 
-import androidx.compose.runtime.toMutableStateList
 import androidx.navigation3.runtime.NavBackStack
+import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.navigation.NavigatorImpl
 import com.w2sv.filenavigator.ui.navigation.Screen
 import junit.framework.TestCase.assertEquals
@@ -9,11 +9,12 @@ import org.junit.Test
 
 class NavigatorImplTest {
 
-    private lateinit var backStack: NavBackStack
-    private val navigator by lazy { NavigatorImpl(backStack) }
+    private lateinit var backStack: NavBackStack<Screen>
+    private lateinit var navigator: Navigator
 
     private fun initializeBackStack(vararg screen: Screen) {
-        backStack = screen.toList().toMutableStateList()
+        backStack = NavBackStack(*screen)
+        navigator = NavigatorImpl(backStack)
     }
 
     private fun assertBackStackEquals(expected: List<Screen>) {

@@ -43,6 +43,7 @@ internal fun Project.applyBaseConfig(excludeMetaInfResources: Boolean = true, na
                 unitTests {
                     isReturnDefaultValues = true
                     isIncludeAndroidResources = true
+                    all { test -> test.failOnNoDiscoveredTests.set(false) }
                 }
                 animationsDisabled = true
             }

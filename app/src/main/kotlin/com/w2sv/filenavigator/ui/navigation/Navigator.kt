@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.navigation
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -17,7 +18,8 @@ interface Navigator {
 }
 
 @Stable
-private class NavigatorImpl(backStack: NavBackStack<Screen>) :
+@VisibleForTesting
+class NavigatorImpl(backStack: NavBackStack<Screen>) :
     Nav3Navigator<Screen>(backStack),
     Navigator {
     override fun toAppSettings() =
