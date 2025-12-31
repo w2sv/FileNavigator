@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsIgnoringVisibility
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -80,7 +81,7 @@ private fun Sheet(drawerState: DrawerState, modifier: Modifier = Modifier) {
             )
             Text(text = remember { "© 2023 - ${LocalDate.now().year} | w2sv" })
             HorizontalDivider(modifier = Modifier.padding(HomeScreenNavigationDrawerTokens.verticalPadding))
-            NavigationDrawerItemColumn(closeDrawer = drawerState::close)
+            NavigationDrawerItemColumn(closeDrawer = drawerState::close, modifier = Modifier.fillMaxWidth())
         }
     }
 }

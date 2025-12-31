@@ -7,25 +7,23 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ShareCompat
 import androidx.core.net.toUri
 import com.w2sv.androidutils.openUrl
@@ -173,8 +171,7 @@ fun NavigationDrawerItemColumn(closeDrawer: suspend () -> Unit, modifier: Modifi
                     Action(
                         action = element,
                         actionScope = actionScope,
-                        coroutineScope = coroutineScope,
-                        modifier = Modifier.fillMaxWidth()
+                        coroutineScope = coroutineScope
                     )
                 }
 
@@ -206,30 +203,40 @@ private fun Action(
     coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.clickable(onClick = { coroutineScope.launch { action.onClick(actionScope) } })) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                modifier = Modifier.size(size = IconSize.Big),
-                painter = painterResource(id = action.iconRes),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = stringResource(id = action.labelRes),
-                modifier = Modifier.padding(start = ItemRowDefaults.IconTextSpacing),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
+    ConstraintLayout(modifier = modifier.clickable { coroutineScope.launch { action.onClick(actionScope) } }) {
+        val (icon, label, explanation) = createRefs()
+
+        Icon(
+            painter = painterResource(id = action.iconRes),
+            contentDescription = null,
+            tint = colorScheme.primary,
+            modifier = Modifier
+                .size(IconSize.Big)
+                .constrainAs(icon) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                }
+        )
+
+        Text(
+            text = stringResource(id = action.labelRes),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.constrainAs(label) {
+                start.linkTo(icon.end, margin = ItemRowDefaults.IconTextSpacing)
+                centerVerticallyTo(icon)
+            }
+        )
+
         action.explanationRes?.let {
             Text(
                 text = stringResource(id = it),
-                color = MaterialTheme.colorScheme.onSurfaceVariantDecreasedAlpha,
-                modifier = Modifier.padding(start = IconSize.Big + ItemRowDefaults.IconTextSpacing),
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                color = colorScheme.onSurfaceVariantDecreasedAlpha,
+                modifier = Modifier.constrainAs(explanation) {
+                    start.linkTo(label.start)
+                    top.linkTo(label.bottom)
+                }
             )
         }
     }
