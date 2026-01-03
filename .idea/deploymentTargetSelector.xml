@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-04-18T10:30:49.772770529Z">
+        <DropdownSelection timestamp="2026-01-03T15:14:31.618894849Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/home/jaza5177/.android/avd/AudiDev-33-audi-android-automotive-v20241025_01-x86_64.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/home/jaza5177/.android/avd/Pixel_9_Pro.avd" />
             </handle>
           </Target>
         </DropdownSelection>

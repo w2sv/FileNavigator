@@ -23,16 +23,11 @@ internal class PreferencesRepositoryImpl @Inject constructor(
 ) : PreferencesDataStoreRepository(dataStore),
     PreferencesRepository {
 
-    override val theme = enumDataStoreFlow(
-        intPreferencesKey("theme")
-    ) { Theme.Default }
+    override val theme = enumDataStoreFlow(intPreferencesKey("theme")) { Theme.Default }
 
-    override val useAmoledBlackTheme =
-        dataStoreFlow(booleanPreferencesKey("useAmoledBlackTheme")) { false }
+    override val useAmoledBlackTheme = dataStoreFlow(booleanPreferencesKey("useAmoledBlackTheme")) { false }
 
-    override val useDynamicColors = dataStoreFlow(
-        booleanPreferencesKey("useDynamicColors")
-    ) { dynamicColorsSupported }
+    override val useDynamicColors = dataStoreFlow(booleanPreferencesKey("useDynamicColors")) { dynamicColorsSupported }
 
     override val postNotificationsPermissionRequested = dataStoreFlow(
         booleanPreferencesKey("postNotificationsPermissionRequested")

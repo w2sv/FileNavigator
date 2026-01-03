@@ -23,7 +23,7 @@ fun goToManageExternalStorageSettings(context: Context) {
  * @return true for API < 30 where [Manifest.permission.MANAGE_EXTERNAL_STORAGE] didn't yet exist, otherwise checks whether the permission
  * has been granted.
  */
-val isExternalStorageManger: Boolean
+val hasManageAllFilesPermission: Boolean
     get() = !manageExternalStoragePermissionRequired || Environment.isExternalStorageManager()
 
 /**

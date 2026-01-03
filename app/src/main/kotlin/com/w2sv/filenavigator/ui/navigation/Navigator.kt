@@ -36,14 +36,14 @@ class NavigatorImpl(backStack: NavBackStack<Screen>) :
 }
 
 @Composable
-fun rememberNavigator(startScreen: Screen, permissionMissing: () -> Boolean): Navigator {
+fun rememberNavigator(startScreen: Screen, allPermissionsGranted: () -> Boolean): Navigator {
     val backStack = rememberNavBackStack(startScreen)
     val navigator = remember(backStack) { NavigatorImpl(backStack) }
 
-    OnChange(permissionMissing()) {
+    OnChange(allPermissionsGranted()) {
         when {
-            it && navigator.currentScreen !is Screen.RequiredPermissions -> navigator.toRequiredPermissions()
-            !it && navigator.currentScreen is Screen.RequiredPermissions -> navigator.leaveRequiredPermissions()
+            !it && navigator.currentScreen !is Screen.RequiredPermissions -> navigator.toRequiredPermissions()
+            it && navigator.currentScreen is Screen.RequiredPermissions -> navigator.leaveRequiredPermissions()
         }
     }
 

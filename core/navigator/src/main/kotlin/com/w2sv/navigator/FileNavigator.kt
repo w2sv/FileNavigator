@@ -5,8 +5,8 @@ import android.content.Intent
 import com.w2sv.androidutils.UnboundService
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
+import com.w2sv.common.util.hasManageAllFilesPermission
 import com.w2sv.common.util.hasPostNotificationsPermission
-import com.w2sv.common.util.isExternalStorageManger
 import com.w2sv.common.util.log
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.navigator.moving.MoveResultListener
@@ -173,6 +173,6 @@ class FileNavigator : UnboundService() {
          * @return whether the necessary permissions for running the [FileNavigator] are granted.
          */
         fun necessaryPermissionsGranted(context: Context): Boolean =
-            isExternalStorageManger && context.hasPostNotificationsPermission()
+            hasManageAllFilesPermission && context.hasPostNotificationsPermission()
     }
 }

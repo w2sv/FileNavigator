@@ -46,8 +46,8 @@ class MainActivity : ComponentActivity() {
             // Update system bars on change of useDarkTheme
             LaunchedEffect(useDarkTheme) { enableEdgeToEdge(useDarkTheme = useDarkTheme) }
 
-            val permissionMissing by appVM.permissions.anyMissing.collectAsStateWithLifecycle()
-            val navigator = rememberNavigator(startScreen = appVM.startScreen, permissionMissing = { permissionMissing })
+            val allPermissionsGranted by appVM.permissionsState.allGranted.collectAsStateWithLifecycle()
+            val navigator = rememberNavigator(startScreen = appVM.startScreen, allPermissionsGranted = { allPermissionsGranted })
 
             CompositionLocalProvider(
                 LocalMoveDestinationPathConverter provides moveDestinationPathConverter,
@@ -77,9 +77,9 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    override fun onStart() {
-        super.onStart()
-        appVM.permissions.updateManageAllFilesPermission()
+    override fun onResume() {
+        super.onResume()
+        appVM.permissionsState.refresh()
     }
 }
 

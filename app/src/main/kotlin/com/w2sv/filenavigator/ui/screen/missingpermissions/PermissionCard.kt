@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.missingpermissions
 
+import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -33,7 +35,7 @@ import com.w2sv.filenavigator.ui.theme.AppTheme
 private fun PermissionCardPrev() {
     AppTheme {
         PermissionCard(
-            PermissionCardProperties(
+            PermissionCard(
                 iconRes = R.drawable.ic_notifications_24,
                 textRes = R.string.post_notifications_permission_rational,
                 onGrantButtonClick = { }
@@ -43,10 +45,28 @@ private fun PermissionCardPrev() {
 }
 
 @Immutable
-data class PermissionCardProperties(@DrawableRes val iconRes: Int, @StringRes val textRes: Int, val onGrantButtonClick: () -> Unit)
+data class PermissionCard(@DrawableRes val iconRes: Int, @StringRes val textRes: Int, val onGrantButtonClick: (Context) -> Unit) {
+    companion object {
+        fun postNotifications(onGrantButtonClick: (Context) -> Unit): PermissionCard =
+            PermissionCard(
+                iconRes = R.drawable.ic_notifications_24,
+                textRes = R.string.post_notifications_permission_rational,
+                onGrantButtonClick = onGrantButtonClick
+            )
+
+        fun manageAllFiles(onGrantButtonClick: (Context) -> Unit): PermissionCard =
+            PermissionCard(
+                iconRes = R.drawable.ic_folder_open_24,
+                textRes = R.string.manage_external_storage_permission_rational,
+                onGrantButtonClick = onGrantButtonClick
+            )
+    }
+}
 
 @Composable
-fun PermissionCard(properties: PermissionCardProperties, modifier: Modifier = Modifier) {
+fun PermissionCard(card: PermissionCard, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+
     ElevatedCard(
         modifier = modifier,
         elevation = AppCardDefaults.elevation
@@ -59,20 +79,20 @@ fun PermissionCard(properties: PermissionCardProperties, modifier: Modifier = Mo
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(
-                painter = painterResource(id = properties.iconRes),
+                painter = painterResource(id = card.iconRes),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier.size(28.dp)
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = rememberStyledTextResource(id = properties.textRes),
+                text = rememberStyledTextResource(id = card.textRes),
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(16.dp))
             DialogButton(
                 text = stringResource(id = R.string.grant),
-                onClick = properties.onGrantButtonClick
+                onClick = { card.onGrantButtonClick(context) }
             )
         }
     }

@@ -7,7 +7,7 @@ import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.result.SingleFileError
 import com.anggrayudi.storage.result.SingleFileResult
 import com.w2sv.common.util.hasChild
-import com.w2sv.common.util.isExternalStorageManger
+import com.w2sv.common.util.hasManageAllFilesPermission
 import com.w2sv.common.util.log
 import com.w2sv.navigator.moving.model.MoveDestination
 import com.w2sv.navigator.moving.model.MoveFile
@@ -35,7 +35,7 @@ internal sealed interface PreCheckResult {
 
             return when {
                 !moveFile.mediaStoreFileData.fileExists -> Failure(MoveResult.MoveFileNotFound)
-                !isExternalStorageManger -> Failure(MoveResult.ManageAllFilesPermissionMissing)
+                !hasManageAllFilesPermission -> Failure(MoveResult.ManageAllFilesPermissionMissing)
                 moveMediaFile == null -> Failure(MoveResult.InternalError)
                 destinationDirectory?.hasChild(
                     context = context,

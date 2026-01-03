@@ -4,29 +4,22 @@ import android.Manifest
 import androidx.compose.runtime.Composable
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.w2sv.androidutils.os.postNotificationsPermissionRequired
-import com.w2sv.composed.core.OnChange
+import com.w2sv.kotlinutils.threadUnsafeLazy
 
 @Composable
-fun rememberPostNotificationsPermissionState(onPermissionResult: (Boolean) -> Unit, onStatusChanged: (Boolean) -> Unit): PermissionState =
+fun rememberPostNotificationsPermissionState(): PermissionState =
     if (postNotificationsPermissionRequired) {
-        rememberPermissionState(
-            permission = Manifest.permission.POST_NOTIFICATIONS,
-            onPermissionResult = onPermissionResult
-        )
-            .also {
-                OnChange(value = it.status) { status ->
-                    onStatusChanged(status.isGranted)
-                }
-            }
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
     } else {
-        GrantedPermissionState
+        grantedPermissionState
     }
 
-private object GrantedPermissionState : PermissionState {
-    override val permission: String = ""
-    override val status: PermissionStatus = PermissionStatus.Granted
-    override fun launchPermissionRequest() {}
+private val grantedPermissionState by threadUnsafeLazy {
+    object : PermissionState {
+        override val permission: String = ""
+        override val status: PermissionStatus = PermissionStatus.Granted
+        override fun launchPermissionRequest() {}
+    }
 }

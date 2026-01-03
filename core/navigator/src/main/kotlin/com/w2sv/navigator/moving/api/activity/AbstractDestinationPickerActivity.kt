@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.annotation.CallSuper
 import com.w2sv.common.util.DocumentUri
-import com.w2sv.common.util.isExternalStorageManger
+import com.w2sv.common.util.hasManageAllFilesPermission
 import com.w2sv.navigator.moving.model.MoveResult
 
 internal abstract class AbstractDestinationPickerActivity : AbstractMoveActivity() {
@@ -23,7 +23,7 @@ internal abstract class AbstractDestinationPickerActivity : AbstractMoveActivity
     @CallSuper
     protected open fun preemptiveMoveFailure(): MoveResult.Failure? =
         when {
-            !isExternalStorageManger -> MoveResult.ManageAllFilesPermissionMissing
+            !hasManageAllFilesPermission -> MoveResult.ManageAllFilesPermissionMissing
             else -> null
         }
 
