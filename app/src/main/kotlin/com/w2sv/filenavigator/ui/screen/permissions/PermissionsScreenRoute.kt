@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.missingpermissions
+package com.w2sv.filenavigator.ui.screen.permissions
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,7 +41,7 @@ fun PermissionsScreenRoute(appVM: AppViewModel = activityViewModel()) {
         )
     }
 
-    RequiredPermissionsScreen(cards = permissionCards)
+    PermissionsScreen(cards = permissionCards)
 }
 
 @Composable

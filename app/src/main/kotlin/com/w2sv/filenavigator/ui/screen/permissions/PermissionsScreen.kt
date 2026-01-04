@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.missingpermissions
+package com.w2sv.filenavigator.ui.screen.permissions
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +24,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-fun RequiredPermissionsScreen(cards: ImmutableList<PermissionCard>) {
+fun PermissionsScreen(cards: ImmutableList<PermissionCard>) {
     Scaffold(topBar = { TopAppBarAboveHorizontalDivider(title = stringResource(id = R.string.required_permissions)) }) { paddingValues ->
         val sharedModifier =
             Modifier
@@ -42,7 +42,7 @@ fun RequiredPermissionsScreen(cards: ImmutableList<PermissionCard>) {
 @Composable
 private fun Prev() {
     AppTheme {
-        RequiredPermissionsScreen(
+        PermissionsScreen(
             persistentListOf(
                 PermissionCard.postNotifications { },
                 PermissionCard.manageAllFiles { }

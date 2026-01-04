@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.missingpermissions
+package com.w2sv.filenavigator.ui.screen.permissions
 
 import android.content.Context
 import androidx.annotation.DrawableRes
