@@ -7,9 +7,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.w2sv.filenavigator.ui.screen.appsettings.AppSettingsScreen
-import com.w2sv.filenavigator.ui.screen.home.HomeScreen
-import com.w2sv.filenavigator.ui.screen.missingpermissions.RequiredPermissionsScreen
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.NavigatorSettingsScreen
+import com.w2sv.filenavigator.ui.screen.home.HomeScreenRoute
+import com.w2sv.filenavigator.ui.screen.missingpermissions.PermissionsScreenRoute
+import com.w2sv.filenavigator.ui.screen.navigatorsettings.NavigatorSettingsScreenRoute
 
 @Composable
 fun NavGraph(navigator: Navigator) {
@@ -34,16 +34,16 @@ fun NavGraph(navigator: Navigator) {
         },
         entryProvider = entryProvider {
             entry<Screen.Home> {
-                HomeScreen()
+                HomeScreenRoute()
             }
             entry<Screen.AppSettings> {
                 AppSettingsScreen()
             }
             entry<Screen.RequiredPermissions> {
-                RequiredPermissionsScreen()
+                PermissionsScreenRoute()
             }
             entry<Screen.NavigatorSettings> {
-                NavigatorSettingsScreen()
+                NavigatorSettingsScreenRoute()
             }
         }
     )

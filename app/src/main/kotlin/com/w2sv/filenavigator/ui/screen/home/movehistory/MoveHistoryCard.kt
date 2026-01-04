@@ -40,7 +40,7 @@ import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
-import com.w2sv.filenavigator.ui.screen.home.MoveHistoryState
+import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryState
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.util.snackbar.SnackbarController
 import com.w2sv.filenavigator.ui.util.snackbar.rememberSnackbarController

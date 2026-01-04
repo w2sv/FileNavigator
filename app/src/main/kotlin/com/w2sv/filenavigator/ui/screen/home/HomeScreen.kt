@@ -22,8 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.core.isPortraitModeActive
 import com.w2sv.composed.material3.extensions.rememberVisibilityProgress
 import com.w2sv.core.common.R
@@ -33,7 +31,8 @@ import com.w2sv.filenavigator.ui.designsystem.PaddingDefaults
 import com.w2sv.filenavigator.ui.designsystem.drawer.HomeScreenNavigationDrawer
 import com.w2sv.filenavigator.ui.designsystem.drawer.drawerDisplaced
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryCard
-import com.w2sv.filenavigator.ui.screen.home.statusdisplay.NavigatorStatusCard
+import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryState
+import com.w2sv.filenavigator.ui.screen.home.navigatorstatus.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
@@ -41,30 +40,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
-    val navigatorIsRunning by viewModel.navigatorIsRunning.collectAsStateWithLifecycle()
-    val moveHistoryState = MoveHistoryState.remember(viewModel)
-
-    HomeScreen(navigatorIsRunning = navigatorIsRunning, moveHistoryState = moveHistoryState)
-}
-
-@Preview
-@Composable
-private fun HomeScreenPrev() {
-    PreviewOf {
-        HomeScreen(
-            navigatorIsRunning = true,
-            moveHistoryState = MoveHistoryState(
-                history = persistentListOf(),
-                deleteAll = {},
-                deleteEntry = {}
-            )
-        )
-    }
-}
-
-@Composable
-private fun HomeScreen(
+fun HomeScreen(
     navigatorIsRunning: Boolean,
     moveHistoryState: MoveHistoryState,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -114,6 +90,21 @@ private fun HomeScreen(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun HomeScreenPrev() {
+    PreviewOf {
+        HomeScreen(
+            navigatorIsRunning = true,
+            moveHistoryState = MoveHistoryState(
+                history = persistentListOf(),
+                deleteAll = {},
+                deleteEntry = {}
+            )
+        )
     }
 }
 

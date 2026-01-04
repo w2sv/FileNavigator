@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.home.statusdisplay
+package com.w2sv.filenavigator.ui.screen.home.navigatorstatus
 
 import android.content.Context
 import androidx.annotation.DrawableRes
