@@ -2,24 +2,21 @@ package com.w2sv.filenavigator.ui.screen.permissions
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.core.isPortraitModeActive
 import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
 import com.w2sv.filenavigator.ui.theme.AppTheme
+import com.w2sv.filenavigator.ui.util.ScreenPreviews
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -38,7 +35,7 @@ fun PermissionsScreen(cards: ImmutableList<PermissionCard>) {
     }
 }
 
-@Preview(device = "spec:width=411dp,height=891dp,dpi=420,isRound=false,chinSize=0dp,orientation=landscape", showSystemUi = true)
+@ScreenPreviews
 @Composable
 private fun Prev() {
     AppTheme {
@@ -75,9 +72,8 @@ private fun LandscapeMode(permissionCards: ImmutableList<PermissionCard>, modifi
             PermissionCard(
                 card = it,
                 modifier = Modifier
-                    .fillMaxWidth(0.4f)
+                    .fillParentMaxWidth(0.4f)
                     .animateItem()
-                    .verticalScroll(rememberScrollState())
             )
         }
     }
