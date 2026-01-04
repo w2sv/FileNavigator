@@ -38,8 +38,8 @@ fun PreviewOf(
 
 private class PreviewNavigator : Navigator {
     override fun toAppSettings() {}
-    override fun toRequiredPermissions() {}
-    override fun leaveRequiredPermissions() {}
+    override fun toPermissions() {}
+    override fun toHome() {}
     override fun toNavigatorSettings() {}
     override fun popBackStack() {}
     override val currentScreen = Screen.Home

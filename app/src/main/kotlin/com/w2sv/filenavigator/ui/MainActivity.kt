@@ -18,6 +18,7 @@ import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.w2sv.composed.core.CollectFromFlow
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.navigation.NavGraph
 import com.w2sv.filenavigator.ui.navigation.rememberNavigator
@@ -46,8 +47,14 @@ class MainActivity : ComponentActivity() {
             // Update system bars on change of useDarkTheme
             LaunchedEffect(useDarkTheme) { enableEdgeToEdge(useDarkTheme = useDarkTheme) }
 
-            val allPermissionsGranted by appVM.permissionsState.allGranted.collectAsStateWithLifecycle()
-            val navigator = rememberNavigator(startScreen = appVM.startScreen, allPermissionsGranted = { allPermissionsGranted })
+            val navigator = rememberNavigator(startScreen = appVM.startScreen)
+
+            // Navigate to permissions screen if not all permissions granted and we're not already there
+            CollectFromFlow(appVM.permissionsState.allGranted) { allPermissionsGranted ->
+                if (!allPermissionsGranted && !navigator.currentScreen.isPermissions) {
+                    navigator.toPermissions()
+                }
+            }
 
             CompositionLocalProvider(
                 LocalMoveDestinationPathConverter provides moveDestinationPathConverter,

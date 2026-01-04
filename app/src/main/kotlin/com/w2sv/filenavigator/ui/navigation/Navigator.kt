@@ -5,12 +5,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavBackStack
-import com.w2sv.composed.core.OnChange
 
 interface Navigator {
     fun toAppSettings()
-    fun toRequiredPermissions()
-    fun leaveRequiredPermissions()
+    fun toPermissions()
+    fun toHome()
     fun toNavigatorSettings()
     fun popBackStack()
     val currentScreen: Screen
@@ -25,10 +24,10 @@ class NavigatorImpl(backStack: NavBackStack<Screen>) :
     override fun toAppSettings() =
         launchSingleTop(Screen.AppSettings)
 
-    override fun toRequiredPermissions() =
-        clearAndLaunch(Screen.RequiredPermissions)
+    override fun toPermissions() =
+        clearAndLaunch(Screen.Permissions)
 
-    override fun leaveRequiredPermissions() =
+    override fun toHome() =
         clearAndLaunch(Screen.Home)
 
     override fun toNavigatorSettings() =
@@ -36,16 +35,7 @@ class NavigatorImpl(backStack: NavBackStack<Screen>) :
 }
 
 @Composable
-fun rememberNavigator(startScreen: Screen, allPermissionsGranted: () -> Boolean): Navigator {
+fun rememberNavigator(startScreen: Screen): Navigator {
     val backStack = rememberNavBackStack(startScreen)
-    val navigator = remember(backStack) { NavigatorImpl(backStack) }
-
-    OnChange(allPermissionsGranted()) {
-        when {
-            !it && navigator.currentScreen !is Screen.RequiredPermissions -> navigator.toRequiredPermissions()
-            it && navigator.currentScreen is Screen.RequiredPermissions -> navigator.leaveRequiredPermissions()
-        }
-    }
-
-    return navigator
+    return remember(backStack) { NavigatorImpl(backStack) }
 }

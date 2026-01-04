@@ -48,7 +48,7 @@ class AppViewModel @Inject constructor(private val preferencesRepository: Prefer
     val startScreen: Screen by threadUnsafeLazy {
         when {
             BuildConfig.DEBUG && BuildConfig.START_SCREEN == "NavigatorSettings" -> Screen.NavigatorSettings
-            !permissionsState.allGranted.value -> Screen.RequiredPermissions
+            !permissionsState.allGranted.value -> Screen.Permissions
             else -> Screen.Home
         }
     }

@@ -12,8 +12,10 @@ sealed class Screen : NavKey {
     object AppSettings : Screen()
 
     @Serializable
-    object RequiredPermissions : Screen()
+    object Permissions : Screen()
 
     @Serializable
     object NavigatorSettings : Screen()
+
+    val isPermissions get() = this == Permissions
 }

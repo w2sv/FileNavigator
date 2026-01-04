@@ -37,9 +37,9 @@ class NavigatorImplTest {
     }
 
     @Test
-    fun `leaveRequiredPermissions pops and adds Home screen`() {
-        initializeBackStack(Screen.RequiredPermissions)
-        navigator.leaveRequiredPermissions()
+    fun `toHome pops and adds Home screen`() {
+        initializeBackStack(Screen.Permissions)
+        navigator.toHome()
         assertBackStackEquals(listOf(Screen.Home))
     }
 

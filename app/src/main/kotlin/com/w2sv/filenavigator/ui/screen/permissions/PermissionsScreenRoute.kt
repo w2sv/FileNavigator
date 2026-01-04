@@ -8,16 +8,20 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.w2sv.androidutils.openAppSettings
 import com.w2sv.common.util.goToManageExternalStorageSettings
+import com.w2sv.composed.core.CollectFromFlow
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.ui.AppViewModel
+import com.w2sv.filenavigator.ui.LocalNavigator
+import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.sharedstate.AppPermissionsState
 import com.w2sv.filenavigator.ui.util.activityViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.filter
 
 @Composable
-fun PermissionsScreenRoute(appVM: AppViewModel = activityViewModel()) {
+fun PermissionsScreenRoute(appVM: AppViewModel = activityViewModel(), navigator: Navigator = LocalNavigator.current) {
     val permissionsState = appVM.permissionsState
     val postNotificationsPermissionState = rememberPostNotificationsPermissionState()
 
@@ -25,6 +29,12 @@ fun PermissionsScreenRoute(appVM: AppViewModel = activityViewModel()) {
         permissionState = postNotificationsPermissionState,
         appPermissionsState = permissionsState
     )
+
+    CollectFromFlow(permissionsState.allGranted.filter { true }) { allGranted ->
+        if (allGranted) {
+            navigator.toHome()
+        }
+    }
 
     val postNotificationsPermissionGranted by permissionsState.postNotificationsPermissionGranted.collectAsStateWithLifecycle()
     val manageAllFilesPermissionGranted by permissionsState.manageAllFilesPermissionGranted.collectAsStateWithLifecycle()
