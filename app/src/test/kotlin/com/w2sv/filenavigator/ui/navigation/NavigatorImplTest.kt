@@ -1,9 +1,6 @@
-package com.w2sv.filenavigator.navigator
+package com.w2sv.filenavigator.ui.navigation
 
 import androidx.navigation3.runtime.NavBackStack
-import com.w2sv.filenavigator.ui.navigation.Navigator
-import com.w2sv.filenavigator.ui.navigation.NavigatorImpl
-import com.w2sv.filenavigator.ui.navigation.Screen
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 

@@ -1,11 +1,19 @@
 package com.w2sv.filenavigator.ui.sharedstate
 
-import com.w2sv.kotlinutils.coroutines.flow.combineStates
+import com.w2sv.kotlinutils.coroutines.flow.mapState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+enum class RequiredPermission {
+    ManageAllFiles,
+    PostNotifications
+}
+
 /**
- * Holds the current state of required app permissions and provides methods to update and track them.
+ * Holds and derives the current state of all required app permissions.
+ *
+ * The state is exposed as a set of [RequiredPermission]s that are currently missing,
+ * allowing the UI to render permission requests declaratively.
  */
 class AppPermissionsState(
     private val hasPostNotificationsPermission: () -> Boolean,
@@ -13,15 +21,18 @@ class AppPermissionsState(
     val postNotificationsPermissionRequested: () -> Boolean,
     private val savePostNotificationsRequested: () -> Unit
 ) {
-    val manageAllFilesPermissionGranted: StateFlow<Boolean>
-        field = MutableStateFlow(hasManageAllFilesPermission())
+    val missingPermissions: StateFlow<List<RequiredPermission>>
+        field = MutableStateFlow(computeMissingPermissions())
 
-    val postNotificationsPermissionGranted: StateFlow<Boolean>
-        field = MutableStateFlow(hasPostNotificationsPermission())
+    val allGranted = missingPermissions.mapState { it.isEmpty() }
 
-    fun setPostNotificationsPermissionGranted(value: Boolean) {
-        postNotificationsPermissionGranted.value = value
-    }
+    private fun computeMissingPermissions(): List<RequiredPermission> =
+        RequiredPermission.entries.filterNot {
+            when (it) {
+                RequiredPermission.ManageAllFiles -> hasManageAllFilesPermission()
+                RequiredPermission.PostNotifications -> hasPostNotificationsPermission()
+            }
+        }
 
     fun onPostNotificationsPermissionRequested() {
         if (!postNotificationsPermissionRequested()) {
@@ -29,18 +40,14 @@ class AppPermissionsState(
         }
     }
 
-    val allGranted = combineStates(postNotificationsPermissionGranted, manageAllFilesPermissionGranted) { a, b -> a && b }
-
     /**
-     * Refreshes the current permission state by re-evaluating the
-     * [postNotificationsPermissionGranted] and [manageAllFilesPermissionGranted] flags
-     * using the provided lambdas.
+     * Refreshes the current permission state by re-evaluating
+     * [hasPostNotificationsPermission] and [hasManageAllFilesPermission].
      *
      * This should be called if the permissions may have changed outside the app
      * (for example, via system settings).
      */
     fun refresh() {
-        postNotificationsPermissionGranted.value = hasPostNotificationsPermission()
-        manageAllFilesPermissionGranted.value = hasManageAllFilesPermission()
+        missingPermissions.value = computeMissingPermissions()
     }
 }
