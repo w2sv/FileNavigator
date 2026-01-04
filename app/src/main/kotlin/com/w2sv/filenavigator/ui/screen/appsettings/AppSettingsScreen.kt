@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.androidutils.os.dynamicColorsSupported
 import com.w2sv.composed.core.rememberStyledTextResource
@@ -36,6 +35,7 @@ import com.w2sv.filenavigator.ui.designsystem.drawer.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.theme.useDarkTheme
 import com.w2sv.filenavigator.ui.util.PreviewOf
+import com.w2sv.filenavigator.ui.util.ScreenPreviews
 
 @Composable
 fun AppSettingsScreen(navigator: Navigator = LocalNavigator.current, appPreferences: AppPreferences = rememberAppPreferences()) {
@@ -59,7 +59,7 @@ fun AppSettingsScreen(navigator: Navigator = LocalNavigator.current, appPreferen
     }
 }
 
-@Preview
+@ScreenPreviews
 @Composable
 private fun Prev() {
     PreviewOf {
@@ -93,7 +93,7 @@ private fun SettingsCardColumn(appPreferences: AppPreferences, modifier: Modifie
                 explanation = rememberStyledTextResource(R.string.show_storage_volume_names_explanation)
             )
         }
-        SettingsCard(title = stringResource(id = R.string.appearance)) {
+        SettingsCard(title = stringResource(id = R.string.appearance), modifier = Modifier.padding(bottom = 24.dp)) {
             Column(verticalArrangement = Arrangement.spacedBy(22.dp), modifier = Modifier.animateContentSize()) {
                 ItemRow(
                     icon = { AppSettingsItemRowIcon(res = R.drawable.ic_nightlight_24) },
