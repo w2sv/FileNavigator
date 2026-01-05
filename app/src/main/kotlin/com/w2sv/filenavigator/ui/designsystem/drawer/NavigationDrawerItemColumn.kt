@@ -7,6 +7,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.core.app.ShareCompat
 import androidx.core.net.toUri
 import com.w2sv.androidutils.openUrl
@@ -39,6 +41,35 @@ import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+@Composable
+fun NavigationDrawerItemColumn(closeDrawer: suspend () -> Unit, modifier: Modifier = Modifier) {
+    val actionScope = rememberDrawerActionScope(closeDrawer)
+    val coroutineScope = rememberCoroutineScope()
+    val elements = remember { navigationDrawerElements() }
+
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(HomeScreenNavigationDrawerTokens.itemSpacing)) {
+        elements.forEach { element ->
+            when (element) {
+                is DrawerItem.Action -> {
+                    Action(
+                        action = element,
+                        actionScope = actionScope,
+                        coroutineScope = coroutineScope,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                is DrawerItem.Header -> {
+                    GroupHeader(
+                        titleRes = element.titleRes,
+                        modifier = Modifier.padding(HomeScreenNavigationDrawerTokens.headerPadding)
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Stable
 private class DrawerActionScope(val context: Context, private val closeDrawer: suspend () -> Unit, private val navigator: Navigator) {
@@ -159,34 +190,6 @@ private fun navigationDrawerElements(): List<DrawerItem> =
     )
 
 @Composable
-fun NavigationDrawerItemColumn(closeDrawer: suspend () -> Unit, modifier: Modifier = Modifier) {
-    val actionScope = rememberDrawerActionScope(closeDrawer)
-    val coroutineScope = rememberCoroutineScope()
-    val elements = remember { navigationDrawerElements() }
-
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(HomeScreenNavigationDrawerTokens.itemSpacing)) {
-        elements.forEach { element ->
-            when (element) {
-                is DrawerItem.Action -> {
-                    Action(
-                        action = element,
-                        actionScope = actionScope,
-                        coroutineScope = coroutineScope
-                    )
-                }
-
-                is DrawerItem.Header -> {
-                    GroupHeader(
-                        titleRes = element.titleRes,
-                        modifier = Modifier.padding(HomeScreenNavigationDrawerTokens.headerPadding)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun GroupHeader(@StringRes titleRes: Int, modifier: Modifier = Modifier) {
     Text(
         text = stringResource(id = titleRes),
@@ -234,7 +237,8 @@ private fun Action(
                 fontSize = 14.sp,
                 color = colorScheme.onSurfaceVariantDecreasedAlpha,
                 modifier = Modifier.constrainAs(explanation) {
-                    start.linkTo(label.start)
+                    linkTo(label.start, parent.end)
+                    width = Dimension.fillToConstraints
                     top.linkTo(label.bottom)
                 }
             )

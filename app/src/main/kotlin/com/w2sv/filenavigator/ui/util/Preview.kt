@@ -73,12 +73,12 @@ private class PreviewMoveDestinationPathConverter : MoveDestinationPathConverter
 @Preview(
     name = "Phone - Landscape",
     device = "spec:width=411dp,height=891dp,orientation=landscape,dpi=420",
-    showSystemUi = true,
+    showSystemUi = true
 )
 @Preview(
     name = "Tablet",
     device = "spec:width=1280dp,height=800dp,dpi=240,orientation=portrait",
-    showSystemUi = true,
+    showSystemUi = true
 )
 @Preview(name = "Tablet - Landscape", device = TABLET, showSystemUi = true)
 annotation class ScreenPreviews
