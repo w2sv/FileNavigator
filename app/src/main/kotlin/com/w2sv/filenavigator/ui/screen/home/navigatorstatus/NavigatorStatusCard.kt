@@ -83,11 +83,7 @@ private enum class NavigatorStatusCardData(val statusText: StatusText, val toggl
 }
 
 @Composable
-fun NavigatorStatusCard(
-    navigatorIsRunning: Boolean,
-    modifier: Modifier = Modifier,
-    navigator: Navigator = LocalNavigator.current
-) {
+fun NavigatorStatusCard(navigatorIsRunning: Boolean, modifier: Modifier = Modifier, navigator: Navigator = LocalNavigator.current) {
     val uiData = remember(navigatorIsRunning) { NavigatorStatusCardData(navigatorIsRunning) }
 
     HomeScreenCard(

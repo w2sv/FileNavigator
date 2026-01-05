@@ -1,7 +1,7 @@
 package com.w2sv.domain.model
 
-import com.w2sv.common.util.DocumentUri
-import com.w2sv.common.util.MediaUri
+import com.w2sv.common.uri.DocumentUri
+import com.w2sv.common.uri.MediaUri
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType

@@ -7,24 +7,24 @@ import android.net.Uri
 import android.os.Handler
 import com.anggrayudi.storage.media.MediaType
 import com.google.common.collect.EvictingQueue
-import com.w2sv.common.util.MediaId
-import com.w2sv.common.util.log
-import com.w2sv.common.util.mediaUri
+import com.w2sv.common.logging.log
+import com.w2sv.common.uri.MediaId
+import com.w2sv.common.uri.mediaUri
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.kotlinutils.coroutines.launchDelayed
+import com.w2sv.navigator.domain.moving.DestinationSelectionManner
+import com.w2sv.navigator.domain.moving.MediaIdWithMediaType
+import com.w2sv.navigator.domain.moving.MediaStoreFileData
+import com.w2sv.navigator.domain.moving.MoveDestination
+import com.w2sv.navigator.domain.moving.MoveFile
+import com.w2sv.navigator.domain.moving.MoveOperation
+import com.w2sv.navigator.domain.notifications.NotificationEvent
+import com.w2sv.navigator.domain.notifications.NotificationEventHandler
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
-import com.w2sv.navigator.moving.model.DestinationSelectionManner
-import com.w2sv.navigator.moving.model.MediaIdWithMediaType
-import com.w2sv.navigator.moving.model.MoveBundle
-import com.w2sv.navigator.moving.model.MoveDestination
-import com.w2sv.navigator.moving.model.MoveFile
-import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
-import com.w2sv.navigator.observing.model.MediaStoreDataProducer
-import com.w2sv.navigator.observing.model.MediaStoreFileData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharedFlow
@@ -53,7 +53,7 @@ private enum class FileChangeOperation(private val flag: Int?) {
 internal abstract class FileObserver(
     val mediaType: MediaType,
     private val context: Context,
-    private val moveFileNotificationManager: MoveFileNotificationManager,
+    private val notificationEventHandler: NotificationEventHandler,
     private val mediaStoreDataProducer: MediaStoreDataProducer,
     private val getAutoMoveConfig: (FileType, SourceType) -> AutoMoveConfig,
     handler: Handler,
@@ -87,11 +87,7 @@ internal abstract class FileObserver(
         moveFileWithProcedureJob = null
     }
 
-    override fun onChange(
-        selfChange: Boolean,
-        uri: Uri?,
-        flags: Int
-    ) {
+    override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
         when (FileChangeOperation[flags].also { emitOnChangeLog(uri, it) }) {
             FileChangeOperation.Insert -> Unit
             FileChangeOperation.Update, FileChangeOperation.Unclassified -> onChangeCore(uri)
@@ -140,7 +136,7 @@ internal abstract class FileObserver(
             ?.let { fileAndSourceType ->
                 val moveFile = MoveFile(
                     mediaUri = mediaUri,
-                    mediaStoreFileData = mediaStoreDataRetrievalResult.data,
+                    mediaStoreData = mediaStoreDataRetrievalResult.data,
                     fileAndSourceType = fileAndSourceType
                 )
                     .log { "Calling onMoveFile on $it" }
@@ -152,12 +148,12 @@ internal abstract class FileObserver(
                     procedureJob = scope.launchDelayed(CANCEL_PERIOD_MILLIS) {
                         when (enabledAutoMoveDestination) {
                             null -> {
-                                moveFileNotificationManager.buildAndPostNotification(moveFile)
+                                notificationEventHandler(NotificationEvent.PostMoveFile(moveFile))
                             }
 
                             else -> {
                                 MoveBroadcastReceiver.sendBroadcast(
-                                    moveBundle = MoveBundle.AutoMove(
+                                    operation = MoveOperation.AutoMove(
                                         file = moveFile,
                                         destination = enabledAutoMoveDestination,
                                         destinationSelectionManner = DestinationSelectionManner.Auto

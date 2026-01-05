@@ -3,8 +3,8 @@ package com.w2sv.navigator.system_broadcastreceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import com.w2sv.common.util.LoggingBroadcastReceiver
-import com.w2sv.common.util.logIdentifier
+import com.w2sv.common.logging.LoggingBroadcastReceiver
+import com.w2sv.common.logging.logIdentifier
 import slimber.log.i
 
 abstract class DynamicBroadcastReceiver(private val action: String) : LoggingBroadcastReceiver() {

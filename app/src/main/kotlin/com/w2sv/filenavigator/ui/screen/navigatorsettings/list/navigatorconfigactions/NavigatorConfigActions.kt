@@ -8,17 +8,9 @@ import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 
 @Stable
 interface NavigatorConfigActions {
-    fun setSourceTypeEnablement(
-        fileType: FileType,
-        sourceType: SourceType,
-        enabled: Boolean
-    )
+    fun setSourceTypeEnablement(fileType: FileType, sourceType: SourceType, enabled: Boolean)
 
-    fun setAutoMoveConfig(
-        fileType: FileType,
-        sourceType: SourceType,
-        config: AutoMoveConfig
-    )
+    fun setAutoMoveConfig(fileType: FileType, sourceType: SourceType, config: AutoMoveConfig)
 
     fun setAutoMoveConfigs(fileType: FileType, config: AutoMoveConfig)
 

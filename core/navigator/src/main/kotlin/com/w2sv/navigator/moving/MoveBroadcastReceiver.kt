@@ -5,9 +5,10 @@ import android.content.Context
 import android.content.Intent
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.navigator.MoveResultChannel
-import com.w2sv.navigator.moving.model.AnyMoveBundle
-import com.w2sv.navigator.moving.model.MoveBundle
+import com.w2sv.common.util.intent
+import com.w2sv.navigator.di.MoveOperationSummaryChannel
+import com.w2sv.navigator.domain.moving.MoveOperation
+import com.w2sv.navigator.domain.moving.MoveOperationSummary
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -17,38 +18,34 @@ import kotlinx.coroutines.launch
 internal class MoveBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
-    lateinit var moveResultChannel: MoveResultChannel
+    lateinit var moveOperationSummaryChannel: MoveOperationSummaryChannel
 
     @Inject
     @GlobalScope(AppDispatcher.IO)
     lateinit var scope: CoroutineScope
 
     override fun onReceive(context: Context, intent: Intent) {
-        val moveBundle = MoveBundle.fromIntent<AnyMoveBundle>(intent)
+        val operation = MoveOperation<MoveOperation>(intent)
 
         scope.launch {
-            with(moveBundle) {
-                file.moveTo(destination = destination, context = context) { result ->
-                    moveResultChannel.trySend(
-                        result bundleWith this
-                    )
-                }
+            operation.file.moveTo(destination = operation.destination, context = context) { result ->
+                moveOperationSummaryChannel.trySend(MoveOperationSummary(result, operation))
             }
         }
     }
 
     companion object {
-        fun sendBroadcast(moveBundle: AnyMoveBundle, context: Context) {
+        fun sendBroadcast(operation: MoveOperation, context: Context) {
             context.sendBroadcast(
-                getIntent(
-                    moveBundle = moveBundle,
+                intent(
+                    moveBundle = operation,
                     context = context
                 )
             )
         }
 
-        fun getIntent(moveBundle: AnyMoveBundle, context: Context): Intent =
-            Intent(context, MoveBroadcastReceiver::class.java)
-                .putExtra(MoveBundle.EXTRA, moveBundle)
+        fun intent(moveBundle: MoveOperation, context: Context): Intent =
+            intent<MoveBroadcastReceiver>(context)
+                .putExtra(MoveOperation.EXTRA, moveBundle)
     }
 }

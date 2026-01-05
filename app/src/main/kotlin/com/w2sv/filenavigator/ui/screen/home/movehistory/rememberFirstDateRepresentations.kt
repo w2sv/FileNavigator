@@ -48,11 +48,7 @@ private fun firstDateRepresentations(
 }
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-internal fun getDateRepresentation(
-    date: LocalDate,
-    now: LocalDate,
-    getString: (Int) -> String
-): String =
+internal fun getDateRepresentation(date: LocalDate, now: LocalDate, getString: (Int) -> String): String =
     when (date) {
         now -> getString(R.string.today)
         now.minusDays(1) -> getString(R.string.yesterday)

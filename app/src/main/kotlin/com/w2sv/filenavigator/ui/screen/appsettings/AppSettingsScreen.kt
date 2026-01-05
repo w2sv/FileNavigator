@@ -139,11 +139,7 @@ private fun AppSettingsItemRowIcon(@DrawableRes res: Int) {
 }
 
 @Composable
-private fun SettingsCard(
-    title: String,
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
-) {
+private fun SettingsCard(title: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     ElevatedCard(
         modifier = modifier,
         elevation = AppCardDefaults.elevation

@@ -18,11 +18,7 @@ class NavigatorConfigActionsImpl(
     private val scopedSnackbarController: ScopedSnackbarController
 ) : NavigatorConfigActions {
 
-    override fun setSourceTypeEnablement(
-        fileType: FileType,
-        sourceType: SourceType,
-        enabled: Boolean
-    ) {
+    override fun setSourceTypeEnablement(fileType: FileType, sourceType: SourceType, enabled: Boolean) {
         val config = config()
         if (!enabled && config.enabledSourceTypesCount(fileType) <= 1) {
             scopedSnackbarController.showReplacing {
@@ -44,11 +40,7 @@ class NavigatorConfigActionsImpl(
         }
     }
 
-    override fun setAutoMoveConfig(
-        fileType: FileType,
-        sourceType: SourceType,
-        config: AutoMoveConfig
-    ) {
+    override fun setAutoMoveConfig(fileType: FileType, sourceType: SourceType, config: AutoMoveConfig) {
         update { it.updateAutoMoveConfig(fileType, sourceType) { config } }
     }
 

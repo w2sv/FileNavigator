@@ -4,21 +4,13 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-Xannotation-default-target=param-property")
-    }
-}
-
-android {
-    buildFeatures {
-        viewBinding = true
-    }
-}
+android { buildFeatures.viewBinding = true }
 
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.common)
+    implementation(projects.core.navigatorDomain)
+    implementation(projects.core.navigatorNotifications)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity)

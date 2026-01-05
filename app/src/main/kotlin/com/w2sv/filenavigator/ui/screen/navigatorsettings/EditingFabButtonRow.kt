@@ -179,11 +179,7 @@ private fun EditingFabVisibility(
 }
 
 @Composable
-private fun EditingFabButton(
-    button: EditingFabButton,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun EditingFabButton(button: EditingFabButton, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val (containerColor, contentColor) = button.colors()
 
     FloatingActionButton(

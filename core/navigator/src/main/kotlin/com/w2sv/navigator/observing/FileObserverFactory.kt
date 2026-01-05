@@ -8,6 +8,7 @@ import com.w2sv.domain.model.navigatorconfig.FileTypeConfigMap
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.kotlinutils.coroutines.flow.mapState
 import com.w2sv.kotlinutils.coroutines.flow.stateInWithBlockingInitial
+import com.w2sv.navigator.observing.di.FileObserverHandlerThread
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -15,10 +16,10 @@ import slimber.log.i
 
 internal class FileObserverFactory @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
-    @param:GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
+    @GlobalScope(AppDispatcher.Default) private val scope: CoroutineScope,
     private val mediaFileObserverFactory: MediaFileObserver.Factory,
     private val nonMediaFileObserverFactory: NonMediaFileObserver.Factory,
-    @param:FileObserverHandlerThread private val handlerThread: HandlerThread
+    @FileObserverHandlerThread private val handlerThread: HandlerThread
 ) {
     private val navigatorConfigStateFlow by lazy {
         navigatorConfigDataSource.navigatorConfig.stateInWithBlockingInitial(scope)
@@ -31,12 +32,10 @@ internal class FileObserverFactory @Inject constructor(
         get() = navigatorConfigStateFlow.mapState { it.fileTypeConfigMap }
 
     operator fun invoke(): List<FileObserver> {
-        val handler = handlerThread.handler()
+        val handler = Handler(handlerThread.looper)
 
         return buildList {
-            addAll(
-                mediaFileTypeObservers(handler)
-            )
+            addAll(mediaFileTypeObservers(handler))
             nonMediaFileTypeObserver(handler)?.let(::add)
         }
     }
@@ -74,6 +73,3 @@ internal class FileObserverFactory @Inject constructor(
         i { "Quit handler thread" }
     }
 }
-
-private fun HandlerThread.handler(): Handler =
-    Handler(looper)

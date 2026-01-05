@@ -175,11 +175,7 @@ private fun StatelessCustomFileTypeConfigurationDialog(
 }
 
 @Composable
-private fun FileExtensionChipWithTooltip(
-    extension: String,
-    deleteExtension: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun FileExtensionChipWithTooltip(extension: String, deleteExtension: () -> Unit, modifier: Modifier = Modifier) {
     val tooltipState = rememberTooltipState()
     val scope = rememberCoroutineScope()
 

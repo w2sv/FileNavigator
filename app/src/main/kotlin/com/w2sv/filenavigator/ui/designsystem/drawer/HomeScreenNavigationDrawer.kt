@@ -45,11 +45,7 @@ internal object HomeScreenNavigationDrawerTokens {
 }
 
 @Composable
-fun HomeScreenNavigationDrawer(
-    state: DrawerState,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
+fun HomeScreenNavigationDrawer(state: DrawerState, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     ModalNavigationDrawer(
         modifier = modifier,
         drawerContent = { Sheet(drawerState = state) },

@@ -1,7 +1,7 @@
 package com.w2sv.domain.model.filetype
 
 import android.os.Parcelable
-import com.w2sv.common.util.logIdentifier
+import com.w2sv.common.logging.logIdentifier
 
 sealed interface FileType :
     StaticFileType.ExtensionSet,

@@ -57,11 +57,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
     // Quick move
     // ==================
 
-    override suspend fun saveQuickMoveDestination(
-        fileType: FileType,
-        sourceType: SourceType,
-        destination: LocalDestinationApi
-    ) {
+    override suspend fun saveQuickMoveDestination(fileType: FileType, sourceType: SourceType, destination: LocalDestinationApi) {
         updateData { config ->
             config.updateSourceConfig(
                 fileType,

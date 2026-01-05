@@ -9,10 +9,9 @@ import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.SourceTypeConfigMap
-import com.w2sv.navigator.moving.model.MediaIdWithMediaType
-import com.w2sv.navigator.notifications.appnotifications.movefile.MoveFileNotificationManager
-import com.w2sv.navigator.observing.model.MediaStoreDataProducer
-import com.w2sv.navigator.observing.model.MediaStoreFileData
+import com.w2sv.navigator.domain.moving.MediaIdWithMediaType
+import com.w2sv.navigator.domain.moving.MediaStoreFileData
+import com.w2sv.navigator.domain.notifications.NotificationEventHandler
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -26,7 +25,7 @@ internal class MediaFileObserver @AssistedInject constructor(
     @Assisted private val fileType: FileType,
     @Assisted private val sourceTypeConfigMapStateFlow: StateFlow<SourceTypeConfigMap>,
     @Assisted handler: Handler,
-    moveFileNotificationManager: MoveFileNotificationManager,
+    notificationEventHandler: NotificationEventHandler,
     mediaStoreDataProducer: MediaStoreDataProducer,
     @ApplicationContext context: Context,
     blacklistedMediaUris: SharedFlow<MediaIdWithMediaType>,
@@ -34,7 +33,7 @@ internal class MediaFileObserver @AssistedInject constructor(
 ) : FileObserver(
     mediaType = fileType.mediaType,
     context = context,
-    moveFileNotificationManager = moveFileNotificationManager,
+    notificationEventHandler = notificationEventHandler,
     mediaStoreDataProducer = mediaStoreDataProducer,
     getAutoMoveConfig = { _, sourceType -> sourceTypeConfigMapStateFlow.value.getValue(sourceType).autoMoveConfig },
     handler = handler,

@@ -21,11 +21,23 @@ internal fun Project.applyBaseConfig(excludeMetaInfResources: Boolean = true, na
         configure<KotlinAndroidProjectExtension> {
             compilerOptions {
                 jvmTarget.set(JvmTarget.JVM_17)
+                freeCompilerArgs.addAll(
+                    "-opt-in=kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi",
+                    "-Xannotation-default-target=param-property",
+                    "-Xwhen-guards",
+                    "-XXLanguage:+ExplicitBackingFields",
+                    "-Xnested-type-aliases",
+                    "-Xcontext-sensitive-resolution",
+                    "-Xcontext-parameters"
+                )
             }
         }
         configure<BaseExtension> {
             this.namespace = when (namespace) {
-                is Namespace.Auto -> "com.w2sv." + path.removePrefix(":").replace(':', '.')  // Sets namespace to "com.w2sv.<module-name>"
+                is Namespace.Auto -> "com.w2sv." + path
+                    .removePrefix(":")
+                    .replace(':', '.')
+                    .replace('-', '_')  // Sets namespace to "com.w2sv.<module-name>"
                 is Namespace.Manual -> namespace.namespace
             }
 

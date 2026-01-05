@@ -1,5 +1,6 @@
 package com.w2sv.common.di
 
+import android.content.ContentResolver
 import android.content.Context
 import android.os.PowerManager
 import dagger.Module
@@ -29,4 +30,8 @@ object CommonModule {
     @Singleton
     fun powerManager(@ApplicationContext context: Context): PowerManager =
         context.getSystemService(PowerManager::class.java)
+
+    @Provides
+    fun contentResolver(@ApplicationContext context: Context): ContentResolver =
+        context.contentResolver
 }

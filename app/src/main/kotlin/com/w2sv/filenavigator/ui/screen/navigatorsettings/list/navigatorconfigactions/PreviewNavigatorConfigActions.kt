@@ -6,18 +6,10 @@ import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 
 object PreviewNavigatorConfigActions : NavigatorConfigActions {
-    override fun setSourceTypeEnablement(
-        fileType: FileType,
-        sourceType: SourceType,
-        enabled: Boolean
-    ) =
+    override fun setSourceTypeEnablement(fileType: FileType, sourceType: SourceType, enabled: Boolean) =
         Unit
 
-    override fun setAutoMoveConfig(
-        fileType: FileType,
-        sourceType: SourceType,
-        config: AutoMoveConfig
-    ) =
+    override fun setAutoMoveConfig(fileType: FileType, sourceType: SourceType, config: AutoMoveConfig) =
         Unit
 
     override fun setAutoMoveConfigs(fileType: FileType, config: AutoMoveConfig) =

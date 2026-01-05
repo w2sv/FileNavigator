@@ -66,11 +66,7 @@ fun MoveHistoryCard(state: MoveHistoryState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun MoveHistoryCard(
-    state: MoveHistoryState,
-    showDeletionDialog: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun MoveHistoryCard(state: MoveHistoryState, showDeletionDialog: () -> Unit, modifier: Modifier = Modifier) {
     HomeScreenCard(modifier) {
         HeaderRow(
             showDropdownMenuButton = !state.historyEmpty,
@@ -99,11 +95,7 @@ private fun MoveHistoryCard(
 }
 
 @Composable
-private fun HeaderRow(
-    showDropdownMenuButton: Boolean,
-    showDeletionDialog: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun HeaderRow(showDropdownMenuButton: Boolean, showDeletionDialog: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,

@@ -23,11 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.w2sv.core.common.R
 
 @Composable
-fun NavigationDrawerScreenTopAppBar(
-    title: String,
-    modifier: Modifier = Modifier,
-    onNavigationIconClick: () -> Unit
-) {
+fun NavigationDrawerScreenTopAppBar(title: String, modifier: Modifier = Modifier, onNavigationIconClick: () -> Unit) {
     TopAppBar(
         title = { Text(title) },
         modifier = modifier,
@@ -70,11 +66,7 @@ fun TopAppBarAboveHorizontalDivider(
 }
 
 @Composable
-fun BackArrowTopAppBar(
-    title: String,
-    onBack: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun BackArrowTopAppBar(title: String, onBack: () -> Unit, modifier: Modifier = Modifier) {
     TopAppBarAboveHorizontalDivider(
         title = title,
         modifier = modifier,

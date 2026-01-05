@@ -160,11 +160,7 @@ fun FileExtensionChip(
 }
 
 @Composable
-private fun ColorRow(
-    color: Color,
-    onConfigureColorButtonPress: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun ColorRow(color: Color, onConfigureColorButtonPress: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxSize()
@@ -204,11 +200,7 @@ private fun ColorRow(
 }
 
 @Composable
-fun RemoveExtensionFromFileTypeButtonRow(
-    text: CharSequence,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun RemoveExtensionFromFileTypeButtonRow(text: CharSequence, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
@@ -218,11 +210,7 @@ fun RemoveExtensionFromFileTypeButtonRow(
 }
 
 @Composable
-fun RemoveExtensionFromFileTypeButton(
-    text: CharSequence,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun RemoveExtensionFromFileTypeButton(text: CharSequence, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = MaterialTheme.colorScheme.errorContainer,

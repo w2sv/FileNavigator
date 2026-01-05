@@ -88,11 +88,7 @@ data class NavigatorConfig(
             }
         )
 
-    fun updateSourceConfig(
-        fileType: FileType,
-        sourceType: SourceType,
-        update: (SourceConfig) -> SourceConfig
-    ): NavigatorConfig =
+    fun updateSourceConfig(fileType: FileType, sourceType: SourceType, update: (SourceConfig) -> SourceConfig): NavigatorConfig =
         updateFileTypeConfig(fileType = fileType) {
             it.copy(
                 sourceTypeConfigMap = it.sourceTypeConfigMap.copy {
@@ -101,11 +97,7 @@ data class NavigatorConfig(
             )
         }
 
-    fun updateSourceTypeEnablement(
-        fileType: FileType,
-        sourceType: SourceType,
-        enabled: Boolean
-    ): NavigatorConfig =
+    fun updateSourceTypeEnablement(fileType: FileType, sourceType: SourceType, enabled: Boolean): NavigatorConfig =
         updateSourceConfig(
             fileType = fileType,
             sourceType = sourceType
@@ -125,11 +117,7 @@ data class NavigatorConfig(
             )
         }
 
-    fun updateAutoMoveConfig(
-        fileType: FileType,
-        sourceType: SourceType,
-        modifyAutoMoveConfig: (AutoMoveConfig) -> AutoMoveConfig
-    ) =
+    fun updateAutoMoveConfig(fileType: FileType, sourceType: SourceType, modifyAutoMoveConfig: (AutoMoveConfig) -> AutoMoveConfig) =
         updateSourceConfig(fileType, sourceType) {
             it.copy(autoMoveConfig = modifyAutoMoveConfig(it.autoMoveConfig))
         }

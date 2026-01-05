@@ -11,7 +11,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.anggrayudi.storage.file.child
 import com.w2sv.androidutils.database.getStringOrThrow
-import com.w2sv.common.util.log
+import com.w2sv.common.logging.log
 import slimber.log.i
 
 private const val PRE_VERSION_5_TABLE_NAME = "MoveEntryEntity"
@@ -145,11 +145,7 @@ internal object Migrations {
     }
 }
 
-private fun SupportSQLiteDatabase.renameColumn(
-    from: String,
-    to: String,
-    tableName: String = PRE_VERSION_5_TABLE_NAME
-) {
+private fun SupportSQLiteDatabase.renameColumn(from: String, to: String, tableName: String = PRE_VERSION_5_TABLE_NAME) {
     execSQL("ALTER TABLE $tableName RENAME COLUMN $from TO $to")
 }
 
@@ -161,10 +157,6 @@ private fun SupportSQLiteDatabase.addNonNullStringColumn(
     execSQL("ALTER TABLE $tableName ADD COLUMN $name TEXT NOT NULL DEFAULT $default")
 }
 
-private fun SupportSQLiteDatabase.addNonNullIntColumn(
-    name: String,
-    default: Int = 0,
-    tableName: String = PRE_VERSION_5_TABLE_NAME
-) {
+private fun SupportSQLiteDatabase.addNonNullIntColumn(name: String, default: Int = 0, tableName: String = PRE_VERSION_5_TABLE_NAME) {
     execSQL("ALTER TABLE $tableName ADD COLUMN $name INTEGER NOT NULL DEFAULT $default")
 }

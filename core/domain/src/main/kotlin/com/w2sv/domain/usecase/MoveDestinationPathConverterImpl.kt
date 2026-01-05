@@ -18,7 +18,7 @@ internal class MoveDestinationPathConverterImpl @Inject constructor(
     @GlobalScope(AppDispatcher.Default) scope: CoroutineScope
 ) : MoveDestinationPathConverter {
     private val showStorageVolumeNames =
-        preferencesRepository.showStorageVolumeNames.stateIn(scope, SharingStarted.Companion.Eagerly)
+        preferencesRepository.showStorageVolumeNames.stateIn(scope, SharingStarted.Eagerly)
 
     override operator fun invoke(moveDestination: MoveDestinationApi, context: Context): String =
         when (moveDestination) {

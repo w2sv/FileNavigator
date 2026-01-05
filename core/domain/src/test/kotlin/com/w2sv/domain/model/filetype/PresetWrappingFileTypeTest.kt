@@ -26,11 +26,7 @@ class PresetWrappingFileTypeTest {
 
     @Test
     fun `ExtensionConfigurable fileExtensions`() {
-        fun test(
-            expected: Set<String>,
-            excludedExtensions: Set<String>,
-            fileType: PresetFileType.ExtensionConfigurable
-        ) {
+        fun test(expected: Set<String>, excludedExtensions: Set<String>, fileType: PresetFileType.ExtensionConfigurable) {
             assertEquals(
                 expected,
                 fileType.toFileType(excludedExtensions = excludedExtensions).fileExtensions

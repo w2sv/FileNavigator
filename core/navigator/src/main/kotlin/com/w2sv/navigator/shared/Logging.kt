@@ -2,6 +2,6 @@ package com.w2sv.navigator.shared
 
 import slimber.log.i
 
-internal fun emitDiscardedLog(reason: () -> String) {
+internal inline fun discardedLog(reason: () -> String) {
     i { "DISCARDED: ${reason()}" }
 }

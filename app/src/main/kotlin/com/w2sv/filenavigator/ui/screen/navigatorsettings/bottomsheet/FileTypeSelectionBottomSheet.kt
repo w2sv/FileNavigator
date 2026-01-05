@@ -102,11 +102,7 @@ fun FileTypeSelectionBottomSheet(
 }
 
 @Composable
-private fun LazyGridItemScope.FileTypeGridItem(
-    fileType: FileType,
-    state: FileTypeSelectionState,
-    modifier: Modifier = Modifier
-) {
+private fun LazyGridItemScope.FileTypeGridItem(fileType: FileType, state: FileTypeSelectionState, modifier: Modifier = Modifier) {
     val content: @Composable () -> Unit = {
         FileTypeCard(
             fileType = fileType,

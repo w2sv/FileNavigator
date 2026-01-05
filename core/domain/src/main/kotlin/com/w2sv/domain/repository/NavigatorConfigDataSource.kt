@@ -20,11 +20,7 @@ interface NavigatorConfigDataSource {
     // Quick move
     // ==================
 
-    suspend fun saveQuickMoveDestination(
-        fileType: FileType,
-        sourceType: SourceType,
-        destination: LocalDestinationApi
-    )
+    suspend fun saveQuickMoveDestination(fileType: FileType, sourceType: SourceType, destination: LocalDestinationApi)
 
     suspend fun unsetQuickMoveDestination(fileType: FileType, sourceType: SourceType)
 

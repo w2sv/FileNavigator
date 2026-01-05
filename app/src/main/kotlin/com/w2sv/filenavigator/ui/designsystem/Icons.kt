@@ -21,11 +21,7 @@ object IconSize {
 }
 
 @Composable
-fun FileTypeIcon(
-    fileType: FileType,
-    modifier: Modifier = Modifier,
-    tint: Color = fileType.color
-) {
+fun FileTypeIcon(fileType: FileType, modifier: Modifier = Modifier, tint: Color = fileType.color) {
     Icon(
         painter = painterResource(id = fileType.iconRes),
         contentDescription = null,

@@ -52,11 +52,7 @@ private object MoveHistoryDefaults {
 }
 
 @Composable
-fun MoveHistory(
-    history: ImmutableList<MovedFile>,
-    onRowClick: suspend (MovedFile, Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun MoveHistory(history: ImmutableList<MovedFile>, onRowClick: suspend (MovedFile, Boolean) -> Unit, modifier: Modifier = Modifier) {
     val dateRepresentationList = rememberFirstDateRepresentations(history)
 
     LazyColumn(modifier = modifier) {

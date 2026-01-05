@@ -1,7 +1,7 @@
 package com.w2sv.filenavigator.ui.util
 
 import androidx.lifecycle.ViewModel
-import com.w2sv.common.util.logIdentifier
+import com.w2sv.common.logging.logIdentifier
 import slimber.log.i
 
 abstract class LifecycleLoggingViewModel : ViewModel() {

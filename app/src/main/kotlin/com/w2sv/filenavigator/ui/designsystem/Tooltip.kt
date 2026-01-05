@@ -13,11 +13,7 @@ import androidx.compose.ui.unit.dp
 
 @SuppressLint("ComposeUnstableReceiver")
 @Composable
-fun TooltipScope.DeletionTooltip(
-    onClick: () -> Unit,
-    contentDescription: String,
-    modifier: Modifier = Modifier
-) {
+fun TooltipScope.DeletionTooltip(onClick: () -> Unit, contentDescription: String, modifier: Modifier = Modifier) {
     PlainTooltip(tonalElevation = 4.dp, shadowElevation = 4.dp, modifier = modifier) {
         IconButton(onClick = onClick) {
             Icon(

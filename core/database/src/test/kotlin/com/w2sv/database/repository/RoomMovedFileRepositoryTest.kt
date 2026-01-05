@@ -3,8 +3,8 @@ package com.w2sv.database.repository
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.w2sv.common.util.DocumentUri
-import com.w2sv.common.util.MediaUri
+import com.w2sv.common.uri.DocumentUri
+import com.w2sv.common.uri.MediaUri
 import com.w2sv.database.AppDatabase
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.model.filetype.PresetFileType

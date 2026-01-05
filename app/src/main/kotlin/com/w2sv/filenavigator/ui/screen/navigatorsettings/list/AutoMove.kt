@@ -47,11 +47,7 @@ fun rememberAutoMoveDestinationPath(
     }
 
 @Composable
-fun AutoMoveRow(
-    destinationPath: String,
-    changeDestination: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun AutoMoveRow(destinationPath: String, changeDestination: () -> Unit, modifier: Modifier = Modifier) {
     CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

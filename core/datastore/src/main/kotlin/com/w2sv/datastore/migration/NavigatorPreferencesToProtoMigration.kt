@@ -3,7 +3,7 @@ package com.w2sv.datastore.migration
 import androidx.datastore.core.DataMigration
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.w2sv.common.util.log
+import com.w2sv.common.logging.log
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.proto.navigatorconfig.toProto
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType

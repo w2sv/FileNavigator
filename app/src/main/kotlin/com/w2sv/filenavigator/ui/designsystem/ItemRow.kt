@@ -83,11 +83,7 @@ fun ItemRow(
 }
 
 @Composable
-fun ItemRowIcon(
-    @DrawableRes res: Int,
-    modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current
-) {
+fun ItemRowIcon(@DrawableRes res: Int, modifier: Modifier = Modifier, tint: Color = LocalContentColor.current) {
     Icon(
         painter = painterResource(id = res),
         modifier = modifier,

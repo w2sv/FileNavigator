@@ -4,8 +4,8 @@ import android.net.Uri
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.w2sv.common.util.documentUri
-import com.w2sv.common.util.mediaUri
+import com.w2sv.common.uri.documentUri
+import com.w2sv.common.uri.mediaUri
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType

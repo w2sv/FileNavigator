@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.common.util.LoggingBroadcastReceiver
+import com.w2sv.common.logging.LoggingBroadcastReceiver
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
