@@ -31,15 +31,11 @@ import com.w2sv.navigator.notifications.api.NotificationEnvironment
 import com.w2sv.navigator.notifications.api.setBigTextStyle
 import com.w2sv.navigator.notifications.helper.GetQuickMoveDestination
 import com.w2sv.navigator.notifications.helper.iconBitmap
+import slimber.log.i
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.firstOrNull
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
-import slimber.log.i
 
 // TODO make stateless, store state in event handler & unsingleton
 @Singleton
@@ -263,10 +259,10 @@ private fun MoveFile.notificationLabel(context: Context): String =
                 )
 
                 SourceType.Camera -> context.getString(
-                    when (fileType) {
+                    when (val wrappedType = fileType.wrappedPresetTypeOrNull) {
                         PresetFileType.Image -> R.string.photo
                         PresetFileType.Video -> R.string.video
-                        else -> throw IllegalArgumentException()
+                        else -> error("wrapped file type should be PresetFileType.Image or PresetFileType.Video but was $wrappedType")
                     }
                 )
 
