@@ -26,13 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.composed.material3.ColumnWithDividers
 import com.w2sv.core.common.R
+import com.w2sv.designsystem.TweakedSegmentedButton
+import com.w2sv.designsystem.theme.orOnSurfaceDisabledIf
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
-import com.w2sv.filenavigator.ui.designsystem.TweakedSegmentedButton
 import com.w2sv.filenavigator.ui.modelext.color
-import com.w2sv.filenavigator.ui.util.orOnSurfaceDisabledIf
 import kotlinx.collections.immutable.ImmutableMap
 
 @Composable

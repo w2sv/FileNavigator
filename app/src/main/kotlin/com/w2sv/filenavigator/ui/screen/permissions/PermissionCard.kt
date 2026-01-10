@@ -29,9 +29,9 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.common.AppUrl
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.core.common.R
+import com.w2sv.designsystem.DialogButton
+import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
-import com.w2sv.filenavigator.ui.designsystem.DialogButton
-import com.w2sv.filenavigator.ui.theme.AppTheme
 
 @Preview
 @Composable

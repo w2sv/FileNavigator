@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import com.w2sv.filenavigator.ui.util.Easing
+import com.w2sv.designsystem.Easing
 
 @Immutable
 data class BorderAnimationState(val width: () -> Dp, val color: () -> Color) {

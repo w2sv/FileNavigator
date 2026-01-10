@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.designsystem.drawer
+package com.w2sv.filenavigator.ui.screen.home.drawer
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement

@@ -50,12 +50,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.colonSuffixed
 import com.w2sv.core.common.R
+import com.w2sv.designsystem.CharSequenceText
+import com.w2sv.designsystem.DialogButton
+import com.w2sv.designsystem.HighlightedDialogButton
+import com.w2sv.designsystem.theme.dialogSectionLabel
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType
-import com.w2sv.filenavigator.ui.designsystem.DialogButton
-import com.w2sv.filenavigator.ui.designsystem.HighlightedDialogButton
-import com.w2sv.filenavigator.ui.theme.dialogSectionLabel
-import com.w2sv.filenavigator.ui.util.CharSequenceText
 import kotlinx.parcelize.Parcelize
 
 @Composable

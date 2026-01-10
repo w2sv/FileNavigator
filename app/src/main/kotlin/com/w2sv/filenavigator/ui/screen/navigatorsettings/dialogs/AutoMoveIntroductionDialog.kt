@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.core.common.R
+import com.w2sv.designsystem.DialogButton
+import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.filenavigator.ui.AppViewModel
-import com.w2sv.filenavigator.ui.designsystem.DialogButton
-import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.activityViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach

@@ -37,12 +37,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.core.common.R
+import com.w2sv.designsystem.Easing
+import com.w2sv.designsystem.theme.ResultColor
+import com.w2sv.designsystem.theme.DEFAULT_ANIMATION_DURATION
 import com.w2sv.filenavigator.ui.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
-import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.theme.DEFAULT_ANIMATION_DURATION
-import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.navigator.FileNavigator
 
@@ -50,10 +50,10 @@ private enum class NavigatorStatusCardData(val statusText: StatusText, val toggl
     IsInactive(
         statusText = StatusText(
             textRes = R.string.inactive,
-            color = AppColor.error
+            color = ResultColor.error
         ),
         toggleButton = ToggleButton(
-            color = AppColor.success,
+            color = ResultColor.success,
             iconRes = R.drawable.ic_start_24,
             labelRes = R.string.start,
             onClick = { FileNavigator.start(it) }
@@ -62,10 +62,10 @@ private enum class NavigatorStatusCardData(val statusText: StatusText, val toggl
     IsRunning(
         statusText = StatusText(
             textRes = R.string.active,
-            color = AppColor.success
+            color = ResultColor.success
         ),
         toggleButton = ToggleButton(
-            color = AppColor.error,
+            color = ResultColor.error,
             iconRes = R.drawable.ic_stop_24,
             labelRes = R.string.stop,
             onClick = { FileNavigator.stop(it) }

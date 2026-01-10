@@ -39,6 +39,10 @@ gradlePlugin {
             id = "filenavigator.application"
             implementationClass = "ApplicationConventionPlugin"
         }
+        register("compose") {
+            id = "filenavigator.compose"
+            implementationClass = "ComposeConventionPlugin"
+        }
         register("hilt") {
             id = "filenavigator.hilt"
             implementationClass = "HiltConventionPlugin"

@@ -19,11 +19,11 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.core.CollectFromFlow
+import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.navigation.NavGraph
 import com.w2sv.filenavigator.ui.navigation.rememberNavigator
-import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.theme.useDarkTheme
+import com.w2sv.filenavigator.ui.util.useDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

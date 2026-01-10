@@ -20,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.util.CharSequenceText
+import com.w2sv.designsystem.CharSequenceText
+import com.w2sv.designsystem.theme.ResultColor
 import com.w2sv.filenavigator.ui.util.TextEditor
 
 /**
@@ -66,7 +66,7 @@ fun OutlinedTextField(
                         onClick = onApply,
                         modifier = Modifier.padding(end = 4.dp),
                         enabled = editor.isValid,
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(contentColor = AppColor.success)
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(contentColor = ResultColor.success)
                     ) {
                         Icon(applyIconImageVector, contentDescription = null)
                     }

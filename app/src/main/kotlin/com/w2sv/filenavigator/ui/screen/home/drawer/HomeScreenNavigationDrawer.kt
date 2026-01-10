@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.designsystem.drawer
+package com.w2sv.filenavigator.ui.screen.home.drawer
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background

@@ -14,8 +14,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.core.isPortraitModeActive
 import com.w2sv.core.common.R
+import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.filenavigator.ui.designsystem.TopAppBarAboveHorizontalDivider
-import com.w2sv.filenavigator.ui.theme.AppTheme
 import com.w2sv.filenavigator.ui.util.ScreenPreviews
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf

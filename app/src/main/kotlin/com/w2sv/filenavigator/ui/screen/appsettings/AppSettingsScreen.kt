@@ -31,11 +31,11 @@ import com.w2sv.filenavigator.ui.designsystem.ItemRow
 import com.w2sv.filenavigator.ui.designsystem.ItemRowIcon
 import com.w2sv.filenavigator.ui.designsystem.PaddingDefaults
 import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
-import com.w2sv.filenavigator.ui.designsystem.drawer.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.navigation.Navigator
-import com.w2sv.filenavigator.ui.theme.useDarkTheme
+import com.w2sv.filenavigator.ui.screen.home.drawer.ThemeSelectionRow
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.filenavigator.ui.util.ScreenPreviews
+import com.w2sv.filenavigator.ui.util.useDarkTheme
 
 @Composable
 fun AppSettingsScreen(navigator: Navigator = LocalNavigator.current, appPreferences: AppPreferences = rememberAppPreferences()) {

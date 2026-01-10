@@ -36,6 +36,7 @@ import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.core.colorSaver
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.core.common.R
+import com.w2sv.designsystem.theme.dialogSectionLabel
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.PresetFileType
@@ -43,7 +44,6 @@ import com.w2sv.domain.model.filetype.PresetWrappingFileType
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.color
-import com.w2sv.filenavigator.ui.theme.dialogSectionLabel
 import com.w2sv.filenavigator.ui.util.snapshotStateListSaver
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import kotlinx.collections.immutable.ImmutableSet

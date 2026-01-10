@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.designsystem.drawer
+package com.w2sv.filenavigator.ui.screen.home.drawer
 
 import android.content.Context
 import android.content.Intent
@@ -34,11 +34,11 @@ import com.w2sv.androidutils.startActivity
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.AppUrl
 import com.w2sv.core.common.R
+import com.w2sv.designsystem.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.LocalNavigator
 import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.ItemRowTokens
 import com.w2sv.filenavigator.ui.navigation.Navigator
-import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

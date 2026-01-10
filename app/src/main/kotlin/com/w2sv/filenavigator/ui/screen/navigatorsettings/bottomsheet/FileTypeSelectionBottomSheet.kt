@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.composed.core.extensions.thenIf
 import com.w2sv.core.common.R
+import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
@@ -51,7 +52,6 @@ import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.stringResource
-import com.w2sv.filenavigator.ui.theme.AppTheme
 import kotlinx.collections.immutable.toImmutableMap
 
 @Composable

@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.designsystem
+package com.w2sv.designsystem
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D

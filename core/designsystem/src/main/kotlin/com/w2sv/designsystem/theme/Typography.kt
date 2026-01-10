@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.theme
+package com.w2sv.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
@@ -9,7 +9,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.w2sv.filenavigator.R
+import com.w2sv.core.designsystem.R
 
 private val defaultTypography = Typography()
 
@@ -25,7 +25,7 @@ private val railway = FontFamily(
     Font(R.font.raleway_thin, FontWeight.Thin, FontStyle.Normal)
 )
 
-val typography = Typography(
+internal val typography = Typography(
     displayLarge = defaultTypography.displayLarge.copy(fontFamily = railway),
     displayMedium = defaultTypography.displayMedium.copy(fontFamily = railway),
     displaySmall = defaultTypography.displaySmall.copy(fontFamily = railway),
@@ -51,7 +51,7 @@ val typography = Typography(
     labelSmall = defaultTypography.labelSmall.copy(fontFamily = railway)
 )
 
-@get:Composable
-@get:ReadOnlyComposable
 val Typography.dialogSectionLabel
+    @Composable
+    @ReadOnlyComposable
     get() = bodyLarge.copy(fontSize = 18.sp)

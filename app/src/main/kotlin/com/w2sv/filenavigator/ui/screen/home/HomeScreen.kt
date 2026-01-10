@@ -28,8 +28,8 @@ import com.w2sv.core.common.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.NavigationDrawerScreenTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.PaddingDefaults
-import com.w2sv.filenavigator.ui.designsystem.drawer.HomeScreenNavigationDrawer
-import com.w2sv.filenavigator.ui.designsystem.drawer.drawerDisplaced
+import com.w2sv.filenavigator.ui.screen.home.drawer.HomeScreenNavigationDrawer
+import com.w2sv.filenavigator.ui.screen.home.drawer.drawerDisplaced
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryCard
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryState
 import com.w2sv.filenavigator.ui.screen.home.navigatorstatus.NavigatorStatusCard

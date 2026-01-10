@@ -1,3 +1,3 @@
-package com.w2sv.filenavigator.ui.theme
+package com.w2sv.designsystem.theme
 
 const val DEFAULT_ANIMATION_DURATION = 500

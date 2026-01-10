@@ -17,6 +17,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -32,16 +33,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.core.common.R
+import com.w2sv.designsystem.DialogButton
+import com.w2sv.designsystem.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
-import com.w2sv.filenavigator.ui.designsystem.DialogButton
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
-import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryState
-import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.util.snackbar.SnackbarController
 import com.w2sv.filenavigator.ui.util.snackbar.rememberSnackbarController
 
@@ -201,9 +201,7 @@ private fun NoHistoryPlaceHolder(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
-        CompositionLocalProvider(
-            LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariantDecreasedAlpha
-        ) {
+        CompositionLocalProvider(LocalContentColor provides colorScheme.onSurfaceVariantDecreasedAlpha) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_history_24),
                 contentDescription = null,

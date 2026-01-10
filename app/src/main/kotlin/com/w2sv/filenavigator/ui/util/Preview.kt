@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Devices.PHONE
 import androidx.compose.ui.tooling.preview.Devices.TABLET
 import androidx.compose.ui.tooling.preview.Preview
+import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.model.movedestination.ExternalDestinationApi
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
@@ -15,7 +16,6 @@ import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.navigation.Screen
-import com.w2sv.filenavigator.ui.theme.AppTheme
 
 @Composable
 fun PreviewOf(

@@ -1,8 +1,9 @@
-package com.w2sv.filenavigator.ui.util
+package com.w2sv.designsystem
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,7 +41,7 @@ fun CharSequenceText(
     style: TextStyle = LocalTextStyle.current
 ) {
     when (text) {
-        is AnnotatedString -> androidx.compose.material3.Text(
+        is AnnotatedString -> Text(
             text = text,
             modifier = modifier,
             color = color,
@@ -61,7 +62,7 @@ fun CharSequenceText(
             style = style
         )
 
-        is String -> androidx.compose.material3.Text(
+        is String -> Text(
             text = text,
             modifier = modifier,
             color = color,

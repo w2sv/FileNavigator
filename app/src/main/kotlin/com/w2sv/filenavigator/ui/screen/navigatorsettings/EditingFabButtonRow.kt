@@ -34,10 +34,10 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.composed.core.CollectLatestFromFlow
 import com.w2sv.composed.core.OnChange
 import com.w2sv.core.common.R
+import com.w2sv.designsystem.Easing
 import com.w2sv.filenavigator.ui.LocalSnackbarVisibility
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.util.Easing
 import com.w2sv.filenavigator.ui.util.OnVisibilityStateChange
 import com.w2sv.filenavigator.ui.util.snackbar.rememberSnackbarController
 import kotlinx.coroutines.flow.first

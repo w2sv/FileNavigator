@@ -5,13 +5,13 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.play)
     alias(libs.plugins.filenavigator.application)
+    alias(libs.plugins.filenavigator.compose)
     alias(libs.plugins.filenavigator.hilt)
     alias(libs.plugins.kotlin.parcelize)
-    alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.play)
 }
 
 android {
@@ -38,7 +38,6 @@ android {
         }
     }
     buildFeatures {
-        compose = true
         buildConfig = true
     }
     lint {
@@ -59,16 +58,6 @@ android {
     dependenciesInfo {
         // Disable dependency metadata when building APKs for fdroid reproducibility
         includeInApk = false
-    }
-    kotlin {
-        compilerOptions {
-            freeCompilerArgs.addAll(
-                "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
-                "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-                "-opt-in=androidx.compose.foundation.layout.ExperimentalLayoutApi",
-                "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
-            )
-        }
     }
 }
 
@@ -132,18 +121,17 @@ play {
 }
 
 dependencies {
-    implementation(projects.core.domain)
-    implementation(projects.core.common)
-    implementation(projects.core.navigator)
-    implementation(projects.core.datastore)
-    implementation(projects.core.database)
     baselineProfile(projects.benchmarking)
+    implementation(projects.core.common)
+    implementation(projects.core.designsystem)
+    implementation(projects.core.database)
+    implementation(projects.core.datastore)
+    implementation(projects.core.domain)
+    implementation(projects.core.navigator)
 
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.w2sv.kotlinutils)
     implementation(libs.w2sv.reversiblestate)
-    implementation(libs.w2sv.composed.core)
-    implementation(libs.w2sv.composed.material3)
     implementation(libs.w2sv.composed.permissions)
     implementation(libs.w2sv.colorpicker)
 
@@ -157,16 +145,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.navigation3.android)
 
     // .Compose
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation(libs.androidx.compose.activity)
     implementation(libs.androidx.compose.viewmodel)
-    implementation(libs.androidx.compose.animation)
-    implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.compose.material.icons)
-    implementation(libs.androidx.lifecycle.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.constraintlayout.compose)
 
@@ -178,7 +157,6 @@ dependencies {
     implementation(libs.slimber)
     implementation(libs.google.guava)
     implementation(libs.w2sv.simplestorage)
-    lintChecks(libs.compose.lint.checks)
     implementation(libs.textflow)
     // Workaround for https://github.com/google/dagger/issues/5059
     ksp(libs.kotlin.metadata.jvm)

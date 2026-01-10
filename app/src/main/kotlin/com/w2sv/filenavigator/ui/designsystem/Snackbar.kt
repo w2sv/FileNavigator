@@ -24,10 +24,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.core.OnDispose
+import com.w2sv.designsystem.CharSequenceText
+import com.w2sv.designsystem.theme.ResultColor
 import com.w2sv.filenavigator.ui.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.LocalSnackbarVisibility
-import com.w2sv.filenavigator.ui.theme.AppColor
-import com.w2sv.filenavigator.ui.util.CharSequenceText
 import com.w2sv.filenavigator.ui.util.snackbar.SnackbarVisibility
 
 /**
@@ -47,8 +47,8 @@ data class AppSnackbarVisuals(
 data class SnackbarAction(val label: String, val callback: () -> Unit)
 
 enum class SnackbarKind(val icon: ImageVector, val iconTint: Color) {
-    Success(Icons.Outlined.Check, AppColor.success),
-    Error(Icons.Outlined.Warning, AppColor.error)
+    Success(Icons.Outlined.Check, ResultColor.success),
+    Error(Icons.Outlined.Warning, ResultColor.error)
 }
 
 @Composable

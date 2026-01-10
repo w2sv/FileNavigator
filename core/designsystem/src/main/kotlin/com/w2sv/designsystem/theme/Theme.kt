@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.theme
+package com.w2sv.designsystem.theme
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,18 +8,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.w2sv.domain.model.Theme
+import com.w2sv.androidutils.os.dynamicColorsSupported
 import com.w2sv.kotlinutils.threadUnsafeLazy
 
 @SuppressLint("NewApi")
 @Composable
 fun AppTheme(
-    useDarkTheme: Boolean = false,
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
     useAmoledBlackTheme: Boolean = false,
-    useDynamicColors: Boolean = false,
+    useDynamicColors: Boolean = dynamicColorsSupported,
     context: Context = LocalContext.current,
     content: @Composable () -> Unit
 ) {
@@ -38,15 +37,6 @@ fun AppTheme(
         content = content
     )
 }
-
-@Composable
-@ReadOnlyComposable
-fun useDarkTheme(theme: Theme): Boolean =
-    when (theme) {
-        Theme.Light -> false
-        Theme.Dark -> true
-        Theme.Default -> isSystemInDarkTheme()
-    }
 
 private fun ColorScheme.amoledBlack(): ColorScheme =
     copy(background = Color.Black, surface = Color.Black, onBackground = Color.White, onSurface = Color.White)

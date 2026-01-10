@@ -21,9 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.w2sv.filenavigator.ui.theme.AppTheme
-import com.w2sv.filenavigator.ui.theme.onSurfaceVariantDecreasedAlpha
-import com.w2sv.filenavigator.ui.util.CharSequenceText
+import com.w2sv.core.common.R
+import com.w2sv.designsystem.CharSequenceText
+import com.w2sv.designsystem.theme.AppTheme
+import com.w2sv.designsystem.theme.onSurfaceVariantDecreasedAlpha
 
 object ItemRowTokens {
     val IconTextSpacing = 16.dp
@@ -121,11 +122,11 @@ private fun SwitchItemRowPrev() {
     AppTheme {
         Surface {
             SwitchItemRow(
-                icon = { ItemRowIcon(com.w2sv.core.common.R.drawable.ic_palette_24) },
-                labelRes = com.w2sv.core.common.R.string.appearance,
+                icon = { ItemRowIcon(R.drawable.ic_palette_24) },
+                labelRes = R.string.appearance,
                 checked = true,
                 onCheckedChange = {},
-                explanation = stringResource(com.w2sv.core.common.R.string.show_storage_volume_names_explanation)
+                explanation = stringResource(R.string.show_storage_volume_names_explanation)
             )
         }
     }

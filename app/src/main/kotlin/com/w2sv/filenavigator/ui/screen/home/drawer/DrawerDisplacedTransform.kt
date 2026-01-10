@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.designsystem.drawer
+package com.w2sv.filenavigator.ui.screen.home.drawer
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
