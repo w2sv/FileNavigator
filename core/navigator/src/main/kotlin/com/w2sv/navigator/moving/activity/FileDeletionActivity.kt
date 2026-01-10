@@ -2,11 +2,10 @@ package com.w2sv.navigator.moving.activity
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
@@ -31,9 +30,9 @@ import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.domain.moving.MoveFileNotificationData
 import com.w2sv.navigator.domain.notifications.NotificationEventHandler
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Gets invoked when the user clicks the 'Delete file' notification action on the 'Move file' notification.
@@ -53,16 +52,17 @@ internal class FileDeletionActivity : DialogHostingActivity() {
     private val args by threadUnsafeLazy { MoveFileNotificationData(intent) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge(SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContent {
             AppTheme {
-                DeletionConfirmationDialog(
-                    fileName = args.moveFile.mediaStoreData.name,
-                    onDismissRequest = { finishAndRemoveTask() },
-                    onConfirmation = { launchFileDeletion() }
-                )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    DeletionConfirmationDialog(
+                        fileName = args.moveFile.mediaStoreData.name,
+                        onDismissRequest = { finishAndRemoveTask() },
+                        onConfirmation = { launchFileDeletion() }
+                    )
+                }
             }
         }
     }

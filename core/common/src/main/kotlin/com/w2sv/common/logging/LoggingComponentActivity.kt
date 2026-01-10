@@ -14,31 +14,31 @@ abstract class LoggingComponentActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        i { "$logIdentifier onCreate" }
+        i { "Lifecycle: $logIdentifier onCreate" }
     }
 
     override fun onStart() {
         super.onStart()
-        i { "$logIdentifier onStart" }
+        i { "Lifecycle: $logIdentifier onStart" }
     }
 
     override fun onResume() {
         super.onResume()
-        i { "$logIdentifier onResume" }
+        i { "Lifecycle: $logIdentifier onResume" }
     }
 
     override fun onPause() {
         super.onPause()
-        i { "$logIdentifier onPause" }
+        i { "Lifecycle: $logIdentifier onPause" }
     }
 
     override fun onStop() {
         super.onStop()
-        i { "$logIdentifier onStop" }
+        i { "Lifecycle: $logIdentifier onStop" }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        i { "$logIdentifier onDestroy" }
+        i { "Lifecycle: $logIdentifier onDestroy" }
     }
 }
