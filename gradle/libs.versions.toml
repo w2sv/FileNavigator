@@ -24,7 +24,7 @@ lifecycleViewmodelNavigation3 = "2.10.0"
 # @keep
 minSdk = "30"
 nav3Core = "1.1.0-alpha01"
-protobuf = "4.33.2"
+protobuf = "4.33.3"
 protobuf-plugin = "0.9.6"
 room = "2.8.4"
 triplet-play = "3.13.0"
