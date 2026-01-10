@@ -31,11 +31,11 @@ import com.w2sv.navigator.notifications.api.NotificationEnvironment
 import com.w2sv.navigator.notifications.api.setBigTextStyle
 import com.w2sv.navigator.notifications.helper.GetQuickMoveDestination
 import com.w2sv.navigator.notifications.helper.iconBitmap
-import slimber.log.i
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.collections.set
+import slimber.log.i
 
 // TODO make stateless, store state in event handler & unsingleton
 @Singleton

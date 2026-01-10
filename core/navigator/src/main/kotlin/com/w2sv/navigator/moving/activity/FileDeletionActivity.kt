@@ -31,9 +31,9 @@ import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.domain.moving.MoveFileNotificationData
 import com.w2sv.navigator.domain.notifications.NotificationEventHandler
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * Gets invoked when the user clicks the 'Delete file' notification action on the 'Move file' notification.
@@ -61,7 +61,8 @@ internal class FileDeletionActivity : DialogHostingActivity() {
                 DeletionConfirmationDialog(
                     fileName = args.moveFile.mediaStoreData.name,
                     onDismissRequest = { finishAndRemoveTask() },
-                    onConfirmation = { launchFileDeletion() })
+                    onConfirmation = { launchFileDeletion() }
+                )
             }
         }
     }

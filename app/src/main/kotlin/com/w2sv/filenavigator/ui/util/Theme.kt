@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import com.w2sv.domain.model.Theme
 
-
 @Composable
 @ReadOnlyComposable
 fun useDarkTheme(theme: Theme): Boolean =
