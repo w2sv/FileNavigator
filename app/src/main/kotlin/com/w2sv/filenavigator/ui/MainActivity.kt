@@ -18,12 +18,16 @@ import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.w2sv.common.logging.log
 import com.w2sv.composed.core.CollectFromFlow
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
+import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.ui.navigation.NavGraph
+import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.navigation.rememberNavigator
 import com.w2sv.filenavigator.ui.util.useDarkTheme
+import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -68,6 +72,17 @@ class MainActivity : ComponentActivity() {
                     NavGraph(navigator = navigator)
                 }
             }
+
+            if (BuildConfig.DEBUG) {
+                LaunchedEffect(Unit) { performOptionalDevAction(navigator) }
+            }
+        }
+    }
+
+    private fun performOptionalDevAction(navigator: Navigator) {
+        when (intent.action.log { "action=$it" }) {
+            DevAction.LAUNCH_NAVIGATOR_SETTINGS_SCREEN -> navigator.toNavigatorSettings()
+            DevAction.START_NAVIGATOR -> FileNavigator.start(this)
         }
     }
 

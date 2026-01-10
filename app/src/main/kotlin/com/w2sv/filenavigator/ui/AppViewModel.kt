@@ -7,7 +7,6 @@ import com.w2sv.common.util.hasManageAllFilesPermission
 import com.w2sv.common.util.hasPostNotificationsPermission
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
-import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.ui.navigation.Screen
 import com.w2sv.filenavigator.ui.sharedstate.AppPermissionsState
 import com.w2sv.filenavigator.ui.sharedstate.ThemeSettings
@@ -19,12 +18,12 @@ import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class AppViewModel @Inject constructor(private val preferencesRepository: PreferencesRepository, @ApplicationContext context: Context) :
@@ -44,10 +43,8 @@ class AppViewModel @Inject constructor(private val preferencesRepository: Prefer
         savePostNotificationsRequested = { viewModelScope.launch { preferencesRepository.postNotificationsPermissionRequested.save(true) } }
     )
 
-    @Suppress("KotlinConstantConditions", "SimplifyBooleanWithConstants")
     val startScreen: Screen by threadUnsafeLazy {
         when {
-            BuildConfig.DEBUG && BuildConfig.START_SCREEN == "NavigatorSettings" -> Screen.NavigatorSettings
             !permissionsState.allGranted.value -> Screen.Permissions
             else -> Screen.Home
         }

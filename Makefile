@@ -37,6 +37,11 @@ build-apk:
 	@echo "Build APK"
 	@./gradlew assembleRelease --console verbose
 
+run-with-navigator-start:
+	@./gradlew installDebug
+	@adb shell am force-stop com.w2sv.filenavigator
+	@adb shell am start -n com.w2sv.filenavigator/.ui.MainActivity -a com.w2sv.filenavigator.START_NAVIGATOR
+
 # ==============
 # Publishing
 # ==============
