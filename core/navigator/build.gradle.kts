@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.filenavigator.library)
+    alias(libs.plugins.filenavigator.compose)
     alias(libs.plugins.filenavigator.hilt)
     alias(libs.plugins.kotlin.parcelize)
 }
@@ -7,8 +8,9 @@ plugins {
 android { buildFeatures.viewBinding = true }
 
 dependencies {
-    implementation(projects.core.domain)
     implementation(projects.core.common)
+    implementation(projects.core.designsystem)
+    implementation(projects.core.domain)
     implementation(projects.core.navigatorDomain)
     implementation(projects.core.navigatorNotifications)
 

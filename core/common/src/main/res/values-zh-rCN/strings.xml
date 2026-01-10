@@ -54,7 +54,7 @@
     <string name="cancel">取消</string>
     <string name="understood">好的</string>
     <string name="quick_move_permission_query_dialog_content">你需要授予File Navigator访问指定用于快速移动的文件夹的权限.\n\n该操作在选定某个文件夹时只需操作一次.</string>
-    <string name="file_deletion_confirmation_dialog_message"><![CDATA[确认删除 <b>%1$s</b>?]]></string>
+    <string name="file_deletion_confirmation_dialog_message">确认删除 <b>%1$s</b>?</string>
     <string name="delete">删除</string>
     <plurals name="couldn_t_move_files_due_to">
         <item quantity="other"><![CDATA[无法移动 %1$s 个文件。出错： <b>%2$s</b>]]></item>
