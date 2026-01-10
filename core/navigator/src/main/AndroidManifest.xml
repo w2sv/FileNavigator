@@ -74,7 +74,7 @@
         <activity
             android:name="com.w2sv.navigator.moving.activity.QuickMoveDestinationAccessPermissionQueryActivity"
             android:taskAffinity="com.w2sv.filenavigator.moving"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@style/Theme.Transparent" />
         <activity
             android:name="com.w2sv.navigator.moving.activity.ViewFileIfPresentActivity"
             android:noHistory="true"
@@ -85,8 +85,7 @@
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:taskAffinity="com.w2sv.filenavigator.deletion"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
-
+            android:theme="@style/Theme.Transparent" />
     </application>
 
 </manifest>

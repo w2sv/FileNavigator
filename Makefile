@@ -37,6 +37,10 @@ build-apk:
 	@echo "Build APK"
 	@./gradlew assembleRelease --console verbose
 
+take-screenshot-and-expand-status-bar:
+	@adb shell screencap -p /sdcard/Pictures/screenshot.png
+	@adb shell cmd statusbar expand-notifications
+
 run-with-navigator-start:
 	@./gradlew installDebug
 	@adb shell am force-stop com.w2sv.filenavigator
