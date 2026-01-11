@@ -2,13 +2,6 @@ SHELL=/bin/bash
 
 VERSION := $(shell grep -Po '^version=\K.*' gradle.properties)
 
-clean:
-	@echo "Clean"
-	@./gradlew clean
-
-format:
-	@./gradlew ktlintFormat
-
 update-dependencies:
 	@./gradlew versionCatalogUpdate
 
@@ -16,14 +9,34 @@ update-gradle:
 	@./gradlew wrapper --gradle-version latest
 
 # ==============
-# Building
+# Development
 # ==============
+
+format:
+	@./gradlew ktlintFormat
 
 compose-compiler-reports:
 	@echo ./gradlew assembleRelease -PcomposeCompilerReports=true
 
 generate-proto:
 	@./gradlew generateDebugProto
+
+generate-module-graph:
+	@./gradlew generateModulesGraphvizText --no-configure-on-demand -Pmodules.graph.output.gv=all_modules
+	@dot -Tsvg all_modules -o module-graph.svg
+
+take-screenshot-and-expand-status-bar:
+	@adb shell screencap -p /sdcard/Pictures/screenshot.png
+	@adb shell cmd statusbar expand-notifications
+
+run-with-navigator-start:
+	@./gradlew installDebug
+	@adb shell am force-stop com.w2sv.filenavigator
+	@adb shell am start -n com.w2sv.filenavigator/.ui.MainActivity -a com.w2sv.filenavigator.START_NAVIGATOR
+
+# ==============
+# Building
+# ==============
 
 baseline-profile:
 	@echo "Generate baseline profile"
@@ -37,28 +50,19 @@ build-apk:
 	@echo "Build APK"
 	@./gradlew assembleRelease --console verbose
 
-take-screenshot-and-expand-status-bar:
-	@adb shell screencap -p /sdcard/Pictures/screenshot.png
-	@adb shell cmd statusbar expand-notifications
-
-run-with-navigator-start:
-	@./gradlew installDebug
-	@adb shell am force-stop com.w2sv.filenavigator
-	@adb shell am start -n com.w2sv.filenavigator/.ui.MainActivity -a com.w2sv.filenavigator.START_NAVIGATOR
-
 # ==============
 # Publishing
 # ==============
 
 build-and-publish-to-test-track:
-	@$(MAKE) clean  # Required as 'publishBundle' publishes all .aab's in specified archive dir
+	@./gradlew clean  # Required as 'publishBundle' publishes all .aab's in specified archive dir
 	@$(MAKE) build-aab
 
 	@echo "Publish Bundle"
 	@./gradlew publishBundle --track internal --console verbose
 
 build-and-publish-bundle:
-	@$(MAKE) clean  # Required as 'publishBundle' publishes all .aab's in specified archive dir
+	@./gradlew clean  # Required as 'publishBundle' publishes all .aab's in specified archive dir
 	@$(MAKE) build-aab
 
 	@echo "Publish Bundle"
