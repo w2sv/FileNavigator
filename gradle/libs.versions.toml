@@ -23,8 +23,9 @@ lifecycle = "2.10.0"
 lifecycleViewmodelNavigation3 = "2.10.0"
 # @keep
 minSdk = "30"
+moduleGraph = "2.9.0"
 nav3Core = "1.1.0-alpha01"
-protobuf = "4.33.2"
+protobuf = "4.33.3"
 protobuf-plugin = "0.9.6"
 room = "2.8.4"
 triplet-play = "3.13.0"
@@ -33,7 +34,6 @@ versionCatalogUpdate = "1.0.1"
 w2sv-composed = "0.1.1"
 w2sv-datastoreutils = "0.0.8"
 w2sv-kotlinutils = "0.1.11"
-moduleGraph = "2.9.0"
 
 [libraries]
 # @keep
@@ -121,13 +121,13 @@ baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprof
 # @keep
 filenavigator-application = { id = "filenavigator.application" }
 # @keep
+filenavigator-compose = { id = "filenavigator.compose" }
+# @keep
 filenavigator-hilt = { id = "filenavigator.hilt" }
 # @keep
 filenavigator-library = { id = "filenavigator.library" }
 # @keep
 filenavigator-room = { id = "filenavigator.room" }
-# @keep
-filenavigator-compose = { id = "filenavigator.compose" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -135,7 +135,7 @@ kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref =
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+module-graph = { id = "com.jraska.module.graph.assertion", version.ref = "moduleGraph" }
 play = { id = "com.github.triplet.play", version.ref = "triplet-play" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdate" }
-module-graph = { id = "com.jraska.module.graph.assertion", version.ref = "moduleGraph" }
