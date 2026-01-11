@@ -6,7 +6,7 @@ import com.w2sv.androidutils.content.logString
 import com.w2sv.androidutils.service.UnboundService
 import slimber.log.i
 
-abstract class LifecycleLoggingUnboundService : UnboundService() {
+abstract class LoggingUnboundService : UnboundService() {
 
     init {
         i { "Lifecycle: $logIdentifier.init" }

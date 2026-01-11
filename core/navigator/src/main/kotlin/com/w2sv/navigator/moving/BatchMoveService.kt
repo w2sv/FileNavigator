@@ -7,7 +7,7 @@ import com.w2sv.androidutils.content.getParcelableCompat
 import com.w2sv.androidutils.content.intent
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.common.logging.LifecycleLoggingUnboundService
+import com.w2sv.common.logging.LoggingUnboundService
 import com.w2sv.navigator.di.MoveOperationSummaryChannel
 import com.w2sv.navigator.domain.moving.MoveDestination
 import com.w2sv.navigator.domain.moving.MoveOperation
@@ -27,7 +27,7 @@ import slimber.log.e
 import slimber.log.w
 
 @AndroidEntryPoint
-internal class BatchMoveService : LifecycleLoggingUnboundService() {
+internal class BatchMoveService : LoggingUnboundService() {
 
     @Inject
     lateinit var notificationEventHandler: NotificationEventHandler

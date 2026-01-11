@@ -58,7 +58,8 @@
     </plurals>
     <string name="cancel">Cancel</string>
     <string name="understood">Understood</string>
-    <string name="quick_move_permission_query_dialog_content">You need to grant File Navigator access to the selected destination to quick-move files there.\n\nThis is necessary only once per destination.</string>
+    <string name="quick_move_permission_query_dialog_line_1">You need to grant File Navigator <b>access to the selected directory</b> for it to quick-move files there.</string>
+    <string name="quick_move_permission_query_dialog_line_2">This is necessary only <b>once per directory</b>.</string>
     <string name="file_deletion_confirmation_dialog_message">Are you sure you want to delete file <b>%1$s</b>?</string>
     <string name="delete">Delete</string>
     <plurals name="couldn_t_move_files_due_to">
