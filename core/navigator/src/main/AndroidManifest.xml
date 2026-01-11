@@ -72,7 +72,7 @@
             android:taskAffinity="com.w2sv.filenavigator.moving"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name="com.w2sv.navigator.moving.activity.QuickMoveDestinationAccessPermissionQueryActivity"
+            android:name="com.w2sv.navigator.moving.activity.QuickMoveDestinationAccessPermissionActivity"
             android:taskAffinity="com.w2sv.filenavigator.moving"
             android:theme="@style/Theme.Transparent" />
         <activity

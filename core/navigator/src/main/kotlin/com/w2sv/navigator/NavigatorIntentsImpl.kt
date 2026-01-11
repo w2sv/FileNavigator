@@ -14,7 +14,7 @@ import com.w2sv.navigator.moving.activity.BatchMoveDestinationPickerActivity
 import com.w2sv.navigator.moving.activity.DestinationPickerActivityApi
 import com.w2sv.navigator.moving.activity.FileDeletionActivity
 import com.w2sv.navigator.moving.activity.FileDestinationPickerActivity
-import com.w2sv.navigator.moving.activity.QuickMoveDestinationAccessPermissionQueryActivity
+import com.w2sv.navigator.moving.activity.QuickMoveDestinationAccessPermissionActivity
 import com.w2sv.navigator.moving.activity.ViewFileIfPresentActivity
 import com.w2sv.navigator.shared.mainActivityPendingIntent
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -47,7 +47,7 @@ internal class NavigatorIntentsImpl @Inject constructor(@ApplicationContext priv
         )
 
     override fun quickMoveWithPermissionCheck(bundle: MoveOperation.QuickMove): Intent =
-        QuickMoveDestinationAccessPermissionQueryActivity.makeRestartActivityTaskIntent(bundle, context)
+        QuickMoveDestinationAccessPermissionActivity.intent(bundle, context)
 
     override fun stopNavigator(): Intent =
         FileNavigator.stopIntent(context)

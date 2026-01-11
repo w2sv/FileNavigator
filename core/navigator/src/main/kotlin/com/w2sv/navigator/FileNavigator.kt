@@ -3,7 +3,7 @@ package com.w2sv.navigator
 import android.content.Context
 import android.content.Intent
 import com.w2sv.androidutils.content.intent
-import com.w2sv.common.logging.LifecycleLoggingUnboundService
+import com.w2sv.common.logging.LoggingUnboundService
 import com.w2sv.common.util.hasManageAllFilesPermission
 import com.w2sv.common.util.hasPostNotificationsPermission
 import com.w2sv.navigator.domain.notifications.ForegroundNotificationProvider
@@ -15,7 +15,7 @@ import slimber.log.i
 import slimber.log.w
 
 @AndroidEntryPoint
-class FileNavigator : LifecycleLoggingUnboundService() {
+class FileNavigator : LoggingUnboundService() {
 
     @Inject
     internal lateinit var isRunning: IsRunning

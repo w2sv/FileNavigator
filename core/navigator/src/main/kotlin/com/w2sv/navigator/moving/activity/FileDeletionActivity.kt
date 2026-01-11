@@ -21,6 +21,7 @@ import androidx.lifecycle.coroutineScope
 import com.w2sv.androidutils.content.intent
 import com.w2sv.androidutils.res.getHtmlFormattedText
 import com.w2sv.androidutils.widget.showToast
+import com.w2sv.common.logging.LoggingComponentActivity
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.core.common.R
 import com.w2sv.designsystem.DialogButton
@@ -36,7 +37,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Gets invoked when the user clicks the 'Delete file' notification action on the 'Move file' notification.
- * Must receive [com.w2sv.navigator.domain.moving.MoveFile] & [com.w2sv.navigator.domain.notifications.CancelNotificationEvent] through its intent.
+ * Must receive [MoveFileNotificationData] through its intent.
  *
  * Shows a file deletion confirmation dialog. If the user confirms the deletion,
  * it attempts to carry out the deletion, shows a toast informing about the result, cancels the 'Move file' notification
@@ -44,7 +45,7 @@ import kotlinx.coroutines.launch
  * clicking outside of its area, it finishes right away.
  */
 @AndroidEntryPoint
-internal class FileDeletionActivity : DialogHostingActivity() {
+internal class FileDeletionActivity : LoggingComponentActivity() {
 
     @Inject
     lateinit var notificationEventHandler: NotificationEventHandler
