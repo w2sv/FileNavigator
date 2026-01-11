@@ -29,11 +29,11 @@ protobuf-plugin = "0.9.6"
 room = "2.8.4"
 triplet-play = "3.13.0"
 versionCatalogUpdate = "1.0.1"
-versions = "0.53.0"
 # @pin
 w2sv-composed = "0.1.1"
 w2sv-datastoreutils = "0.0.8"
 w2sv-kotlinutils = "0.1.11"
+moduleGraph = "2.9.0"
 
 [libraries]
 # @keep
@@ -138,4 +138,3 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 play = { id = "com.github.triplet.play", version.ref = "triplet-play" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdate" }
-versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
