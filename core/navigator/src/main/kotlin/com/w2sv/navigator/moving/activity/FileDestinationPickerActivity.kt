@@ -6,7 +6,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import com.w2sv.androidutils.os.getParcelableCompat
+import com.w2sv.androidutils.content.getParcelableCompat
 import com.w2sv.common.logging.log
 import com.w2sv.common.uri.DocumentUri
 import com.w2sv.common.uri.documentUri

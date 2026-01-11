@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionState
-import com.w2sv.androidutils.openAppSettings
+import com.w2sv.androidutils.content.openAppSettings
 import com.w2sv.common.util.goToManageExternalStorageSettings
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest

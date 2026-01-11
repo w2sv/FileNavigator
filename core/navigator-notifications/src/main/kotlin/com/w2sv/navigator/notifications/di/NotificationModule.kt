@@ -2,7 +2,7 @@ package com.w2sv.navigator.notifications.di
 
 import android.app.NotificationManager
 import android.content.Context
-import com.w2sv.androidutils.getNotificationManager
+import com.w2sv.androidutils.service.getNotificationManager
 import com.w2sv.navigator.notifications.api.NotificationEnvironment
 import dagger.Module
 import dagger.Provides

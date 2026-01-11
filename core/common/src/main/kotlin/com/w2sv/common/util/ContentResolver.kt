@@ -6,7 +6,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import com.w2sv.androidutils.graphics.loadBitmap
-import com.w2sv.androidutils.hasPermission
+import com.w2sv.androidutils.net.hasPermission
 import java.io.FileNotFoundException
 import slimber.log.e
 

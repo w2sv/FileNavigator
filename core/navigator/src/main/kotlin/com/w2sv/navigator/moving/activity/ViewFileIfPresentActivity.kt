@@ -3,10 +3,10 @@ package com.w2sv.navigator.moving.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import com.w2sv.androidutils.content.restartActivityTaskIntent
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.logging.LoggingComponentActivity
 import com.w2sv.common.uri.MediaUri
-import com.w2sv.common.util.restartActivityTaskIntent
 import com.w2sv.core.common.R
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.domain.moving.MoveFileNotificationData
