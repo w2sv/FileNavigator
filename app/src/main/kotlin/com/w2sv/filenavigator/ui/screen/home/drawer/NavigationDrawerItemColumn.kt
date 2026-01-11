@@ -28,9 +28,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.app.ShareCompat
 import androidx.core.net.toUri
-import com.w2sv.androidutils.openUrl
-import com.w2sv.androidutils.packagePlayStoreUrl
-import com.w2sv.androidutils.startActivity
+import com.w2sv.androidutils.content.openUrl
+import com.w2sv.androidutils.content.packagePlayStoreUrl
+import com.w2sv.androidutils.content.startActivity
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.AppUrl
 import com.w2sv.core.common.R

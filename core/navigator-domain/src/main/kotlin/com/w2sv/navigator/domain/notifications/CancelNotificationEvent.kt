@@ -2,7 +2,7 @@ package com.w2sv.navigator.domain.notifications
 
 import android.content.Intent
 import android.os.Parcelable
-import com.w2sv.androidutils.os.getParcelableCompat
+import com.w2sv.androidutils.content.getParcelableCompat
 
 sealed interface CancelNotificationEvent :
     NotificationEvent,

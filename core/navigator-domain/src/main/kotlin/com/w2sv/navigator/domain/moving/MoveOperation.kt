@@ -3,7 +3,7 @@ package com.w2sv.navigator.domain.moving
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
-import com.w2sv.androidutils.os.getParcelableCompat
+import com.w2sv.androidutils.content.getParcelableCompat
 import com.w2sv.common.logging.log
 import com.w2sv.common.uri.DocumentUri
 import com.w2sv.common.uri.MediaUri

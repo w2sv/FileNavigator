@@ -1,7 +1,7 @@
 package com.w2sv.navigator.di
 
 import android.content.Context
-import com.w2sv.androidutils.isServiceRunning
+import com.w2sv.androidutils.service.isServiceRunning
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.domain.moving.MediaIdWithMediaType
 import com.w2sv.navigator.domain.moving.MoveOperationSummary

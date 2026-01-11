@@ -7,7 +7,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.findViewTreeViewModelStoreOwner
-import com.w2sv.androidutils.findActivity
+import com.w2sv.androidutils.activity.findActivity
 
 @Composable
 inline fun <reified VM : ViewModel> activityViewModel(): VM =

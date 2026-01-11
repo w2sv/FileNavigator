@@ -88,7 +88,7 @@ protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protob
 robolectric = "org.robolectric:robolectric:4.16"
 slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
 textflow = "io.github.oleksandrbalan:textflow-material3:1.2.1"
-w2sv-androidutils-core = "com.github.w2sv.AndroidUtils:core:0.4.9"
+w2sv-androidutils-core = "com.github.w2sv.AndroidUtils:core:0.4.10"
 w2sv-colorpicker = "com.github.w2sv:Compose-Color-Picker-Bundle:1.0.0-rc9"
 w2sv-composed-core = { module = "com.github.w2sv.Composed:core", version.ref = "w2sv-composed" }
 w2sv-composed-material3 = { module = "com.github.w2sv.Composed:material3", version.ref = "w2sv-composed" }

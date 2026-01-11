@@ -3,9 +3,9 @@ package com.w2sv.navigator.moving
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.w2sv.androidutils.content.intent
 import com.w2sv.common.di.AppDispatcher
 import com.w2sv.common.di.GlobalScope
-import com.w2sv.common.util.intent
 import com.w2sv.navigator.di.MoveOperationSummaryChannel
 import com.w2sv.navigator.domain.moving.MoveOperation
 import com.w2sv.navigator.domain.moving.MoveOperationSummary

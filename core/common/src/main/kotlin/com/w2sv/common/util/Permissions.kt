@@ -6,7 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.provider.Settings
-import com.w2sv.androidutils.hasPermission
+import com.w2sv.androidutils.content.hasPermission
 import com.w2sv.androidutils.os.manageExternalStoragePermissionRequired
 import com.w2sv.androidutils.os.postNotificationsPermissionRequired
 

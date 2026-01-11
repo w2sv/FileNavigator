@@ -2,8 +2,8 @@ package com.w2sv.common.logging
 
 import android.content.Intent
 import android.content.res.Configuration
-import com.w2sv.androidutils.UnboundService
-import com.w2sv.androidutils.os.logString
+import com.w2sv.androidutils.content.logString
+import com.w2sv.androidutils.service.UnboundService
 import slimber.log.i
 
 abstract class LifecycleLoggingUnboundService : UnboundService() {

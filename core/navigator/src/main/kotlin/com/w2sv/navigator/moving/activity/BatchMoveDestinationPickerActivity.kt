@@ -2,7 +2,7 @@ package com.w2sv.navigator.moving.activity
 
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
-import com.w2sv.androidutils.os.getParcelableCompat
+import com.w2sv.androidutils.content.getParcelableCompat
 import com.w2sv.common.uri.DocumentUri
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
 import com.w2sv.kotlinutils.threadUnsafeLazy
