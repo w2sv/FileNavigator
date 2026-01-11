@@ -138,3 +138,4 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 play = { id = "com.github.triplet.play", version.ref = "triplet-play" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdate" }
+module-graph = { id = "com.jraska.module.graph.assertion", version.ref = "moduleGraph" }

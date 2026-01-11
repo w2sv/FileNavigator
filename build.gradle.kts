@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.play) apply false
     alias(libs.plugins.baselineprofile) apply false
+    alias(libs.plugins.module.graph) apply true
     alias(libs.plugins.ktlint)
     alias(libs.plugins.versionCatalogUpdate)
 }
