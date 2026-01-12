@@ -1,7 +1,5 @@
 package com.w2sv.filenavigator.ui.screen.home.movehistory
 
-import android.content.ActivityNotFoundException
-import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -23,27 +21,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.core.common.R
 import com.w2sv.designsystem.DialogButton
 import com.w2sv.designsystem.theme.onSurfaceVariantDecreasedAlpha
-import com.w2sv.domain.model.MovedFile
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
-import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
-import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.modelext.launchViewMovedFileActivity
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
-import com.w2sv.filenavigator.ui.util.snackbar.SnackbarController
-import com.w2sv.filenavigator.ui.util.snackbar.rememberSnackbarController
 
 @Composable
 fun MoveHistoryCard(state: MoveHistoryState, modifier: Modifier = Modifier) {
@@ -85,10 +74,7 @@ private fun MoveHistoryCard(state: MoveHistoryState, showDeletionDialog: () -> U
             if (it) {
                 NoHistoryPlaceHolder()
             } else {
-                MoveHistory(
-                    history = state.history,
-                    onRowClick = rememberMoveEntryRowOnClick(state.deleteEntry)
-                )
+                MoveHistory(state = state)
             }
         }
     }
@@ -125,50 +111,6 @@ private fun HeaderRow(showDropdownMenuButton: Boolean, showDeletionDialog: () ->
         }
     }
 }
-
-@Composable
-private fun rememberMoveEntryRowOnClick(
-    launchHistoryEntryDeletion: (MovedFile) -> Unit,
-    context: Context = LocalContext.current,
-    snackbarController: SnackbarController = rememberSnackbarController(context = context)
-): suspend (MovedFile, Boolean) -> Unit =
-    remember {
-        { movedFile, fileExists ->
-            if (fileExists) {
-                snackbarController.dismissCurrent()
-                movedFile.launchViewMovedFileActivity(
-                    context = context,
-                    onError = { e ->
-                        snackbarController.show {
-                            AppSnackbarVisuals(
-                                message = getString(
-                                    when (e) {
-                                        is ActivityNotFoundException -> R.string.provider_does_not_support_file_viewing
-                                        else -> R.string.can_t_view_file_from_within_file_navigator
-                                    }
-                                ),
-                                kind = SnackbarKind.Error
-                            )
-                        }
-                    }
-                )
-            } else {
-                snackbarController.showReplacing {
-                    AppSnackbarVisuals(
-                        message = getString(R.string.couldn_t_find_file),
-                        kind = SnackbarKind.Error,
-                        action = SnackbarAction(
-                            label = getString(R.string.delete_entry),
-                            callback = {
-                                launchHistoryEntryDeletion(movedFile)
-                                snackbarController.dismissCurrent()
-                            }
-                        )
-                    )
-                }
-            }
-        }
-    }
 
 @Composable
 private fun HistoryDeletionDialog(closeDialog: () -> Unit, onConfirmed: () -> Unit) {
