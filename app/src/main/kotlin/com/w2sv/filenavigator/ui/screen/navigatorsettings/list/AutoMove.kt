@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +31,7 @@ import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.designsystem.IconSize
 import com.w2sv.filenavigator.ui.designsystem.SubDirectoryIcon
+import com.w2sv.filenavigator.ui.util.WithLocalContentColor
 
 @Composable
 fun rememberAutoMoveDestinationPath(
@@ -41,14 +40,12 @@ fun rememberAutoMoveDestinationPath(
     moveDestinationPathConverter: MoveDestinationPathConverter = LocalMoveDestinationPathConverter.current
 ): State<String?> =
     remember(destination) {
-        mutableStateOf(
-            destination?.let { moveDestinationPathConverter.invoke(it, context) }
-        )
+        mutableStateOf(destination?.let { moveDestinationPathConverter.invoke(it, context) })
     }
 
 @Composable
 fun AutoMoveRow(destinationPath: String, changeDestination: () -> Unit, modifier: Modifier = Modifier) {
-    CompositionLocalProvider(value = LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+    WithLocalContentColor(colorScheme.onSurfaceVariant) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifier
@@ -68,7 +65,7 @@ fun AutoMoveRow(destinationPath: String, changeDestination: () -> Unit, modifier
                     painter = painterResource(id = R.drawable.ic_folder_edit_24),
                     contentDescription = stringResource(R.string.select_the_auto_move_destination),
                     modifier = Modifier.size(IconSize.Big),
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = colorScheme.primary
                 )
             }
         }

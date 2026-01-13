@@ -7,10 +7,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.w2sv.core.common.R
 import com.w2sv.domain.model.MovedFile
-import kotlinx.collections.immutable.ImmutableList
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlinx.collections.immutable.ImmutableList
 
 /**
  * Returns a mapping from list indices to date labels for a move history.
@@ -31,11 +31,7 @@ fun rememberIndexToDateLabel(history: ImmutableList<MovedFile>, context: Context
     }
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-fun firstDateLabels(
-    dates: List<LocalDate>,
-    getString: (Int) -> String,
-    today: LocalDate = LocalDate.now()
-): Map<Int, String> {
+fun firstDateLabels(dates: List<LocalDate>, getString: (Int) -> String, today: LocalDate = LocalDate.now()): Map<Int, String> {
     var lastDateLabel: String? = null
     return buildMap {
         dates.forEachIndexed { index, date ->
