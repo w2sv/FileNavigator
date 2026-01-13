@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -33,6 +31,7 @@ import com.w2sv.designsystem.DialogButton
 import com.w2sv.designsystem.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
+import com.w2sv.filenavigator.ui.util.WithLocalContentColor
 
 @Composable
 fun MoveHistoryCard(state: MoveHistoryState, modifier: Modifier = Modifier) {
@@ -143,7 +142,7 @@ private fun NoHistoryPlaceHolder(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
-        CompositionLocalProvider(LocalContentColor provides colorScheme.onSurfaceVariantDecreasedAlpha) {
+        WithLocalContentColor(colorScheme.onSurfaceVariantDecreasedAlpha) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_history_24),
                 contentDescription = null,

@@ -120,7 +120,7 @@ private fun PortraitMode(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         statusDisplayCard(Modifier)
-        moveHistoryCard(Modifier.fillMaxHeight(0.8f))
+        moveHistoryCard(Modifier.fillMaxHeight(0.85f))
     }
 }
 

@@ -24,7 +24,7 @@ fun MovedFile.startViewFileActivity(context: Context, onError: (Throwable) -> Un
                     when (this@startViewFileActivity) {
                         is MovedFile.Local -> {
                             setDataAndType(
-                                mediaUri?.uri ?: run { throw IllegalArgumentException("Media uri null") },
+                                mediaUri?.uri ?: error("Media uri null"),
                                 this@startViewFileActivity.fileType.mediaType.mimeType
                             )
                         }

@@ -25,6 +25,9 @@ generate-module-graph:
 	@./gradlew generateModulesGraphvizText --no-configure-on-demand -Pmodules.graph.output.gv=all_modules
 	@dot -Tsvg all_modules -o module-graph.svg
 
+take-screenshot:
+	@adb shell screencap -p /sdcard/Pictures/screenshot1.png
+
 take-screenshot-and-expand-status-bar:
 	@adb shell screencap -p /sdcard/Pictures/screenshot.png
 	@adb shell cmd statusbar expand-notifications

@@ -1,9 +1,9 @@
 package com.w2sv.filenavigator.ui.screen.home.movehistory
 
 import com.w2sv.core.common.R
+import java.time.LocalDate
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
-import java.time.LocalDate
 
 class FirstDateLabelsTest {
 
