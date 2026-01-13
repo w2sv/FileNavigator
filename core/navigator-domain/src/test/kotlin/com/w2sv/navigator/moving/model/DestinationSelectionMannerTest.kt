@@ -1,6 +1,7 @@
 package com.w2sv.navigator.moving.model
 
 import com.w2sv.navigator.domain.moving.DestinationSelectionManner
+import com.w2sv.navigator.domain.notifications.NotificationEvent
 import com.w2sv.test.testParceling
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,11 +13,11 @@ internal class DestinationSelectionMannerTest {
     @Test
     fun testParceling() {
         DestinationSelectionManner
-            .Picked(CancelNotificationParams(12, "manager"))
+            .Picked(NotificationEvent.CancelMoveFile(12))
             .testParceling()
 
         DestinationSelectionManner
-            .Quick(CancelNotificationParams(19, "manager"))
+            .Quick(NotificationEvent.CancelMoveFile(19))
             .testParceling()
 
         DestinationSelectionManner.Auto.testParceling()

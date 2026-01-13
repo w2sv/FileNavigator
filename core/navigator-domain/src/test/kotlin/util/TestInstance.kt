@@ -4,8 +4,8 @@ import com.w2sv.common.uri.MediaUri
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
+import com.w2sv.navigator.domain.moving.MediaStoreFileData
 import com.w2sv.navigator.domain.moving.MoveFile
-import com.w2sv.navigator.observing.model.MediaStoreFileData
 
 internal object TestInstance {
 
