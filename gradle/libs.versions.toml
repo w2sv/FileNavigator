@@ -24,7 +24,7 @@ lifecycleViewmodelNavigation3 = "2.10.0"
 # @keep
 minSdk = "30"
 moduleGraph = "2.9.0"
-nav3Core = "1.1.0-alpha01"
+nav3Core = "1.1.0-alpha03"
 protobuf = "4.33.3"
 protobuf-plugin = "0.9.6"
 room = "2.8.4"
