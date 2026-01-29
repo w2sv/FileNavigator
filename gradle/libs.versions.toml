@@ -1,7 +1,7 @@
 [versions]
 agp = "8.13.2"
 androidx-test = "1.7.0"
-androidxActivity = "1.12.2"
+androidxActivity = "1.12.3"
 baselineprofile = "1.4.1"
 benchmarkMacroJunit4 = "1.4.1"
 # @keep
