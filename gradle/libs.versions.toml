@@ -1,5 +1,5 @@
 [versions]
-agp = "9.0.0"
+agp = "9.0.1"
 androidx-test = "1.7.0"
 androidxActivity = "1.12.4"
 baselineprofile = "1.5.0-alpha03"
@@ -72,8 +72,6 @@ google-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", ver
 junit = { module = "junit:junit", version.ref = "junit" }
 # @keep
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-# Required only for https://github.com/google/dagger/issues/5059
-kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }

@@ -128,8 +128,6 @@ dependencies {
     // Other
     implementation(libs.w2sv.simplestorage)
     implementation(libs.textflow)
-    // Workaround for https://github.com/google/dagger/issues/5059
-    ksp(libs.kotlin.metadata.jvm)
 
     // Unit Test
     testImplementation(libs.bundles.unitTest)
