@@ -38,7 +38,7 @@ private fun ExtensionContainer.configureKotlinAndroidProject() {
                 "-opt-in=kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi",
                 "-Xannotation-default-target=param-property",
                 "-Xwhen-guards",
-                "-XXLanguage:+ExplicitBackingFields",
+                "-Xexplicit-backing-fields",
                 "-Xnested-type-aliases",
                 "-Xcontext-sensitive-resolution",
                 "-Xcontext-parameters"
