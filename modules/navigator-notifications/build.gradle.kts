@@ -7,14 +7,10 @@ dependencies {
     implementation(projects.modules.navigatorDomain)
     implementation(projects.modules.domain)
     implementation(projects.modules.common)
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.documentfile)
-
     implementation(libs.w2sv.androidutils.core)
-    implementation(libs.w2sv.kotlinutils)
-    implementation(libs.slimber)
 
     testImplementation(libs.bundles.unitTest)
 }

@@ -11,15 +11,10 @@ dependencies {
     implementation(projects.modules.domain)
     implementation(projects.modules.navigatorDomain)
     implementation(projects.modules.navigatorNotifications)
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.appcompat)
-
     implementation(libs.w2sv.androidutils.core)
-    implementation(libs.w2sv.kotlinutils)
-    implementation(libs.slimber)
-
     implementation(libs.w2sv.simplestorage)
 
     // ==============

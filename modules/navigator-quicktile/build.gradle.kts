@@ -7,10 +7,6 @@ dependencies {
     implementation(projects.modules.common)
     implementation(projects.modules.navigator)
     implementation(projects.modules.navigatorDomain)
-
     implementation(libs.androidx.core.ktx)
-
     implementation(libs.w2sv.androidutils.core)
-    implementation(libs.w2sv.kotlinutils)
-    implementation(libs.slimber)
 }

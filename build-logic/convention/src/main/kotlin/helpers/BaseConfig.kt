@@ -8,11 +8,17 @@ import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 internal fun Project.applyBaseConfig(excludeMetaInfResources: Boolean = true, namespace: Namespace = Namespace.Auto) {
     pluginManager.applyPlugins("ktlint", catalog = catalog)
+
+    dependencies {
+        "implementation"(bundle("w2sv-kotlinutils"))
+        "implementation"(library("slimber"))
+    }
 
     extensions.configureKotlinAndroidProject()
     extensions.configureCommon(

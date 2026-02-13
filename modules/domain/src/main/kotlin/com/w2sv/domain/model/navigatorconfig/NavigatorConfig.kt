@@ -1,12 +1,12 @@
 package com.w2sv.domain.model.navigatorconfig
 
-import com.w2sv.common.util.filterKeysByValueToSet
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.kotlinutils.copy
+import com.w2sv.kotlinutils.keysWhereToSet
 import com.w2sv.kotlinutils.map
 import com.w2sv.kotlinutils.update
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +21,7 @@ data class NavigatorConfig(
     val startOnBoot: Boolean
 ) {
     val enabledFileTypes: Set<FileType> by lazy {
-        fileTypeConfigMap.filterKeysByValueToSet { it.enabled }
+        fileTypeConfigMap.keysWhereToSet { it.enabled }
     }
 
     val sortedEnabledFileTypes: List<FileType> by lazy {

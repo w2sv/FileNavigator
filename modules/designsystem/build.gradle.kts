@@ -5,6 +5,4 @@ plugins {
 
 dependencies {
     implementation(libs.w2sv.androidutils.core)
-    implementation(libs.w2sv.kotlinutils)
-    implementation(libs.slimber)
 }

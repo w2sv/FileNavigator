@@ -17,7 +17,6 @@ dependencies {
     implementation(projects.modules.domain)
     implementation(libs.androidx.core.ktx)
     implementation(libs.w2sv.androidutils.core)
-    implementation(libs.slimber)
     implementation(libs.w2sv.simplestorage)
 
     testImplementation(libs.bundles.unitTest)

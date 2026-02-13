@@ -4,6 +4,5 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.slimber)
     api(libs.bundles.unitTest)
 }

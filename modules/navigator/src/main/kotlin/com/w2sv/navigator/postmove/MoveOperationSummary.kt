@@ -1,7 +1,7 @@
 package com.w2sv.navigator.postmove
 
 import android.content.Context
-import com.w2sv.common.util.makeIf
+import com.w2sv.kotlinutils.makeIf
 import com.w2sv.navigator.domain.moving.MoveOperation
 import com.w2sv.navigator.domain.moving.MoveOperationFeedback
 import com.w2sv.navigator.domain.moving.MoveResult

@@ -1,6 +1,7 @@
 package helpers
 
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ExternalModuleDependencyBundle
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
@@ -28,6 +29,12 @@ internal val Project.catalog
  */
 internal fun Project.library(alias: String): Provider<MinimalExternalModuleDependency> =
     catalog.findLibrary(alias).get()
+
+/**
+ * @param alias The bundle alias that will be passed to [VersionCatalog.findBundle]
+ */
+internal fun Project.bundle(alias: String): Provider<ExternalModuleDependencyBundle> =
+    catalog.findBundle(alias).get()
 
 internal fun PluginManager.applyPlugins(vararg pluginId: String, catalog: VersionCatalog) {
     pluginId.forEach {

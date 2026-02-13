@@ -3,9 +3,9 @@ package com.w2sv.navigator.observing
 import android.os.Handler
 import android.os.HandlerThread
 import com.w2sv.common.logging.log
-import com.w2sv.common.util.filterKeysByValueToSet
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfigFlow
+import com.w2sv.kotlinutils.keysWhereToSet
 import com.w2sv.navigator.di.FileObserverHandlerThread
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
@@ -31,7 +31,7 @@ internal class FileObserverProvider @Inject constructor(
             .enabledFileTypes
             .filter { it.isMediaType }
             .map { fileType ->
-                val sourceTypes = navigatorConfig.fileTypeConfig(fileType).sourceTypeConfigMap.filterKeysByValueToSet { it.enabled }
+                val sourceTypes = navigatorConfig.fileTypeConfig(fileType).sourceTypeConfigMap.keysWhereToSet { it.enabled }
                 MediaFileObserver(
                     fileType = fileType,
                     enabledSourceTypes = sourceTypes,

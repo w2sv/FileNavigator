@@ -103,7 +103,6 @@ dependencies {
     implementation(projects.modules.navigatorQuicktile)
 
     implementation(libs.w2sv.androidutils.core)
-    implementation(libs.w2sv.kotlinutils)
     implementation(libs.w2sv.reversiblestate)
     implementation(libs.w2sv.composed.permissions)
     implementation(libs.w2sv.colorpicker)
@@ -127,7 +126,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.core)
 
     // Other
-    implementation(libs.slimber)
     implementation(libs.w2sv.simplestorage)
     implementation(libs.textflow)
     // Workaround for https://github.com/google/dagger/issues/5059
