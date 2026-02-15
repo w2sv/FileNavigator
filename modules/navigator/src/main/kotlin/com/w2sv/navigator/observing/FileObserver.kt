@@ -13,8 +13,8 @@ import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.navigator.domain.moving.DestinationSelectionManner
 import com.w2sv.navigator.domain.moving.MediaStoreEntry
 import com.w2sv.navigator.domain.moving.MoveDestination
-import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.moving.MoveOperation
+import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.notifications.NotificationEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
@@ -45,8 +45,7 @@ internal abstract class FileObserver(val mediaType: MediaType, blacklistSize: In
     }
 
     private fun blacklistFilteredSelfCreatedFiles() {
-        selfCreatedFiles
-            .flow
+        selfCreatedFilesFlow
             .filter { it.mediaType == mediaType }
             .map { it.mediaId }
             .collectOn(scope) { mediaId ->
