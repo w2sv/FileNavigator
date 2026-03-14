@@ -16,7 +16,7 @@ kotlinxCollectionsImmutable = "0.4.0"
 kotlinxCoroutines = "1.10.2"
 kotlinxSerializationCore = "1.10.0"
 ksp = "2.3.5"
-ktlint = "14.0.1"
+ktlint = "14.2.0"
 lifecycle = "2.10.0"
 lifecycleViewmodelNavigation3 = "2.10.0"
 # @keep
