@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator.ui.screen.home.drawer
+package com.w2sv.filenavigator.ui.screen.appsettings
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -27,9 +28,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.w2sv.modules.common.R
 import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.ui.designsystem.rememberBorderAnimationState
+import com.w2sv.modules.common.R
 
 @Composable
 fun ThemeSelectionRow(
@@ -39,24 +40,24 @@ fun ThemeSelectionRow(
     buttonSize: Dp = 44.dp,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Center
 ) {
+    val indicators = remember { themeIndicatorProperties() }
     Row(
         modifier = modifier,
         horizontalArrangement = horizontalArrangement,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        themeIndicatorProperties
-            .forEach { properties ->
-                ThemeIndicator(
-                    properties = properties,
-                    isSelected = { properties.theme == selected },
-                    onClick = { onSelected(properties.theme) },
-                    buttonModifier = Modifier.size(buttonSize)
-                )
-            }
+        indicators.forEach { indicator ->
+            ThemeIndicator(
+                properties = indicator,
+                isSelected = { indicator.theme == selected },
+                onClick = { onSelected(indicator.theme) },
+                buttonModifier = Modifier.size(buttonSize)
+            )
+        }
     }
 }
 
-private val themeIndicatorProperties =
+private fun themeIndicatorProperties() =
     listOf(
         ThemeIndicatorProperties(
             theme = Theme.Light,

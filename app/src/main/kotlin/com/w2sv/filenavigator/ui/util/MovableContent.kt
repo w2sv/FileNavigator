@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 
 typealias ModifierReceivingComposable = @Composable (Modifier) -> Unit
 
+// TODO composed
 @Composable
 fun <P> rememberMovableContentOf(content: @Composable (P) -> Unit): @Composable (P) -> Unit =
     remember {
