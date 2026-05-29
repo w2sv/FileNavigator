@@ -1,12 +1,2 @@
-• Added an additional file stability checking mechanism to prevent moving while a file is still being written
-• Prevent duplicate notification emission for the same file
-• Improved batch move reliability
-• Cleaner “Navigate file“ notification wording
-• Improved file size formatting
-• “File Navigator is running” notification is now silent
-• Added “AutoMoved” label to move history entries
-• Improved "Permissions" & "App Settings" screen UI
-• Added "Add quick settings tile" button
-• Made global dialog themes MaterialYou compatible
-• Fixed crashes when handling camera source files
-• Tons of performance & stability improvements
+fix: duplicate move attempts after successful auto move, resulting in a duplicate empty file at the move destination & an error toast
+feat: add .xtc extension to EBook
