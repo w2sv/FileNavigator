@@ -8,10 +8,10 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.w2sv.modules.common.R
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
+import com.w2sv.modules.common.R
 import kotlinx.collections.immutable.toImmutableMap
 
 fun LazyListScope.fileTypeSettingsList(

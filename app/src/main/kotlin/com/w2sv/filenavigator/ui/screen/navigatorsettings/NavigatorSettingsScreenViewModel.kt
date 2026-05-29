@@ -10,12 +10,12 @@ import com.w2sv.navigator.di.FileNavigatorIsRunning
 import com.w2sv.navigator.system_broadcastreceiver.PowerSaveModeChangedReceiver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 @HiltViewModel
 class NavigatorSettingsScreenViewModel @Inject constructor(

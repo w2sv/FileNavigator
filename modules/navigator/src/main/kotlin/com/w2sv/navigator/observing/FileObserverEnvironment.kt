@@ -8,9 +8,9 @@ import com.w2sv.navigator.domain.notifications.NotificationEventHandler
 import com.w2sv.navigator.moving.FileMover
 import com.w2sv.navigator.shared.createdfiles.SelfCreatedFileIdentifiers
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
 /**
  * Bundles shared infrastructure needed by all [FileObserver] instances.

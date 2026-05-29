@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions
 
 import androidx.compose.runtime.Stable
-import com.w2sv.modules.common.R
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
@@ -10,6 +9,7 @@ import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.util.snackbar.ScopedSnackbarController
+import com.w2sv.modules.common.R
 
 @Stable
 class NavigatorConfigActionsImpl(

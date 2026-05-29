@@ -19,7 +19,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.core.rememberStyledTextResource
-import com.w2sv.modules.common.R
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
@@ -30,6 +29,7 @@ import com.w2sv.filenavigator.ui.util.StatefulTextEditor
 import com.w2sv.kotlinutils.copy
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
+import com.w2sv.modules.common.R
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow

@@ -15,14 +15,14 @@ import com.w2sv.common.util.lineBreakSuffixed
 import com.w2sv.common.util.loadBitmapWithFileNotFoundHandling
 import com.w2sv.common.util.removeSlashSuffix
 import com.w2sv.common.util.slashPrefixed
-import com.w2sv.modules.common.R
 import com.w2sv.domain.model.filetype.PresetFileType
+import com.w2sv.modules.common.R
 import com.w2sv.navigator.domain.NavigatorIntents
 import com.w2sv.navigator.domain.moving.DestinationSelectionManner
 import com.w2sv.navigator.domain.moving.MoveDestination
-import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.moving.MoveFileNotificationData
 import com.w2sv.navigator.domain.moving.MoveOperation
+import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.notifications.NotificationEvent
 import com.w2sv.navigator.notifications.AppNotification
 import com.w2sv.navigator.notifications.NotificationEventReceiver

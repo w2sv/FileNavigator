@@ -13,14 +13,14 @@ import com.w2sv.navigator.notifications.controller.BatchMoveNotificationControll
 import com.w2sv.navigator.notifications.controller.BatchMoveProgressNotificationController
 import com.w2sv.navigator.notifications.controller.BatchMoveResultsNotificationController
 import com.w2sv.navigator.notifications.controller.NavigateFileNotificationController
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import slimber.log.i
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 internal class NotificationEventHandlerImpl @Inject constructor(

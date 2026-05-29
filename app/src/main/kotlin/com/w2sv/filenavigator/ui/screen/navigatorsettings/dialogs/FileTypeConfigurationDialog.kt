@@ -49,13 +49,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.w2sv.common.util.colonSuffixed
-import com.w2sv.modules.common.R
 import com.w2sv.designsystem.CharSequenceText
 import com.w2sv.designsystem.DialogButton
 import com.w2sv.designsystem.HighlightedDialogButton
 import com.w2sv.designsystem.theme.dialogSectionLabel
 import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.modules.common.R
 import kotlinx.parcelize.Parcelize
 
 @Composable

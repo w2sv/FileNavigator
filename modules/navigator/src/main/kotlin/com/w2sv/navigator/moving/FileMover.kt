@@ -6,9 +6,9 @@ import com.w2sv.navigator.domain.moving.MoveOperation
 import com.w2sv.navigator.postmove.MoveOperationSummary
 import com.w2sv.navigator.postmove.MoveSummaryChannel
 import com.w2sv.navigator.postmove.loggingTrySend
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 internal class FileMover @Inject constructor(
     private val moveSummaryChannel: MoveSummaryChannel,

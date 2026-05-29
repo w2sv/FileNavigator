@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.w2sv.composed.core.isPortraitModeActive
 import com.w2sv.composed.material3.extensions.rememberVisibilityProgress
-import com.w2sv.modules.common.R
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
 import com.w2sv.filenavigator.ui.designsystem.NavigationDrawerScreenTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.PaddingDefaults
@@ -36,6 +35,7 @@ import com.w2sv.filenavigator.ui.screen.home.navigatorstatus.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
+import com.w2sv.modules.common.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 

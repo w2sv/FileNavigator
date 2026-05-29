@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.androidutils.os.dynamicColorsSupported
 import com.w2sv.composed.core.rememberStyledTextResource
-import com.w2sv.modules.common.R
 import com.w2sv.domain.model.Theme
 import com.w2sv.filenavigator.ui.LocalNavigator
 import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
@@ -35,6 +34,7 @@ import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.filenavigator.ui.util.ScreenPreviews
 import com.w2sv.filenavigator.ui.util.useDarkTheme
+import com.w2sv.modules.common.R
 
 @Composable
 fun AppSettingsScreen(navigator: Navigator = LocalNavigator.current, appPreferences: AppPreferences = rememberAppPreferences()) {

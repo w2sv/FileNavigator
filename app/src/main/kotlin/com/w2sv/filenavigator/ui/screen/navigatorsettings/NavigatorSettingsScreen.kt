@@ -10,7 +10,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.core.isLandscapeModeActive
-import com.w2sv.modules.common.R
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.filenavigator.ui.LocalNavigator
@@ -22,6 +21,7 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.NavigatorSettings
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.PreviewNavigatorConfigActions
 import com.w2sv.filenavigator.ui.util.PreviewOf
+import com.w2sv.modules.common.R
 import kotlinx.coroutines.flow.emptyFlow
 
 @Composable

@@ -6,10 +6,10 @@ import com.w2sv.common.uri.DocumentUri
 import com.w2sv.common.uri.MediaUri
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.navigator.domain.moving.MoveDestination
-import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.moving.MoveOperation
-import slimber.log.i
+import com.w2sv.navigator.domain.moving.NavigatableFile
 import java.time.LocalDateTime
+import slimber.log.i
 
 internal fun MoveOperation.movedFile(context: Context, dateTime: LocalDateTime): MovedFile {
     val name = destination.fileName(context)

@@ -36,7 +36,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.w2sv.modules.common.R
 import com.w2sv.designsystem.Easing
 import com.w2sv.designsystem.theme.DEFAULT_ANIMATION_DURATION
 import com.w2sv.designsystem.theme.ResultColor
@@ -44,6 +43,7 @@ import com.w2sv.filenavigator.ui.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
 import com.w2sv.filenavigator.ui.util.PreviewOf
+import com.w2sv.modules.common.R
 import com.w2sv.navigator.FileNavigator
 
 private enum class NavigatorStatusCardData(val statusText: StatusText, val toggleButton: ToggleButton) {

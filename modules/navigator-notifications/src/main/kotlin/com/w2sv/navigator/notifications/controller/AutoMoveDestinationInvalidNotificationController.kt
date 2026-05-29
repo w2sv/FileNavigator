@@ -3,8 +3,8 @@ package com.w2sv.navigator.notifications.controller
 import androidx.core.app.NotificationCompat
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
-import com.w2sv.modules.common.R
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
+import com.w2sv.modules.common.R
 import com.w2sv.navigator.domain.notifications.NotificationEvent
 import com.w2sv.navigator.notifications.AppNotification
 import com.w2sv.navigator.notifications.NotificationEventReceiver

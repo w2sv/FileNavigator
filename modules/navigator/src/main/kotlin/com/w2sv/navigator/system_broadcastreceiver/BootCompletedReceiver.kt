@@ -7,13 +7,13 @@ import com.w2sv.common.logging.LoggingBroadcastReceiver
 import com.w2sv.domain.repository.NavigatorConfigFlow
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * Called on system emission of [Intent.ACTION_BOOT_COMPLETED].

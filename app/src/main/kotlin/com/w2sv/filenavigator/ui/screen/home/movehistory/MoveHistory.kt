@@ -42,7 +42,6 @@ import androidx.lifecycle.Lifecycle
 import com.w2sv.common.uri.DocumentUri
 import com.w2sv.composed.core.OnLifecycleEvent
 import com.w2sv.composed.core.extensions.thenIf
-import com.w2sv.modules.common.R
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.model.filetype.PresetFileType
@@ -59,6 +58,7 @@ import com.w2sv.filenavigator.ui.modelext.startViewFileActivity
 import com.w2sv.filenavigator.ui.util.WithLocalContentColor
 import com.w2sv.filenavigator.ui.util.snackbar.SnackbarController
 import com.w2sv.filenavigator.ui.util.snackbar.rememberSnackbarController
+import com.w2sv.modules.common.R
 import eu.wewox.textflow.material3.TextFlow
 import java.time.LocalDateTime
 import kotlinx.coroutines.CoroutineScope

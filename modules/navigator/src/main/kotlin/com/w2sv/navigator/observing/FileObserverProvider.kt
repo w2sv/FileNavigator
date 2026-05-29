@@ -7,9 +7,9 @@ import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigFlow
 import com.w2sv.kotlinutils.keysWhereToSet
 import com.w2sv.navigator.di.FileObserverHandlerThread
+import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 import slimber.log.i
-import javax.inject.Inject
 
 internal class FileObserverProvider @Inject constructor(
     private val navigatorConfigFlow: NavigatorConfigFlow,

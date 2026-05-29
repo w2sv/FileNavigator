@@ -14,8 +14,8 @@ import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.domain.moving.DestinationSelectionManner
 import com.w2sv.navigator.domain.moving.MoveDestination
-import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.moving.MoveOperation
+import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.notifications.CancelNotificationEvent
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.shared.createdfiles.EmitSelfCreatedFile
@@ -102,8 +102,11 @@ internal class FileDestinationPickerActivity : DestinationPickerActivityApi() {
     }
 
     @Parcelize
-    data class Args(val navigatableFile: NavigatableFile, val cancelNotification: CancelNotificationEvent, override val startDestination: DocumentUri?) :
-        DestinationPickerActivityApi.Args {
+    data class Args(
+        val navigatableFile: NavigatableFile,
+        val cancelNotification: CancelNotificationEvent,
+        override val startDestination: DocumentUri?
+    ) : DestinationPickerActivityApi.Args {
         fun moveOperation(destination: MoveDestination.File): MoveOperation.FileDestinationPicked =
             MoveOperation.FileDestinationPicked(
                 file = navigatableFile,

@@ -26,12 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.w2sv.modules.common.R
 import com.w2sv.designsystem.DialogButton
 import com.w2sv.designsystem.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
 import com.w2sv.filenavigator.ui.util.WithLocalContentColor
+import com.w2sv.modules.common.R
 
 @Composable
 fun MoveHistoryCard(state: MoveHistoryState, modifier: Modifier = Modifier) {

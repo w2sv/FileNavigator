@@ -23,11 +23,11 @@ import com.w2sv.androidutils.res.getHtmlFormattedText
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.logging.LoggingComponentActivity
 import com.w2sv.composed.core.rememberStyledTextResource
-import com.w2sv.modules.common.R
 import com.w2sv.designsystem.DialogButton
 import com.w2sv.designsystem.HighlightedDialogButton
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.kotlinutils.threadUnsafeLazy
+import com.w2sv.modules.common.R
 import com.w2sv.navigator.domain.moving.MoveFileNotificationData
 import com.w2sv.navigator.domain.notifications.NotificationEventHandler
 import dagger.hilt.android.AndroidEntryPoint

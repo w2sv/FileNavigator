@@ -7,8 +7,8 @@ import com.w2sv.androidutils.content.componentName
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.logging.LoggingComponentActivity
 import com.w2sv.common.uri.MediaUri
-import com.w2sv.modules.common.R
 import com.w2sv.kotlinutils.threadUnsafeLazy
+import com.w2sv.modules.common.R
 import com.w2sv.navigator.domain.moving.MoveFileNotificationData
 import com.w2sv.navigator.domain.notifications.NotificationEventHandler
 import dagger.hilt.android.AndroidEntryPoint

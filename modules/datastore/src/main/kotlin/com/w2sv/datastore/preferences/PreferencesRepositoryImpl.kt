@@ -8,9 +8,9 @@ import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.persistedpreferences.EnumSavePolicy
 import com.w2sv.persistedpreferences.PersistedPreferencesAccessor
-import slimber.log.i
 import javax.inject.Inject
 import javax.inject.Singleton
+import slimber.log.i
 
 @Singleton
 internal class PreferencesRepositoryImpl @Inject constructor(dataStore: DataStore<Preferences>) :

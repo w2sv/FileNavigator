@@ -32,9 +32,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.w2sv.modules.common.R
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.ui.util.PreviewOf
+import com.w2sv.modules.common.R
 import java.time.LocalDate
 
 internal object HomeScreenNavigationDrawerTokens {

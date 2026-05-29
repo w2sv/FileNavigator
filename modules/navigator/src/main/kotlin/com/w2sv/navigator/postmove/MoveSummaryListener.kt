@@ -11,13 +11,13 @@ import com.w2sv.navigator.domain.moving.MoveResult
 import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.notifications.NotificationEventHandler
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.time.LocalDateTime
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import slimber.log.i
-import java.time.LocalDateTime
-import javax.inject.Inject
 
 internal class MoveSummaryListener @Inject constructor(
     private val insertMovedFileUseCase: InsertMovedFileUseCase,

@@ -2,8 +2,8 @@ package com.w2sv.navigator.domain.notifications
 
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.navigator.domain.moving.MoveDestination
-import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.moving.MoveResult
+import com.w2sv.navigator.domain.moving.NavigatableFile
 import kotlinx.parcelize.Parcelize
 
 sealed interface NotificationEvent {
