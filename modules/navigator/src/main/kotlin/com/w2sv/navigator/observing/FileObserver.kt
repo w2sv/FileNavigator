@@ -16,11 +16,9 @@ import com.w2sv.navigator.domain.moving.MoveDestination
 import com.w2sv.navigator.domain.moving.MoveOperation
 import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.notifications.NotificationEvent
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import slimber.log.i
 
 internal abstract class FileObserver(val mediaType: MediaType, blacklistSize: Int, handler: Handler, environment: FileObserverEnvironment) :
@@ -35,7 +33,7 @@ internal abstract class FileObserver(val mediaType: MediaType, blacklistSize: In
      */
     private val blacklist = RecentSet<MediaId>(blacklistSize)
 
-    private val pendingJobs = mutableMapOf<MediaId, Job>()
+    private val pendingJobs = PendingMediaStoreEntryJobs()
 
     open val logIdentifier: String
         get() = this::class.java.simpleName
@@ -93,7 +91,7 @@ internal abstract class FileObserver(val mediaType: MediaType, blacklistSize: In
         }
 
         log { "Found matching fileAndSourceType $fileAndSourceType" }
-        scope.launch { promptNavigationWhenMediaStoreEntryStable(mediaId, mediaUri, fileAndSourceType) }
+        promptNavigationWhenMediaStoreEntryStable(mediaId, mediaUri, fileAndSourceType)
     }
 
     /**
@@ -103,34 +101,28 @@ internal abstract class FileObserver(val mediaType: MediaType, blacklistSize: In
     protected abstract fun enabledFileAndSourceTypeOrNull(mediaStoreEntry: MediaStoreEntry): FileAndSourceType?
 
     private fun promptNavigationWhenMediaStoreEntryStable(mediaId: MediaId, mediaUri: MediaUri, fileAndSourceType: FileAndSourceType) {
-        val cancelledJob = cancelAndRemovePendingJob(mediaId)
+        val cancelledJob = pendingJobs.replace(mediaId, scope) {
+            awaitStableMediaStoreEntry(
+                provideEntry = { validMediaStoreEntryOrNull(mediaUri) },
+                log = ::log
+            )?.let { mediaStoreEntry ->
+                val navigatableFile = NavigatableFile(
+                    mediaUri = mediaUri,
+                    mediaStoreEntry = mediaStoreEntry,
+                    fileAndSourceType = fileAndSourceType
+                )
+                log { "Calling promptFileNavigation for $navigatableFile" }
+                promptNavigation(navigatableFile)
+
+                log { "Completed job for $mediaId - Adding to blacklist" }
+                blacklist.add(mediaId)
+            }
+        }
         log {
             if (cancelledJob) {
                 "Relaunching awaitStableMediaStoreData for $mediaId"
             } else {
                 "Launching awaitStableMediaStoreData for $mediaId"
-            }
-        }
-
-        pendingJobs[mediaId] = scope.launch {
-            try {
-                awaitStableMediaStoreEntry(
-                    provideEntry = { validMediaStoreEntryOrNull(mediaUri) },
-                    log = ::log
-                )?.let { mediaStoreEntry ->
-                    val navigatableFile = NavigatableFile(
-                        mediaUri = mediaUri,
-                        mediaStoreEntry = mediaStoreEntry,
-                        fileAndSourceType = fileAndSourceType
-                    )
-                    log { "Calling promptFileNavigation for $navigatableFile" }
-                    promptNavigation(navigatableFile)
-
-                    log { "Completed job for $mediaId - Adding to blacklist" }
-                    blacklist.add(mediaId)
-                }
-            } finally {
-                pendingJobs.remove(mediaId)
             }
         }
     }
@@ -174,11 +166,11 @@ internal abstract class FileObserver(val mediaType: MediaType, blacklistSize: In
     }
 
     private fun cancelAndRemovePendingJob(mediaId: MediaId): Boolean {
-        val cancelledJob = pendingJobs[mediaId]?.apply {
-            log { "Cancelling pending job for $mediaId" }
-            cancel()
-        } != null
-        pendingJobs.remove(mediaId)
+        val cancelledJob = pendingJobs.cancelAndRemove(mediaId).also { cancelled ->
+            if (cancelled) {
+                log { "Cancelling pending job for $mediaId" }
+            }
+        }
         return cancelledJob
     }
 
