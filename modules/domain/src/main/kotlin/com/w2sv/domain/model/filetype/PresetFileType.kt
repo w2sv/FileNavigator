@@ -187,7 +187,7 @@ sealed interface PresetFileType : StaticFileType {
         setOf(
             "epub", "azw", "azw1", "azw2", "azw3", "mobi", "iba", "rtf", "tpz", "mart",
             "tk3", "aep", "dnl", "ybk", "lit", "ebk", "prc", "kfx", "ava", "orb", "koob",
-            "bpnueb", "pef", "vbk", "fkb", "bkk"
+            "bpnueb", "pef", "vbk", "fkb", "bkk", "xtc"
         )
     )
 
