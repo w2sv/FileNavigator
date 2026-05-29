@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.sharedstate
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -9,7 +8,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class AppPermissionsStateTest {
 
     private var hasPostNotificationsPermission = false

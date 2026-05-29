@@ -11,8 +11,8 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.migration.NavigatorPreferencesToProtoMigration
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigProtoSerializer
-import com.w2sv.domain.model.navigatorconfig.NavigatorConfigFlow
 import com.w2sv.domain.repository.NavigatorConfigDataSource
+import com.w2sv.domain.repository.NavigatorConfigFlow
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,5 +46,5 @@ internal object DataStoreModule {
 
     @Provides
     fun navigatorConfigFlow(dataSource: NavigatorConfigDataSource): NavigatorConfigFlow =
-        dataSource.navigatorConfig
+        dataSource.config
 }

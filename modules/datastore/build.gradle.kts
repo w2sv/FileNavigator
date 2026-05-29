@@ -10,9 +10,9 @@ dependencies {
     implementation(projects.modules.common)
     implementation(projects.modules.domain)
     implementation(projects.modules.datastoreProto)
+
     implementation(libs.androidx.core.ktx)
-    implementation(libs.w2sv.datastoreutils.preferences)
-    implementation(libs.w2sv.datastoreutils.datastoreflow)
+    implementation(libs.w2sv.persistedPreferences)
     implementation(libs.w2sv.androidutils.core)
 
     testImplementation(projects.modules.test)

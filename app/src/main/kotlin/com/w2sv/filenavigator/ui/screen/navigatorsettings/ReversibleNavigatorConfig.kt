@@ -11,6 +11,7 @@ import com.w2sv.reversiblestate.ReversibleStateFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 class ReversibleNavigatorConfig(reversibleStateFlow: ReversibleStateFlow<NavigatorConfig>) :
@@ -24,12 +25,13 @@ class ReversibleNavigatorConfig(reversibleStateFlow: ReversibleStateFlow<Navigat
     ) : this(
         reversibleStateFlow = ReversibleStateFlow(
             scope = scope,
-            appliedStateFlow = navigatorConfigDataSource.navigatorConfig.stateIn(
+            appliedState = navigatorConfigDataSource.config.stateIn(
                 scope = scope,
-                started = SharingStarted.WhileSubscribed()
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = NavigatorConfig.default
             ),
-            syncState = {
-                navigatorConfigDataSource.navigatorConfig.save(it)
+            commitState = { state ->
+                navigatorConfigDataSource.update { state }
                 onStateSynced()
             }
         )

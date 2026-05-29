@@ -1,14 +1,14 @@
 package com.w2sv.domain.repository
 
-import com.w2sv.datastoreutils.datastoreflow.DataStoreFlow
 import com.w2sv.domain.model.Theme
+import com.w2sv.persistedpreferences.PersistedPreference
 
 interface PreferencesRepository {
-    val theme: DataStoreFlow<Theme>
-    val useAmoledBlackTheme: DataStoreFlow<Boolean>
-    val useDynamicColors: DataStoreFlow<Boolean>
-    val postNotificationsPermissionRequested: DataStoreFlow<Boolean>
-    val showStorageVolumeNames: DataStoreFlow<Boolean>
-    val showAutoMoveIntroduction: DataStoreFlow<Boolean>
-    val showQuickMovePermissionQueryExplanation: DataStoreFlow<Boolean>
+    val theme: PersistedPreference<Theme>
+    val useAmoledBlackTheme: PersistedPreference<Boolean>
+    val useDynamicColors: PersistedPreference<Boolean>
+    val postNotificationsPermissionRequested: PersistedPreference<Boolean>
+    val showStorageVolumeNames: PersistedPreference<Boolean>
+    val showAutoMoveIntroduction: PersistedPreference<Boolean>
+    val showQuickMovePermissionQueryExplanation: PersistedPreference<Boolean>
 }

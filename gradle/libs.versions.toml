@@ -1,37 +1,36 @@
 [versions]
-agp = "9.0.1"
+agp = "9.2.1"
 androidx-test = "1.7.0"
-androidxActivity = "1.12.4"
-baselineprofile = "1.5.0-alpha03"
+androidxActivity = "1.13.0"
+baselineprofile = "1.5.0-alpha06"
 # @keep
-compileSdk = "36"
-compose-lint-checks = "1.4.2"
+compileSdk = "37"
+compose-lint-checks = "1.5.0"
 compose-material3 = "1.4.0"
-compose-tooling = "1.10.3"
-hilt = "2.59.1"
+compose-tooling = "1.11.2"
+hilt = "2.59.2"
 hiltNavigationCompose = "1.3.0"
 junit = "4.13.2"
-kotlin = "2.3.10"
+kotlin = "2.3.21"
 kotlinxCollectionsImmutable = "0.4.0"
-kotlinxCoroutines = "1.10.2"
-kotlinxSerializationCore = "1.10.0"
-ksp = "2.3.5"
-ktlint = "14.0.1"
+kotlinxCoroutines = "1.11.0"
+kotlinxSerializationCore = "1.11.0"
+ksp = "2.3.9"
+ktlint = "14.2.0"
 lifecycle = "2.10.0"
 lifecycleViewmodelNavigation3 = "2.10.0"
 # @keep
 minSdk = "30"
-moduleGraph = "2.9.0"
-nav3Core = "1.1.0-alpha04"
-protobuf = "4.33.5"
-protobuf-plugin = "0.9.6"
+moduleGraph = "2.9.1"
+nav3Core = "1.2.0-alpha03"
+protobuf = "4.35.0"
+protobuf-plugin = "0.10.0"
 room = "2.8.4"
 triplet-play = "4.0.0"
-versionCatalogUpdate = "1.0.1"
+versionCatalogUpdate = "1.1.0"
 # @pin
 w2sv-composed = "0.1.1"
-w2sv-datastoreutils = "0.0.8"
-w2sv-kotlinutils = "0.2.1"
+w2sv-kotlinutils = "1.0.0"
 
 [libraries]
 # @keep
@@ -50,7 +49,7 @@ androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", versi
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-tooling" }
 androidx-compose-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-constraintlayout-compose = "androidx.constraintlayout:constraintlayout-compose:1.1.1"
-androidx-core-ktx = "androidx.core:core-ktx:1.17.0"
+androidx-core-ktx = "androidx.core:core-ktx:1.18.0"
 androidx-documentfile = "androidx.documentfile:documentfile:1.1.0"
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
@@ -83,23 +82,18 @@ protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protob
 robolectric = "org.robolectric:robolectric:4.16.1"
 slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
 textflow = "io.github.oleksandrbalan:textflow-material3:1.2.1"
-w2sv-androidutils-core = "com.github.w2sv.AndroidUtils:core:0.5.0"
+w2sv-androidutils-core = "io.github.w2sv:androidutils-core:1.0.0"
 w2sv-colorpicker = "com.github.w2sv:Compose-Color-Picker-Bundle:1.0.0-rc9"
 w2sv-composed-core = { module = "com.github.w2sv.Composed:core", version.ref = "w2sv-composed" }
 w2sv-composed-material3 = { module = "com.github.w2sv.Composed:material3", version.ref = "w2sv-composed" }
 w2sv-composed-permissions = { module = "com.github.w2sv.Composed:permissions", version.ref = "w2sv-composed" }
-w2sv-datastoreutils-datastoreflow = { module = "com.github.w2sv.DataStoreUtils:datastoreflow", version.ref = "w2sv-datastoreutils" }
-w2sv-datastoreutils-preferences = { module = "com.github.w2sv.DataStoreUtils:preferences", version.ref = "w2sv-datastoreutils" }
-w2sv-kotlinutils-core = { module = "com.github.w2sv.KotlinUtils:core", version.ref = "w2sv-kotlinutils" }
-w2sv-kotlinutils-coroutines = { module = "com.github.w2sv.KotlinUtils:coroutines", version.ref = "w2sv-kotlinutils" }
-w2sv-reversiblestate = "com.github.w2sv:ReversibleStateKt:0.0.6-rc2"
+w2sv-persistedPreferences = "io.github.w2sv:persisted-preferences:1.1.0"
+w2sv-kotlinutils-core = { module = "io.github.w2sv:kotlinutils-core", version.ref = "w2sv-kotlinutils" }
+w2sv-kotlinutils-coroutines = { module = "io.github.w2sv:kotlinutils-coroutines", version.ref = "w2sv-kotlinutils" }
+w2sv-reversiblestate = "io.github.w2sv:reversible-state:1.0.0"
 w2sv-simplestorage = "com.github.w2sv:SimpleStorage:2.0.0-0.1.0-rc1"
 
 [bundles]
-w2sv-kotlinutils = [
-    "w2sv-kotlinutils-core",
-    "w2sv-kotlinutils-coroutines"
-]
 instrumentationTest = [
     "androidx-test-ext-junit",
     "androidx-test-rules",
@@ -111,6 +105,10 @@ unitTest = [
     "kotlinx-coroutines-test",
     "mockk",
     "robolectric",
+]
+w2sv-kotlinutils = [
+    "w2sv-kotlinutils-core",
+    "w2sv-kotlinutils-coroutines",
 ]
 
 [plugins]

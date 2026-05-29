@@ -18,12 +18,12 @@ data class ConfigEditState(
 
 @Composable
 fun rememberConfigEditState(navigatorVM: NavigatorSettingsScreenViewModel = hiltViewModel()): ConfigEditState {
-    val configHasChanges by navigatorVM.reversibleConfig.statesDissimilar.collectAsStateWithLifecycle()
+    val configHasChanges by navigatorVM.reversibleConfig.isDirty.collectAsStateWithLifecycle()
     return remember(navigatorVM) {
         ConfigEditState(
             hasChanges = { configHasChanges },
-            reset = navigatorVM.reversibleConfig::reset,
-            apply = navigatorVM::launchConfigSync,
+            reset = navigatorVM.reversibleConfig::revert,
+            apply = navigatorVM.reversibleConfig::launchCommit,
             changesHaveBeenApplied = navigatorVM.configChangesHaveBeenApplied
         )
     }

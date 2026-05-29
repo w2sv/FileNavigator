@@ -9,10 +9,8 @@ import com.w2sv.kotlinutils.copy
 import com.w2sv.kotlinutils.keysWhereToSet
 import com.w2sv.kotlinutils.map
 import com.w2sv.kotlinutils.update
-import kotlinx.coroutines.flow.Flow
 
 typealias FileTypeConfigMap = Map<FileType, FileTypeConfig>
-typealias NavigatorConfigFlow = Flow<NavigatorConfig>
 
 data class NavigatorConfig(
     val fileTypeConfigMap: FileTypeConfigMap,

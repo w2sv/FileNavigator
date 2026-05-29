@@ -4,16 +4,10 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-Xannotation-default-target=param-property")
-    }
-}
-
 dependencies {
     implementation(projects.modules.common)
 
-    api(libs.w2sv.datastoreutils.datastoreflow)
+    api(libs.w2sv.persistedPreferences)
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.w2sv.simplestorage)
     implementation(libs.androidx.core.ktx)

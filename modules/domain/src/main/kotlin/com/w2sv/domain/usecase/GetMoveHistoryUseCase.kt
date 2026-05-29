@@ -6,11 +6,11 @@ import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetWrappingFileType
-import com.w2sv.domain.model.navigatorconfig.NavigatorConfigFlow
 import com.w2sv.domain.repository.MovedFileRepository
-import javax.inject.Inject
+import com.w2sv.domain.repository.NavigatorConfigFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import javax.inject.Inject
 
 class GetMoveHistoryUseCase @Inject constructor(
     private val movedFileRepository: MovedFileRepository,

@@ -1,7 +1,7 @@
 package com.w2sv.navigator.notifications
 
 import com.w2sv.common.di.ApplicationIoScope
-import com.w2sv.domain.model.navigatorconfig.NavigatorConfigFlow
+import com.w2sv.domain.repository.NavigatorConfigFlow
 import com.w2sv.kotlinutils.copy
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.kotlinutils.coroutines.flow.combineToPair

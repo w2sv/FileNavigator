@@ -3,39 +3,39 @@ package com.w2sv.datastore.preferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.intPreferencesKey
 import com.w2sv.androidutils.os.dynamicColorsSupported
-import com.w2sv.datastoreutils.datastoreflow.DataStoreFlow
-import com.w2sv.datastoreutils.preferences.PreferencesDataStoreRepository
 import com.w2sv.domain.model.Theme
 import com.w2sv.domain.repository.PreferencesRepository
+import com.w2sv.persistedpreferences.EnumSavePolicy
+import com.w2sv.persistedpreferences.PersistedPreferencesAccessor
+import slimber.log.i
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 internal class PreferencesRepositoryImpl @Inject constructor(dataStore: DataStore<Preferences>) :
-    PreferencesDataStoreRepository(dataStore),
+    PersistedPreferencesAccessor(dataStore, log = ::i),
     PreferencesRepository {
 
-    override val theme = enumDataStoreFlow(intPreferencesKey("theme")) { Theme.Default }
+    override val theme = enumPreference("theme", { Theme.Default }, EnumSavePolicy.byOrdinal())
 
-    override val useAmoledBlackTheme = dataStoreFlow(booleanPreferencesKey("useAmoledBlackTheme")) { false }
+    override val useAmoledBlackTheme = persistedPreference(booleanPreferencesKey("useAmoledBlackTheme")) { false }
 
-    override val useDynamicColors = dataStoreFlow(booleanPreferencesKey("useDynamicColors")) { dynamicColorsSupported }
+    override val useDynamicColors = persistedPreference(booleanPreferencesKey("useDynamicColors")) { dynamicColorsSupported }
 
-    override val postNotificationsPermissionRequested = dataStoreFlow(
+    override val postNotificationsPermissionRequested = persistedPreference(
         booleanPreferencesKey("postNotificationsPermissionRequested")
     ) { false }
 
-    override val showStorageVolumeNames: DataStoreFlow<Boolean> = dataStoreFlow(
+    override val showStorageVolumeNames = persistedPreference(
         booleanPreferencesKey("showStorageVolumeNames")
     ) { true }
 
-    override val showAutoMoveIntroduction: DataStoreFlow<Boolean> = dataStoreFlow(
+    override val showAutoMoveIntroduction = persistedPreference(
         booleanPreferencesKey("showAutoMoveIntroduction")
     ) { true }
 
-    override val showQuickMovePermissionQueryExplanation: DataStoreFlow<Boolean> = dataStoreFlow(
+    override val showQuickMovePermissionQueryExplanation = persistedPreference(
         booleanPreferencesKey("showQuickMovePermissionQueryExplanation")
     ) { true }
 }

@@ -2,30 +2,30 @@ package com.w2sv.datastore.proto.navigatorconfig
 
 import androidx.annotation.VisibleForTesting
 import androidx.datastore.core.DataStore
+import com.w2sv.common.di.ApplicationIoScope
 import com.w2sv.datastore.NavigatorConfigProto
-import com.w2sv.datastoreutils.datastoreflow.DataStoreFlow
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
+import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 internal class NavigatorConfigDataSourceImpl @Inject constructor(
-    private val navigatorConfigProtoDataStore: DataStore<NavigatorConfigProto>
+    private val dataStore: DataStore<NavigatorConfigProto>,
+    @ApplicationIoScope scope: CoroutineScope
 ) : NavigatorConfigDataSource {
 
-    override val navigatorConfig: DataStoreFlow<NavigatorConfig> = DataStoreFlow(
-        navigatorConfigProtoDataStore.data.map { it.toExternal() },
-        { NavigatorConfig.default },
-        ::saveNavigatorConfig
-    )
-
-    private suspend fun saveNavigatorConfig(config: NavigatorConfig) {
-        updateData { config }
-    }
+    override val config = dataStore.data
+        .map { it.toExternal() }
+        .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 1) // Share to avoid redundant .toExternal calls
 
     /**
      * Convenience method that enables directly modifying a [NavigatorConfig] instance, that has been mapped to from the
@@ -34,8 +34,8 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
      *
      * @see DataStore.updateData
      */
-    private suspend fun updateData(transform: suspend (NavigatorConfig) -> NavigatorConfig) {
-        navigatorConfigProtoDataStore.updateData { protoConfig ->
+    override suspend fun update(transform: suspend (NavigatorConfig) -> NavigatorConfig) {
+        dataStore.updateData { protoConfig ->
             transform(protoConfig.toExternal()).toProto(protoConfig.hasBeenMigrated)
         }
     }
@@ -45,7 +45,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
     // ==================
 
     override suspend fun unsetAutoMoveConfig(fileType: FileType, sourceType: SourceType) {
-        updateData {
+        update {
             it.updateAutoMoveConfig(fileType, sourceType) {
                 AutoMoveConfig.Empty
             }
@@ -57,7 +57,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
     // ==================
 
     override suspend fun saveQuickMoveDestination(fileType: FileType, sourceType: SourceType, destination: LocalDestinationApi) {
-        updateData { config ->
+        update { config ->
             config.updateSourceConfig(
                 fileType,
                 sourceType
@@ -73,7 +73,7 @@ internal class NavigatorConfigDataSourceImpl @Inject constructor(
     }
 
     override suspend fun unsetQuickMoveDestination(fileType: FileType, sourceType: SourceType) {
-        updateData { config ->
+        update { config ->
             config.updateSourceConfig(
                 fileType,
                 sourceType

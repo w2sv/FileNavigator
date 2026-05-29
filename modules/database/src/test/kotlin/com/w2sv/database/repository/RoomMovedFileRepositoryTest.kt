@@ -15,7 +15,6 @@ import com.w2sv.domain.repository.MovedFileRepository
 import java.io.IOException
 import java.time.LocalDateTime
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -26,7 +25,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-@OptIn(ExperimentalCoroutinesApi::class)
 internal class RoomMovedFileRepositoryTest {
 
     private val testScope = TestScope(UnconfinedTestDispatcher())

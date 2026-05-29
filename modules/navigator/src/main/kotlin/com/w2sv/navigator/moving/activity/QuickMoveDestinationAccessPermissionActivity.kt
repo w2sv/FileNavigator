@@ -120,7 +120,7 @@ internal class QuickMoveDestinationAccessPermissionActivity : LoggingComponentAc
 
     private suspend fun determineAction(): Action =
         when {
-            preferencesRepository.showQuickMovePermissionQueryExplanation.first() -> ShowRationale
+            preferencesRepository.showQuickMovePermissionQueryExplanation.flow.first() -> ShowRationale
             moveOperation.destination.hasReadAndWritePermission(this) -> StartMove
             else -> LaunchPicker
         }

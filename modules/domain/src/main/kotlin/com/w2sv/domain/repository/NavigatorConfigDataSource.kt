@@ -1,13 +1,17 @@
 package com.w2sv.domain.repository
 
-import com.w2sv.datastoreutils.datastoreflow.DataStoreFlow
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
+import kotlinx.coroutines.flow.Flow
+
+typealias NavigatorConfigFlow = Flow<NavigatorConfig>
 
 interface NavigatorConfigDataSource {
-    val navigatorConfig: DataStoreFlow<NavigatorConfig>
+    val config: NavigatorConfigFlow
+
+    suspend fun update(transform: suspend (NavigatorConfig) -> NavigatorConfig)
 
     // ==================
     // Auto move
