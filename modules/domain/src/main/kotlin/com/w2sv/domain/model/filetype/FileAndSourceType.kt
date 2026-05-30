@@ -8,6 +8,13 @@ import kotlin.collections.listOf
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Pairing of a matched [FileType] with the source category that produced it.
+ *
+ * A file type can be valid for multiple sources, for example image downloads
+ * and camera photos. This value captures the concrete combination used for
+ * labels, icons and source-specific navigation settings.
+ */
 @Parcelize
 data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType) : Parcelable {
 
@@ -31,11 +38,11 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
         when {
             isGif -> context.getString(R.string.gif)
             sourceType == SourceType.Camera -> context.getString(
-                when (fileType.wrappedPresetTypeOrNull) {
+                when (fileType.presetTypeOrNull) {
                     PresetFileType.Image -> R.string.photo
                     PresetFileType.Video -> R.string.video
                     else -> error(
-                        "wrapped file type should be PresetFileType.Image or PresetFileType.Video but was ${fileType.wrappedPresetTypeOrNull}"
+                        "file type should be PresetFileType.Image or PresetFileType.Video but was ${fileType.presetTypeOrNull}"
                     )
                 }
             )
@@ -44,6 +51,6 @@ data class FileAndSourceType(val fileType: FileType, val sourceType: SourceType)
                 sourceType.labelRes
             )
 
-            else -> fileType.label(context)
+            else -> fileType.name(context)
         }
 }

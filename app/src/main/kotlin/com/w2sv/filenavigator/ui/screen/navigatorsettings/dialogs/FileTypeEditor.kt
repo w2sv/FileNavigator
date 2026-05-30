@@ -19,14 +19,10 @@ import androidx.compose.ui.platform.LocalContext
 import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.core.rememberStyledTextResource
-import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
-import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
-import com.w2sv.domain.model.filetype.PresetWrappingFileType
 import com.w2sv.filenavigator.ui.util.InputInvalidityReason
 import com.w2sv.filenavigator.ui.util.ProxyTextEditor
 import com.w2sv.filenavigator.ui.util.StatefulTextEditor
-import com.w2sv.kotlinutils.copy
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.modules.common.R
@@ -58,7 +54,7 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
 
         @Composable
         override fun text(): CharSequence =
-            rememberStyledTextResource(errorMessageRes, fileExtension, fileType.label(LocalContext.current))
+            rememberStyledTextResource(errorMessageRes, fileExtension, fileType.name(LocalContext.current))
 
         companion object {
             // TODO: test
@@ -66,24 +62,19 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
                 fileTypes
                     .find { fileExtension in it.fileExtensions }
                     ?.let { fileType ->
-                        when (fileType) {
-                            is CustomFileType, is PresetWrappingFileType.ExtensionConfigurable ->
-                                if (fileType.fileExtensions.size == 1) {
-                                    IsOnlyFileTypeExtension(
-                                        fileExtension,
-                                        fileType
-                                    )
-                                } else {
-                                    IsExcludableExtension(fileExtension, fileType)
-                                }
-
-                            is PresetWrappingFileType.ExtensionSet -> IsNonExcludableExtension(fileExtension, fileType)
+                        when {
+                            fileType is FileType.FixedPreset -> IsNonExcludableExtension(fileExtension, fileType)
+                            fileType.fileExtensions.size == 1 -> IsOnlyFileTypeExtension(
+                                fileExtension,
+                                fileType
+                            )
+                            else -> IsExcludableExtension(fileExtension, fileType)
                         }
                     }
         }
     }
 
-    data class IsNonExcludableExtension(override val fileExtension: String, override val fileType: AnyPresetWrappingFileType) :
+    data class IsNonExcludableExtension(override val fileExtension: String, override val fileType: FileType) :
         IsExistingFileTypeExtension(R.string.is_file_type_extension_and_must_not_be_readded)
 
     data class IsOnlyFileTypeExtension(override val fileExtension: String, override val fileType: FileType) :
@@ -95,20 +86,20 @@ sealed class FileExtensionInvalidityReason(@StringRes override val errorMessageR
 
 @Stable
 class CustomFileTypeEditor(
-    initialFileType: CustomFileType,
+    initialFileType: FileType.Custom,
     otherFileTypes: Collection<FileType>,
-    private val createFileType: (CustomFileType) -> Unit,
+    private val createFileType: (FileType.Custom) -> Unit,
     private val scope: CoroutineScope,
     private val context: Context
 ) {
     private val otherFileTypeNames by threadUnsafeLazy {
-        buildSet { otherFileTypes.forEach { add(it.label(context)) } }
+        buildSet { otherFileTypes.forEach { add(it.name(context)) } }
     }
 
     var fileType by mutableStateOf(initialFileType)
         private set
 
-    private fun updateFileType(update: (CustomFileType) -> CustomFileType) {
+    private fun updateFileType(update: (FileType.Custom) -> FileType.Custom) {
         fileType = update(fileType)
     }
 
@@ -117,8 +108,8 @@ class CustomFileTypeEditor(
     // ===================
 
     val nameEditor = ProxyTextEditor(
-        getValue = { fileType.name },
-        setValue = { value -> updateFileType { it.copy(name = value) } },
+        getValue = { fileType.name(context) },
+        setValue = { value -> updateFileType { it.withCustomName(value) } },
         processInput = { it.trim() },
         findInvalidityReason = { input ->
             when {
@@ -134,7 +125,7 @@ class CustomFileTypeEditor(
     // ===================
 
     fun deleteExtension(@IntRange(from = 0L) index: Int) {
-        updateFileType { it.copy(fileExtensions = it.fileExtensions.copy { removeAt(index) }) }
+        updateFileType { it.withFileExtensions(it.fileExtensions.toMutableList().apply { removeAt(index) }) }
     }
 
     private var otherFileTypesMutable by mutableStateOf(otherFileTypes)
@@ -155,7 +146,7 @@ class CustomFileTypeEditor(
     )
 
     fun addExtension() {
-        updateFileType { it.copy(fileExtensions = it.fileExtensions + extensionEditor.pop()) }
+        updateFileType { it.withFileExtensions(it.fileExtensions + extensionEditor.pop()) }
     }
 
     // ===================
@@ -163,7 +154,7 @@ class CustomFileTypeEditor(
     // ===================
 
     fun updateColor(color: Color) {
-        updateFileType { it.copy(colorInt = color.toArgb()) }
+        updateFileType { it.withColor(color.toArgb()) }
     }
 
     // ===================
@@ -190,15 +181,15 @@ class CustomFileTypeEditor(
     companion object {
         fun saver(
             existingFileTypes: Collection<FileType>,
-            createFileType: (CustomFileType) -> Unit,
+            createFileType: (FileType.Custom) -> Unit,
             scope: CoroutineScope,
             context: Context
-        ): Saver<CustomFileTypeEditor, Pair<CustomFileType, String>> =
-            object : Saver<CustomFileTypeEditor, Pair<CustomFileType, String>> {
-                override fun SaverScope.save(value: CustomFileTypeEditor): Pair<CustomFileType, String> =
+        ): Saver<CustomFileTypeEditor, Pair<FileType.Custom, String>> =
+            object : Saver<CustomFileTypeEditor, Pair<FileType.Custom, String>> {
+                override fun SaverScope.save(value: CustomFileTypeEditor): Pair<FileType.Custom, String> =
                     value.fileType to value.extensionEditor.getValue()
 
-                override fun restore(value: Pair<CustomFileType, String>): CustomFileTypeEditor =
+                override fun restore(value: Pair<FileType.Custom, String>): CustomFileTypeEditor =
                     CustomFileTypeEditor(
                         initialFileType = value.first,
                         otherFileTypes = existingFileTypes,
@@ -215,8 +206,8 @@ class CustomFileTypeEditor(
 @Composable
 fun rememberCustomFileTypeEditor(
     existingFileTypes: ImmutableSet<FileType>,
-    saveFileType: (CustomFileType) -> Unit,
-    initialFileType: CustomFileType? = null,
+    saveFileType: (FileType.Custom) -> Unit,
+    initialFileType: FileType.Custom? = null,
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current
 ): CustomFileTypeEditor {
@@ -225,7 +216,7 @@ fun rememberCustomFileTypeEditor(
         saver = CustomFileTypeEditor.saver(existingFileTypes, saveFileType, scope, context)
     ) {
         CustomFileTypeEditor(
-            initialFileType = initialFileType ?: CustomFileType.newEmpty(existingFileTypes),
+            initialFileType = initialFileType ?: FileType.newEmptyCustom(existingFileTypes),
             otherFileTypes = existingFileTypes,
             createFileType = saveFileType,
             scope = scope,

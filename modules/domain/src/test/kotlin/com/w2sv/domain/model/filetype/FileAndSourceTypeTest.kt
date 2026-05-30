@@ -13,6 +13,6 @@ class FileAndSourceTypeTest {
         FileAndSourceType(PresetFileType.Image.toFileType(), SourceType.Screenshot).testParceling()
         FileAndSourceType(PresetFileType.Image.toFileType(color = 78325), SourceType.Screenshot).testParceling()
         FileAndSourceType(PresetFileType.EBook.toFileType(color = 234453, setOf("sdasf", "xscvs")), SourceType.Download).testParceling()
-        FileAndSourceType(CustomFileType("Custom", listOf("ext"), 2345213, 1008), SourceType.Download).testParceling()
+        FileAndSourceType(FileType.custom("Custom", listOf("ext"), 2345213, 1008), SourceType.Download).testParceling()
     }
 }

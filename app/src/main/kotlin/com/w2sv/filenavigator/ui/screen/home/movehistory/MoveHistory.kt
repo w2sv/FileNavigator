@@ -303,7 +303,7 @@ private fun Prev(fileName: String, useDynamicColor: Boolean, useDarkTheme: Boole
                 mediaUri = null,
                 name = fileName,
                 originalName = null,
-                fileType = PresetFileType.Image.toDefaultFileType(),
+                fileType = PresetFileType.Image.toFileType(),
                 sourceType = SourceType.Screenshot,
                 moveDestination = object : LocalDestinationApi {
                     override fun pathRepresentation(context: Context, includeVolumeName: Boolean): String =

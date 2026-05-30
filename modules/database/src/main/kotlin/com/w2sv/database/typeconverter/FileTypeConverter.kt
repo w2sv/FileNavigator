@@ -1,53 +1,30 @@
 package com.w2sv.database.typeconverter
 
 import androidx.room.TypeConverter
-import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
-import com.w2sv.domain.model.filetype.PresetWrappingFileType
 
 internal object FileTypeConverter {
 
     @TypeConverter
     fun fromFileType(fileType: FileType): String =
         when (fileType) {
-            is PresetWrappingFileType<*> -> {
-                when (fileType.presetFileType) {
-                    PresetFileType.Image -> "Image"
-                    PresetFileType.Audio -> "Audio"
-                    PresetFileType.Video -> "Video"
-                    PresetFileType.PDF -> "PDF"
-                    PresetFileType.APK -> "APK"
-                    PresetFileType.Text -> "Text"
-                    PresetFileType.Archive -> "Archive"
-                    PresetFileType.EBook -> "EBook"
-                }
-            }
-
-            is CustomFileType -> fileType.serialized()
+            is FileType.Preset -> fileType.presetFileType.name
+            is FileType.Custom -> fileType.serialized()
         }
 
     @TypeConverter
     fun toFileType(string: String): FileType =
-        when (string) {
-            "Image" -> PresetFileType.Image.toDefaultFileType()
-            "Audio" -> PresetFileType.Audio.toDefaultFileType()
-            "Video" -> PresetFileType.Video.toDefaultFileType()
-            "PDF" -> PresetFileType.PDF.toDefaultFileType()
-            "APK" -> PresetFileType.APK.toDefaultFileType()
-            "Text" -> PresetFileType.Text.toDefaultFileType()
-            "Archive" -> PresetFileType.Archive.toDefaultFileType()
-            "EBook" -> PresetFileType.EBook.toDefaultFileType()
-            else -> CustomFileType.deserialized(string)
-        }
+        PresetFileType.entries.firstOrNull { it.name == string }?.toFileType()
+            ?: deserializedCustomFileType(string)
 }
 
-private fun CustomFileType.serialized(): String =
+private fun FileType.Custom.serialized(): String =
     listOf(name, ordinal, colorInt).joinToString(DELIMITER_CHAR)
 
-private fun CustomFileType.Companion.deserialized(string: String): CustomFileType {
+private fun deserializedCustomFileType(string: String): FileType {
     val (name, ordinal, colorInt) = string.split(DELIMITER_CHAR)
-    return CustomFileType(
+    return FileType.custom(
         name = name,
         fileExtensions = emptyList(),
         colorInt = colorInt.toInt(),

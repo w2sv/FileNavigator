@@ -15,18 +15,18 @@ internal class NavigatorConfigTest {
 
     @Test
     fun `enabledFileTypes and disabledFileTypes`() {
-        val config = PresetFileType.Media.values.fold(NavigatorConfig.default) { acc, mediaFileType ->
-            acc.updateFileTypeConfig(mediaFileType.toDefaultFileType()) { fileTypeConfig ->
+        val config = PresetFileType.mediaEntries.fold(NavigatorConfig.default) { acc, mediaFileType ->
+            acc.updateFileTypeConfig(mediaFileType.toFileType()) { fileTypeConfig ->
                 fileTypeConfig.copy(enabled = false)
             }
         }
-        assertEquals(PresetFileType.NonMedia.values.toSet(), config.enabledFileTypes.map { it.wrappedPresetTypeOrNull }.toSet())
-        assertEquals(PresetFileType.Media.values.toSet(), config.disabledFileTypes.map { it.wrappedPresetTypeOrNull }.toSet())
+        assertEquals(PresetFileType.downloadEntries.toSet(), config.enabledFileTypes.map { it.presetTypeOrNull }.toSet())
+        assertEquals(PresetFileType.mediaEntries.toSet(), config.disabledFileTypes.map { it.presetTypeOrNull }.toSet())
     }
 
     @Test
     fun testUpdateFileTypeConfig() {
-        val updatedConfig = NavigatorConfig.default.updateFileTypeConfig(PresetFileType.Image.toDefaultFileType()) { fileTypeConfig ->
+        val updatedConfig = NavigatorConfig.default.updateFileTypeConfig(PresetFileType.Image.toFileType()) { fileTypeConfig ->
             fileTypeConfig.copy(
                 enabled = false,
                 sourceTypeConfigMap = fileTypeConfig.sourceTypeConfigMap.copy {
@@ -49,7 +49,8 @@ internal class NavigatorConfigTest {
 
         val expected = NavigatorConfig(
             fileTypeConfigMap = mapOf(
-                PresetFileType.Image.toDefaultFileType() to FileTypeConfig(
+                PresetFileType.Image.toFileType().id to FileTypeConfig(
+                    fileType = PresetFileType.Image.toFileType(),
                     enabled = false,
                     sourceTypeConfigMap = mapOf(
                         SourceType.Camera to SourceConfig(
@@ -69,13 +70,13 @@ internal class NavigatorConfigTest {
                         SourceType.Download to SourceConfig()
                     )
                 ),
-                PresetFileType.Video.toDefaultFileType() to PresetFileType.Video.defaultConfig(),
-                PresetFileType.Audio.toDefaultFileType() to PresetFileType.Audio.defaultConfig(),
-                PresetFileType.PDF.toDefaultFileType() to nonMediaFileTypeConfig(),
-                PresetFileType.Text.toDefaultFileType() to nonMediaFileTypeConfig(),
-                PresetFileType.Archive.toDefaultFileType() to nonMediaFileTypeConfig(),
-                PresetFileType.APK.toDefaultFileType() to nonMediaFileTypeConfig(),
-                PresetFileType.EBook.toDefaultFileType() to nonMediaFileTypeConfig()
+                PresetFileType.Video.toFileType().let { it.id to it.defaultConfig() },
+                PresetFileType.Audio.toFileType().let { it.id to it.defaultConfig() },
+                PresetFileType.PDF.toFileType().let { it.id to it.defaultConfig() },
+                PresetFileType.Text.toFileType().let { it.id to it.defaultConfig() },
+                PresetFileType.Archive.toFileType().let { it.id to it.defaultConfig() },
+                PresetFileType.APK.toFileType().let { it.id to it.defaultConfig() },
+                PresetFileType.EBook.toFileType().let { it.id to it.defaultConfig() }
             ),
             showBatchMoveNotification = true,
             disableOnLowBattery = false,
@@ -88,11 +89,3 @@ internal class NavigatorConfigTest {
         )
     }
 }
-
-private fun nonMediaFileTypeConfig(enabled: Boolean = true): FileTypeConfig =
-    FileTypeConfig(
-        enabled = enabled,
-        sourceTypeConfigMap = mapOf(
-            SourceType.Download to SourceConfig()
-        )
-    )

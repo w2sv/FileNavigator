@@ -55,7 +55,7 @@ internal class FileObserverProvider @Inject constructor(
                         .log {
                             "Provided ${it.logIdentifier} | fileTypes=${
                                 enabledNonMediaTypes.map { fileType ->
-                                    fileType.wrappedPresetTypeOrNull
+                                    fileType.presetTypeOrNull
                                 }
                             }"
                         }

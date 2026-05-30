@@ -16,7 +16,7 @@ internal object PreMigrationNavigatorPreferencesKey {
     fun keys(): Sequence<Preferences.Key<*>> =
         sequence {
             yield(disableOnLowBattery)
-            yieldAll(PresetFileType.values.flatMap { it.associatedPreMigrationKeys() })
+            yieldAll(PresetFileType.entries.flatMap { it.associatedPreMigrationKeys() })
         }
 
     private fun PresetFileType.associatedPreMigrationKeys(): Sequence<Preferences.Key<*>> =
@@ -49,5 +49,5 @@ internal object PreMigrationNavigatorPreferencesKey {
         stringPreferencesKey("${fileType.preferencesKeyNameIdentifier}.${sourceType.name}.LAST_MOVE_DESTINATION")
 
     private val PresetFileType.preferencesKeyNameIdentifier: String
-        get() = this::class.java.simpleName
+        get() = name
 }

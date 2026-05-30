@@ -1,11 +1,8 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
-import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
-import com.w2sv.domain.model.filetype.PresetWrappingFileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.kotlinutils.copy
 import com.w2sv.reversiblestate.ReversibleState
 import com.w2sv.reversiblestate.ReversibleStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -41,35 +38,37 @@ class ReversibleNavigatorConfig(reversibleStateFlow: ReversibleStateFlow<Navigat
         update { it.toggleFileTypeEnablement(fileType) }
     }
 
-    fun <T : FileType> editFileType(current: T, edited: T) {
+    fun editFileType(current: FileType, edited: FileType) {
         update { it.editFileType(current) { edited } }
     }
 
-    fun createCustomFileType(type: CustomFileType) {
+    fun createCustomFileType(type: FileType.Custom) {
         update { it.addCustomFileType(type) }
     }
 
-    fun deleteCustomFileType(type: CustomFileType) {
+    fun deleteCustomFileType(type: FileType.Custom) {
         update { it.deleteCustomFileType(type) }
     }
 
     /**
-     * @param fileType Must be either [CustomFileType] or [com.w2sv.domain.model.filetype.PresetWrappingFileType.ExtensionConfigurable]
+     * @param fileType Must be either a custom file type or a preset file type with configurable extensions.
      * TODO: test
      */
     fun excludeFileExtension(fileType: FileType, extension: String) {
+        require(fileType !is FileType.FixedPreset) { "$fileType doesn't support extension exclusion" }
+
         when (fileType) {
-            is CustomFileType -> update {
+            is FileType.Custom -> update {
                 it.editFileType(fileType) {
-                    fileType.copy(fileExtensions = it.fileExtensions.copy { remove(extension) })
+                    fileType.withFileExtensions(it.fileExtensions - extension)
                 }
             }
 
-            is PresetWrappingFileType.ExtensionConfigurable -> update {
-                it.editFileType(fileType) { it.copy(excludedExtensions = it.excludedExtensions + extension) }
+            is FileType.ConfigurablePreset -> update {
+                it.editFileType(fileType) {
+                    fileType.withExcludedExtensions(fileType.excludedExtensions + extension)
+                }
             }
-
-            is PresetWrappingFileType.ExtensionSet -> error("$fileType of type PresetWrappingFileType.ExtensionSet should not be passed")
         }
     }
 }

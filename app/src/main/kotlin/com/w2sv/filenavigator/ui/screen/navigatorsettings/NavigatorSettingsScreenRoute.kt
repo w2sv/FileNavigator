@@ -10,8 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.core.OnChange
-import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
-import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.filenavigator.ui.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.FileTypeSelectionBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.rememberFileTypeSelectionState
@@ -45,8 +44,8 @@ fun NavigatorSettingsScreenRoute(
         showFileTypesBottomSheet = { showFileTypesBottomSheet = true },
         showFileTypeConfigurationDialog = { fileType ->
             fileTypeConfigurationDialog = when (fileType) {
-                is AnyPresetWrappingFileType -> FileTypeConfigurationDialog.ConfigurePresetType(fileType)
-                is CustomFileType -> FileTypeConfigurationDialog.ConfigureCustomType(fileType)
+                is FileType.Preset -> FileTypeConfigurationDialog.ConfigurePresetType(fileType)
+                is FileType.Custom -> FileTypeConfigurationDialog.ConfigureCustomType(fileType)
             }
         }
     )
@@ -85,7 +84,7 @@ fun NavigatorSettingsScreenRoute(
             is FileTypeConfigurationDialog.ConfigurePresetType -> PresetFileTypeConfigurationDialog(
                 fileType = dialog.fileType,
                 saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
-                customFileTypes = navigatorConfig.fileTypes.filterIsInstance<CustomFileType>().toImmutableSet(),
+                customFileTypes = navigatorConfig.fileTypes.filterIsInstance<FileType.Custom>().toImmutableSet(),
                 excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension,
                 deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
                 onDismissRequest = closeDialog

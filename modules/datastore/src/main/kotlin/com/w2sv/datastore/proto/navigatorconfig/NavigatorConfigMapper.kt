@@ -15,9 +15,8 @@ import com.w2sv.datastore.fileTypeConfigProto
 import com.w2sv.datastore.navigatorConfigProto
 import com.w2sv.datastore.proto.ProtoMapper
 import com.w2sv.datastore.sourceConfigProto
-import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
-import com.w2sv.domain.model.filetype.PresetWrappingFileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
@@ -57,22 +56,26 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
                     NavigatorConfig.default.toProto(true).run { extensionPresetFileTypesMap + extensionConfigurableFileTypesMap }
                 }
                 .forEach { (ordinal, proto) ->
-                    put(
-                        when (proto) {
-                            is ExtensionPresetFileTypeProto -> (PresetFileType[ordinal] as PresetFileType.ExtensionSet).toFileType(
-                                color = proto.color
+                    val fileType = when (proto) {
+                        is ExtensionPresetFileTypeProto -> PresetFileType[ordinal].toFileType(
+                            color = proto.color
+                        )
+
+                        is ExtensionConfigurableFileTypeProto ->
+                            PresetFileType[ordinal].toFileType(
+                                color = proto.color,
+                                excludedExtensions = proto.excludedExtensionsList.toSet()
                             )
 
-                            is ExtensionConfigurableFileTypeProto ->
-                                (PresetFileType[ordinal] as PresetFileType.ExtensionConfigurable).toFileType(
-                                    color = proto.color,
-                                    excludedExtensions = proto.excludedExtensionsList.toSet()
-                                )
-
-                            is CustomFileTypeProto -> CustomFileTypeMapper.toExternal(proto)
-                            else -> error("Invalid proto type $proto")
-                        },
-                        FileTypeConfigMapper.toExternal(fileTypeToConfigMap.getValue(ordinal))
+                        is CustomFileTypeProto -> CustomFileTypeMapper.toExternal(proto)
+                        else -> error("Invalid proto type $proto")
+                    }
+                    put(
+                        fileType.id,
+                        FileTypeConfigMapper.toExternal(
+                            proto = fileTypeToConfigMap.getValue(ordinal),
+                            fileType = fileType
+                        )
                     )
                 }
         }
@@ -82,22 +85,27 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
 
     fun toProto(external: NavigatorConfig, hasBeenMigrated: Boolean): NavigatorConfigProto =
         navigatorConfigProto {
-            external.fileTypeConfigMap.forEach { (fileType, fileTypeConfig) ->
+            external.fileTypeConfigMap.values.forEach { fileTypeConfig ->
+                val fileType = fileTypeConfig.fileType
                 when (fileType) {
-                    is PresetWrappingFileType.ExtensionSet -> this.extensionPresetFileTypes.put(
-                        fileType.ordinal,
-                        extensionPresetFileTypeProto { color = fileType.colorInt }
-                    )
+                    is FileType.ConfigurablePreset -> {
+                        this.extensionConfigurableFileTypes.put(
+                            fileType.ordinal,
+                            extensionConfigurableFileTypeProto {
+                                color = fileType.colorInt
+                                excludedExtensions.addAll(fileType.excludedExtensions)
+                            }
+                        )
+                    }
 
-                    is PresetWrappingFileType.ExtensionConfigurable -> this.extensionConfigurableFileTypes.put(
-                        fileType.ordinal,
-                        extensionConfigurableFileTypeProto {
-                            color = fileType.colorInt
-                            excludedExtensions.addAll(fileType.excludedExtensions)
-                        }
-                    )
+                    is FileType.FixedPreset -> {
+                        this.extensionPresetFileTypes.put(
+                            fileType.ordinal,
+                            extensionPresetFileTypeProto { color = fileType.colorInt }
+                        )
+                    }
 
-                    is CustomFileType -> this.customFileTypes.put(
+                    is FileType.Custom -> this.customFileTypes.put(
                         fileType.ordinal,
                         CustomFileTypeMapper.toProto(fileType)
                     )
@@ -111,16 +119,17 @@ private object NavigatorConfigMapper : ProtoMapper<NavigatorConfigProto, Navigat
         }
 }
 
-private object FileTypeConfigMapper : ProtoMapper<FileTypeConfigProto, FileTypeConfig> {
-    override fun toExternal(proto: FileTypeConfigProto): FileTypeConfig =
+private object FileTypeConfigMapper {
+    fun toExternal(proto: FileTypeConfigProto, fileType: FileType): FileTypeConfig =
         FileTypeConfig(
+            fileType = fileType,
             enabled = proto.enabled,
             sourceTypeConfigMap = proto.sourceTypeToConfigMap.map { (sourceTypeIndex, config) ->
                 SourceType.entries[sourceTypeIndex] to SourceConfigMapper.toExternal(config)
             }
         )
 
-    override fun toProto(external: FileTypeConfig): FileTypeConfigProto =
+    fun toProto(external: FileTypeConfig): FileTypeConfigProto =
         fileTypeConfigProto {
             enabled = external.enabled
             sourceTypeToConfig.putAll(
@@ -169,16 +178,16 @@ private object AutoMoveConfigMapper : ProtoMapper<AutoMoveConfigProto, AutoMoveC
         }
 }
 
-private object CustomFileTypeMapper : ProtoMapper<CustomFileTypeProto, CustomFileType> {
-    override fun toExternal(proto: CustomFileTypeProto): CustomFileType =
-        CustomFileType(
+private object CustomFileTypeMapper : ProtoMapper<CustomFileTypeProto, FileType.Custom> {
+    override fun toExternal(proto: CustomFileTypeProto): FileType.Custom =
+        FileType.custom(
             name = proto.name,
             fileExtensions = proto.extensionsList,
             colorInt = proto.color,
             ordinal = proto.ordinal
         )
 
-    override fun toProto(external: CustomFileType): CustomFileTypeProto =
+    override fun toProto(external: FileType.Custom): CustomFileTypeProto =
         customFileTypeProto {
             name = external.name
             extensions.addAll(external.fileExtensions)

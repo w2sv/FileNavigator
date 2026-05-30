@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.model.navigatorconfig.sortedByOrdinal
@@ -25,7 +24,7 @@ private const val SelectionWarningDuration = 3_000L
 class FileTypeSelectionState(
     val selectionMap: ImmutableMap<FileType, Boolean>,
     private val toggleSelection: (FileType) -> Unit,
-    val deleteCustomFileType: (CustomFileType) -> Unit,
+    val deleteCustomFileType: (FileType.Custom) -> Unit,
     private val scope: CoroutineScope
 ) {
     val sortedFileTypes: List<FileType> by threadUnsafeLazy {
@@ -66,14 +65,15 @@ class FileTypeSelectionState(
 fun rememberFileTypeSelectionState(
     navigatorConfig: NavigatorConfig,
     toggleSelection: (FileType) -> Unit,
-    deleteCustomFileType: (CustomFileType) -> Unit
+    deleteCustomFileType: (FileType.Custom) -> Unit
 ): FileTypeSelectionState {
     val scope = rememberCoroutineScope()
 
     val selectionMap = remember(navigatorConfig) {
         navigatorConfig
             .fileTypeConfigMap
-            .mapValues { it.value.enabled }
+            .values
+            .associate { it.fileType to it.enabled }
             .toImmutableMap()
     }
 

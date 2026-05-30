@@ -15,3 +15,12 @@
 - Use inline classes for ids, serialized strings, uris, ordinals, counts, and other values where mixing two values of the same primitive type would be a realistic bug.
 - Do not use an inline class when the value needs multiple fields, inheritance, mutable state, or when it would make calling code materially noisier without preventing likely mistakes.
 - Keep inline classes behavior-light. They may expose validation, parsing, formatting, or narrow convenience accessors, but should not grow into service objects.
+
+## Sealed Types
+
+- Prefer nesting sealed subclasses inside their sealed parent when the hierarchy stays shallow and readable, for example `FileTypeSettings.Preset` and `FileTypeSettings.Custom`.
+- Use top-level subclasses only when nesting would become too deep, when the subclass has substantial standalone behavior, or when local naming becomes awkward at call sites.
+
+## Control Flow
+
+- Prefer a flat `when` over nested `if`/`else` cascades when selecting between mutually exclusive cases.

@@ -217,7 +217,7 @@ internal class NavigateFileNotificationController @Inject constructor(
 }
 
 private fun NavigatableFile.largeNotificationIcon(context: Context): Bitmap? =
-    when (fileType.wrappedPresetTypeOrNull) {
+    when (fileType.presetTypeOrNull) {
         PresetFileType.Image -> context.contentResolver.loadBitmapWithFileNotFoundHandling(mediaUri.uri)
         PresetFileType.Video -> {
             try {

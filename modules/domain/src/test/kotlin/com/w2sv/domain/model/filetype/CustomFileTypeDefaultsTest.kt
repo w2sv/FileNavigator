@@ -7,11 +7,11 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class CustomFileTypeTest {
+class CustomFileTypeDefaultsTest {
 
     @Test
-    fun testParceling() {
-        CustomFileType(
+    fun parceling() {
+        FileType.custom(
             name = "Html",
             fileExtensions = listOf("html"),
             colorInt = 2134124,
@@ -21,13 +21,13 @@ class CustomFileTypeTest {
     }
 
     @Test
-    fun testNewEmpty() {
+    fun newEmptyCustom() {
         fun test(existingOrdinals: List<Int>, expectedOrdinal: Int) {
             assertEquals(
                 expectedOrdinal,
-                CustomFileType.newEmpty(
+                FileType.newEmptyCustom(
                     existingOrdinals.map {
-                        CustomFileType(
+                        FileType.custom(
                             name = "",
                             fileExtensions = emptyList(),
                             colorInt = -1,
@@ -39,6 +39,6 @@ class CustomFileTypeTest {
         }
 
         test(listOf(34, 0, 1, 3, 1003, 1007), 1008)
-        test(listOf(0, 1, 3), CustomFileType.MIN_ORDINAL)
+        test(listOf(0, 1, 3), 1000)
     }
 }

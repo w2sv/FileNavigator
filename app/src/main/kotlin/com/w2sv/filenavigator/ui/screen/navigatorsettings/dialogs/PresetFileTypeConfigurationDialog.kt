@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,10 +35,8 @@ import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.core.colorSaver
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.designsystem.theme.dialogSectionLabel
-import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
-import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
-import com.w2sv.domain.model.filetype.PresetWrappingFileType
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.filenavigator.ui.modelext.color
@@ -63,7 +60,7 @@ private data object LastEnabledExtension : PresetFileTypeConfigurationDialogInpu
 
 @Parcelize
 @Stable
-private data class ConflictingCustomFileType(val fileType: CustomFileType, val extension: String) :
+private data class ConflictingCustomFileType(val fileType: FileType.Custom, val extension: String) :
     PresetFileTypeConfigurationDialogInputWarning {
 
     @IgnoredOnParcel
@@ -74,7 +71,7 @@ private data class ConflictingCustomFileType(val fileType: CustomFileType, val e
         get() = rememberStyledTextResource(
             if (isOnlyFileTypeExtension) R.string.is_only_other_file_type_extension else R.string.is_other_file_type_extension,
             extension,
-            fileType.name
+            fileType.name(LocalContext.current)
         )
 
     @get:Composable
@@ -82,39 +79,40 @@ private data class ConflictingCustomFileType(val fileType: CustomFileType, val e
         get() = if (isOnlyFileTypeExtension) {
             rememberStyledTextResource(
                 R.string.delete_file_type,
-                fileType.name
+                fileType.name(LocalContext.current)
             )
         } else {
-            rememberStyledTextResource(R.string.remove_from, extension, fileType.name)
+            rememberStyledTextResource(R.string.remove_from, extension, fileType.name(LocalContext.current))
         }
 }
 
 // TODO: refactor
 @Composable
 fun PresetFileTypeConfigurationDialog(
-    fileType: AnyPresetWrappingFileType,
-    saveFileType: (AnyPresetWrappingFileType) -> Unit,
-    customFileTypes: ImmutableSet<CustomFileType>,
+    fileType: FileType.Preset,
+    saveFileType: (FileType) -> Unit,
+    customFileTypes: ImmutableSet<FileType.Custom>,
     excludeFileExtension: ExcludeExtension,
-    deleteCustomFileType: (CustomFileType) -> Unit,
+    deleteCustomFileType: (FileType.Custom) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var excludedExtensions = rememberSaveable(saver = snapshotStateListSaver<String>()) {
-        fileType.asExtensionConfigurableTypeOrNull?.excludedExtensions?.toMutableStateList() ?: mutableStateListOf()
+        (fileType as? FileType.ConfigurablePreset)?.excludedExtensions.orEmpty().toMutableStateList()
     }
     var color by rememberSaveable(fileType.color, stateSaver = colorSaver()) { mutableStateOf(fileType.color) }
 
     val editedFileType by remember {
         derivedStateOf {
-            when (fileType) {
-                is PresetWrappingFileType.ExtensionConfigurable -> fileType.copy(
-                    excludedExtensions = excludedExtensions.toSet(),
-                    colorInt = color.toArgb()
-                )
-
-                is PresetWrappingFileType.ExtensionSet -> fileType.copy(colorInt = color.toArgb())
-            }
+            fileType
+                .withColor(color.toArgb())
+                .let {
+                    if (it is FileType.ConfigurablePreset) {
+                        it.withExcludedExtensions(excludedExtensions.toSet())
+                    } else {
+                        it
+                    }
+                }
         }
     }
 
@@ -126,7 +124,7 @@ fun PresetFileTypeConfigurationDialog(
     ) { openColorPickerDialog ->
         FileTypeConfigurationDialog(
             icon = fileType.iconRes,
-            title = stringResource(R.string.preset_non_media_file_type_configuration_dialog_title, fileType.label(context)),
+            title = stringResource(R.string.preset_non_media_file_type_configuration_dialog_title, fileType.name(context)),
             onDismissRequest = onDismissRequest,
             modifier = modifier,
             onConfigureColorButtonPress = openColorPickerDialog,
@@ -157,8 +155,8 @@ fun PresetFileTypeConfigurationDialog(
 
                 val availableExtensions: Collection<String> = remember {
                     when (fileType) {
-                        is PresetWrappingFileType.ExtensionConfigurable -> fileType.defaultFileExtensions
-                        is PresetWrappingFileType.ExtensionSet -> fileType.fileExtensions
+                        is FileType.ConfigurablePreset -> fileType.availableFileExtensions
+                        is FileType.FixedPreset -> fileType.fileExtensions
                     }
                 }
 
@@ -261,7 +259,7 @@ fun PresetFileTypeConfigurationDialog(
 @Composable
 private fun PresetNonMediaFileTypeConfigurationDialogPrev() {
     PresetFileTypeConfigurationDialog(
-        fileType = PresetFileType.Text.toDefaultFileType(),
+        fileType = PresetFileType.Text.toFileType(),
         saveFileType = {},
         onDismissRequest = {},
         customFileTypes = persistentSetOf(),

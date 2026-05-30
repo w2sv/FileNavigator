@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,14 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.composed.core.extensions.thenIf
 import com.w2sv.designsystem.theme.AppTheme
-import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.modules.common.R
 import kotlinx.collections.immutable.toImmutableMap
 
@@ -112,7 +111,7 @@ private fun LazyGridItemScope.FileTypeGridItem(fileType: FileType, state: FileTy
         )
     }
 
-    if (fileType is CustomFileType) {
+    if (fileType is FileType.Custom) {
         DeleteCustomFileTypeTooltipBox(deleteCustomFileType = { state.deleteCustomFileType(fileType) }) {
             content()
         }
@@ -148,10 +147,12 @@ private fun LazyGridItemScope.FileTypeCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     GridCard(isSelected = isSelected, onClick = onClick, modifier = modifier) {
         FileTypeIcon(fileType, modifier = Modifier.size(46.dp))
         Spacer(modifier = Modifier.height(6.dp))
-        Text(text = fileType.stringResource())
+        Text(text = fileType.name(context))
     }
 }
 
@@ -203,7 +204,7 @@ private fun LazyGridItemScope.GridCard(
 @Composable
 private fun Prev() {
     AppTheme {
-        val map = NavigatorConfig.default.fileTypeConfigMap.mapValues { it.value.enabled }
+        val map = NavigatorConfig.default.fileTypeConfigMap.values.associate { it.fileType to it.enabled }
         FileTypeSelectionBottomSheet(
             state = FileTypeSelectionState(
                 map.toImmutableMap(),

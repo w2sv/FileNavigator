@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.Preferences
 import com.w2sv.common.logging.log
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.datastore.proto.navigatorconfig.toProto
-import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import kotlinx.coroutines.flow.first
@@ -44,10 +43,8 @@ internal class NavigatorPreferencesToProtoMigration(private val preferencesDataS
     private fun performMigration(preferences: Preferences): NavigatorConfigProto =
         NavigatorConfig.default.let { defaultConfig ->
             defaultConfig.copy(
-                fileTypeConfigMap = defaultConfig.fileTypeConfigMap.mapValues { (fileType, fileTypeConfig) ->
-                    // default config contains only AnyPresetWrappingFileTypes
-                    fileType as AnyPresetWrappingFileType
-                    val presetFileType = fileType.presetFileType
+                fileTypeConfigMap = defaultConfig.fileTypeConfigMap.mapValues { (_, fileTypeConfig) ->
+                    val presetFileType = checkNotNull(fileTypeConfig.fileType.presetTypeOrNull)
 
                     fileTypeConfig.copy(
                         enabled = preferences.getOrDefault(

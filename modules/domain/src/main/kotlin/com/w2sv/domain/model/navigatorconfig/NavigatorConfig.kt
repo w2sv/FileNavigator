@@ -1,16 +1,15 @@
 package com.w2sv.domain.model.navigatorconfig
 
-import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.filetype.FileTypeId
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.kotlinutils.copy
-import com.w2sv.kotlinutils.keysWhereToSet
 import com.w2sv.kotlinutils.map
 import com.w2sv.kotlinutils.update
 
-typealias FileTypeConfigMap = Map<FileType, FileTypeConfig>
+typealias FileTypeConfigMap = Map<FileTypeId, FileTypeConfig>
 
 data class NavigatorConfig(
     val fileTypeConfigMap: FileTypeConfigMap,
@@ -19,7 +18,9 @@ data class NavigatorConfig(
     val startOnBoot: Boolean
 ) {
     val enabledFileTypes: Set<FileType> by lazy {
-        fileTypeConfigMap.keysWhereToSet { it.enabled }
+        fileTypeConfigMap.values
+            .filter { it.enabled }
+            .mapTo(mutableSetOf()) { it.fileType }
     }
 
     val sortedEnabledFileTypes: List<FileType> by lazy {
@@ -27,7 +28,9 @@ data class NavigatorConfig(
     }
 
     val disabledFileTypes: Set<FileType> by lazy {
-        fileTypeConfigMap.keys - enabledFileTypes
+        fileTypeConfigMap.values
+            .filterNot { it.enabled }
+            .mapTo(mutableSetOf()) { it.fileType }
     }
 
     /**
@@ -48,7 +51,7 @@ data class NavigatorConfig(
         fileTypeConfig(fileType).sourceTypeConfigMap.values.count { it.enabled }
 
     fun fileTypeConfig(fileType: FileType): FileTypeConfig =
-        fileTypeConfigMap.getValue(fileType)
+        fileTypeConfigMap.getValue(fileType.id)
 
     fun sourceConfig(fileType: FileType, sourceType: SourceType): SourceConfig =
         fileTypeConfig(fileType).sourceTypeConfigMap.getValue(sourceType)
@@ -64,34 +67,36 @@ data class NavigatorConfig(
     // ================
 
     fun toggleFileTypeEnablement(fileType: FileType): NavigatorConfig =
-        copy(fileTypeConfigMap = fileTypeConfigMap.copy { update(fileType) { it.copy(enabled = !it.enabled) } })
+        copy(fileTypeConfigMap = fileTypeConfigMap.copy { update(fileType.id) { it.copy(enabled = !it.enabled) } })
 
     /**
      * Adds [type] to the configuration with a default [FileTypeConfig], with [FileTypeConfig.enabled] set to [enabled].
-     * @see com.w2sv.domain.model.filetype.StaticFileType.defaultConfig
+     * @see com.w2sv.domain.model.filetype.defaultConfig
      */
-    fun addCustomFileType(type: CustomFileType, enabled: Boolean = false): NavigatorConfig =
+    fun addCustomFileType(type: FileType.Custom, enabled: Boolean = false): NavigatorConfig =
         copy(
             fileTypeConfigMap = fileTypeConfigMap.copy {
-                put(type, type.defaultConfig(enabled = enabled))
+                put(type.id, type.defaultConfig(enabled = enabled))
             }
         )
 
-    fun <FT : FileType> editFileType(current: FT, mutate: (FT) -> FT): NavigatorConfig =
+    fun editFileType(current: FileType, mutate: (FileType) -> FileType): NavigatorConfig =
         copy(
             fileTypeConfigMap = fileTypeConfigMap.copy {
-                val fileTypeConfig = requireNotNull(remove(current))
-                put(mutate(current), fileTypeConfig)
+                val fileTypeConfig = getValue(current.id)
+                val edited = mutate(current)
+                remove(current.id)
+                put(edited.id, fileTypeConfig.copy(fileType = edited))
             }
         )
 
-    fun deleteCustomFileType(type: CustomFileType): NavigatorConfig =
-        copy(fileTypeConfigMap = fileTypeConfigMap.copy { remove(type) })
+    fun deleteCustomFileType(type: FileType.Custom): NavigatorConfig =
+        copy(fileTypeConfigMap = fileTypeConfigMap.copy { remove(type.id) })
 
     fun updateFileTypeConfig(fileType: FileType, update: (FileTypeConfig) -> FileTypeConfig): NavigatorConfig =
         copy(
             fileTypeConfigMap = fileTypeConfigMap.copy {
-                this.update(fileType, update)
+                this.update(fileType.id, update)
             }
         )
 
@@ -132,8 +137,9 @@ data class NavigatorConfig(
     companion object {
         val default by lazy {
             NavigatorConfig(
-                fileTypeConfigMap = PresetFileType.values.associate { presetFileType ->
-                    presetFileType.toDefaultFileType() to presetFileType.defaultConfig()
+                fileTypeConfigMap = PresetFileType.entries.associate { presetFileType ->
+                    val fileType = presetFileType.toFileType()
+                    fileType.id to fileType.defaultConfig()
                 },
                 showBatchMoveNotification = true,
                 disableOnLowBattery = false,

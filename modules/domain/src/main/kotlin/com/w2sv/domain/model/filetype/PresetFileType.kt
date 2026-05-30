@@ -1,108 +1,29 @@
 package com.w2sv.domain.model.filetype
 
-import android.content.Context
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.annotation.VisibleForTesting
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.modules.common.R
 
-sealed interface PresetFileType : StaticFileType {
-    val labelRes: Int
-    val defaultColorInt: Int
-
-    override val ordinal: Int
-        get() = ordinalsMap.getValue(this)
-
-    override fun label(context: Context): String =
-        context.getString(labelRes)
-
-    fun toDefaultFileType(): AnyPresetWrappingFileType =
-        when (this) {
-            is ExtensionSet -> toFileType()
-            is ExtensionConfigurable -> toFileType()
-        }
-
-    sealed interface ExtensionSet :
-        PresetFileType,
-        StaticFileType.ExtensionSet {
-        fun toFileType(@ColorInt color: Int = EMPTY_COLOR_INT): PresetWrappingFileType.ExtensionSet =
-            PresetWrappingFileType.ExtensionSet(
-                presetFileType = this,
-                colorInt = selectColor(
-                    storedColor = color,
-                    defaultColor = defaultColorInt
-                )
-            )
-    }
-
-    sealed interface ExtensionConfigurable :
-        PresetFileType,
-        StaticFileType.ExtensionConfigurable {
-        fun toFileType(
-            @ColorInt color: Int = EMPTY_COLOR_INT,
-            excludedExtensions: Set<String> = emptySet()
-        ): PresetWrappingFileType.ExtensionConfigurable =
-            PresetWrappingFileType.ExtensionConfigurable(
-                presetFileType = this,
-                colorInt = selectColor(
-                    storedColor = color,
-                    defaultColor = defaultColorInt
-                ),
-                excludedExtensions = excludedExtensions
-            )
-    }
-
-    sealed class Media(
-        @StringRes override val labelRes: Int,
-        @DrawableRes override val iconRes: Int,
-        @ColorInt override val defaultColorInt: Int,
-        override val mediaType: MediaType,
-        override val sourceTypes: List<SourceType>,
-        override val fileExtensions: Collection<String>
-    ) : ExtensionSet {
-        companion object {
-            @JvmStatic
-            val values: List<Media>
-                get() = listOf(Image, Video, Audio)
-        }
-    }
-
-    sealed interface NonMedia :
-        PresetFileType,
-        StaticFileType.NonMedia {
-
-        sealed class ExtensionSet(
-            @StringRes override val labelRes: Int,
-            @DrawableRes override val iconRes: Int,
-            @ColorInt override val defaultColorInt: Int,
-            override val fileExtensions: Collection<String>
-        ) : NonMedia,
-            PresetFileType.ExtensionSet
-
-        sealed class ExtensionConfigurable(
-            @StringRes override val labelRes: Int,
-            @DrawableRes override val iconRes: Int,
-            @ColorInt override val defaultColorInt: Int,
-            override val defaultFileExtensions: Set<String>
-        ) : NonMedia,
-            PresetFileType.ExtensionConfigurable {
-            companion object {
-                @JvmStatic
-                val values: List<ExtensionConfigurable>
-                    get() = listOf(Text, Archive, EBook)
-            }
-        }
-
-        companion object {
-            @JvmStatic
-            val values: List<NonMedia>
-                get() = listOf(PDF, Text, Archive, APK, EBook)
-        }
-    }
-
-    data object Image : Media(
+/**
+ * Built-in file type definition.
+ *
+ * Presets are static identities with default metadata: label, icon, media store
+ * bucket, source types, default color and built-in extensions. User state such
+ * as the selected color or excluded extensions is stored on the concrete
+ * [FileType.Preset] variant.
+ */
+enum class PresetFileType(
+    @StringRes val labelRes: Int,
+    @DrawableRes val iconRes: Int,
+    @ColorInt val defaultColorInt: Int,
+    val mediaType: MediaType,
+    val sourceTypes: List<SourceType>,
+    val fileExtensions: Set<String>,
+    val extensionsAreConfigurable: Boolean = false
+) {
+    Image(
         labelRes = R.string.image,
         iconRes = R.drawable.ic_image_24,
         defaultColorInt = -4253137,
@@ -118,9 +39,9 @@ sealed interface PresetFileType : StaticFileType {
             "mac", "pbm", "pgm", "png", "pnm", "ppm", "ras", "rgb", "svg", "svgz", "tif",
             "tiff", "wbmp", "webp", "xbm", "xpm", "xwd"
         )
-    )
+    ),
 
-    data object Video : Media(
+    Video(
         labelRes = R.string.video,
         iconRes = R.drawable.ic_video_file_24,
         defaultColorInt = -13449,
@@ -131,9 +52,9 @@ sealed interface PresetFileType : StaticFileType {
             "jpm", "m1v", "m2v", "m4u", "m4v", "mkv", "mov", "mp4", "mp4v", "mpg",
             "mpeg", "ogv", "qt", "ts", "vob", "webm", "wm", "wmv"
         )
-    )
+    ),
 
-    data object Audio : Media(
+    Audio(
         labelRes = R.string.audio,
         iconRes = R.drawable.ic_audio_file_24,
         defaultColorInt = -891856,
@@ -144,68 +65,90 @@ sealed interface PresetFileType : StaticFileType {
             "mp2", "mp3", "mpga", "oga", "ogg", "opus", "ra", "ram", "snd", "wav", "weba",
             "wma"
         )
-    )
+    ),
 
-    data object PDF : NonMedia.ExtensionSet(
-        R.string.pdf,
-        R.drawable.ic_pdf_24,
-        -14941188,
-        setOf("pdf")
-    )
+    PDF(
+        labelRes = R.string.pdf,
+        iconRes = R.drawable.ic_pdf_24,
+        defaultColorInt = -14941188,
+        mediaType = MediaType.DOWNLOADS,
+        sourceTypes = listOf(SourceType.Download),
+        fileExtensions = setOf("pdf")
+    ),
 
-    data object Text : NonMedia.ExtensionConfigurable(
-        R.string.text,
-        R.drawable.ic_text_file_24,
-        -1046887,
-        setOf(
+    Text(
+        labelRes = R.string.text,
+        iconRes = R.drawable.ic_text_file_24,
+        defaultColorInt = -1046887,
+        mediaType = MediaType.DOWNLOADS,
+        sourceTypes = listOf(SourceType.Download),
+        fileExtensions = setOf(
             "txt", "text", "asc", "csv", "xml", "json", "md", "doc", "docx", "odt",
             "wpd", "cfg", "log", "ini", "properties", "html"
-        )
-    )
+        ),
+        extensionsAreConfigurable = true
+    ),
 
-    data object Archive : NonMedia.ExtensionConfigurable(
-        R.string.archive,
-        R.drawable.ic_folder_zip_24,
-        -8232367,
-        setOf(
+    Archive(
+        labelRes = R.string.archive,
+        iconRes = R.drawable.ic_folder_zip_24,
+        defaultColorInt = -8232367,
+        mediaType = MediaType.DOWNLOADS,
+        sourceTypes = listOf(SourceType.Download),
+        fileExtensions = setOf(
             "zip", "rar", "tar", "7z", "gz", "bz2", "xz", "z", "iso", "cab", "tbz",
             "pkg", "deb", "rpm", "sit", "dmg", "jar", "war", "ear", "zipx", "tgz"
-        )
-    )
+        ),
+        extensionsAreConfigurable = true
+    ),
 
-    data object APK : NonMedia.ExtensionSet(
-        R.string.apk,
-        R.drawable.ic_apk_file_24,
-        -15410306,
-        setOf("apk")
-    )
+    APK(
+        labelRes = R.string.apk,
+        iconRes = R.drawable.ic_apk_file_24,
+        defaultColorInt = -15410306,
+        mediaType = MediaType.DOWNLOADS,
+        sourceTypes = listOf(SourceType.Download),
+        fileExtensions = setOf("apk")
+    ),
 
-    data object EBook : NonMedia.ExtensionConfigurable(
-        R.string.ebook,
-        R.drawable.ic_book_24,
-        -5728974,
-        setOf(
+    EBook(
+        labelRes = R.string.ebook,
+        iconRes = R.drawable.ic_book_24,
+        defaultColorInt = -5728974,
+        mediaType = MediaType.DOWNLOADS,
+        sourceTypes = listOf(SourceType.Download),
+        fileExtensions = setOf(
             "epub", "azw", "azw1", "azw2", "azw3", "mobi", "iba", "rtf", "tpz", "mart",
             "tk3", "aep", "dnl", "ybk", "lit", "ebk", "prc", "kfx", "ava", "orb", "koob",
             "bpnueb", "pef", "vbk", "fkb", "bkk", "xtc"
+        ),
+        extensionsAreConfigurable = true
+    );
+
+    fun toFileType(@ColorInt color: Int = 0, excludedExtensions: Set<String> = emptySet()): FileType.Preset =
+        FileType.preset(
+            presetFileType = this,
+            color = color,
+            excludedExtensions = excludedExtensions
         )
-    )
 
     companion object {
+
         @JvmStatic
-        val values: List<PresetFileType>
-            get() = Media.values + NonMedia.values
+        val mediaEntries: List<PresetFileType> by lazy {
+            entries.filter { it.mediaType != MediaType.DOWNLOADS }
+        }
+
+        @JvmStatic
+        val downloadEntries: List<PresetFileType> by lazy {
+            entries.filter { it.mediaType == MediaType.DOWNLOADS }
+        }
+
+        @JvmStatic
+        val configurableNonMediaValues: List<PresetFileType>
+            get() = downloadEntries.filter { it.extensionsAreConfigurable }
 
         operator fun get(ordinal: Int): PresetFileType =
-            values[ordinal]
-
-        @VisibleForTesting
-        val ordinalsMap by lazy { values.withIndex().associate { it.value to it.index } }
+            entries[ordinal]
     }
 }
-
-private const val EMPTY_COLOR_INT = 0
-
-@ColorInt
-private fun selectColor(@ColorInt storedColor: Int, @ColorInt defaultColor: Int): Int =
-    if (storedColor != EMPTY_COLOR_INT) storedColor else defaultColor

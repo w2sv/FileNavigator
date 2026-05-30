@@ -18,18 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.designsystem.theme.AppTheme
-import com.w2sv.domain.model.filetype.CustomFileType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
 import com.w2sv.filenavigator.ui.designsystem.OutlinedTextField
 import com.w2sv.filenavigator.ui.modelext.color
-import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.util.ClearFocusOnFlowEmissionOrKeyboardHidden
 import com.w2sv.modules.common.R
 import kotlinx.collections.immutable.ImmutableSet
@@ -42,7 +41,7 @@ typealias ExcludeExtension = (FileType, String) -> Unit
 fun CustomFileTypeCreationDialog(
     fileTypes: ImmutableSet<FileType>,
     onDismissRequest: () -> Unit,
-    createFileType: (CustomFileType) -> Unit,
+    createFileType: (FileType.Custom) -> Unit,
     excludeFileExtension: ExcludeExtension,
     modifier: Modifier = Modifier
 ) {
@@ -58,10 +57,10 @@ fun CustomFileTypeCreationDialog(
 
 @Composable
 fun CustomFileTypeConfigurationDialog(
-    fileType: CustomFileType,
+    fileType: FileType.Custom,
     fileTypes: ImmutableSet<FileType>,
     onDismissRequest: () -> Unit,
-    saveFileType: (CustomFileType) -> Unit,
+    saveFileType: (FileType.Custom) -> Unit,
     excludeFileExtension: ExcludeExtension,
     modifier: Modifier = Modifier
 ) {
@@ -110,6 +109,8 @@ private fun StatelessCustomFileTypeConfigurationDialog(
     excludeFileExtension: ExcludeExtension,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     FileTypeConfigurationDialog(
         icon = R.drawable.ic_custom_file_type_24,
         title = title,
@@ -146,7 +147,7 @@ private fun StatelessCustomFileTypeConfigurationDialog(
                                 text = rememberStyledTextResource(
                                     R.string.exclude_from,
                                     excludableFileTypeExtension.fileExtension,
-                                    excludableFileTypeExtension.fileType.stringResource()
+                                    excludableFileTypeExtension.fileType.name(context)
                                 ),
                                 onClick = {
                                     excludeFileExtension(
@@ -205,9 +206,9 @@ private fun StatelessCustomFileTypeConfigurationDialogPrev() {
             title = "Create a file type",
             confirmButtonText = "Apply",
             customFileTypeEditor = rememberCustomFileTypeEditor(
-                existingFileTypes = PresetFileType.NonMedia.ExtensionConfigurable.values.map { it.toDefaultFileType() }.toImmutableSet(),
+                existingFileTypes = PresetFileType.configurableNonMediaValues.map { it.toFileType() }.toImmutableSet(),
                 saveFileType = {},
-                initialFileType = CustomFileType("Html", listOf("html", "htm"), Color.Magenta.toArgb(), -1)
+                initialFileType = FileType.custom("Html", listOf("html", "htm"), Color.Magenta.toArgb(), -1)
             )
                 .apply { extensionEditor.update("json") },
             onDismissRequest = {},

@@ -53,8 +53,7 @@ import com.w2sv.designsystem.CharSequenceText
 import com.w2sv.designsystem.DialogButton
 import com.w2sv.designsystem.HighlightedDialogButton
 import com.w2sv.designsystem.theme.dialogSectionLabel
-import com.w2sv.domain.model.filetype.AnyPresetWrappingFileType
-import com.w2sv.domain.model.filetype.CustomFileType
+import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.modules.common.R
 import kotlinx.parcelize.Parcelize
 
@@ -232,9 +231,9 @@ sealed interface FileTypeConfigurationDialog : Parcelable {
 
     @Parcelize
     @JvmInline
-    value class ConfigureCustomType(val fileType: CustomFileType) : FileTypeConfigurationDialog
+    value class ConfigureCustomType(val fileType: FileType.Custom) : FileTypeConfigurationDialog
 
     @Parcelize
     @JvmInline
-    value class ConfigurePresetType(val fileType: AnyPresetWrappingFileType) : FileTypeConfigurationDialog
+    value class ConfigurePresetType(val fileType: FileType.Preset) : FileTypeConfigurationDialog
 }

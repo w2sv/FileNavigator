@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,7 +33,6 @@ import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
 import com.w2sv.filenavigator.ui.designsystem.SubDirectoryIcon
 import com.w2sv.filenavigator.ui.modelext.color
-import com.w2sv.filenavigator.ui.modelext.stringResource
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.modules.common.R
 import kotlinx.collections.immutable.ImmutableMap
@@ -67,7 +67,7 @@ fun FileTypeSettingsPanel(
 @Composable
 private fun FileTypeSettingsPanelPrev() {
     PreviewOf {
-        val imageFileType = PresetFileType.Image.toDefaultFileType()
+        val imageFileType = PresetFileType.Image.toFileType()
         FileTypeSettingsPanel(
             fileType = imageFileType,
             setSourceAutoMoveConfigs = {},
@@ -116,6 +116,8 @@ private fun FileTypeSurfaceContent(
     showFileTypeConfigurationDialog: (FileType) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -128,7 +130,7 @@ private fun FileTypeSurfaceContent(
                 .size(34.dp)
         )
         Text(
-            text = fileType.stringResource(),
+            text = fileType.name(context),
             fontSize = 18.sp
         )
         Spacer(modifier = Modifier.weight(1f))

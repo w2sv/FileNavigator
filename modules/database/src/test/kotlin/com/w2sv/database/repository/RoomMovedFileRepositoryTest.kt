@@ -59,7 +59,7 @@ internal class RoomMovedFileRepositoryTest {
                     mediaUri = MediaUri.parse("kjasdf"),
                     name = "someFile.jpg",
                     originalName = null,
-                    fileType = PresetFileType.Image.toDefaultFileType(),
+                    fileType = PresetFileType.Image.toFileType(),
                     sourceType = SourceType.Screenshot,
                     moveDestination = LocalDestination.parse("kjhasdfkjh"),
                     moveDateTime = LocalDateTime.now(),
@@ -73,7 +73,7 @@ internal class RoomMovedFileRepositoryTest {
                     ),
                     name = "someFile.jpg",
                     originalName = "previousName.jpg",
-                    fileType = PresetFileType.Image.toDefaultFileType(),
+                    fileType = PresetFileType.Image.toFileType(),
                     sourceType = SourceType.Screenshot,
                     moveDateTime = LocalDateTime.now()
                 ),
@@ -85,7 +85,7 @@ internal class RoomMovedFileRepositoryTest {
                     ),
                     name = "someFile.jpg",
                     originalName = null,
-                    fileType = PresetFileType.Image.toDefaultFileType(),
+                    fileType = PresetFileType.Image.toFileType(),
                     sourceType = SourceType.Screenshot,
                     moveDateTime = LocalDateTime.now()
                 )
