@@ -108,7 +108,8 @@ enum class PresetFileType(
         defaultColorInt = -15410306,
         mediaType = MediaType.DOWNLOADS,
         sourceTypes = listOf(SourceType.Download),
-        fileExtensions = setOf("apk")
+        fileExtensions = setOf("apk", "apkm", "xapk", "apks"),
+        extensionsAreConfigurable = true
     ),
 
     EBook(

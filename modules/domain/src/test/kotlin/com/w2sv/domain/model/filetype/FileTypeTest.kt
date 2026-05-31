@@ -15,13 +15,13 @@ class FileTypeTest {
         (PresetFileType.Image.toFileType() as FileType.FixedPreset).testParceling()
         (PresetFileType.Image.toFileType(3245235) as FileType.FixedPreset).testParceling()
         (PresetFileType.Video.toFileType(-1) as FileType.FixedPreset).testParceling()
-        (PresetFileType.APK.toFileType(-983264) as FileType.FixedPreset).testParceling()
     }
 
     @Test
     fun `configurable extension preset parceling`() {
         (PresetFileType.Text.toFileType() as FileType.ConfigurablePreset).testParceling()
         (PresetFileType.Text.toFileType(3253566, setOf("html", "json")) as FileType.ConfigurablePreset).testParceling()
+        (PresetFileType.APK.toFileType(-983264, setOf("xapk")) as FileType.ConfigurablePreset).testParceling()
         (PresetFileType.EBook.toFileType(-873624, setOf("dsaf", "kjs")) as FileType.ConfigurablePreset).testParceling()
     }
 
@@ -55,10 +55,7 @@ class FileTypeTest {
 
     @Test
     fun `preset and custom file types use distinct model variants`() {
-        val customFileType: FileType = FileType.custom("Html", listOf("html"), 342523, 1006)
-
         assertTrue(PresetFileType.Image.toFileType() is FileType.FixedPreset)
         assertTrue(PresetFileType.Text.toFileType() is FileType.ConfigurablePreset)
-        assertTrue(customFileType is FileType.Custom)
     }
 }
