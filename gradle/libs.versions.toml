@@ -66,6 +66,7 @@ androidx-splashscreen = "androidx.core:core-splashscreen:1.2.0"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.3.0"
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test" }
+app-cash-turbine = "app.cash.turbine:turbine:1.2.1"
 compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "compose-lint-checks" }
 google-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 google-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
@@ -102,6 +103,7 @@ instrumentationTest = [
 ]
 unitTest = [
     "androidx-test-ext-junit",
+    "app-cash-turbine",
     "junit",
     "kotlinx-coroutines-test",
     "mockk",
