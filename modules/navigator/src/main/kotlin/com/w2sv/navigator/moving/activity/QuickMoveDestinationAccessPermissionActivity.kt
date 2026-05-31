@@ -141,11 +141,13 @@ internal class QuickMoveDestinationAccessPermissionActivity : LoggingComponentAc
         // If user selected different destination, save as quick move destination
         if (moveDestination != moveOperation.destination) {
             lifecycleScope.launch {
-                navigatorConfigDataSource.saveQuickMoveDestination(
-                    fileType = moveOperation.file.fileType,
-                    sourceType = moveOperation.file.sourceType,
-                    destination = moveDestination
-                )
+                navigatorConfigDataSource.update {
+                    it.saveQuickMoveDestination(
+                        fileType = moveOperation.file.fileType,
+                        sourceType = moveOperation.file.sourceType,
+                        destination = moveDestination
+                    )
+                }
             }
         }
 

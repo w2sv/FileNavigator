@@ -90,8 +90,29 @@ data class NavigatorConfig(
             }
         )
 
+    fun editFileType(current: FileType, edited: FileType): NavigatorConfig =
+        editFileType(current) { edited }
+
     fun deleteCustomFileType(type: FileType.Custom): NavigatorConfig =
         copy(fileTypeConfigMap = fileTypeConfigMap.copy { remove(type.id) })
+
+    /**
+     * Removes [extension] from [fileType]'s current extension ownership.
+     *
+     * Custom file types own their extension set directly. Extension-configurable
+     * presets keep their default set and store the removed extension as an
+     * exclusion. Fixed presets do not support this operation.
+     */
+    fun excludeFileExtension(fileType: FileType, extension: String): NavigatorConfig =
+        when (fileType) {
+            is FileType.Custom ->
+                editFileType(fileType, fileType.withFileExtensions(fileType.fileExtensions - extension))
+
+            is FileType.ConfigurablePreset ->
+                editFileType(fileType, fileType.withExcludedExtensions(fileType.excludedExtensions + extension))
+
+            else -> error("$fileType doesn't support extension exclusion")
+        }
 
     fun updateFileTypeConfig(fileType: FileType, update: (FileTypeConfig) -> FileTypeConfig): NavigatorConfig =
         copy(
@@ -134,6 +155,32 @@ data class NavigatorConfig(
             it.copy(autoMoveConfig = modifyAutoMoveConfig(it.autoMoveConfig))
         }
 
+    fun unsetAutoMoveConfig(fileType: FileType, sourceType: SourceType): NavigatorConfig =
+        updateAutoMoveConfig(fileType, sourceType) {
+            AutoMoveConfig.Empty
+        }
+
+    fun saveQuickMoveDestination(fileType: FileType, sourceType: SourceType, destination: LocalDestinationApi): NavigatorConfig =
+        updateSourceConfig(
+            fileType = fileType,
+            sourceType = sourceType
+        ) { sourceConfig ->
+            sourceConfig.copy(
+                quickMoveDestinations = updatedQuickMoveDestinations(
+                    currentDestinations = sourceConfig.quickMoveDestinations,
+                    destination = destination
+                )
+            )
+        }
+
+    fun unsetQuickMoveDestination(fileType: FileType, sourceType: SourceType): NavigatorConfig =
+        updateSourceConfig(
+            fileType = fileType,
+            sourceType = sourceType
+        ) {
+            it.copy(quickMoveDestinations = listOf())
+        }
+
     companion object {
         val default by lazy {
             NavigatorConfig(
@@ -148,6 +195,22 @@ data class NavigatorConfig(
         }
     }
 }
+
+internal fun updatedQuickMoveDestinations(
+    currentDestinations: List<LocalDestinationApi>,
+    destination: LocalDestinationApi
+): List<LocalDestinationApi> =
+    when (destination.documentUri) {
+        currentDestinations.firstOrNull()?.documentUri -> currentDestinations
+        currentDestinations.getOrNull(1)?.documentUri -> currentDestinations.reversed()
+        else -> buildList {
+            add(destination)
+            currentDestinations.firstOrNull()
+                ?.let { firstCurrentElement ->
+                    add(firstCurrentElement)
+                }
+        }
+    }
 
 fun Collection<FileType>.sortedByOrdinal(): List<FileType> =
     sortedBy { fileType -> fileType.ordinal }

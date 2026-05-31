@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.os.Parcelable
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
-import androidx.annotation.VisibleForTesting
 import com.anggrayudi.storage.media.MediaType
 import com.w2sv.domain.model.navigatorconfig.FileTypeConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig

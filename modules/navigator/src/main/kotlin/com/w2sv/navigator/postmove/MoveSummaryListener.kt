@@ -58,19 +58,23 @@ internal class MoveSummaryListener @Inject constructor(
 
     private fun onQuickMoveDestinationNotFound(file: NavigatableFile) {
         scope.launch {
-            navigatorConfigDataSource.unsetQuickMoveDestination(
-                fileType = file.fileType,
-                sourceType = file.sourceType
-            )
+            navigatorConfigDataSource.update {
+                it.unsetQuickMoveDestination(
+                    fileType = file.fileType,
+                    sourceType = file.sourceType
+                )
+            }
         }
     }
 
     private fun onAutoMoveDestinationNotFound(file: NavigatableFile) {
         scope.launch {
-            navigatorConfigDataSource.unsetAutoMoveConfig(
-                fileType = file.fileType,
-                sourceType = file.sourceType
-            )
+            navigatorConfigDataSource.update {
+                it.unsetAutoMoveConfig(
+                    fileType = file.fileType,
+                    sourceType = file.sourceType
+                )
+            }
         }
     }
 
@@ -88,11 +92,13 @@ internal class MoveSummaryListener @Inject constructor(
                 i { "Saving quick move destination $it" }
 
                 scope.launch {
-                    navigatorConfigDataSource.saveQuickMoveDestination(
-                        fileType = data.file.fileType,
-                        sourceType = data.file.sourceType,
-                        destination = it
-                    )
+                    navigatorConfigDataSource.update { config ->
+                        config.saveQuickMoveDestination(
+                            fileType = data.file.fileType,
+                            sourceType = data.file.sourceType,
+                            destination = it
+                        )
+                    }
                 }
             }
         }

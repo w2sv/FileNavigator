@@ -22,6 +22,7 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.PresetFileType
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.rememberNavigatorConfigActions
 import com.w2sv.filenavigator.ui.util.snackbar.dismissCurrentSnackbar
 import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.flow.update
 
 @Composable
 fun NavigatorSettingsScreenRoute(
@@ -32,8 +33,9 @@ fun NavigatorSettingsScreenRoute(
 
     var showFileTypesBottomSheet by rememberSaveable { mutableStateOf(false) }
     var fileTypeConfigurationDialog by rememberSaveable { mutableStateOf<FileTypeConfigurationDialog?>(null) }
+    val reversibleConfig = navigatorVM.reversibleConfig
 
-    val navigatorConfig by navigatorVM.reversibleConfig.collectAsStateWithLifecycle()
+    val navigatorConfig by reversibleConfig.collectAsStateWithLifecycle()
 
     OnChange(navigatorConfig) { snackbarHostState.dismissCurrentSnackbar() }
 
@@ -54,8 +56,8 @@ fun NavigatorSettingsScreenRoute(
         FileTypeSelectionBottomSheet(
             state = rememberFileTypeSelectionState(
                 navigatorConfig = navigatorConfig,
-                toggleSelection = navigatorVM.reversibleConfig::toggleFileTypeEnablement,
-                deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType
+                toggleSelection = { fileType -> reversibleConfig.update { it.toggleFileTypeEnablement(fileType) } },
+                deleteCustomFileType = { fileType -> reversibleConfig.update { it.deleteCustomFileType(fileType) } }
             ),
             onDismissRequest = { showFileTypesBottomSheet = false },
             showFileTypeCreationDialog = { fileTypeConfigurationDialog = FileTypeConfigurationDialog.CreateType }
@@ -69,24 +71,24 @@ fun NavigatorSettingsScreenRoute(
             FileTypeConfigurationDialog.CreateType -> CustomFileTypeCreationDialog(
                 fileTypes = navigatorConfig.fileTypes.toImmutableSet(),
                 onDismissRequest = closeDialog,
-                createFileType = navigatorVM.reversibleConfig::createCustomFileType,
-                excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension
+                createFileType = { fileType -> reversibleConfig.update { it.addCustomFileType(fileType) } },
+                excludeFileExtension = { fileType, extension -> reversibleConfig.update { it.excludeFileExtension(fileType, extension) } }
             )
 
             is FileTypeConfigurationDialog.ConfigureCustomType -> CustomFileTypeConfigurationDialog(
                 fileType = dialog.fileType,
                 fileTypes = remember { (navigatorConfig.fileTypes - dialog.fileType).toImmutableSet() },
                 onDismissRequest = closeDialog,
-                saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
-                excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension
+                saveFileType = { fileType -> reversibleConfig.update { it.editFileType(dialog.fileType, fileType) } },
+                excludeFileExtension = { fileType, extension -> reversibleConfig.update { it.excludeFileExtension(fileType, extension) } }
             )
 
             is FileTypeConfigurationDialog.ConfigurePresetType -> PresetFileTypeConfigurationDialog(
                 fileType = dialog.fileType,
-                saveFileType = { navigatorVM.reversibleConfig.editFileType(dialog.fileType, it) },
+                saveFileType = { fileType -> reversibleConfig.update { it.editFileType(dialog.fileType, fileType) } },
                 customFileTypes = navigatorConfig.fileTypes.filterIsInstance<FileType.Custom>().toImmutableSet(),
-                excludeFileExtension = navigatorVM.reversibleConfig::excludeFileExtension,
-                deleteCustomFileType = navigatorVM.reversibleConfig::deleteCustomFileType,
+                excludeFileExtension = { fileType, extension -> reversibleConfig.update { it.excludeFileExtension(fileType, extension) } },
+                deleteCustomFileType = { fileType -> reversibleConfig.update { it.deleteCustomFileType(fileType) } },
                 onDismissRequest = closeDialog
             )
         }

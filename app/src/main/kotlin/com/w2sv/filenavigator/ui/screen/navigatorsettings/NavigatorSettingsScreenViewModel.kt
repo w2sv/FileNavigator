@@ -2,20 +2,24 @@ package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.filenavigator.ui.util.LoggingViewModel
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.navigator.FileNavigator
 import com.w2sv.navigator.di.FileNavigatorIsRunning
 import com.w2sv.navigator.system_broadcastreceiver.PowerSaveModeChangedReceiver
+import com.w2sv.reversiblestate.ReversibleStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel
 class NavigatorSettingsScreenViewModel @Inject constructor(
@@ -37,10 +41,15 @@ class NavigatorSettingsScreenViewModel @Inject constructor(
 
     val configChangesHaveBeenApplied = navigatorConfigDataSource.config.distinctUntilChanged().drop(1).map {}
 
-    val reversibleConfig = ReversibleNavigatorConfig(
+    val reversibleConfig = ReversibleStateFlow(
         scope = viewModelScope,
-        navigatorConfigDataSource = navigatorConfigDataSource,
-        onStateSynced = {
+        appliedState = navigatorConfigDataSource.config.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = NavigatorConfig.default
+        ),
+        commitState = { state ->
+            navigatorConfigDataSource.update { state }
             if (navigatorIsRunning.value) {
                 FileNavigator.reregisterFileObservers(context)
             }
