@@ -1,7 +1,7 @@
 [versions]
 agp = "9.0.1"
 androidx-test = "1.7.0"
-androidxActivity = "1.12.4"
+androidxActivity = "1.13.0"
 baselineprofile = "1.5.0-alpha03"
 # @keep
 compileSdk = "36"
