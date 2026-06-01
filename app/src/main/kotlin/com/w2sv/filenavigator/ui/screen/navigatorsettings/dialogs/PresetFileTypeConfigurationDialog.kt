@@ -97,7 +97,7 @@ fun PresetFileTypeConfigurationDialog(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var excludedExtensions = rememberSaveable(saver = snapshotStateListSaver<String>()) {
+    val excludedExtensions = rememberSaveable(saver = snapshotStateListSaver()) {
         (fileType as? FileType.ConfigurablePreset)?.excludedExtensions.orEmpty().toMutableStateList()
     }
     var color by rememberSaveable(fileType.color, stateSaver = colorSaver()) { mutableStateOf(fileType.color) }

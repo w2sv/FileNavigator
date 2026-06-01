@@ -147,7 +147,7 @@
     <string name="delete_file_extension">删除扩展名</string>
     <string name="edit_file_type_name_field_placeholder">输入名称</string>
     <string name="edit_file_type_name_field_label">名称</string>
-    <string name="edit_file_type_dialog_title">编辑文件类型</string>
+    <string name="edit_custom_file_type_dialog_title">编辑文件类型</string>
     <string name="preset_non_media_file_type_configuration_dialog_title">编辑 %1$s 文件类型</string>
     <string name="create_file_type_dialog_title">创建文件类型</string>
     <string name="create">创建</string>

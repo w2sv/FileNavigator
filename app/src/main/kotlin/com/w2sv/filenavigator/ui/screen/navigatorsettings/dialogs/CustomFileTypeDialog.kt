@@ -65,7 +65,7 @@ fun CustomFileTypeConfigurationDialog(
     modifier: Modifier = Modifier
 ) {
     ColorPickerDialogOverlaidCustomFileTypeConfigurationDialog(
-        title = stringResource(R.string.edit_file_type_dialog_title),
+        title = stringResource(R.string.edit_custom_file_type_dialog_title),
         confirmButtonText = stringResource(R.string.apply),
         customFileTypeEditor = rememberCustomFileTypeEditor(fileTypes, saveFileType, fileType),
         onDismissRequest = onDismissRequest,

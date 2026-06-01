@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SelectableChipColors
 import androidx.compose.material3.Text
@@ -87,14 +86,13 @@ fun FileTypeConfigurationDialog(
     fileTypeColor: Color,
     onConfigureColorButtonPress: () -> Unit,
     modifier: Modifier = Modifier,
-    iconTint: Color = LocalContentColor.current,
     confirmButtonEnabled: Boolean = true,
     confirmButtonText: String = stringResource(R.string.apply),
     content: @Composable ColumnScope.() -> Unit
 ) {
     AlertDialog(
         modifier = modifier,
-        icon = { Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(44.dp), tint = iconTint) },
+        icon = { Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(44.dp)) },
         title = { Text(title) },
         onDismissRequest = onDismissRequest,
         text = {
