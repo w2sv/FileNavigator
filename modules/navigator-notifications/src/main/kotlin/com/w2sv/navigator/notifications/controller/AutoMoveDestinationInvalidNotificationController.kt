@@ -3,7 +3,7 @@ package com.w2sv.navigator.notifications.controller
 import androidx.core.app.NotificationCompat
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
-import com.w2sv.domain.usecase.MoveDestinationPathConverter
+import com.w2sv.domain.usecase.MoveDestinationLabelProvider
 import com.w2sv.modules.common.R
 import com.w2sv.navigator.domain.notifications.NotificationEvent
 import com.w2sv.navigator.notifications.AppNotification
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 internal class AutoMoveDestinationInvalidNotificationController @Inject constructor(
     environment: NotificationEnvironment,
-    private val moveDestinationPathConverter: MoveDestinationPathConverter
+    private val moveDestinationLabelProvider: MoveDestinationLabelProvider
 ) : MultiNotificationController<NotificationEvent.AutoMoveDestinationInvalid>(
     environment = environment,
     appNotification = AppNotification.AutoMoveDestinationInvalid
@@ -40,7 +40,7 @@ internal class AutoMoveDestinationInvalidNotificationController @Inject construc
         buildSpannedString {
             bold {
                 append(
-                    moveDestinationPathConverter.invoke(
+                    moveDestinationLabelProvider.invoke(
                         moveDestination = args.destination,
                         context = context
                     )

@@ -23,7 +23,7 @@ import com.w2sv.common.logging.logIdentifier
 import com.w2sv.composed.core.CollectFromFlow
 import com.w2sv.composed.core.OnChange
 import com.w2sv.designsystem.theme.AppTheme
-import com.w2sv.domain.usecase.MoveDestinationPathConverter
+import com.w2sv.domain.usecase.MoveDestinationLabelProvider
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.ui.navigation.NavGraph
 import com.w2sv.filenavigator.ui.navigation.Navigator
@@ -38,7 +38,7 @@ import slimber.log.i
 class MainActivity : LoggingComponentActivity() {
 
     @Inject
-    lateinit var moveDestinationPathConverter: MoveDestinationPathConverter
+    lateinit var moveDestinationLabelProvider: MoveDestinationLabelProvider
 
     private val appVM by viewModels<AppViewModel>()
 
@@ -65,7 +65,7 @@ class MainActivity : LoggingComponentActivity() {
             }
 
             CompositionLocalProvider(
-                LocalMoveDestinationPathConverter provides moveDestinationPathConverter,
+                LocalMoveDestinationLabelProvider provides moveDestinationLabelProvider,
                 LocalNavigator provides navigator
             ) {
                 AppTheme(

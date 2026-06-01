@@ -99,6 +99,7 @@ dependencies {
     implementation(projects.modules.database)
     implementation(projects.modules.datastore)
     implementation(projects.modules.domain)
+    implementation(projects.modules.usecase)
     implementation(projects.modules.navigator)
     implementation(projects.modules.navigatorQuicktile)
 

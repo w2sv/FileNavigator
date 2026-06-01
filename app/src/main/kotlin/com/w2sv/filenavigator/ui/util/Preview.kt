@@ -9,8 +9,8 @@ import androidx.compose.ui.tooling.preview.Devices.TABLET
 import androidx.compose.ui.tooling.preview.Preview
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
-import com.w2sv.domain.usecase.MoveDestinationPathConverter
-import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
+import com.w2sv.domain.usecase.MoveDestinationLabelProvider
+import com.w2sv.filenavigator.ui.LocalMoveDestinationLabelProvider
 import com.w2sv.filenavigator.ui.LocalNavigator
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.navigation.Screen
@@ -31,7 +31,7 @@ fun PreviewOf(
     ) {
         CompositionLocalProvider(
             LocalNavigator provides PreviewNavigator(),
-            LocalMoveDestinationPathConverter provides PreviewMoveDestinationPathConverter(),
+            LocalMoveDestinationLabelProvider provides PreviewMoveDestinationLabelProvider(),
             content = content
         )
     }
@@ -47,7 +47,7 @@ private class PreviewNavigator : Navigator {
     override val backStack = emptyList<Screen>()
 }
 
-private class PreviewMoveDestinationPathConverter : MoveDestinationPathConverter {
+private class PreviewMoveDestinationLabelProvider : MoveDestinationLabelProvider {
     override operator fun invoke(moveDestination: MoveDestinationApi, context: Context): String =
         moveDestination.documentUri.uri.toString()
 }

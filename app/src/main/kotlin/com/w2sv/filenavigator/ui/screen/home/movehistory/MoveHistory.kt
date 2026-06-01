@@ -47,7 +47,7 @@ import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
-import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
+import com.w2sv.filenavigator.ui.LocalMoveDestinationLabelProvider
 import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
 import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
 import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
@@ -73,7 +73,7 @@ fun MoveHistory(state: MoveHistoryState, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val indexToDate = rememberIndexToDateLabel(state.history, context)
     val snackbarController = rememberSnackbarController()
-    val moveDestinationPathConverter = LocalMoveDestinationPathConverter.current
+    val moveDestinationPathConverter = LocalMoveDestinationLabelProvider.current
 
     LazyColumn(modifier = modifier) {
         itemsIndexed(state.history, key = { _, movedFile -> movedFile.moveDateTime }) { i, movedFile ->

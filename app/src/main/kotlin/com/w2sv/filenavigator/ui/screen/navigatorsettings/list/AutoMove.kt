@@ -13,17 +13,17 @@ import androidx.compose.ui.platform.LocalContext
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
-import com.w2sv.domain.usecase.MoveDestinationPathConverter
-import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
+import com.w2sv.domain.usecase.MoveDestinationLabelProvider
+import com.w2sv.filenavigator.ui.LocalMoveDestinationLabelProvider
 
 @Composable
 fun rememberAutoMoveDestinationPath(
     destination: LocalDestinationApi?,
     context: Context = LocalContext.current,
-    moveDestinationPathConverter: MoveDestinationPathConverter = LocalMoveDestinationPathConverter.current
+    moveDestinationLabelProvider: MoveDestinationLabelProvider = LocalMoveDestinationLabelProvider.current
 ): State<String?> =
     remember(destination) {
-        mutableStateOf(destination?.let { moveDestinationPathConverter.invoke(it, context) })
+        mutableStateOf(destination?.let { moveDestinationLabelProvider.invoke(it, context) })
     }
 
 @Composable
