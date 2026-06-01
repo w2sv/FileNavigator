@@ -8,8 +8,6 @@ import androidx.compose.ui.tooling.preview.Devices.PHONE
 import androidx.compose.ui.tooling.preview.Devices.TABLET
 import androidx.compose.ui.tooling.preview.Preview
 import com.w2sv.designsystem.theme.AppTheme
-import com.w2sv.domain.model.movedestination.ExternalDestinationApi
-import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
 import com.w2sv.domain.usecase.MoveDestinationPathConverter
 import com.w2sv.filenavigator.ui.LocalMoveDestinationPathConverter
@@ -51,22 +49,7 @@ private class PreviewNavigator : Navigator {
 
 private class PreviewMoveDestinationPathConverter : MoveDestinationPathConverter {
     override operator fun invoke(moveDestination: MoveDestinationApi, context: Context): String =
-        when (moveDestination) {
-            is LocalDestinationApi -> {
-                moveDestination.pathRepresentation(
-                    context = context,
-                    includeVolumeName = true
-                )
-            }
-
-            is ExternalDestinationApi -> {
-                moveDestination.uiRepresentation(
-                    context
-                )
-            }
-
-            else -> error("")
-        }
+        moveDestination.documentUri.uri.toString()
 }
 
 @Preview(name = "Phone", device = PHONE, showSystemUi = true)

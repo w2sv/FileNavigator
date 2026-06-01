@@ -1,6 +1,7 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.list
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,18 +23,50 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
+import com.w2sv.common.uri.DocumentUri
 import com.w2sv.composed.material3.ColumnWithDividers
 import com.w2sv.designsystem.TweakedSegmentedButton
 import com.w2sv.designsystem.theme.orOnSurfaceDisabledIf
 import com.w2sv.domain.model.filetype.FileType
+import com.w2sv.domain.model.filetype.FileTypeId
+import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
+import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
+import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.ui.modelext.color
+import com.w2sv.filenavigator.ui.util.PreviewOf
+import com.w2sv.kotlinutils.copy
 import com.w2sv.modules.common.R
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableMap
+
+@Preview
+@Composable
+private fun Prev() {
+    PreviewOf {
+        FileTypeSourcesSettingsSurface(
+            PresetFileType.Image.toFileType(),
+            NavigatorConfig.default.fileTypeConfigMap.getValue(FileTypeId.Preset(PresetFileType.Image)).sourceTypeConfigMap.copy {
+                this[SourceType.Camera] =
+                    SourceConfig(
+                        autoMoveConfig = AutoMoveConfig(
+                            enabled = true,
+                            destination = LocalDestination(DocumentUri("primary:Download/Zango/Nested".toUri()))
+                        )
+                    )
+            }.toImmutableMap(),
+            onSourceCheckedChange = { _, _ -> },
+            setSourceAutoMoveConfig = { _, _ -> }
+        )
+    }
+}
 
 @Composable
 fun FileTypeSourcesSettingsSurface(
@@ -79,12 +112,17 @@ fun FileTypeSourcesSettingsSurface(
                 val autoMoveDestinationPath by rememberAutoMoveDestinationPath(destination = autoMoveConfig.destination)
                 AnimatedVisibility(visible = sourceConfig.enabled && autoMoveConfig.enabled && autoMoveDestinationPath != null) {
                     autoMoveDestinationPath?.let { path ->
-                        AutoMoveRow(
-                            destinationPath = path,
-                            changeDestination = { selectAutoMoveDestination.launch(autoMoveConfig.destination?.documentUri?.uri) },
+                        Text(
+                            text = path,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(start = 22.dp, end = 10.dp)
+                                .padding(start = 68.dp, end = 48.dp, bottom = 8.dp)
+                                .clickable(
+                                    onClick = { selectAutoMoveDestination.launch(autoMoveConfig.destination?.documentUri?.uri) },
+                                    onClickLabel = stringResource(R.string.select_the_auto_move_destination)
+                                ),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }

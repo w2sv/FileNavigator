@@ -29,14 +29,10 @@ value class LocalDestination(override val documentUri: DocumentUri) : LocalDesti
         }
 
     override fun pathRepresentation(context: Context, includeVolumeName: Boolean): String =
-        if (isVolumeRoot) {
-            if (includeVolumeName) {
-                documentUri.volumeName
-            } else {
-                context.getString(R.string.volume_root)
-            }
-        } else {
-            documentUri.documentFilePath(context)
+        when {
+            isVolumeRoot && includeVolumeName -> documentUri.volumeName
+            isVolumeRoot -> context.getString(R.string.volume_root)
+            else -> documentUri.documentFilePath(context)
                 .let { path ->
                     if (includeVolumeName) {
                         path
