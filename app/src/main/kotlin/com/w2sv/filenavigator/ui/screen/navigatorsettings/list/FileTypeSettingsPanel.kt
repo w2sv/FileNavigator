@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,6 @@ import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
-import com.w2sv.filenavigator.ui.designsystem.SubDirectoryIcon
 import com.w2sv.filenavigator.ui.modelext.color
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.modules.common.R
@@ -142,7 +142,7 @@ private fun FileTypeSurfaceContent(
                         collapseMenu()
                         setSourceAutoMoveConfigs()
                     },
-                    leadingIcon = { SubDirectoryIcon() }
+                    leadingIcon = { Icon(painterResource(R.drawable.ic_folder_destination_24), contentDescription = null) }
                 )
             }
         }
