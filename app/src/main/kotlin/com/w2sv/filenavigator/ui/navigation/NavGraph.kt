@@ -1,50 +1,21 @@
 package com.w2sv.filenavigator.ui.navigation
 
-import androidx.compose.animation.ContentTransform
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.ui.NavDisplay
-import com.w2sv.filenavigator.ui.screen.appsettings.AppSettingsScreen
-import com.w2sv.filenavigator.ui.screen.home.HomeScreenRoute
-import com.w2sv.filenavigator.ui.screen.navigatorsettings.NavigatorSettingsScreenRoute
-import com.w2sv.filenavigator.ui.screen.permissions.PermissionsScreenRoute
+import androidx.compose.ui.Modifier
 
 @Composable
 fun NavGraph(navigator: Navigator) {
-    NavDisplay(
-        backStack = navigator.backStack,
-        onBack = { navigator.popBackStack() },
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
-        transitionSpec = {
-            ContentTransform(
-                NavAnimation.NonPop.enter(),
-                NavAnimation.NonPop.exit()
-            )
-        },
-        popTransitionSpec = {
-            ContentTransform(
-                NavAnimation.Pop.enter(),
-                NavAnimation.Pop.exit()
-            )
-        },
-        entryProvider = entryProvider {
-            entry<Screen.Home> {
-                HomeScreenRoute()
-            }
-            entry<Screen.AppSettings> {
-                AppSettingsScreen()
-            }
-            entry<Screen.Permissions> {
-                PermissionsScreenRoute()
-            }
-            entry<Screen.NavigatorSettings> {
-                NavigatorSettingsScreenRoute()
-            }
-        }
-    )
+    val rootScaffoldState = rememberRootScaffoldState()
+
+    RootScaffold(
+        navigator = navigator,
+        rootScaffoldState = rootScaffoldState
+    ) { paddingValues ->
+        NavContent(
+            navigator = navigator,
+            rootScaffoldState = rootScaffoldState,
+            modifier = Modifier.padding(paddingValues)
+        )
+    }
 }

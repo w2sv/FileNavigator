@@ -22,16 +22,28 @@ class NavigatorImpl(backStack: NavBackStack<Screen>) :
     Nav3Navigator<Screen>(backStack),
     Navigator {
     override fun toAppSettings() =
-        launchSingleTop(Screen.AppSettings)
+        toPrimaryDestination(Screen.AppSettings)
 
     override fun toPermissions() =
         clearAndLaunch(Screen.Permissions)
 
     override fun toHome() =
-        clearAndLaunch(Screen.Home)
+        toPrimaryDestination(Screen.Home)
 
     override fun toNavigatorSettings() =
-        launchSingleTop(Screen.NavigatorSettings)
+        toPrimaryDestination(Screen.NavigatorSettings)
+
+    private fun toPrimaryDestination(target: Screen) {
+        if (backStack.lastOrNull() == target && backStack.firstOrNull() == Screen.Home && backStack.size <= 2) {
+            return
+        }
+
+        backStack.clear()
+        backStack.add(Screen.Home)
+        if (target != Screen.Home) {
+            backStack.add(target)
+        }
+    }
 }
 
 @Composable

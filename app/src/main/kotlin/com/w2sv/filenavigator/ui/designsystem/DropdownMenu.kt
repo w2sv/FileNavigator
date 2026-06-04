@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -16,18 +17,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import com.w2sv.modules.common.R
 
+// TODO: composed
 @Stable
 interface DropdownMenuScope : ColumnScope {
     fun collapseMenu()
 }
 
 @Composable
-fun MoreIconButtonWithDropdownMenu(modifier: Modifier = Modifier, dropdownMenuContent: @Composable (DropdownMenuScope.() -> Unit)) {
+fun MoreIconButtonWithDropdownMenu(
+    modifier: Modifier = Modifier,
+    iconTint: Color = LocalContentColor.current,
+    dropdownMenuContent: @Composable (DropdownMenuScope.() -> Unit)
+) {
     var menuIsExpanded by rememberSaveable {
         mutableStateOf(false)
     }
@@ -36,7 +43,8 @@ fun MoreIconButtonWithDropdownMenu(modifier: Modifier = Modifier, dropdownMenuCo
         IconButton(onClick = { menuIsExpanded = !menuIsExpanded }, modifier = Modifier.size(IconSize.IconButton.Smaller)) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_more_vert_24),
-                contentDescription = stringResource(R.string.open_the_dropdown_menu)
+                contentDescription = stringResource(R.string.open_the_dropdown_menu),
+                tint = iconTint
             )
         }
         DropdownMenu(

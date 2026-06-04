@@ -50,7 +50,7 @@ fun LazyListScope.moreItemList(config: NavigatorConfig, actions: NavigatorConfig
     item {
         NavigatorSettingsListSectionHeader(
             text = stringResource(id = R.string.more),
-            padding = NavigatorSettingsListTokens.moreSectionHeaderPadding
+            padding = NavigatorSettingsListDimens.moreSectionHeaderPadding
         )
     }
     val itemRowModifier = Modifier

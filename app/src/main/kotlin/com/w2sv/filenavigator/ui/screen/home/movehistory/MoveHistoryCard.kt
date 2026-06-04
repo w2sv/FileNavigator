@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,8 +26,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.designsystem.DialogButton
 import com.w2sv.designsystem.theme.onSurfaceVariantDecreasedAlpha
+import com.w2sv.filenavigator.ui.designsystem.AppCard
+import com.w2sv.filenavigator.ui.designsystem.AppCardHeaderIcon
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
-import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
 import com.w2sv.filenavigator.ui.util.WithLocalContentColor
 import com.w2sv.modules.common.R
 
@@ -55,15 +54,18 @@ fun MoveHistoryCard(state: MoveHistoryState, modifier: Modifier = Modifier) {
 
 @Composable
 private fun MoveHistoryCard(state: MoveHistoryState, showDeletionDialog: () -> Unit, modifier: Modifier = Modifier) {
-    HomeScreenCard(modifier) {
-        HeaderRow(
-            showDropdownMenuButton = !state.historyEmpty,
-            showDeletionDialog = showDeletionDialog,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
+    AppCard(
+        title = stringResource(R.string.move_history),
+        headerIcon = { AppCardHeaderIcon(R.drawable.ic_history_24) },
+        modifier = modifier,
+        trailingHeaderContent = {
+            Spacer(modifier = Modifier.weight(1f))
+            HeaderMenu(
+                showDropdownMenuButton = !state.historyEmpty,
+                showDeletionDialog = showDeletionDialog
+            )
+        }
+    ) {
         AnimatedContent(
             targetState = state.historyEmpty,
             modifier = Modifier
@@ -80,33 +82,22 @@ private fun MoveHistoryCard(state: MoveHistoryState, showDeletionDialog: () -> U
 }
 
 @Composable
-private fun HeaderRow(showDropdownMenuButton: Boolean, showDeletionDialog: () -> Unit, modifier: Modifier = Modifier) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = stringResource(R.string.move_history),
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        AnimatedVisibility(visible = showDropdownMenuButton) {
-            MoreIconButtonWithDropdownMenu {
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_delete_history_24),
-                            contentDescription = null
-                        )
-                    },
-                    text = { Text(stringResource(R.string.delete_move_history_dropdown_menu_item_label)) },
-                    onClick = {
-                        collapseMenu()
-                        showDeletionDialog()
-                    }
-                )
-            }
+private fun HeaderMenu(showDropdownMenuButton: Boolean, showDeletionDialog: () -> Unit) {
+    AnimatedVisibility(visible = showDropdownMenuButton) {
+        MoreIconButtonWithDropdownMenu(iconTint = colorScheme.secondary) {
+            DropdownMenuItem(
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_delete_history_24),
+                        contentDescription = null
+                    )
+                },
+                text = { Text(stringResource(R.string.delete_move_history_dropdown_menu_item_label)) },
+                onClick = {
+                    collapseMenu()
+                    showDeletionDialog()
+                }
+            )
         }
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="home">主页</string>
     <!-- File Types -->
     <string name="image">图片</string>
     <string name="video">视频</string>
@@ -75,7 +76,6 @@
     <string name="post_notifications_permission_rational">File Navigator需要 <b>发送通知权限</b> 用于就文件分类事项发送通知</string>
     <string name="manage_external_storage_permission_rational">File Navigator需要<b>所有文件管理权限</b>用于移动将要进行分类的文件</string>
     <string name="theme">主题</string>
-    <string name="open_navigation_drawer">打开导航抽屉</string>
     <string name="share">分享本软件</string>
     <string name="rate">评分</string>
     <string name="privacy_policy">隐私政策</string>
@@ -93,7 +93,6 @@
     <string name="delete_move_history_dropdown_menu_item_label">清除文件移动记录</string>
     <string name="move_history_deletion_dialog_message">确定清除？此操作不可逆</string>
     <string name="move_history_placeholder">被移动的文件将在这里显示</string>
-    <string name="return_to_main_screen">回到主页</string>
     <string name="move_history">移动记录</string>
     <string name="navigator_settings">整理程序设置</string>
     <string name="couldn_t_find_file">未能找到文件</string>
@@ -122,7 +121,6 @@
     <string name="app_settings">软件设置</string>
     <string name="show_storage_volume_names">显示存储卷名</string>
     <string name="show_storage_volume_names_explanation">比如 显示为<b>primary:Folder/OtherFolder</b>而非<b>Folder/OtherFolder</b></string>
-    <string name="settings">设置</string>
     <string name="general">通用</string>
     <string name="auto_move_introduction_paragraph_1">现在你可以通过以下方式打开特定文件类别的自动移动</string>
     <string name="auto_move_introduction_paragraph_2"><b>1.</b> 点击已启用文件类型的 <b>自动移动</b> \n<b>2.</b> 选择目标文件夹\n<b>3.</b> 保存配置</string>

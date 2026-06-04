@@ -37,6 +37,7 @@ class ComposeConventionPlugin : Plugin<Project> {
                 "implementation"(library("androidx.compose.animation"))
                 "implementation"(library("androidx.compose.foundation"))
                 "implementation"(library("androidx.compose.material.icons"))
+                "implementation"(library("androidx.compose.material.icons.extended"))
                 "implementation"(library("androidx.lifecycle.compose"))
                 "lintChecks"(library("compose.lint.checks"))
                 "implementation"(library("w2sv.composed.core"))

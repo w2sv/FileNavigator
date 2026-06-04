@@ -1,17 +1,24 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.core.OnChange
+import com.w2sv.composed.core.isLandscapeModeActive
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.filenavigator.ui.LocalSnackbarHostState
+import com.w2sv.filenavigator.ui.navigation.RootScaffoldState
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.FileTypeSelectionBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.rememberFileTypeSelectionState
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.AutoMoveIntroductionDialogIfNotYetShown
@@ -26,6 +33,7 @@ import kotlinx.coroutines.flow.update
 
 @Composable
 fun NavigatorSettingsScreenRoute(
+    rootScaffoldState: RootScaffoldState,
     navigatorVM: NavigatorSettingsScreenViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
@@ -36,13 +44,22 @@ fun NavigatorSettingsScreenRoute(
     val reversibleConfig = navigatorVM.reversibleConfig
 
     val navigatorConfig by reversibleConfig.collectAsStateWithLifecycle()
+    val configEditState = rememberConfigEditState(navigatorVM)
 
     OnChange(navigatorConfig) { snackbarHostState.dismissCurrentSnackbar() }
+    DisposableEffect(rootScaffoldState, configEditState) {
+        val fab: @Composable () -> Unit = { NavigatorSettingsFloatingActionButton(configEditState = configEditState) }
+        rootScaffoldState.fab = fab
+        onDispose {
+            if (rootScaffoldState.fab === fab) {
+                rootScaffoldState.fab = null
+            }
+        }
+    }
 
     NavigatorSettingsScreen(
         navigatorConfig = navigatorConfig,
-        navigatorConfigActions = rememberNavigatorConfigActions(),
-        configEditState = rememberConfigEditState(navigatorVM),
+        navigatorConfigActions = rememberNavigatorConfigActions(navigatorVM),
         showFileTypesBottomSheet = { showFileTypesBottomSheet = true },
         showFileTypeConfigurationDialog = { fileType ->
             fileTypeConfigurationDialog = when (fileType) {
@@ -93,4 +110,17 @@ fun NavigatorSettingsScreenRoute(
             )
         }
     }
+}
+
+@Composable
+private fun NavigatorSettingsFloatingActionButton(configEditState: ConfigEditState) {
+    EditingFabButtonRow(
+        configEditState = configEditState,
+        modifier = Modifier
+            .padding(
+                top = 8.dp, // Snackbar padding
+                end = if (isLandscapeModeActive) 38.dp else 0.dp
+            )
+            .height(70.dp)
+    )
 }

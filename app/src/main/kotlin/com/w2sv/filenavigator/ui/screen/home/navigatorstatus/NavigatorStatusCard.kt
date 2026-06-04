@@ -1,60 +1,68 @@
 package com.w2sv.filenavigator.ui.screen.home.navigatorstatus
 
 import android.content.Context
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Pause
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.designsystem.Easing
 import com.w2sv.designsystem.theme.DEFAULT_ANIMATION_DURATION
-import com.w2sv.designsystem.theme.ResultColor
-import com.w2sv.filenavigator.ui.LocalNavigator
-import com.w2sv.filenavigator.ui.navigation.Navigator
-import com.w2sv.filenavigator.ui.screen.home.HomeScreenCard
+import com.w2sv.filenavigator.ui.designsystem.AppCard
+import com.w2sv.filenavigator.ui.designsystem.AppCardHeaderIcon
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.modules.common.R
 import com.w2sv.navigator.FileNavigator
+
+@Preview
+@Composable
+private fun ActivePrev() {
+    PreviewOf { NavigatorStatusCard(navigatorIsRunning = true) }
+}
+
+@Preview
+@Composable
+private fun InactivePrev() {
+    PreviewOf { NavigatorStatusCard(navigatorIsRunning = false) }
+}
 
 private enum class NavigatorStatusCardData(val statusText: StatusText, val toggleButton: ToggleButton) {
     IsInactive(
         statusText = StatusText(
             textRes = R.string.inactive,
-            color = ResultColor.error
+            color = { MaterialTheme.colorScheme.error }
         ),
         toggleButton = ToggleButton(
-            color = ResultColor.success,
-            iconRes = R.drawable.ic_start_24,
+            imageVector = Icons.Outlined.PlayArrow,
             labelRes = R.string.start,
             onClick = { FileNavigator.start(it) }
         )
@@ -62,19 +70,18 @@ private enum class NavigatorStatusCardData(val statusText: StatusText, val toggl
     IsRunning(
         statusText = StatusText(
             textRes = R.string.active,
-            color = ResultColor.success
+            color = { MaterialTheme.colorScheme.primary }
         ),
         toggleButton = ToggleButton(
-            color = ResultColor.error,
-            iconRes = R.drawable.ic_stop_24,
+            imageVector = Icons.Outlined.Pause,
             labelRes = R.string.stop,
             onClick = { FileNavigator.stop(it) }
         )
     );
 
-    data class StatusText(@StringRes val textRes: Int, val color: Color)
+    data class StatusText(@StringRes val textRes: Int, val color: @Composable () -> Color)
 
-    data class ToggleButton(val color: Color, @DrawableRes val iconRes: Int, @StringRes val labelRes: Int, val onClick: (Context) -> Unit)
+    data class ToggleButton(val imageVector: ImageVector, @StringRes val labelRes: Int, val onClick: (Context) -> Unit)
 
     companion object {
         operator fun invoke(isRunning: Boolean): NavigatorStatusCardData =
@@ -83,84 +90,40 @@ private enum class NavigatorStatusCardData(val statusText: StatusText, val toggl
 }
 
 @Composable
-fun NavigatorStatusCard(navigatorIsRunning: Boolean, modifier: Modifier = Modifier, navigator: Navigator = LocalNavigator.current) {
+fun NavigatorStatusCard(navigatorIsRunning: Boolean, modifier: Modifier = Modifier) {
     val uiData = remember(navigatorIsRunning) { NavigatorStatusCardData(navigatorIsRunning) }
 
-    HomeScreenCard(
-        modifier,
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        HeaderWithStatus(uiData.statusText)
-        ButtonRow(
-            toggleButton = uiData.toggleButton,
-            onSettingsButtonClick = { navigator.toNavigatorSettings() },
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun Prev() {
-    PreviewOf { NavigatorStatusCard(navigatorIsRunning = true) }
-}
-
-@Composable
-private fun HeaderWithStatus(statusText: NavigatorStatusCardData.StatusText, modifier: Modifier = Modifier) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
-        Text(
-            text = stringResource(R.string.navigator),
-            style = MaterialTheme.typography.headlineMedium
-        )
-        VerticalDivider(
-            modifier = Modifier
-                .height(16.dp)
-                .padding(horizontal = 12.dp),
-            color = MaterialTheme.colorScheme.onSurface,
-            thickness = Dp.Hairline
-        )
-        UpSlidingAnimatedContent(targetState = statusText) {
-            Text(
-                text = stringResource(id = it.textRes),
-                style = MaterialTheme.typography.headlineMedium,
-                color = it.color
-            )
+    AppCard(
+        title = "${stringResource(R.string.navigator)}:",
+        headerIcon = { AppCardHeaderIcon(R.drawable.ic_app_logo_24) },
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        trailingHeaderContent = {
+            Spacer(modifier = Modifier.width(8.dp))
+            StatusText(uiData.statusText)
         }
-    }
-}
-
-@Composable
-private fun ButtonRow(
-    toggleButton: NavigatorStatusCardData.ToggleButton,
-    onSettingsButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
     ) {
-        val buttonHeight = 65.dp
         NavigatorToggleButton(
-            properties = toggleButton,
+            properties = uiData.toggleButton,
             modifier = Modifier
-                .height(buttonHeight)
-                .weight(0.5f)
+                .height(55.dp)
+                .fillMaxWidth()
         )
-        Spacer(modifier = Modifier.weight(0.05f))
-        FilledTonalButton(
-            onClick = onSettingsButtonClick,
-            modifier = Modifier
-                .height(buttonHeight)
-                .weight(0.3f)
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_settings_24),
-                    contentDescription = null
-                )
-                Text(stringResource(R.string.settings))
-            }
-        }
+    }
+}
+
+@Composable
+private fun StatusText(statusText: NavigatorStatusCardData.StatusText, modifier: Modifier = Modifier) {
+    FadeScaleAnimatedContent(
+        targetState = statusText,
+        modifier = modifier,
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Text(
+            text = stringResource(id = it.textRes),
+            style = MaterialTheme.typography.headlineMedium,
+            color = it.color()
+        )
     }
 }
 
@@ -172,16 +135,15 @@ private fun NavigatorToggleButton(properties: NavigatorStatusCardData.ToggleButt
         onClick = { properties.onClick(context) },
         modifier = modifier
     ) {
-        UpSlidingAnimatedContent(targetState = properties) {
+        FadeScaleAnimatedContent(targetState = properties) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    painter = painterResource(id = it.iconRes),
+                    imageVector = it.imageVector,
                     contentDescription = null,
-                    modifier = Modifier.size(32.dp),
-                    tint = it.color
+                    modifier = Modifier.size(32.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
@@ -194,11 +156,11 @@ private fun NavigatorToggleButton(properties: NavigatorStatusCardData.ToggleButt
 }
 
 @Composable
-private fun <S> UpSlidingAnimatedContent(
+private fun <S> FadeScaleAnimatedContent(
     targetState: S,
     modifier: Modifier = Modifier,
-    contentAlignment: Alignment = Alignment.TopStart,
-    label: String = "AnimatedContent",
+    contentAlignment: Alignment = Alignment.Center,
+    label: String = "FadeScaleAnimatedContent",
     contentKey: (targetState: S) -> Any? = { it },
     content: @Composable AnimatedContentScope.(targetState: S) -> Unit
 ) {
@@ -208,23 +170,31 @@ private fun <S> UpSlidingAnimatedContent(
         contentAlignment = contentAlignment,
         label = label,
         contentKey = contentKey,
-        transitionSpec = remember {
-            {
-                slideInVertically(
+        transitionSpec = {
+            fadeIn(
+                animationSpec = tween(
+                    durationMillis = DEFAULT_ANIMATION_DURATION,
+                    easing = Easing.AnticipateOvershoot
+                )
+            ) + scaleIn(
+                initialScale = 0.92f,
+                animationSpec = tween(
+                    durationMillis = DEFAULT_ANIMATION_DURATION,
+                    easing = Easing.AnticipateOvershoot
+                )
+            ) togetherWith
+                fadeOut(
                     animationSpec = tween(
-                        durationMillis = DEFAULT_ANIMATION_DURATION,
+                        durationMillis = DEFAULT_ANIMATION_DURATION / 2,
                         easing = Easing.AnticipateOvershoot
-                    ),
-                    initialOffsetY = { it }
-                ) togetherWith
-                    slideOutVertically(
-                        targetOffsetY = { -it },
-                        animationSpec = tween(
-                            durationMillis = DEFAULT_ANIMATION_DURATION,
-                            easing = Easing.AnticipateOvershoot
-                        )
                     )
-            }
+                ) + scaleOut(
+                    targetScale = 1.08f,
+                    animationSpec = tween(
+                        durationMillis = DEFAULT_ANIMATION_DURATION / 2,
+                        easing = Easing.AnticipateOvershoot
+                    )
+                )
         },
         content = content
     )

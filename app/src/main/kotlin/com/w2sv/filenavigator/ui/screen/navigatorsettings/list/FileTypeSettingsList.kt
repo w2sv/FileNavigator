@@ -23,7 +23,7 @@ fun LazyListScope.fileTypeSettingsList(
     item {
         NavigatorSettingsListSectionHeader(
             text = stringResource(id = R.string.navigated_file_types),
-            padding = NavigatorSettingsListTokens.fileTypeSectionHeaderPadding,
+            padding = NavigatorSettingsListDimens.fileTypeSectionHeaderPadding,
             endContent = {
                 FilledTonalIconButton(onClick = showFileTypesBottomSheet) {
                     Icon(

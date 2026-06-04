@@ -25,13 +25,13 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigac
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.PreviewNavigatorConfigActions
 import com.w2sv.filenavigator.ui.util.PreviewOf
 
-object NavigatorSettingsListTokens {
+object NavigatorSettingsListDimens {
     val itemSpacing: Dp = 6.dp
     val fileTypeSectionHeaderPadding = PaddingValues(top = 8.dp, bottom = 4.dp)
     val moreSectionHeaderPadding = PaddingValues(top = 18.dp, bottom = 4.dp)
     val contentPadding: PaddingValues
         @Composable
-        get() = PaddingValues(bottom = if (isPortraitModeActive) 140.dp else 90.dp) // for FABs
+        get() = PaddingValues(bottom = if (isPortraitModeActive) 112.dp else 90.dp) // for FABs
 }
 
 @Composable
@@ -46,8 +46,8 @@ fun NavigatorSettingsList(
     LazyColumn(
         modifier = modifier,
         state = state,
-        verticalArrangement = Arrangement.spacedBy(NavigatorSettingsListTokens.itemSpacing),
-        contentPadding = NavigatorSettingsListTokens.contentPadding
+        verticalArrangement = Arrangement.spacedBy(NavigatorSettingsListDimens.itemSpacing),
+        contentPadding = NavigatorSettingsListDimens.contentPadding
     ) {
         fileTypeSettingsList(
             config = config,

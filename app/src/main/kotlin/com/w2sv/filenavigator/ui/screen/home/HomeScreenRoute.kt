@@ -4,12 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryState
+import com.w2sv.filenavigator.ui.screen.home.movehistory.rememberMoveHistoryState
 
 @Composable
 fun HomeScreenRoute(viewModel: HomeScreenViewModel = hiltViewModel()) {
     val navigatorIsRunning by viewModel.navigatorIsRunning.collectAsStateWithLifecycle()
-    val moveHistoryState = MoveHistoryState.remember(viewModel)
+    val moveHistoryState = rememberMoveHistoryState(viewModel)
 
-    HomeScreen(navigatorIsRunning = navigatorIsRunning, moveHistoryState = moveHistoryState)
+    HomeScreen(
+        navigatorIsRunning = navigatorIsRunning,
+        moveHistoryState = moveHistoryState
+    )
 }

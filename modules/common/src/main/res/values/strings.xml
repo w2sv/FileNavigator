@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">File Navigator</string>
+    <string name="home">Home</string>
     <!-- File Types -->
     <string name="image">Picture</string>
     <string name="video">Video</string>
@@ -82,7 +83,6 @@
     <string name="post_notifications_permission_rational">File Navigator requires <b>Post Notification Permission</b> to notify you about navigatable files.</string>
     <string name="manage_external_storage_permission_rational">File Navigator requires permission to <b>Manage All Files</b> in order to move files.</string>
     <string name="theme">Theme</string>
-    <string name="open_navigation_drawer">Open navigation drawer</string>
     <string name="share">Share</string>
     <string name="rate">Rate</string>
     <string name="privacy_policy">Privacy Policy</string>
@@ -100,7 +100,6 @@
     <string name="delete_move_history_dropdown_menu_item_label">Delete move history</string>
     <string name="move_history_deletion_dialog_message">Do you want to irretrievably delete your move history?</string>
     <string name="move_history_placeholder">Moved files will appear here</string>
-    <string name="return_to_main_screen">Return to main screen</string>
     <string name="move_history">Move History</string>
     <string name="navigator_settings">Navigator Settings</string>
     <string name="couldn_t_find_file">Couldn\'t find file.</string>
@@ -129,7 +128,6 @@
     <string name="app_settings">App Settings</string>
     <string name="show_storage_volume_names">Show storage volume names</string>
     <string name="show_storage_volume_names_explanation">E.g. <b>primary:Folder/OtherFolder</b> instead of <b>Folder/OtherFolder</b></string>
-    <string name="settings">Settings</string>
     <string name="general">General</string>
     <string name="auto_move_introduction_paragraph_1">You can now enable file source specific Auto Moving by</string>
     <string name="auto_move_introduction_paragraph_2"><b>1.</b> Clicking on the <b>Auto</b> button of an enabled file source\n<b>2.</b> Selecting a destination\n<b>3.</b> Saving the changes</string>

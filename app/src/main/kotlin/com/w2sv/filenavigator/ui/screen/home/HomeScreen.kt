@@ -7,89 +7,43 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.w2sv.composed.core.isPortraitModeActive
-import com.w2sv.composed.material3.extensions.rememberVisibilityProgress
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
-import com.w2sv.filenavigator.ui.designsystem.NavigationDrawerScreenTopAppBar
 import com.w2sv.filenavigator.ui.designsystem.PaddingDefaults
-import com.w2sv.filenavigator.ui.screen.home.drawer.HomeScreenNavigationDrawer
-import com.w2sv.filenavigator.ui.screen.home.drawer.drawerDisplaced
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryCard
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryState
 import com.w2sv.filenavigator.ui.screen.home.navigatorstatus.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
-import com.w2sv.modules.common.R
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(
-    navigatorIsRunning: Boolean,
-    moveHistoryState: MoveHistoryState,
-    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-) {
-    val scope = rememberCoroutineScope()
-    var contentWidthPx by remember { mutableIntStateOf(0) }
-    val drawerVisibilityProgress by drawerState.rememberVisibilityProgress()
+fun HomeScreen(navigatorIsRunning: Boolean, moveHistoryState: MoveHistoryState) {
+    val sharedModifier = Modifier.fillMaxSize()
 
-    HomeScreenNavigationDrawer(state = drawerState) {
-        Scaffold(
-            snackbarHost = { AppSnackbarHost() },
-            topBar = {
-                NavigationDrawerScreenTopAppBar(
-                    title = stringResource(id = R.string.app_name),
-                    onNavigationIconClick = { scope.launch { drawerState.open() } }
-                )
-            },
-            modifier = Modifier.onSizeChanged { contentWidthPx = it.width }
-        ) { paddingValues ->
-            val sharedModifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .drawerDisplaced(
-                        visibilityProgress = drawerVisibilityProgress,
-                        animationBoxWidthPx = contentWidthPx.toFloat()
-                    )
+    val statusDisplayCard: ModifierReceivingComposable = rememberMovableContentOf {
+        NavigatorStatusCard(navigatorIsRunning = navigatorIsRunning, modifier = it)
+    }
+    val moveHistoryCard: ModifierReceivingComposable = rememberMovableContentOf {
+        MoveHistoryCard(state = moveHistoryState, modifier = it)
+    }
 
-            val statusDisplayCard: ModifierReceivingComposable = rememberMovableContentOf {
-                NavigatorStatusCard(navigatorIsRunning = navigatorIsRunning, modifier = it)
-            }
-            val moveHistoryCard: ModifierReceivingComposable = rememberMovableContentOf {
-                MoveHistoryCard(state = moveHistoryState, modifier = it)
-            }
+    when (isPortraitModeActive) {
+        true -> PortraitMode(
+            statusDisplayCard = statusDisplayCard,
+            moveHistoryCard = moveHistoryCard,
+            modifier = sharedModifier
+        )
 
-            when (isPortraitModeActive) {
-                true -> PortraitMode(
-                    statusDisplayCard = statusDisplayCard,
-                    moveHistoryCard = moveHistoryCard,
-                    modifier = sharedModifier
-                )
-
-                false -> LandscapeMode(
-                    statusDisplayCard = statusDisplayCard,
-                    moveHistoryCard = moveHistoryCard,
-                    modifier = sharedModifier
-                )
-            }
-        }
+        false -> LandscapeMode(
+            statusDisplayCard = statusDisplayCard,
+            moveHistoryCard = moveHistoryCard,
+            modifier = sharedModifier
+        )
     }
 }
 

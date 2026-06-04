@@ -10,7 +10,6 @@ import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.filenavigator.ui.modelext.color
 
 object IconSize {
-    val Default = 24.dp
     val Big = 28.dp
 
     object IconButton {

@@ -19,29 +19,35 @@ class NavigatorImplTest {
     }
 
     @Test
-    fun `toAppSettings adds screen if not already top`() {
+    fun `toAppSettings sets home followed by app settings`() {
         initializeBackStack(Screen.Home)
         navigator.toAppSettings()
-        assertEquals(Screen.AppSettings, backStack.last())
-        assertEquals(2, backStack.size)
+        assertBackStackEquals(listOf(Screen.Home, Screen.AppSettings))
     }
 
     @Test
     fun `toAppSettings does not add duplicate if already on top`() {
         initializeBackStack(Screen.Home, Screen.AppSettings)
         navigator.toAppSettings()
-        assertEquals(2, backStack.size) // no new item
+        assertBackStackEquals(listOf(Screen.Home, Screen.AppSettings))
     }
 
     @Test
-    fun `toHome pops and adds Home screen`() {
+    fun `toAppSettings replaces another primary destination`() {
+        initializeBackStack(Screen.Home, Screen.NavigatorSettings)
+        navigator.toAppSettings()
+        assertBackStackEquals(listOf(Screen.Home, Screen.AppSettings))
+    }
+
+    @Test
+    fun `toHome clears to home`() {
         initializeBackStack(Screen.Permissions)
         navigator.toHome()
         assertBackStackEquals(listOf(Screen.Home))
     }
 
     @Test
-    fun `popBackStack removes top item`() {
+    fun `popBackStack from bottom navigation destination returns home`() {
         initializeBackStack(Screen.Home, Screen.AppSettings)
         navigator.popBackStack()
         assertEquals(Screen.Home, backStack.last())
