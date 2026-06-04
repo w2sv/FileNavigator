@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarDuration
@@ -27,7 +28,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.core.OnDispose
 import com.w2sv.designsystem.CharSequenceText
-import com.w2sv.designsystem.theme.ResultColor
 import com.w2sv.filenavigator.ui.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.LocalSnackbarVisibility
 import com.w2sv.filenavigator.ui.util.snackbar.SnackbarVisibility
@@ -57,8 +57,8 @@ enum class SnackbarKind(val icon: ImageVector) {
         @Composable
         @ReadOnlyComposable
         get() = when (this) {
-            Success -> ResultColor.success
-            Error -> ResultColor.error
+            Success -> MaterialTheme.colorScheme.primary
+            Error -> MaterialTheme.colorScheme.error
             Info -> LocalContentColor.current
         }
 }
