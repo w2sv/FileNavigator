@@ -42,7 +42,7 @@ fun NavContent(navigator: Navigator, rootScaffoldState: RootScaffoldState, modif
                 AppSettingsScreen()
             }
             entry<Screen.Permissions> {
-                PermissionsScreenRoute()
+                PermissionsScreenRoute(onAllPermissionsGranted = navigator::toHome)
             }
             entry<Screen.NavigatorSettings> {
                 NavigatorSettingsScreenRoute(rootScaffoldState = rootScaffoldState)

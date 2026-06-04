@@ -10,8 +10,6 @@ import com.w2sv.common.util.goToManageExternalStorageSettings
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
 import com.w2sv.filenavigator.ui.AppViewModel
-import com.w2sv.filenavigator.ui.LocalNavigator
-import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.sharedstate.AppPermissionsState
 import com.w2sv.filenavigator.ui.sharedstate.RequiredPermission
 import com.w2sv.filenavigator.ui.util.activityViewModel
@@ -19,7 +17,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-fun PermissionsScreenRoute(appVM: AppViewModel = activityViewModel(), navigator: Navigator = LocalNavigator.current) {
+fun PermissionsScreenRoute(onAllPermissionsGranted: () -> Unit, appVM: AppViewModel = activityViewModel()) {
     val permissionsState = appVM.permissionsState
     val postNotificationsPermissionState = rememberPostNotificationsPermissionState()
 
@@ -30,7 +28,7 @@ fun PermissionsScreenRoute(appVM: AppViewModel = activityViewModel(), navigator:
 
     val missingPermissions by permissionsState.missingPermissions.collectAsStateWithLifecycle()
 
-    OnChange(missingPermissions) { if (it.isEmpty()) navigator.toHome() }
+    OnChange(missingPermissions) { if (it.isEmpty()) onAllPermissionsGranted() }
 
     val permissionCards = remember(missingPermissions) {
         buildPermissionCards(

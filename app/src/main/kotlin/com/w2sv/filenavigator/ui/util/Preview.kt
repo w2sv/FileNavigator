@@ -11,9 +11,6 @@ import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
 import com.w2sv.domain.usecase.MoveDestinationLabelProvider
 import com.w2sv.filenavigator.ui.LocalMoveDestinationLabelProvider
-import com.w2sv.filenavigator.ui.LocalNavigator
-import com.w2sv.filenavigator.ui.navigation.Navigator
-import com.w2sv.filenavigator.ui.navigation.Screen
 
 @Composable
 fun PreviewOf(
@@ -30,21 +27,10 @@ fun PreviewOf(
         useDynamicColors = useDynamicColors
     ) {
         CompositionLocalProvider(
-            LocalNavigator provides PreviewNavigator(),
             LocalMoveDestinationLabelProvider provides PreviewMoveDestinationLabelProvider(),
             content = content
         )
     }
-}
-
-private class PreviewNavigator : Navigator {
-    override fun toAppSettings() {}
-    override fun toPermissions() {}
-    override fun toHome() {}
-    override fun toNavigatorSettings() {}
-    override fun popBackStack() {}
-    override val currentScreen = Screen.Home
-    override val backStack = emptyList<Screen>()
 }
 
 private class PreviewMoveDestinationLabelProvider : MoveDestinationLabelProvider {

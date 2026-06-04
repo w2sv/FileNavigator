@@ -60,10 +60,7 @@ class MainActivity : LoggingComponentActivity() {
                 }
             }
 
-            CompositionLocalProvider(
-                LocalMoveDestinationLabelProvider provides moveDestinationLabelProvider,
-                LocalNavigator provides navigator
-            ) {
+            CompositionLocalProvider(LocalMoveDestinationLabelProvider provides moveDestinationLabelProvider) {
                 AppTheme(
                     useDarkTheme = useDarkTheme,
                     useAmoledBlackTheme = appThemeSettings.useAmoledBlackTheme,
