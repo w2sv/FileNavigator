@@ -33,7 +33,7 @@ class NavigatorImplTest {
     }
 
     @Test
-    fun `toAppSettings replaces another primary destination`() {
+    fun `toAppSettings replaces another non-home bottom nav destination`() {
         initializeBackStack(Screen.Home, Screen.NavigatorSettings)
         navigator.toAppSettings()
         assertBackStackEquals(listOf(Screen.Home, Screen.AppSettings))
@@ -47,10 +47,17 @@ class NavigatorImplTest {
     }
 
     @Test
+    fun `toHome from other bottom nav destination pops back stack`() {
+        initializeBackStack(Screen.Home, Screen.AppSettings)
+        navigator.toHome()
+        assertBackStackEquals(listOf(Screen.Home))
+    }
+
+    @Test
     fun `popBackStack from bottom navigation destination returns home`() {
         initializeBackStack(Screen.Home, Screen.AppSettings)
         navigator.popBackStack()
-        assertEquals(Screen.Home, backStack.last())
+        assertBackStackEquals(listOf(Screen.Home))
     }
 
     @Test

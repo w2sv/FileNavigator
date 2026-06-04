@@ -20,6 +20,8 @@ sealed class Screen(@StringRes val titleRes: Int) : NavKey {
     @Serializable
     object NavigatorSettings : Screen(R.string.navigator_settings)
 
+    val isBottomNavDestination get() = this != Permissions
     val isPermissions get() = this == Permissions
+    val isHome get() = this == Home
     val isNavigatorSettings get() = this == NavigatorSettings
 }
