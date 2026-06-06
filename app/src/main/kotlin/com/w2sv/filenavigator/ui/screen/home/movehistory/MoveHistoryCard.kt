@@ -2,13 +2,12 @@ package com.w2sv.filenavigator.ui.screen.home.movehistory
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -23,14 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.w2sv.designsystem.DialogButton
-import com.w2sv.designsystem.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.filenavigator.ui.designsystem.AppCard
 import com.w2sv.filenavigator.ui.designsystem.AppCardHeaderIcon
 import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
-import com.w2sv.filenavigator.ui.util.WithLocalContentColor
+import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.modules.common.R
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun MoveHistoryCard(state: MoveHistoryState, modifier: Modifier = Modifier) {
@@ -50,6 +50,14 @@ fun MoveHistoryCard(state: MoveHistoryState, modifier: Modifier = Modifier) {
         showDeletionDialog = { showHistoryDeletionDialog = true },
         modifier = modifier
     )
+}
+
+@Preview
+@Composable
+private fun Prev() {
+    PreviewOf {
+        MoveHistoryCard(MoveHistoryState(persistentListOf(), {}, {}))
+    }
 }
 
 @Composable
@@ -112,7 +120,9 @@ private fun HistoryDeletionDialog(closeDialog: () -> Unit, onConfirmed: () -> Un
                 onClick = {
                     onConfirmed()
                     closeDialog()
-                }
+                },
+                contentColor = colorScheme.onErrorContainer,
+                containerColor = colorScheme.errorContainer
             )
         },
         dismissButton = { DialogButton(text = stringResource(id = R.string.no), onClick = closeDialog) },
@@ -133,17 +143,14 @@ private fun NoHistoryPlaceHolder(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
-        WithLocalContentColor(colorScheme.onSurfaceVariantDecreasedAlpha) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_history_24),
-                contentDescription = null,
-                modifier = Modifier.size(92.dp)
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = stringResource(R.string.move_history_placeholder),
-                modifier = Modifier.padding(horizontal = 12.dp)
-            )
-        }
+        Image(
+            painter = painterResource(id = R.drawable.move_history_decorator),
+            contentDescription = null,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        Text(
+            text = stringResource(R.string.move_history_placeholder),
+            modifier = Modifier.padding(horizontal = 12.dp)
+        )
     }
 }
