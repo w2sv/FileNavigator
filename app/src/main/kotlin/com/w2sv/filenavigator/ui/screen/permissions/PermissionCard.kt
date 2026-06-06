@@ -30,7 +30,7 @@ import com.w2sv.common.AppUrl
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.designsystem.DialogButton
 import com.w2sv.designsystem.theme.AppTheme
-import com.w2sv.filenavigator.ui.designsystem.AppCardDefaults
+import com.w2sv.filenavigator.ui.designsystem.AppCardProperties
 import com.w2sv.modules.common.R
 
 @Preview
@@ -76,7 +76,7 @@ fun PermissionCard(card: PermissionCard, modifier: Modifier = Modifier) {
 
     ElevatedCard(
         modifier = modifier,
-        elevation = AppCardDefaults.elevation
+        elevation = AppCardProperties.elevation
     ) {
         Column(
             modifier = Modifier

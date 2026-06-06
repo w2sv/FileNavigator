@@ -70,7 +70,7 @@ private enum class NavigatorStatusCardData(val statusText: StatusText, val toggl
     IsRunning(
         statusText = StatusText(
             textRes = R.string.active,
-            color = { MaterialTheme.colorScheme.primary }
+            color = { MaterialTheme.colorScheme.tertiary }
         ),
         toggleButton = ToggleButton(
             imageVector = Icons.Outlined.Pause,

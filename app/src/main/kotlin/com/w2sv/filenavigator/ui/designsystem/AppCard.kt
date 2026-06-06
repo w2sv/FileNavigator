@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +25,10 @@ object AppCardProperties {
     val headerIconModifier = Modifier
         .padding(end = 12.dp)
         .size(28.dp)
+
+    val elevation
+        @Composable
+        get() = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
 }
 
 @Composable
@@ -38,7 +42,7 @@ fun AppCard(
 ) {
     ElevatedCard(
         modifier = modifier,
-        elevation = AppCardDefaults.elevation
+        elevation = AppCardProperties.elevation
     ) {
         Column(
             modifier = Modifier
@@ -68,7 +72,7 @@ fun AppCard(
 fun AppCardHeaderIcon(
     @DrawableRes painterRes: Int,
     modifier: Modifier = AppCardProperties.headerIconModifier,
-    tint: Color = LocalContentColor.current
+    tint: Color = MaterialTheme.colorScheme.primary
 ) {
     Icon(
         painter = painterResource(painterRes),
