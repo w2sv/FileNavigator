@@ -24,6 +24,7 @@ class ComposeConventionPlugin : Plugin<Project> {
                         "androidx.compose.material3.ExperimentalMaterial3Api",
                         "androidx.compose.foundation.ExperimentalFoundationApi",
                         "androidx.compose.foundation.layout.ExperimentalLayoutApi",
+                        "androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi"
                     )
                 }
             }
@@ -35,6 +36,7 @@ class ComposeConventionPlugin : Plugin<Project> {
                 "debugImplementation"(library("androidx.compose.ui.tooling"))
                 "implementation"(library("androidx.compose.activity"))
                 "implementation"(library("androidx.compose.animation"))
+                "implementation"(library("androidx.compose.animation.graphics"))
                 "implementation"(library("androidx.compose.foundation"))
                 "implementation"(library("androidx.compose.material.icons"))
                 "implementation"(library("androidx.compose.material.icons.extended"))

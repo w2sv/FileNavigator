@@ -42,6 +42,7 @@ androidx-appcompat = "androidx.appcompat:appcompat:1.7.1"
 androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "baselineprofile" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-tooling" }
+androidx-compose-animation-graphics = { module = "androidx.compose.animation:animation-graphics", version.ref = "compose-tooling" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-tooling" }
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "androidx-compose-material" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "androidx-compose-material" }
