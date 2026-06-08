@@ -51,5 +51,9 @@ gradlePlugin {
             id = "filenavigator.room"
             implementationClass = "RoomConventionPlugin"
         }
+        register("storeScreenshots") {
+            id = "filenavigator.store-screenshots"
+            implementationClass = "StoreScreenshotsConventionPlugin"
+        }
     }
 }

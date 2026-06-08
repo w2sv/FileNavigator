@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.filenavigator.application)
     alias(libs.plugins.filenavigator.compose)
     alias(libs.plugins.filenavigator.hilt)
+    alias(libs.plugins.filenavigator.store.screenshots)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.baselineprofile)
@@ -102,6 +103,7 @@ dependencies {
     implementation(projects.modules.usecase)
     implementation(projects.modules.navigator)
     implementation(projects.modules.navigatorQuicktile)
+    "screenshotImplementation"(projects.modules.navigatorDomain)
 
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.w2sv.reversiblestate)

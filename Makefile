@@ -34,6 +34,9 @@ take-screenshot-and-expand-status-bar:
 	@adb shell screencap -p /sdcard/Pictures/screenshot.png
 	@adb shell cmd statusbar expand-notifications
 
+screenshots:
+	@./gradlew :app:storeScreenshots --quiet --console=plain --warning-mode=summary
+
 download-gif:
 	@adb shell curl -L -o /storage/emulated/0/Download/image.gif "https://ssb.wiki.gallery/images/6/68/Reverse_aerial_rush_SSB4.gif"
 

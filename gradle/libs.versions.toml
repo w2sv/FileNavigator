@@ -132,6 +132,8 @@ filenavigator-hilt = { id = "filenavigator.hilt" }
 filenavigator-library = { id = "filenavigator.library" }
 # @keep
 filenavigator-room = { id = "filenavigator.room" }
+# @keep
+filenavigator-store-screenshots = { id = "filenavigator.store-screenshots" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

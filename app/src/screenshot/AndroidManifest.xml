@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name=".ui.screenshot.InAppScreenshotActivity"
+            android:exported="false"
+            android:theme="@style/Theme.App.StoreScreenshot" />
+        <activity
+            android:name=".ui.screenshot.NotificationScreenshotActivity"
+            android:exported="false"
+            android:theme="@style/Theme.App.StoreScreenshot" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.store-screenshots"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/store_screenshot_file_paths" />
+        </provider>
+    </application>
+
+</manifest>

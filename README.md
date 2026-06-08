@@ -41,9 +41,10 @@
 
 <table>
   <tr>
-    <td><img src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/1.jpg" alt="Screenshot 1"></td>
-    <td><img src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/2.jpg" alt="Screenshot 2"></td>
-    <td><img src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/3.jpg" alt="Screenshot 3"></td>
+    <td><img src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/1.png" alt="Screenshot 1"></td>
+    <td><img src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/2.png" alt="Screenshot 2"></td>
+    <td><img src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/3.png" alt="Screenshot 3"></td>
+    <td><img src="https://github.com/w2sv/FileNavigator/blob/main/app/src/main/play/listings/en-US/graphics/phone-screenshots/4.png" alt="Screenshot 4"></td>
   </tr>
 </table>
 
