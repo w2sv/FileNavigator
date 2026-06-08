@@ -62,6 +62,9 @@ build-apk:
 # Publishing
 # ==============
 
+commits-since-last-release:
+	@git log "$(git describe --tags --abbrev=0)..HEAD" --oneline
+
 build-and-publish-to-test-track:
 	@./gradlew clean  # Required as 'publishBundle' publishes all .aab's in specified archive dir
 	@$(MAKE) build-aab
