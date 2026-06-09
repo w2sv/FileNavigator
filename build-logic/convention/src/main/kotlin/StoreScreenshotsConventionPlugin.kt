@@ -12,12 +12,6 @@ class StoreScreenshotsConventionPlugin : Plugin<Project> {
             val storeScreenshotsRequested = gradle.startParameter.taskNames.any {
                 it.substringAfterLast(':') == STORE_SCREENSHOTS_TASK
             }
-            val screenshotAndroidTestRequested = gradle.startParameter.taskNames.any {
-                it.substringAfterLast(':').contains("ScreenshotAndroidTest")
-            }
-            val androidStudioModelSync = ANDROID_STUDIO_MODEL_PROPERTIES.any { property ->
-                providers.gradleProperty(property).orNull?.toBoolean() == true
-            }
 
             extensions.configure<ApplicationExtension> {
                 defaultConfig {
@@ -35,13 +29,7 @@ class StoreScreenshotsConventionPlugin : Plugin<Project> {
                     }
                 }
 
-                // Model the screenshot sources during Studio sync, then preserve that variant when Studio runs it.
-                testBuildType =
-                    if (
-                        storeScreenshotsRequested ||
-                        screenshotAndroidTestRequested ||
-                        androidStudioModelSync
-                    ) {
+                testBuildType = if (storeScreenshotsRequested) {
                         SCREENSHOT_BUILD_TYPE
                     } else {
                         "debug"
@@ -124,12 +112,6 @@ class StoreScreenshotsConventionPlugin : Plugin<Project> {
             "phone-screenshots",
             "tablet-screenshots",
             "large-tablet-screenshots"
-        )
-        val ANDROID_STUDIO_MODEL_PROPERTIES = listOf(
-            "android.injected.build.model.v2",
-            "android.injected.build.model.only",
-            "android.injected.build.model.only.advanced",
-            "android.injected.build.model.only.versioned"
         )
     }
 }
