@@ -30,7 +30,7 @@ import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.kotlinutils.threadUnsafeLazy
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import com.w2sv.navigator.domain.moving.MoveDestination
 import com.w2sv.navigator.domain.moving.MoveOperation
 import com.w2sv.navigator.domain.moving.MoveResult

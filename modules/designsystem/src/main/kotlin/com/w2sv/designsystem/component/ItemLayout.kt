@@ -18,7 +18,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.designsystem.theme.onSurfaceVariantDecreasedAlpha
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 
 object ItemLayoutDimens {
     val IconTextSpacing = 16.dp

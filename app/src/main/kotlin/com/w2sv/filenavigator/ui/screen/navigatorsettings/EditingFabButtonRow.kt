@@ -39,7 +39,7 @@ import com.w2sv.designsystem.snackbar.LocalSnackbarVisibility
 import com.w2sv.designsystem.snackbar.SnackbarKind
 import com.w2sv.designsystem.snackbar.rememberSnackbarController
 import com.w2sv.filenavigator.ui.shared.util.OnVisibilityStateChange
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import kotlinx.coroutines.flow.first
 
 private enum class EditingFabButton(@StringRes val labelRes: Int, val imageVector: ImageVector) {

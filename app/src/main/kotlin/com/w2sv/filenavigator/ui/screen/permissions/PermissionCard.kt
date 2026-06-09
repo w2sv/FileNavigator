@@ -31,7 +31,7 @@ import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.designsystem.component.AppCardProperties
 import com.w2sv.designsystem.component.DialogButton
 import com.w2sv.designsystem.theme.AppTheme
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 
 @Preview
 @Composable

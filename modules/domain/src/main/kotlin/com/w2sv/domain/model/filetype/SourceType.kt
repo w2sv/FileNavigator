@@ -2,7 +2,7 @@ package com.w2sv.domain.model.filetype
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 
 /**
  * Origin category for files observed by the navigator.

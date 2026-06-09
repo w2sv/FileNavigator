@@ -4,7 +4,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import androidx.annotation.StringRes
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 
 /**
  * Enum assures required id-uniqueness of resulting [NotificationChannel].

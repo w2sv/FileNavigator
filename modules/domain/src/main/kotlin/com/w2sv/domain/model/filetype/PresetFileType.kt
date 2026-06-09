@@ -4,7 +4,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.anggrayudi.storage.media.MediaType
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 
 /**
  * Built-in file type definition.

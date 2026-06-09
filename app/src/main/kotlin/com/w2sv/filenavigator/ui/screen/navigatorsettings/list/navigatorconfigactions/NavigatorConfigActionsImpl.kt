@@ -9,7 +9,7 @@ import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 
 @Stable
 class NavigatorConfigActionsImpl(

@@ -3,7 +3,7 @@ package com.w2sv.navigator.notifications.controller
 import androidx.core.app.NotificationCompat
 import androidx.core.text.buildSpannedString
 import com.w2sv.androidutils.res.getQuantityText
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import com.w2sv.navigator.domain.moving.MoveDestination
 import com.w2sv.navigator.domain.moving.MoveResult
 import com.w2sv.navigator.domain.notifications.NotificationEvent

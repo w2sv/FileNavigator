@@ -2,7 +2,7 @@ package com.w2sv.navigator.notifications.controller
 
 import android.app.PendingIntent
 import androidx.core.app.NotificationCompat
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import com.w2sv.navigator.domain.NavigatorIntents
 import com.w2sv.navigator.notifications.AppNotification
 import com.w2sv.navigator.notifications.api.controller.SingleNotificationController

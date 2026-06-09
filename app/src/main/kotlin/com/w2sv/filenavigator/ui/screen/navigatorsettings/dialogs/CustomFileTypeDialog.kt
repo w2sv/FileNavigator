@@ -30,7 +30,7 @@ import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.filenavigator.ui.shared.util.ClearFocusOnFlowEmissionOrKeyboardHidden
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch

@@ -5,7 +5,7 @@ import android.graphics.Color
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import com.w2sv.androidutils.res.isNightModeActiveCompat
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import com.w2sv.navigator.domain.NavigatorIntents
 import com.w2sv.navigator.domain.moving.DestinationSelectionManner
 import com.w2sv.navigator.domain.moving.MoveDestination

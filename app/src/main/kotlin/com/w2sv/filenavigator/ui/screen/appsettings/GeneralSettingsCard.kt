@@ -7,7 +7,7 @@ import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.designsystem.component.AppCard
 import com.w2sv.designsystem.component.SwitchItemLayout
 import com.w2sv.domain.model.settings.AppSettings
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 
 @Composable
 fun GeneralSettingsCard(appSettings: AppSettings, saveAppSettings: (AppSettings) -> Unit, modifier: Modifier = Modifier) {

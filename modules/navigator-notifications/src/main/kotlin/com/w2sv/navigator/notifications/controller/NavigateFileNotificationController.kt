@@ -16,7 +16,7 @@ import com.w2sv.common.util.loadBitmapWithFileNotFoundHandling
 import com.w2sv.common.util.removeSlashSuffix
 import com.w2sv.common.util.slashPrefixed
 import com.w2sv.domain.model.filetype.PresetFileType
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import com.w2sv.navigator.domain.NavigatorIntents
 import com.w2sv.navigator.domain.moving.DestinationSelectionManner
 import com.w2sv.navigator.domain.moving.MoveDestination

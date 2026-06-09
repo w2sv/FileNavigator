@@ -11,6 +11,7 @@ dependencies {
     implementation(projects.modules.domain)
     implementation(projects.modules.navigatorDomain)
     implementation(projects.modules.navigatorNotifications)
+    implementation(projects.modules.resources)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.appcompat)

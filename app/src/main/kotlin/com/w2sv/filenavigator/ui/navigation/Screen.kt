@@ -2,7 +2,7 @@ package com.w2sv.filenavigator.ui.navigation
 
 import androidx.annotation.StringRes
 import androidx.navigation3.runtime.NavKey
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import kotlinx.serialization.Serializable
 
 @Serializable

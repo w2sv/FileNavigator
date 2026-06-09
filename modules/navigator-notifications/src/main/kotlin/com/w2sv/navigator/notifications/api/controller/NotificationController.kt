@@ -2,7 +2,7 @@ package com.w2sv.navigator.notifications.api.controller
 
 import android.app.NotificationChannel
 import androidx.core.app.NotificationCompat
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import com.w2sv.navigator.notifications.AppNotificationChannel
 import com.w2sv.navigator.notifications.api.env.NotificationEnvironment
 import com.w2sv.navigator.notifications.api.notificationBuilder
