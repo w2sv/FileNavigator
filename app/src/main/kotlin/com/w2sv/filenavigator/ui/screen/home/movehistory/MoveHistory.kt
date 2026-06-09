@@ -42,22 +42,20 @@ import androidx.lifecycle.Lifecycle
 import com.w2sv.common.uri.DocumentUri
 import com.w2sv.composed.core.OnLifecycleEvent
 import com.w2sv.composed.core.extensions.thenIf
+import com.w2sv.designsystem.layout.WeightedBox
+import com.w2sv.designsystem.modelext.color
+import com.w2sv.designsystem.snackbar.AppSnackbarVisuals
+import com.w2sv.designsystem.snackbar.SnackbarAction
+import com.w2sv.designsystem.snackbar.SnackbarController
+import com.w2sv.designsystem.snackbar.SnackbarKind
+import com.w2sv.designsystem.snackbar.rememberSnackbarController
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
-import com.w2sv.filenavigator.ui.LocalMoveDestinationLabelProvider
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
-import com.w2sv.filenavigator.ui.designsystem.SnackbarAction
-import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.designsystem.WeightedBox
-import com.w2sv.filenavigator.ui.modelext.color
-import com.w2sv.filenavigator.ui.modelext.exists
-import com.w2sv.filenavigator.ui.modelext.startViewFileActivity
-import com.w2sv.filenavigator.ui.util.WithLocalContentColor
-import com.w2sv.filenavigator.ui.util.snackbar.SnackbarController
-import com.w2sv.filenavigator.ui.util.snackbar.rememberSnackbarController
+import com.w2sv.filenavigator.ui.shared.LocalMoveDestinationLabelProvider
+import com.w2sv.filenavigator.ui.shared.util.WithLocalContentColor
 import com.w2sv.modules.common.R
 import eu.wewox.textflow.material3.TextFlow
 import java.time.LocalDateTime
@@ -112,7 +110,7 @@ fun MoveHistory(state: MoveHistoryState, modifier: Modifier = Modifier) {
 }
 
 /**
- * Remembers [MovedFile.exists] and updates the value on [Lifecycle.Event.ON_START], as file might have been deleted while the app was in
+ * Remembers [exists] and updates the value on [Lifecycle.Event.ON_START], as file might have been deleted while the app was in
  * the background.
  */
 @Composable

@@ -10,8 +10,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbarHost
-import com.w2sv.filenavigator.ui.designsystem.TopAppBar
+import com.w2sv.designsystem.component.TopAppBar
+import com.w2sv.designsystem.snackbar.AppSnackbarHost
 
 class RootScaffoldState {
     var fab: (@Composable () -> Unit)? by mutableStateOf<(@Composable () -> Unit)?>(null)

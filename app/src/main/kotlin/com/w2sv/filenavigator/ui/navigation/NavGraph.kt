@@ -3,7 +3,7 @@ package com.w2sv.filenavigator.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.w2sv.filenavigator.ui.sharedstate.AppPermissionsState
+import com.w2sv.filenavigator.ui.shared.permissions.AppPermissionsState
 
 @Composable
 fun NavGraph(navigator: Navigator, permissionsState: AppPermissionsState) {

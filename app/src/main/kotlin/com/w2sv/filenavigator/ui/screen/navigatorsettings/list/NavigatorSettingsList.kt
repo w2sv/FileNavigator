@@ -23,7 +23,7 @@ import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.PreviewNavigatorConfigActions
-import com.w2sv.filenavigator.ui.util.PreviewOf
+import com.w2sv.filenavigator.ui.shared.debugging.PreviewOf
 
 object NavigatorSettingsListDimens {
     val itemSpacing: Dp = 6.dp

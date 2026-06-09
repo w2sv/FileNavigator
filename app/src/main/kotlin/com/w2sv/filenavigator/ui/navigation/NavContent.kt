@@ -11,7 +11,7 @@ import com.w2sv.filenavigator.ui.screen.appsettings.AppSettingsScreenRoute
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenRoute
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.NavigatorSettingsScreenRoute
 import com.w2sv.filenavigator.ui.screen.permissions.PermissionsScreenRoute
-import com.w2sv.filenavigator.ui.sharedstate.AppPermissionsState
+import com.w2sv.filenavigator.ui.shared.permissions.AppPermissionsState
 
 @Composable
 fun NavContent(

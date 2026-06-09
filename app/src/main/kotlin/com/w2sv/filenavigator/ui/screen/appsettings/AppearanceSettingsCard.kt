@@ -8,11 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.androidutils.os.dynamicColorsSupported
+import com.w2sv.designsystem.component.AppCard
+import com.w2sv.designsystem.component.ItemLayout
+import com.w2sv.designsystem.component.SwitchItemLayout
+import com.w2sv.designsystem.modelext.useDarkTheme
 import com.w2sv.domain.model.settings.AppSettings
-import com.w2sv.filenavigator.ui.designsystem.AppCard
-import com.w2sv.filenavigator.ui.designsystem.ItemLayout
-import com.w2sv.filenavigator.ui.designsystem.SwitchItemLayout
-import com.w2sv.filenavigator.ui.modelext.useDarkTheme
 import com.w2sv.modules.common.R
 
 @Composable

@@ -14,7 +14,7 @@ import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.usecase.MoveDestinationLabelProvider
-import com.w2sv.filenavigator.ui.LocalMoveDestinationLabelProvider
+import com.w2sv.filenavigator.ui.shared.LocalMoveDestinationLabelProvider
 
 @Composable
 fun rememberAutoMoveDestinationPath(

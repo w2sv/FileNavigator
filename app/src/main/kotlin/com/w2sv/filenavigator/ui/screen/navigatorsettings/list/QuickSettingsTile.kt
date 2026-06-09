@@ -11,10 +11,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.w2sv.androidutils.content.componentName
 import com.w2sv.androidutils.service.systemService
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbarVisuals
-import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.util.snackbar.ScopedSnackbarController
-import com.w2sv.filenavigator.ui.util.snackbar.rememberScopedSnackbarController
+import com.w2sv.designsystem.snackbar.AppSnackbarVisuals
+import com.w2sv.designsystem.snackbar.ScopedSnackbarController
+import com.w2sv.designsystem.snackbar.SnackbarKind
+import com.w2sv.designsystem.snackbar.rememberScopedSnackbarController
 import com.w2sv.modules.common.R
 import com.w2sv.navigator.quicktile.FileNavigatorTileService
 import slimber.log.d

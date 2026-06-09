@@ -11,10 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.w2sv.designsystem.component.Icon
+import com.w2sv.designsystem.component.ItemLayout
+import com.w2sv.designsystem.component.SwitchItemLayout
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
-import com.w2sv.filenavigator.ui.designsystem.Icon
-import com.w2sv.filenavigator.ui.designsystem.ItemLayout
-import com.w2sv.filenavigator.ui.designsystem.SwitchItemLayout
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
 import com.w2sv.modules.common.R
 

@@ -25,7 +25,7 @@ import com.w2sv.androidutils.content.componentName
 import com.w2sv.common.logging.LoggingComponentActivity
 import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
 import com.w2sv.composed.core.rememberStyledTextResource
-import com.w2sv.designsystem.HighlightedDialogButton
+import com.w2sv.designsystem.component.HighlightedDialogButton
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.PreferencesRepository

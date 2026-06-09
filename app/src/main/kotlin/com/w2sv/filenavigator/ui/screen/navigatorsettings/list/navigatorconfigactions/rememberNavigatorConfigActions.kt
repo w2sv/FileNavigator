@@ -3,9 +3,9 @@ package com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfiga
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.w2sv.designsystem.snackbar.ScopedSnackbarController
+import com.w2sv.designsystem.snackbar.rememberScopedSnackbarController
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.NavigatorSettingsScreenViewModel
-import com.w2sv.filenavigator.ui.util.snackbar.ScopedSnackbarController
-import com.w2sv.filenavigator.ui.util.snackbar.rememberScopedSnackbarController
 import kotlinx.coroutines.flow.update
 
 @Composable

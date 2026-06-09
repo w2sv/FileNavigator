@@ -9,8 +9,8 @@ import com.w2sv.androidutils.content.openAppSettings
 import com.w2sv.common.util.goToManageExternalStorageSettings
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
-import com.w2sv.filenavigator.ui.sharedstate.AppPermissionsState
-import com.w2sv.filenavigator.ui.sharedstate.RequiredPermission
+import com.w2sv.filenavigator.ui.shared.permissions.AppPermissionsState
+import com.w2sv.filenavigator.ui.shared.permissions.RequiredPermission
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
