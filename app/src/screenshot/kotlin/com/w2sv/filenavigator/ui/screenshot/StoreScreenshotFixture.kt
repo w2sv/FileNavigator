@@ -6,7 +6,6 @@ import androidx.core.net.toUri
 import com.w2sv.common.uri.DocumentUri
 import com.w2sv.common.uri.MediaUri
 import com.w2sv.domain.model.MovedFile
-import com.w2sv.domain.model.Theme
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
@@ -14,9 +13,11 @@ import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
+import com.w2sv.domain.model.settings.AppSettings
+import com.w2sv.domain.model.settings.Theme
+import com.w2sv.domain.model.settings.ThemeSettings
 import com.w2sv.domain.usecase.MoveDestinationLabelProvider
 import com.w2sv.filenavigator.BuildConfig
-import com.w2sv.filenavigator.ui.screen.appsettings.model.AppPreferences
 import com.w2sv.navigator.domain.moving.MediaStoreEntry
 import com.w2sv.navigator.domain.moving.NavigatableFile
 import java.io.File
@@ -55,15 +56,13 @@ internal class StoreScreenshotFixture(context: Context) {
             AutoMoveConfig(enabled = true, destination = StoreDestination("/Pictures/Photos"))
         }
 
-    val appPreferences = AppPreferences(
+    val appSettings = AppSettings(
         showStorageVolumeNames = true,
-        setShowStorageVolumeNames = {},
-        theme = Theme.Light,
-        setTheme = {},
-        useAmoledBlackTheme = false,
-        setUseAmoledBlackTheme = {},
-        useDynamicColors = false,
-        setUseDynamicColors = {}
+        theme = ThemeSettings(
+            theme = Theme.Light,
+            useAmoledBlackTheme = false,
+            useDynamicColors = false
+        )
     )
 
     val moveHistory = listOf(

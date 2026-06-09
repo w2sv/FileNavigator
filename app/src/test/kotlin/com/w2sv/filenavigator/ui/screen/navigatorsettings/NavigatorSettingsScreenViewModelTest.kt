@@ -31,12 +31,12 @@ class NavigatorSettingsScreenViewModelTest {
         every { config } returns configMock
     }
     private var savedShowAutoMoveIntroduction: Boolean? = null
+    private val showAutoMoveIntroduction = mockk<PersistedPreference<Boolean>> {
+        every { stateIn(any(), any()) } returns MutableStateFlow(true)
+        every { save } returns { savedShowAutoMoveIntroduction = it }
+    }
     private val preferencesRepository = mockk<PreferencesRepository>(relaxed = true) {
-        every { showAutoMoveIntroduction } returns PersistedPreference(
-            flow = MutableStateFlow(true),
-            save = { savedShowAutoMoveIntroduction = it },
-            default = { true }
-        )
+        every { showAutoMoveIntroduction } returns this@NavigatorSettingsScreenViewModelTest.showAutoMoveIntroduction
     }
     private val viewModel by lazy {
         NavigatorSettingsScreenViewModel(

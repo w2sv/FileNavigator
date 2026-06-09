@@ -63,7 +63,10 @@ internal fun StoreScreenshotContent(screenshot: StoreScreenshot, fixture: StoreS
                     showFileTypeConfigurationDialog = {}
                 )
 
-                StoreScreenshot.APP_SETTINGS -> AppSettingsScreen(appPreferences = fixture.appPreferences)
+                StoreScreenshot.APP_SETTINGS -> AppSettingsScreen(
+                    appSettings = fixture.appSettings,
+                    saveAppSettings = {}
+                )
             }
         }
     }

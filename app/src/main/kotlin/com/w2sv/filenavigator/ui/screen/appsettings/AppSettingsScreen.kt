@@ -25,11 +25,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.androidutils.content.openUrl
 import com.w2sv.common.AppUrl
-import com.w2sv.domain.model.Theme
+import com.w2sv.domain.model.settings.AppSettings
+import com.w2sv.domain.model.settings.Theme
+import com.w2sv.domain.model.settings.ThemeSettings
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.ui.designsystem.Icon
 import com.w2sv.filenavigator.ui.designsystem.PaddingDefaults
-import com.w2sv.filenavigator.ui.screen.appsettings.model.AppPreferences
 import com.w2sv.filenavigator.ui.screen.appsettings.model.settingsActionGroups
 import com.w2sv.filenavigator.ui.util.PreviewOf
 import com.w2sv.filenavigator.ui.util.ScreenPreviews
@@ -52,25 +53,16 @@ object AppSettingsScreenDimens {
 
 @Composable
 fun AppSettingsScreenRoute(viewModel: AppSettingsViewModel = hiltViewModel()) {
-    val showStorageVolumeNames by viewModel.showStorageVolumeNames.collectAsStateWithLifecycle()
-    val themeSettings by viewModel.themeSettings.collectAsStateWithLifecycle()
+    val appSettings by viewModel.appSettings.collectAsStateWithLifecycle()
 
     AppSettingsScreen(
-        appPreferences = AppPreferences(
-            showStorageVolumeNames = showStorageVolumeNames,
-            setShowStorageVolumeNames = viewModel::saveShowStorageVolumeNames,
-            theme = themeSettings.theme,
-            setTheme = viewModel::saveTheme,
-            useAmoledBlackTheme = themeSettings.useAmoledBlackTheme,
-            setUseAmoledBlackTheme = viewModel::saveUseAmoledBlackTheme,
-            useDynamicColors = themeSettings.useDynamicColors,
-            setUseDynamicColors = viewModel::saveUseDynamicColors
-        )
+        appSettings = appSettings,
+        saveAppSettings = viewModel::saveAppSettings
     )
 }
 
 @Composable
-fun AppSettingsScreen(appPreferences: AppPreferences) {
+fun AppSettingsScreen(appSettings: AppSettings, saveAppSettings: (AppSettings) -> Unit) {
     val context = LocalContext.current
     val actionGroups = remember { settingsActionGroups() }
 
@@ -80,8 +72,18 @@ fun AppSettingsScreen(appPreferences: AppPreferences) {
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = AppSettingsScreenDimens.contentPadding
     ) {
-        item { GeneralSettingsCard(appPreferences = appPreferences) }
-        item { AppearanceSettingsCard(appPreferences = appPreferences) }
+        item {
+            GeneralSettingsCard(
+                appSettings = appSettings,
+                saveAppSettings = saveAppSettings
+            )
+        }
+        item {
+            AppearanceSettingsCard(
+                appSettings = appSettings,
+                saveAppSettings = saveAppSettings
+            )
+        }
         items(actionGroups, key = { it.titleRes }) {
             SettingsActionGroupCard(
                 group = it,
@@ -106,16 +108,15 @@ fun AppSettingsScreen(appPreferences: AppPreferences) {
 private fun Prev() {
     PreviewOf {
         AppSettingsScreen(
-            appPreferences = AppPreferences(
+            appSettings = AppSettings(
                 showStorageVolumeNames = true,
-                setShowStorageVolumeNames = {},
-                theme = Theme.Default,
-                setTheme = {},
-                useAmoledBlackTheme = false,
-                setUseAmoledBlackTheme = {},
-                useDynamicColors = true,
-                setUseDynamicColors = {}
-            )
+                theme = ThemeSettings(
+                    theme = Theme.Default,
+                    useAmoledBlackTheme = false,
+                    useDynamicColors = true
+                )
+            ),
+            saveAppSettings = {}
         )
     }
 }

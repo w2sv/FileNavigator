@@ -1,14 +1,13 @@
 package com.w2sv.domain.repository
 
-import com.w2sv.domain.model.Theme
+import com.w2sv.domain.model.settings.AppSettings
 import com.w2sv.persistedpreferences.PersistedPreference
+import kotlinx.coroutines.flow.StateFlow
 
 interface PreferencesRepository {
-    val theme: PersistedPreference<Theme>
-    val useAmoledBlackTheme: PersistedPreference<Boolean>
-    val useDynamicColors: PersistedPreference<Boolean>
+    val appSettings: StateFlow<AppSettings>
     val postNotificationsPermissionRequested: PersistedPreference<Boolean>
-    val showStorageVolumeNames: PersistedPreference<Boolean>
     val showAutoMoveIntroduction: PersistedPreference<Boolean>
     val showQuickMovePermissionQueryExplanation: PersistedPreference<Boolean>
+    suspend fun saveAppSettings(appSettings: AppSettings)
 }
