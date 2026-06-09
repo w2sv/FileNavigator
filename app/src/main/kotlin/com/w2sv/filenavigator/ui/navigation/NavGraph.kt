@@ -3,9 +3,10 @@ package com.w2sv.filenavigator.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.w2sv.filenavigator.ui.sharedstate.AppPermissionsState
 
 @Composable
-fun NavGraph(navigator: Navigator) {
+fun NavGraph(navigator: Navigator, permissionsState: AppPermissionsState) {
     val rootScaffoldState = rememberRootScaffoldState()
 
     RootScaffold(
@@ -15,6 +16,7 @@ fun NavGraph(navigator: Navigator) {
         NavContent(
             navigator = navigator,
             rootScaffoldState = rootScaffoldState,
+            permissionsState = permissionsState,
             modifier = Modifier.padding(paddingValues)
         )
     }

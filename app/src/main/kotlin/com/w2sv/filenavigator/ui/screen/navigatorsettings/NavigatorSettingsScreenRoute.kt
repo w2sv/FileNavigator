@@ -37,7 +37,12 @@ fun NavigatorSettingsScreenRoute(
     navigatorVM: NavigatorSettingsScreenViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
-    AutoMoveIntroductionDialogIfNotYetShown()
+    val showAutoMoveIntroduction by navigatorVM.showAutoMoveIntroduction.collectAsStateWithLifecycle()
+
+    AutoMoveIntroductionDialogIfNotYetShown(
+        show = showAutoMoveIntroduction,
+        onDismissRequest = navigatorVM::dismissAutoMoveIntroduction
+    )
 
     var showFileTypesBottomSheet by rememberSaveable { mutableStateOf(false) }
     var fileTypeConfigurationDialog by rememberSaveable { mutableStateOf<FileTypeConfigurationDialog?>(null) }

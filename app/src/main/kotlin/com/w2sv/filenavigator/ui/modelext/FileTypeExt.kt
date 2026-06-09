@@ -4,9 +4,7 @@ import androidx.compose.ui.graphics.Color
 import com.w2sv.domain.model.filetype.FileType
 
 /**
- * @return previously cached Color.
+ * @return Compose color corresponding to the defined [FileType.colorInt].
  */
 val FileType.color: Color
-    get() = colorCache.getOrPut(colorInt) { Color(colorInt) }
-
-private val colorCache = mutableMapOf<Int, Color>()
+    get() = Color(colorInt)

@@ -16,7 +16,7 @@ import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.usecase.MoveDestinationLabelProvider
 import com.w2sv.filenavigator.BuildConfig
-import com.w2sv.filenavigator.ui.screen.appsettings.AppPreferences
+import com.w2sv.filenavigator.ui.screen.appsettings.model.AppPreferences
 import com.w2sv.navigator.domain.moving.MediaStoreEntry
 import com.w2sv.navigator.domain.moving.NavigatableFile
 import java.io.File
@@ -56,13 +56,13 @@ internal class StoreScreenshotFixture(context: Context) {
         }
 
     val appPreferences = AppPreferences(
-        showStorageVolumeNames = { true },
+        showStorageVolumeNames = true,
         setShowStorageVolumeNames = {},
-        theme = { Theme.Light },
+        theme = Theme.Light,
         setTheme = {},
-        useAmoledBlackTheme = { false },
+        useAmoledBlackTheme = false,
         setUseAmoledBlackTheme = {},
-        useDynamicColors = { false },
+        useDynamicColors = false,
         setUseDynamicColors = {}
     )
 

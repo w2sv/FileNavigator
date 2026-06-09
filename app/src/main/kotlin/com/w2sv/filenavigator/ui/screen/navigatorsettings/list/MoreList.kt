@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
-import com.w2sv.filenavigator.ui.designsystem.ItemRow
-import com.w2sv.filenavigator.ui.designsystem.ItemRowIcon
-import com.w2sv.filenavigator.ui.designsystem.SwitchItemRow
+import com.w2sv.filenavigator.ui.designsystem.Icon
+import com.w2sv.filenavigator.ui.designsystem.ItemLayout
+import com.w2sv.filenavigator.ui.designsystem.SwitchItemLayout
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
 import com.w2sv.modules.common.R
 
@@ -60,8 +60,8 @@ fun LazyListScope.moreItemList(config: NavigatorConfig, actions: NavigatorConfig
 
     if (isRequestQuickSettingsTileSupported) {
         item {
-            ItemRow(
-                icon = { ItemRowIcon(R.drawable.ic_tile_small_24) },
+            ItemLayout(
+                icon = { Icon(R.drawable.ic_tile_small_24) },
                 labelRes = R.string.quick_settings_tile,
                 modifier = itemRowModifier
             ) {
@@ -72,8 +72,8 @@ fun LazyListScope.moreItemList(config: NavigatorConfig, actions: NavigatorConfig
         }
     }
     items(MoreListItem.entries, key = { it }) { item ->
-        SwitchItemRow(
-            icon = { ItemRowIcon(res = item.iconRes) },
+        SwitchItemLayout(
+            icon = { Icon(res = item.iconRes) },
             labelRes = item.labelRes,
             checked = item.checked(config),
             onCheckedChange = { item.onCheckedChange(actions, it) },

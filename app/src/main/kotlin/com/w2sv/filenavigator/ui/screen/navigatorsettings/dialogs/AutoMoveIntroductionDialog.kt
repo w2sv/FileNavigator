@@ -7,30 +7,30 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.designsystem.DialogButton
 import com.w2sv.designsystem.theme.AppTheme
-import com.w2sv.filenavigator.ui.AppViewModel
-import com.w2sv.filenavigator.ui.util.activityViewModel
 import com.w2sv.modules.common.R
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.onEach
 
 @Composable
-fun AutoMoveIntroductionDialogIfNotYetShown(appVM: AppViewModel = activityViewModel()) {
-    val delayingFlow = remember { appVM.showAutoMoveIntroduction.onEach { delay(1_000) } }
-    val showDialog by delayingFlow.collectAsStateWithLifecycle(false)
+fun AutoMoveIntroductionDialogIfNotYetShown(show: Boolean, onDismissRequest: () -> Unit) {
+    val showDialog = produceState(initialValue = false, key1 = show) {
+        if (show) {
+            delay(1_000.milliseconds)
+            value = true
+        }
+    }
 
-    if (showDialog) {
-        AutoMoveIntroductionDialog(onDismissRequest = { appVM.saveShowAutoMoveIntroduction(false) })
+    if (showDialog.value) {
+        AutoMoveIntroductionDialog(onDismissRequest = onDismissRequest)
     }
 }
 

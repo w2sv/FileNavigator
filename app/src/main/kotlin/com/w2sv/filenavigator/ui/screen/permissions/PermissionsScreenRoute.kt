@@ -9,16 +9,13 @@ import com.w2sv.androidutils.content.openAppSettings
 import com.w2sv.common.util.goToManageExternalStorageSettings
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
-import com.w2sv.filenavigator.ui.AppViewModel
 import com.w2sv.filenavigator.ui.sharedstate.AppPermissionsState
 import com.w2sv.filenavigator.ui.sharedstate.RequiredPermission
-import com.w2sv.filenavigator.ui.util.activityViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-fun PermissionsScreenRoute(onAllPermissionsGranted: () -> Unit, appVM: AppViewModel = activityViewModel()) {
-    val permissionsState = appVM.permissionsState
+fun PermissionsScreenRoute(permissionsState: AppPermissionsState, onAllPermissionsGranted: () -> Unit) {
     val postNotificationsPermissionState = rememberPostNotificationsPermissionState()
 
     SyncPostNotificationsPermissionState(

@@ -1,20 +1,15 @@
 package com.w2sv.filenavigator.ui.designsystem
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,27 +21,32 @@ import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.designsystem.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.modules.common.R
 
-object ItemRowTokens {
+object ItemLayoutDimens {
     val IconTextSpacing = 16.dp
     val SwitchStartPadding = 8.dp
     val ExplanationTopPadding = 2.dp
+    val ExplanationFontSize = 14.sp
 }
 
 @Composable
-fun ItemRow(
+fun ItemLayout(
     icon: @Composable () -> Unit,
     @StringRes labelRes: Int,
     modifier: Modifier = Modifier,
     explanation: CharSequence? = null,
-    content: @Composable () -> Unit
+    trailingContent: (@Composable () -> Unit)? = null
 ) {
     ConstraintLayout(modifier.fillMaxWidth()) {
         val (iconRef, labelRef, contentRef, explanationRef) = createRefs()
 
         Box(
             modifier = Modifier.constrainAs(iconRef) {
-                centerVerticallyTo(contentRef)
                 start.linkTo(parent.start)
+                if (trailingContent != null) {
+                    centerVerticallyTo(contentRef)
+                } else {
+                    top.linkTo(parent.top)
+                }
             },
             content = { icon() }
         )
@@ -54,28 +54,40 @@ fun ItemRow(
         Text(
             text = stringResource(id = labelRes),
             modifier = Modifier.constrainAs(labelRef) {
-                centerVerticallyTo(contentRef)
-                linkTo(iconRef.end, contentRef.start, startMargin = ItemRowTokens.IconTextSpacing)
-                width = Dimension.fillToConstraints
+                if (trailingContent != null) {
+                    centerVerticallyTo(contentRef)
+                    linkTo(iconRef.end, contentRef.start, startMargin = ItemLayoutDimens.IconTextSpacing)
+                    width = Dimension.fillToConstraints
+                } else {
+                    start.linkTo(iconRef.end, margin = ItemLayoutDimens.IconTextSpacing)
+                    centerVerticallyTo(iconRef)
+                }
             }
         )
 
-        Box(
-            modifier = Modifier.constrainAs(contentRef) {
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-            },
-            content = { content() }
-        )
+        trailingContent?.let {
+            Box(
+                modifier = Modifier.constrainAs(contentRef) {
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                },
+                content = { it() }
+            )
+        }
 
         explanation?.let {
             CharSequenceText(
                 text = it,
-                fontSize = 14.sp,
+                fontSize = ItemLayoutDimens.ExplanationFontSize,
                 color = colorScheme.onSurfaceVariantDecreasedAlpha,
                 modifier = Modifier.constrainAs(explanationRef) {
-                    top.linkTo(labelRef.bottom, margin = ItemRowTokens.ExplanationTopPadding)
-                    centerHorizontallyTo(labelRef)
+                    if (trailingContent != null) {
+                        top.linkTo(labelRef.bottom, margin = ItemLayoutDimens.ExplanationTopPadding)
+                        centerHorizontallyTo(labelRef)
+                    } else {
+                        top.linkTo(labelRef.bottom)
+                        linkTo(labelRef.start, parent.end)
+                    }
                     width = Dimension.fillToConstraints
                 }
             )
@@ -84,17 +96,7 @@ fun ItemRow(
 }
 
 @Composable
-fun ItemRowIcon(@DrawableRes res: Int, modifier: Modifier = Modifier, tint: Color = LocalContentColor.current) {
-    Icon(
-        painter = painterResource(id = res),
-        modifier = modifier,
-        contentDescription = null,
-        tint = tint
-    )
-}
-
-@Composable
-fun SwitchItemRow(
+fun SwitchItemLayout(
     icon: @Composable () -> Unit,
     @StringRes labelRes: Int,
     checked: Boolean,
@@ -102,7 +104,7 @@ fun SwitchItemRow(
     modifier: Modifier = Modifier,
     explanation: CharSequence? = null
 ) {
-    ItemRow(
+    ItemLayout(
         icon = icon,
         labelRes = labelRes,
         modifier = modifier,
@@ -111,18 +113,18 @@ fun SwitchItemRow(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
-            modifier = Modifier.padding(start = ItemRowTokens.SwitchStartPadding)
+            modifier = Modifier.padding(start = ItemLayoutDimens.SwitchStartPadding)
         )
     }
 }
 
 @Preview
 @Composable
-private fun SwitchItemRowPrev() {
+private fun SwitchItemLayoutPrev() {
     AppTheme {
         Surface {
-            SwitchItemRow(
-                icon = { ItemRowIcon(R.drawable.ic_palette_24) },
+            SwitchItemLayout(
+                icon = { Icon(R.drawable.ic_palette_24) },
                 labelRes = R.string.appearance,
                 checked = true,
                 onCheckedChange = {},

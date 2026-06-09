@@ -7,13 +7,19 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.w2sv.filenavigator.ui.screen.appsettings.AppSettingsScreen
+import com.w2sv.filenavigator.ui.screen.appsettings.AppSettingsScreenRoute
 import com.w2sv.filenavigator.ui.screen.home.HomeScreenRoute
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.NavigatorSettingsScreenRoute
 import com.w2sv.filenavigator.ui.screen.permissions.PermissionsScreenRoute
+import com.w2sv.filenavigator.ui.sharedstate.AppPermissionsState
 
 @Composable
-fun NavContent(navigator: Navigator, rootScaffoldState: RootScaffoldState, modifier: Modifier = Modifier) {
+fun NavContent(
+    navigator: Navigator,
+    rootScaffoldState: RootScaffoldState,
+    permissionsState: AppPermissionsState,
+    modifier: Modifier = Modifier
+) {
     NavDisplay(
         backStack = navigator.backStack,
         onBack = { navigator.popBackStack() },
@@ -39,10 +45,13 @@ fun NavContent(navigator: Navigator, rootScaffoldState: RootScaffoldState, modif
                 HomeScreenRoute()
             }
             entry<Screen.AppSettings> {
-                AppSettingsScreen()
+                AppSettingsScreenRoute()
             }
             entry<Screen.Permissions> {
-                PermissionsScreenRoute(onAllPermissionsGranted = navigator::toHome)
+                PermissionsScreenRoute(
+                    permissionsState = permissionsState,
+                    onAllPermissionsGranted = navigator::toHome
+                )
             }
             entry<Screen.NavigatorSettings> {
                 NavigatorSettingsScreenRoute(rootScaffoldState = rootScaffoldState)

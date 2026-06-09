@@ -5,7 +5,9 @@ import app.cash.turbine.test
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
+import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.filenavigator.ui.MainDispatcherRule
+import com.w2sv.persistedpreferences.PersistedPreference
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -28,9 +30,18 @@ class NavigatorSettingsScreenViewModelTest {
     private val dataSource = mockk<NavigatorConfigDataSource>(relaxed = true) {
         every { config } returns configMock
     }
+    private var savedShowAutoMoveIntroduction: Boolean? = null
+    private val preferencesRepository = mockk<PreferencesRepository>(relaxed = true) {
+        every { showAutoMoveIntroduction } returns PersistedPreference(
+            flow = MutableStateFlow(true),
+            save = { savedShowAutoMoveIntroduction = it },
+            default = { true }
+        )
+    }
     private val viewModel by lazy {
         NavigatorSettingsScreenViewModel(
             navigatorConfigDataSource = dataSource,
+            preferencesRepository = preferencesRepository,
             navigatorIsRunning = MutableStateFlow(true),
             context = mockk<Context>(relaxed = true)
         )
@@ -78,5 +89,14 @@ class NavigatorSettingsScreenViewModelTest {
                 editedConfig,
                 updater.captured(NavigatorConfig.default)
             )
+        }
+
+    @Test
+    fun `dismissAutoMoveIntroduction disables introduction preference`() =
+        runTest {
+            viewModel.dismissAutoMoveIntroduction()
+            advanceUntilIdle()
+
+            assertEquals(false, savedShowAutoMoveIntroduction)
         }
 }

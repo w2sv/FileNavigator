@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.w2sv.modules.common.R
 
 // TODO: composed
@@ -40,7 +41,7 @@ fun MoreIconButtonWithDropdownMenu(
     }
 
     Box(modifier = modifier) {
-        IconButton(onClick = { menuIsExpanded = !menuIsExpanded }, modifier = Modifier.size(IconSize.IconButton.Smaller)) {
+        IconButton(onClick = { menuIsExpanded = !menuIsExpanded }, modifier = Modifier.size(36.dp)) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_more_vert_24),
                 contentDescription = stringResource(R.string.open_the_dropdown_menu),

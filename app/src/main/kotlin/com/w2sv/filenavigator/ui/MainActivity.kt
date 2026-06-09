@@ -23,10 +23,10 @@ import com.w2sv.composed.core.CollectFromFlow
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.usecase.MoveDestinationLabelProvider
 import com.w2sv.filenavigator.BuildConfig
+import com.w2sv.filenavigator.ui.modelext.useDarkTheme
 import com.w2sv.filenavigator.ui.navigation.NavGraph
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.navigation.rememberNavigator
-import com.w2sv.filenavigator.ui.util.useDarkTheme
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class MainActivity : LoggingComponentActivity() {
     @Inject
     lateinit var moveDestinationLabelProvider: MoveDestinationLabelProvider
 
-    private val appVM by viewModels<AppViewModel>()
+    private val appShellVM by viewModels<AppShellViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setOnExitAnimationListener(SwipeRightSplashScreenExitAnimation())
@@ -45,16 +45,16 @@ class MainActivity : LoggingComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val appThemeSettings by appVM.themeSettings.collectAsStateWithLifecycle()
+            val appThemeSettings by appShellVM.themeSettings.collectAsStateWithLifecycle()
             val useDarkTheme = useDarkTheme(appThemeSettings.theme)
 
             // Update system bars on change of useDarkTheme
             LaunchedEffect(useDarkTheme) { enableEdgeToEdge(useDarkTheme = useDarkTheme) }
 
-            val navigator = rememberNavigator(startScreen = appVM.startScreen)
+            val navigator = rememberNavigator(startScreen = appShellVM.startScreen)
 
             // Navigate to permissions screen if not all permissions granted and we're not already there
-            CollectFromFlow(appVM.permissionsState.allGranted) { allPermissionsGranted ->
+            CollectFromFlow(appShellVM.permissionsState.allGranted) { allPermissionsGranted ->
                 if (!allPermissionsGranted && !navigator.currentScreen.isPermissions) {
                     navigator.toPermissions()
                 }
@@ -66,7 +66,10 @@ class MainActivity : LoggingComponentActivity() {
                     useAmoledBlackTheme = appThemeSettings.useAmoledBlackTheme,
                     useDynamicColors = appThemeSettings.useDynamicColors
                 ) {
-                    NavGraph(navigator = navigator)
+                    NavGraph(
+                        navigator = navigator,
+                        permissionsState = appShellVM.permissionsState
+                    )
                 }
             }
 
@@ -98,7 +101,7 @@ class MainActivity : LoggingComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        appVM.permissionsState.refresh()
+        appShellVM.permissionsState.refresh()
     }
 }
 
