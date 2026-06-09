@@ -5,10 +5,10 @@ import android.os.Parcelable
 import com.anggrayudi.storage.media.MediaFile
 import com.anggrayudi.storage.media.MediaStoreCompat
 import com.anggrayudi.storage.media.MediaType
-import com.w2sv.common.uri.MediaUri
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType
+import com.w2sv.storage.uri.MediaUri
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

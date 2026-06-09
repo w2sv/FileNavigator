@@ -1,13 +1,13 @@
 package com.w2sv.domain.model
 
-import com.w2sv.common.uri.DocumentUri
-import com.w2sv.common.uri.MediaUri
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.ExternalDestinationApi
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
+import com.w2sv.storage.uri.DocumentUri
+import com.w2sv.storage.uri.MediaUri
 import java.time.LocalDateTime
 
 sealed interface MovedFile {

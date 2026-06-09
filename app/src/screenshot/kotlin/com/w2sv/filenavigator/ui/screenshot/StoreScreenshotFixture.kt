@@ -3,8 +3,6 @@ package com.w2sv.filenavigator.ui.screenshot
 import android.content.Context
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
-import com.w2sv.common.uri.DocumentUri
-import com.w2sv.common.uri.MediaUri
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.filetype.PresetFileType
@@ -20,6 +18,8 @@ import com.w2sv.domain.usecase.MoveDestinationLabelProvider
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.navigator.domain.moving.MediaStoreEntry
 import com.w2sv.navigator.domain.moving.NavigatableFile
+import com.w2sv.storage.uri.DocumentUri
+import com.w2sv.storage.uri.MediaUri
 import java.io.File
 import java.time.LocalDateTime
 

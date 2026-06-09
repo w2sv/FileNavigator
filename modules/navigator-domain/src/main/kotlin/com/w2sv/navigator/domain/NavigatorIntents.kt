@@ -2,11 +2,11 @@ package com.w2sv.navigator.domain
 
 import android.app.PendingIntent
 import android.content.Intent
-import com.w2sv.common.uri.DocumentUri
 import com.w2sv.navigator.domain.moving.MoveFileNotificationData
 import com.w2sv.navigator.domain.moving.MoveOperation
 import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.notifications.CancelNotificationEvent
+import com.w2sv.storage.uri.DocumentUri
 
 interface NavigatorIntents {
 

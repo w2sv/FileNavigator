@@ -126,7 +126,9 @@ with files exposed through shared storage and Android's media and document APIs.
 | `:modules:datastore` | Persisted navigator and app configuration |
 | `:modules:datastore-proto` | Generated Protocol Buffer configuration models |
 | `:modules:designsystem` | Shared Compose theme and UI components |
-| `:modules:common` | Shared Android utilities and resources |
+| `:modules:core-android` | Shared Android infrastructure and utility extensions |
+| `:modules:resources` | Shared strings, icons, colors, and images |
+| `:modules:storage` | Document and media URI types and storage helpers |
 | `:modules:test` | Shared test dependencies and utilities |
 | `:benchmarking` | Baseline Profile generation and macrobenchmarks |
 

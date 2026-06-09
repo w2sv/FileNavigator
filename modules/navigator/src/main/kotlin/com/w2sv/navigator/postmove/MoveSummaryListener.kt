@@ -2,7 +2,7 @@ package com.w2sv.navigator.postmove
 
 import android.content.Context
 import com.w2sv.androidutils.widget.showToast
-import com.w2sv.common.di.ApplicationIoScope
+import com.w2sv.core.di.ApplicationIoScope
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.usecase.InsertMovedFileUseCase
 import com.w2sv.navigator.domain.moving.MoveOperation

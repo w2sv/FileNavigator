@@ -1,7 +1,7 @@
 package com.w2sv.filenavigator.ui.screen.home
 
 import androidx.lifecycle.viewModelScope
-import com.w2sv.common.logging.LoggingViewModel
+import com.w2sv.core.logging.LoggingViewModel
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.repository.MovedFileRepository
 import com.w2sv.domain.usecase.GetMoveHistoryUseCase

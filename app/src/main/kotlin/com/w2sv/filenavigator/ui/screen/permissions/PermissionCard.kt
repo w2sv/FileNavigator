@@ -26,11 +26,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.w2sv.common.AppUrl
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.designsystem.component.AppCardProperties
 import com.w2sv.designsystem.component.DialogButton
 import com.w2sv.designsystem.theme.AppTheme
+import com.w2sv.filenavigator.AppUrl
 import com.w2sv.modules.resources.R
 
 @Preview

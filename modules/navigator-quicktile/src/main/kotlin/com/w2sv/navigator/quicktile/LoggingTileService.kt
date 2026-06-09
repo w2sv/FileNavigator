@@ -5,7 +5,7 @@ import android.content.res.Configuration
 import android.os.IBinder
 import android.service.quicksettings.TileService
 import com.w2sv.androidutils.content.toDebugString
-import com.w2sv.common.logging.logIdentifier
+import com.w2sv.core.logging.logIdentifier
 import slimber.log.i
 
 abstract class LoggingTileService : TileService() {

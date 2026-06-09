@@ -87,7 +87,7 @@ play {
 
 dependencies {
     baselineProfile(projects.benchmarking)
-    implementation(projects.modules.common)
+    implementation(projects.modules.coreAndroid)
     implementation(projects.modules.designsystem)
     implementation(projects.modules.database)
     implementation(projects.modules.datastore)
@@ -96,6 +96,7 @@ dependencies {
     implementation(projects.modules.navigator)
     implementation(projects.modules.navigatorQuicktile)
     implementation(projects.modules.resources)
+    implementation(projects.modules.storage)
     "screenshotImplementation"(projects.modules.navigatorDomain)
 
     implementation(libs.w2sv.androidutils.core)

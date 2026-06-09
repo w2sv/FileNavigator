@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.getSimplePath
-import com.w2sv.common.uri.DocumentUri
 import com.w2sv.modules.resources.R
+import com.w2sv.storage.uri.DocumentUri
 
 @JvmInline
 value class LocalDestination(override val documentUri: DocumentUri) : LocalDestinationApi {

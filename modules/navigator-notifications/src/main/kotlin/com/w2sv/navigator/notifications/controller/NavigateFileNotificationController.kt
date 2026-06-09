@@ -8,13 +8,12 @@ import android.util.Size
 import androidx.core.app.NotificationCompat
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
-import com.w2sv.common.di.ApplicationDefaultScope
-import com.w2sv.common.logging.log
-import com.w2sv.common.util.formattedFileSize
-import com.w2sv.common.util.lineBreakSuffixed
-import com.w2sv.common.util.loadBitmapWithFileNotFoundHandling
-import com.w2sv.common.util.removeSlashSuffix
-import com.w2sv.common.util.slashPrefixed
+import com.w2sv.core.di.ApplicationDefaultScope
+import com.w2sv.core.logging.log
+import com.w2sv.core.util.formattedFileSize
+import com.w2sv.core.util.lineBreakSuffixed
+import com.w2sv.core.util.removeSlashSuffix
+import com.w2sv.core.util.slashPrefixed
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.modules.resources.R
 import com.w2sv.navigator.domain.NavigatorIntents
@@ -31,6 +30,7 @@ import com.w2sv.navigator.notifications.api.env.NotificationEnvironment
 import com.w2sv.navigator.notifications.api.setBigTextStyle
 import com.w2sv.navigator.notifications.helper.GetQuickMoveDestinations
 import com.w2sv.navigator.notifications.helper.iconBitmap
+import com.w2sv.storage.util.loadBitmapWithFileNotFoundHandling
 import java.io.IOException
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope

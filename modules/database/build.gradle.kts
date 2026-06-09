@@ -13,8 +13,9 @@ android {
 }
 
 dependencies {
-    implementation(projects.modules.common)
+    implementation(projects.modules.coreAndroid)
     implementation(projects.modules.domain)
+    implementation(projects.modules.storage)
     implementation(libs.androidx.core.ktx)
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.w2sv.simplestorage)

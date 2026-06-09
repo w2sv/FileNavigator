@@ -9,7 +9,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
-import com.w2sv.common.logging.logIdentifier
+import com.w2sv.core.logging.logIdentifier
 import slimber.log.i
 
 interface Navigator {

@@ -4,9 +4,6 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Handler
 import com.anggrayudi.storage.media.MediaType
-import com.w2sv.common.uri.MediaId
-import com.w2sv.common.uri.MediaUri
-import com.w2sv.common.uri.mediaUri
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.navigatorconfig.AutoMoveConfig
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
@@ -16,6 +13,9 @@ import com.w2sv.navigator.domain.moving.MoveDestination
 import com.w2sv.navigator.domain.moving.MoveOperation
 import com.w2sv.navigator.domain.moving.NavigatableFile
 import com.w2sv.navigator.domain.notifications.NotificationEvent
+import com.w2sv.storage.uri.MediaId
+import com.w2sv.storage.uri.MediaUri
+import com.w2sv.storage.uri.mediaUri
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

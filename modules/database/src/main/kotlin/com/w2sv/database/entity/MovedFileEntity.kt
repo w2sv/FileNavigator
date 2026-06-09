@@ -4,13 +4,13 @@ import android.net.Uri
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.w2sv.common.uri.documentUri
-import com.w2sv.common.uri.mediaUri
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.ExternalDestination
 import com.w2sv.domain.model.movedestination.LocalDestination
+import com.w2sv.storage.uri.documentUri
+import com.w2sv.storage.uri.mediaUri
 import java.time.LocalDateTime
 
 @Entity

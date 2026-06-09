@@ -9,6 +9,6 @@ dependencies {
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.androidx.constraintlayout.compose)
 
-    testImplementation(projects.modules.common)
+    testImplementation(projects.modules.coreAndroid)
     testImplementation(libs.bundles.unitTest)
 }

@@ -16,9 +16,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.core.rememberStyledTextResource
+import com.w2sv.core.util.containsSpecialCharacter
 import com.w2sv.designsystem.state.InputInvalidityReason
 import com.w2sv.designsystem.state.ProxyTextEditor
 import com.w2sv.designsystem.state.StatefulTextEditor

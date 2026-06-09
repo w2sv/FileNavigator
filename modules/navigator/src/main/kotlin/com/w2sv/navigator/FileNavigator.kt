@@ -3,9 +3,9 @@ package com.w2sv.navigator
 import android.content.Context
 import android.content.Intent
 import com.w2sv.androidutils.content.intent
-import com.w2sv.common.logging.LoggingUnboundService
-import com.w2sv.common.util.hasManageAllFilesPermission
-import com.w2sv.common.util.hasPostNotificationsPermission
+import com.w2sv.core.logging.LoggingUnboundService
+import com.w2sv.core.util.hasManageAllFilesPermission
+import com.w2sv.core.util.hasPostNotificationsPermission
 import com.w2sv.navigator.domain.notifications.ForegroundNotificationProvider
 import com.w2sv.navigator.observing.FileObserverManager
 import dagger.hilt.android.AndroidEntryPoint

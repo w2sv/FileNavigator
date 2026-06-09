@@ -3,8 +3,6 @@ package com.w2sv.navigator.moving.activity
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
 import com.w2sv.androidutils.content.getParcelableCompat
-import com.w2sv.common.uri.DocumentUri
-import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.domain.moving.DestinationSelectionManner
 import com.w2sv.navigator.domain.moving.MoveDestination
@@ -12,6 +10,8 @@ import com.w2sv.navigator.domain.moving.MoveFileNotificationData
 import com.w2sv.navigator.domain.moving.MoveOperation
 import com.w2sv.navigator.domain.moving.MoveResult
 import com.w2sv.navigator.moving.BatchMoveService
+import com.w2sv.storage.uri.DocumentUri
+import com.w2sv.storage.util.takePersistableReadAndWriteUriPermission
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.parcelize.Parcelize

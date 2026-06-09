@@ -10,11 +10,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.usecase.MoveDestinationLabelProvider
 import com.w2sv.filenavigator.ui.shared.LocalMoveDestinationLabelProvider
+import com.w2sv.storage.util.takePersistableReadAndWriteUriPermission
 
 @Composable
 fun rememberAutoMoveDestinationPath(

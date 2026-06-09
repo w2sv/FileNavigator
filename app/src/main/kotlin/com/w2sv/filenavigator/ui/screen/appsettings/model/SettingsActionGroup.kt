@@ -11,7 +11,7 @@ import com.w2sv.androidutils.content.openUrl
 import com.w2sv.androidutils.content.packagePlayStoreUrl
 import com.w2sv.androidutils.content.startActivity
 import com.w2sv.androidutils.widget.showToast
-import com.w2sv.common.AppUrl
+import com.w2sv.filenavigator.AppUrl
 import com.w2sv.modules.resources.R
 
 @Immutable

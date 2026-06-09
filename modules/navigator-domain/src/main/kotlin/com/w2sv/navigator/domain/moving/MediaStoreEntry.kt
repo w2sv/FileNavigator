@@ -9,8 +9,8 @@ import com.w2sv.androidutils.database.getBooleanOrThrow
 import com.w2sv.androidutils.database.getLongOrThrow
 import com.w2sv.androidutils.database.getStringOrThrow
 import com.w2sv.androidutils.database.query
-import com.w2sv.common.uri.MediaUri
 import com.w2sv.domain.model.filetype.SourceType
+import com.w2sv.storage.uri.MediaUri
 import java.io.File
 import kotlinx.parcelize.Parcelize
 import slimber.log.e

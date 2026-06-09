@@ -11,7 +11,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.anggrayudi.storage.file.child
 import com.w2sv.androidutils.database.getStringOrThrow
-import com.w2sv.common.logging.log
+import com.w2sv.core.logging.log
 import slimber.log.i
 
 private const val PRE_VERSION_5_TABLE_NAME = "MoveEntryEntity"

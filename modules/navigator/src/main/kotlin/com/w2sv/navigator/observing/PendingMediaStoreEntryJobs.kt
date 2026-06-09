@@ -1,6 +1,6 @@
 package com.w2sv.navigator.observing
 
-import com.w2sv.common.uri.MediaId
+import com.w2sv.storage.uri.MediaId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job

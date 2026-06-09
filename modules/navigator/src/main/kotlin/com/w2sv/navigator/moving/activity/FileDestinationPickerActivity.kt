@@ -7,10 +7,7 @@ import android.provider.DocumentsContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.content.getParcelableCompat
-import com.w2sv.common.logging.log
-import com.w2sv.common.uri.DocumentUri
-import com.w2sv.common.uri.documentUri
-import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
+import com.w2sv.core.logging.log
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.navigator.domain.moving.DestinationSelectionManner
 import com.w2sv.navigator.domain.moving.MoveDestination
@@ -20,6 +17,9 @@ import com.w2sv.navigator.domain.notifications.CancelNotificationEvent
 import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.shared.createdfiles.EmitSelfCreatedFile
 import com.w2sv.navigator.shared.createdfiles.SelfCreatedFileIdentifiers
+import com.w2sv.storage.uri.DocumentUri
+import com.w2sv.storage.uri.documentUri
+import com.w2sv.storage.util.takePersistableReadAndWriteUriPermission
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
