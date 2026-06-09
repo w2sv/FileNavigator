@@ -48,8 +48,14 @@
     <string name="couldnt_move">Couldn\'t move</string>
     <string name="location">Location</string>
     <string name="size">Size</string>
-    <string name="move_files">Move %1$d files</string>
-    <string name="move_progress_notification_title">Moving %1$d files…</string>
+    <plurals name="move_files">
+        <item quantity="one">Move %1$d file</item>
+        <item quantity="other">Move %1$d files</item>
+    </plurals>
+    <plurals name="move_progress_notification_title">
+        <item quantity="one">Moving %1$d file…</item>
+        <item quantity="other">Moving %1$d files…</item>
+    </plurals>
     <string name="move_results">Move Results</string>
     <plurals name="moved_files_to">
         <item quantity="one"><![CDATA[Moved %1$d file to <b>%2$s</b>]]></item>

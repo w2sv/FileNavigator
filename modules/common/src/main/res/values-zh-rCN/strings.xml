@@ -44,8 +44,12 @@
     <string name="couldnt_move">无法移动</string>
     <string name="location">文件夹</string>
     <string name="size">大小</string>
-    <string name="move_files">移动 %1$d 个文件</string>
-    <string name="move_progress_notification_title">正在移动 %1$d 个文件…</string>
+    <plurals name="move_files">
+        <item quantity="other">移动 %1$d 个文件</item>
+    </plurals>
+    <plurals name="move_progress_notification_title">
+        <item quantity="other">正在移动 %1$d 个文件…</item>
+    </plurals>
     <string name="move_results">移动结果</string>
     <plurals name="moved_files_to">
         <item quantity="other"><![CDATA[已移动 %1$d 个文件至 <b>%2$s</b>]]></item>

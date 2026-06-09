@@ -86,7 +86,19 @@ private val staticColorSchemeDark by threadUnsafeLazy {
         surfaceContainerHigh = Color(0.16470589f, 0.16470589f, 0.16470589f, 1.0f),
         surfaceContainerHighest = Color(0.20784314f, 0.20784314f, 0.20784314f, 1.0f),
         surfaceContainerLow = Color(0.105882354f, 0.105882354f, 0.105882354f, 1.0f),
-        surfaceContainerLowest = Color(0.05490196f, 0.05490196f, 0.05490196f, 1.0f)
+        surfaceContainerLowest = Color(0.05490196f, 0.05490196f, 0.05490196f, 1.0f),
+        primaryFixed = Color.Unspecified,
+        primaryFixedDim = Color.Unspecified,
+        onPrimaryFixed = Color.Unspecified,
+        onPrimaryFixedVariant = Color.Unspecified,
+        secondaryFixed = Color.Unspecified,
+        secondaryFixedDim = Color.Unspecified,
+        onSecondaryFixed = Color.Unspecified,
+        onSecondaryFixedVariant = Color.Unspecified,
+        tertiaryFixed = Color.Unspecified,
+        tertiaryFixedDim = Color.Unspecified,
+        onTertiaryFixed = Color.Unspecified,
+        onTertiaryFixedVariant = Color.Unspecified
     )
 }
 
@@ -127,6 +139,18 @@ private val staticColorSchemeLight by threadUnsafeLazy {
         surfaceContainerHigh = Color(0.9098039f, 0.9098039f, 0.9098039f, 1.0f),
         surfaceContainerHighest = Color(0.8862745f, 0.8862745f, 0.8862745f, 1.0f),
         surfaceContainerLow = Color(0.9529412f, 0.9529412f, 0.9529412f, 1.0f),
-        surfaceContainerLowest = Color(1.0f, 1.0f, 1.0f, 1.0f)
+        surfaceContainerLowest = Color(1.0f, 1.0f, 1.0f, 1.0f),
+        primaryFixed = Color.Unspecified,
+        primaryFixedDim = Color.Unspecified,
+        onPrimaryFixed = Color.Unspecified,
+        onPrimaryFixedVariant = Color.Unspecified,
+        secondaryFixed = Color.Unspecified,
+        secondaryFixedDim = Color.Unspecified,
+        onSecondaryFixed = Color.Unspecified,
+        onSecondaryFixedVariant = Color.Unspecified,
+        tertiaryFixed = Color.Unspecified,
+        tertiaryFixedDim = Color.Unspecified,
+        onTertiaryFixed = Color.Unspecified,
+        onTertiaryFixedVariant = Color.Unspecified
     )
 }

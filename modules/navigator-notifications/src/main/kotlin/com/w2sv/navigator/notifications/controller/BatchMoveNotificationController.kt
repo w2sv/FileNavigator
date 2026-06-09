@@ -38,7 +38,7 @@ internal class BatchMoveNotificationController @Inject constructor(
         setSortKey("0") // Make notification appear first in the group
         setSilent(true) // Notification will be posted in addition to each 'navigate file' notification; we don't want a double alert
 
-        setContentTitle(context.getString(R.string.move_files, args.size))
+        setContentTitle(context.resources.getQuantityString(R.plurals.move_files, args.size, args.size))
         setLargeIcon(
             context.drawableBitmap(
                 drawable = R.drawable.ic_files_24,

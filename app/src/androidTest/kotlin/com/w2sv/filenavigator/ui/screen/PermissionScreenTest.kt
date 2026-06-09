@@ -2,7 +2,7 @@ package com.w2sv.filenavigator.ui.screen
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.w2sv.filenavigator.ui.MainActivity
 import org.junit.Rule

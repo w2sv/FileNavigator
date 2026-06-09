@@ -19,8 +19,9 @@ internal class BatchMoveProgressNotificationController @Inject constructor(
 ) {
     override fun NotificationCompat.Builder.configure(args: NotificationEvent.BatchMoveProgress, id: Int) {
         setContentTitle(
-            context.getString(
-                R.string.move_progress_notification_title,
+            context.resources.getQuantityString(
+                R.plurals.move_progress_notification_title,
+                args.total,
                 args.total
             )
         )

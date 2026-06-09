@@ -29,7 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -59,7 +59,10 @@ fun FileTypeSelectionBottomSheet(
     showFileTypeCreationDialog: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    sheetState: SheetState = rememberBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)
+    )
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -215,8 +218,8 @@ private fun Prev() {
             showFileTypeCreationDialog = {},
             onDismissRequest = {},
             sheetState = SheetState(
+                enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
                 initialValue = SheetValue.Expanded,
-                skipPartiallyExpanded = true,
                 positionalThreshold = { 0.5f },
                 velocityThreshold = { 0.5f }
             )

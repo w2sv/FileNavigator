@@ -1,4 +1,5 @@
 plugins {
+    id("com.android.lint")
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.protobuf)
 }
