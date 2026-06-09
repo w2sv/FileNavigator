@@ -4,8 +4,8 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.modules.common)
     implementation(projects.modules.resources)
+    api(projects.modules.storage)
 
     api(libs.w2sv.persistedPreferences)
     implementation(libs.w2sv.androidutils.core)

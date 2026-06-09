@@ -4,7 +4,6 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import com.w2sv.common.uri.DocumentUri
 import com.w2sv.navigator.domain.NavigatorIntents
 import com.w2sv.navigator.domain.moving.MoveFileNotificationData
 import com.w2sv.navigator.domain.moving.MoveOperation
@@ -17,6 +16,7 @@ import com.w2sv.navigator.moving.activity.FileDeletionActivity
 import com.w2sv.navigator.moving.activity.FileDestinationPickerActivity
 import com.w2sv.navigator.moving.activity.QuickMoveDestinationAccessPermissionActivity
 import com.w2sv.navigator.moving.activity.ViewFileIfPresentActivity
+import com.w2sv.storage.uri.DocumentUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

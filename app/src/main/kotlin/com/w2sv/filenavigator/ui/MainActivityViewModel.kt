@@ -2,9 +2,9 @@ package com.w2sv.filenavigator.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.w2sv.common.logging.LoggingViewModel
-import com.w2sv.common.util.hasManageAllFilesPermission
-import com.w2sv.common.util.hasPostNotificationsPermission
+import com.w2sv.core.logging.LoggingViewModel
+import com.w2sv.core.util.hasManageAllFilesPermission
+import com.w2sv.core.util.hasPostNotificationsPermission
 import com.w2sv.domain.repository.PreferencesRepository
 import com.w2sv.filenavigator.ui.navigation.Screen
 import com.w2sv.filenavigator.ui.shared.permissions.AppPermissionsState

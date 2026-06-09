@@ -1,8 +1,8 @@
 package com.w2sv.navigator.moving.model
 
-import com.w2sv.common.uri.DocumentUri
-import com.w2sv.common.uri.MediaUri
 import com.w2sv.navigator.domain.moving.MoveDestination
+import com.w2sv.storage.uri.DocumentUri
+import com.w2sv.storage.uri.MediaUri
 import com.w2sv.test.testParceling
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

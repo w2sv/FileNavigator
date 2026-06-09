@@ -1,13 +1,13 @@
 package com.w2sv.navigator.postmove
 
 import android.content.Context
-import com.w2sv.common.logging.log
-import com.w2sv.common.uri.DocumentUri
-import com.w2sv.common.uri.MediaUri
+import com.w2sv.core.logging.log
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.navigator.domain.moving.MoveDestination
 import com.w2sv.navigator.domain.moving.MoveOperation
 import com.w2sv.navigator.domain.moving.NavigatableFile
+import com.w2sv.storage.uri.DocumentUri
+import com.w2sv.storage.uri.MediaUri
 import java.time.LocalDateTime
 import slimber.log.i
 

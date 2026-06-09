@@ -1,7 +1,7 @@
 package com.w2sv.navigator.observing
 
 import android.content.ContentResolver
-import com.w2sv.common.logging.log
+import com.w2sv.core.logging.log
 import javax.inject.Inject
 import slimber.log.i
 

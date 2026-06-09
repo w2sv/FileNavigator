@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.modules.common)
+    implementation(projects.modules.coreAndroid)
     implementation(projects.modules.navigator)
     implementation(projects.modules.navigatorDomain)
     implementation(libs.androidx.core.ktx)

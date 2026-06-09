@@ -1,7 +1,7 @@
 package com.w2sv.datastore.proto.navigatorconfig
 
 import androidx.datastore.core.DataStore
-import com.w2sv.common.di.ApplicationIoScope
+import com.w2sv.core.di.ApplicationIoScope
 import com.w2sv.datastore.NavigatorConfigProto
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource

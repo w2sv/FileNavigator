@@ -2,7 +2,7 @@ package com.w2sv.filenavigator.ui.screen.navigatorsettings
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.w2sv.common.logging.LoggingViewModel
+import com.w2sv.core.logging.LoggingViewModel
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.PreferencesRepository

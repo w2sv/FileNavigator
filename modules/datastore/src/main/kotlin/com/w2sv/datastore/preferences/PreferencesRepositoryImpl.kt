@@ -4,7 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import com.w2sv.androidutils.os.dynamicColorsSupported
-import com.w2sv.common.di.ApplicationDefaultScope
+import com.w2sv.core.di.ApplicationDefaultScope
 import com.w2sv.domain.model.settings.AppSettings
 import com.w2sv.domain.model.settings.Theme
 import com.w2sv.domain.model.settings.ThemeSettings

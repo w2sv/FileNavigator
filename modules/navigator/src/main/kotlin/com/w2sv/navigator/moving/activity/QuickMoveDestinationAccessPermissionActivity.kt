@@ -22,9 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.content.componentName
-import com.w2sv.common.logging.LoggingComponentActivity
-import com.w2sv.common.util.takePersistableReadAndWriteUriPermission
 import com.w2sv.composed.core.rememberStyledTextResource
+import com.w2sv.core.logging.LoggingComponentActivity
 import com.w2sv.designsystem.component.HighlightedDialogButton
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.repository.NavigatorConfigDataSource
@@ -38,6 +37,7 @@ import com.w2sv.navigator.moving.MoveBroadcastReceiver
 import com.w2sv.navigator.moving.activity.QuickMoveDestinationAccessPermissionActivity.Action.LaunchPicker
 import com.w2sv.navigator.moving.activity.QuickMoveDestinationAccessPermissionActivity.Action.ShowRationale
 import com.w2sv.navigator.moving.activity.QuickMoveDestinationAccessPermissionActivity.Action.StartMove
+import com.w2sv.storage.util.takePersistableReadAndWriteUriPermission
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first

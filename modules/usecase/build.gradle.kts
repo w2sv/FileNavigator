@@ -4,7 +4,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.modules.common)
     implementation(projects.modules.domain)
 
     implementation(libs.w2sv.persistedPreferences)

@@ -3,7 +3,7 @@ package com.w2sv.navigator.system_broadcastreceiver
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import com.w2sv.common.logging.LoggingBroadcastReceiver
+import com.w2sv.core.logging.LoggingBroadcastReceiver
 import com.w2sv.domain.repository.NavigatorConfigFlow
 import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.AndroidEntryPoint

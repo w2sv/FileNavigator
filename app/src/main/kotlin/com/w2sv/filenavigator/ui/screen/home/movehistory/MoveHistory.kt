@@ -39,7 +39,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
-import com.w2sv.common.uri.DocumentUri
 import com.w2sv.composed.core.OnLifecycleEvent
 import com.w2sv.composed.core.extensions.thenIf
 import com.w2sv.designsystem.layout.WeightedBox
@@ -57,6 +56,7 @@ import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.filenavigator.ui.shared.LocalMoveDestinationLabelProvider
 import com.w2sv.filenavigator.ui.shared.util.WithLocalContentColor
 import com.w2sv.modules.resources.R
+import com.w2sv.storage.uri.DocumentUri
 import eu.wewox.textflow.material3.TextFlow
 import java.time.LocalDateTime
 import kotlinx.coroutines.CoroutineScope

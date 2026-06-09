@@ -47,7 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.w2sv.common.util.colonSuffixed
+import com.w2sv.core.util.colonSuffixed
 import com.w2sv.designsystem.component.CharSequenceText
 import com.w2sv.designsystem.component.DialogButton
 import com.w2sv.designsystem.component.HighlightedDialogButton

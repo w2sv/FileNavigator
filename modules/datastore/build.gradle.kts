@@ -7,7 +7,7 @@ plugins {
 android.defaultConfig.consumerProguardFiles("consumer-proguard-rules.pro")
 
 dependencies {
-    implementation(projects.modules.common)
+    implementation(projects.modules.coreAndroid)
     implementation(projects.modules.domain)
     implementation(projects.modules.datastoreProto)
 

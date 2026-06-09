@@ -7,14 +7,14 @@ import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.core.os.ParcelCompat
-import com.w2sv.common.uri.DocumentUri
-import com.w2sv.common.uri.MediaUri
 import com.w2sv.domain.model.movedestination.ExternalDestination
 import com.w2sv.domain.model.movedestination.ExternalDestinationApi
 import com.w2sv.domain.model.movedestination.FileDestinationApi
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.domain.model.movedestination.MoveDestinationApi
+import com.w2sv.storage.uri.DocumentUri
+import com.w2sv.storage.uri.MediaUri
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize

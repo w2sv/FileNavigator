@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import com.w2sv.common.logging.LoggingComponentActivity
-import com.w2sv.common.uri.DocumentUri
+import com.w2sv.core.logging.LoggingComponentActivity
+import com.w2sv.storage.uri.DocumentUri
 
 internal abstract class DestinationPickerActivityApi : LoggingComponentActivity() {
 

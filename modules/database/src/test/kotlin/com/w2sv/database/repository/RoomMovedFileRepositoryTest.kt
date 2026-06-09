@@ -3,8 +3,6 @@ package com.w2sv.database.repository
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.w2sv.common.uri.DocumentUri
-import com.w2sv.common.uri.MediaUri
 import com.w2sv.database.AppDatabase
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.model.filetype.PresetFileType
@@ -12,6 +10,8 @@ import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.ExternalDestination
 import com.w2sv.domain.model.movedestination.LocalDestination
 import com.w2sv.domain.repository.MovedFileRepository
+import com.w2sv.storage.uri.DocumentUri
+import com.w2sv.storage.uri.MediaUri
 import java.io.IOException
 import java.time.LocalDateTime
 import junit.framework.TestCase.assertEquals

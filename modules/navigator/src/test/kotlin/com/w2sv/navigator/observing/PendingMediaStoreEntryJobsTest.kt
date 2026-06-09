@@ -1,6 +1,6 @@
 package com.w2sv.navigator.observing
 
-import com.w2sv.common.uri.MediaId
+import com.w2sv.storage.uri.MediaId
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.CompletableDeferred

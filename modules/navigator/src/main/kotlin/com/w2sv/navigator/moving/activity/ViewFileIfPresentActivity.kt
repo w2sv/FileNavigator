@@ -5,12 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import com.w2sv.androidutils.content.componentName
 import com.w2sv.androidutils.widget.showToast
-import com.w2sv.common.logging.LoggingComponentActivity
-import com.w2sv.common.uri.MediaUri
+import com.w2sv.core.logging.LoggingComponentActivity
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.modules.resources.R
 import com.w2sv.navigator.domain.moving.MoveFileNotificationData
 import com.w2sv.navigator.domain.notifications.NotificationEventHandler
+import com.w2sv.storage.uri.MediaUri
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import javax.inject.Inject

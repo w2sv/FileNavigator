@@ -1,11 +1,11 @@
 package util
 
-import com.w2sv.common.uri.MediaUri
 import com.w2sv.domain.model.filetype.FileAndSourceType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.navigator.domain.moving.MediaStoreEntry
 import com.w2sv.navigator.domain.moving.NavigatableFile
+import com.w2sv.storage.uri.MediaUri
 
 internal object TestInstance {
 

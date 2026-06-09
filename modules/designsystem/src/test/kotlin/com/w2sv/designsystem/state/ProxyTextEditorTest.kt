@@ -1,6 +1,6 @@
 package com.w2sv.designsystem.state
 
-import com.w2sv.common.util.containsSpecialCharacter
+import com.w2sv.core.util.containsSpecialCharacter
 import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Test

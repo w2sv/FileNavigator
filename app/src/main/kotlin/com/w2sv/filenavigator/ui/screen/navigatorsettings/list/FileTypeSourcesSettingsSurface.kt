@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
-import com.w2sv.common.uri.DocumentUri
 import com.w2sv.composed.material3.ColumnWithDividers
 import com.w2sv.designsystem.component.TweakedSegmentedButton
 import com.w2sv.designsystem.modelext.color
@@ -44,6 +43,7 @@ import com.w2sv.domain.model.navigatorconfig.SourceConfig
 import com.w2sv.filenavigator.ui.shared.debugging.PreviewOf
 import com.w2sv.kotlinutils.copy
 import com.w2sv.modules.resources.R
+import com.w2sv.storage.uri.DocumentUri
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
 

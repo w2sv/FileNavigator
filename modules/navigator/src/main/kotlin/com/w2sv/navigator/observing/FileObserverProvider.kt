@@ -2,7 +2,7 @@ package com.w2sv.navigator.observing
 
 import android.os.Handler
 import android.os.HandlerThread
-import com.w2sv.common.logging.log
+import com.w2sv.core.logging.log
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigFlow
 import com.w2sv.kotlinutils.keysWhereToSet

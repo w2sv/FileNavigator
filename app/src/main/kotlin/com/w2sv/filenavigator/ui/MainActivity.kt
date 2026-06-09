@@ -17,9 +17,9 @@ import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.common.logging.LoggingComponentActivity
-import com.w2sv.common.logging.log
 import com.w2sv.composed.core.CollectFromFlow
+import com.w2sv.core.logging.LoggingComponentActivity
+import com.w2sv.core.logging.log
 import com.w2sv.designsystem.modelext.useDarkTheme
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.usecase.MoveDestinationLabelProvider

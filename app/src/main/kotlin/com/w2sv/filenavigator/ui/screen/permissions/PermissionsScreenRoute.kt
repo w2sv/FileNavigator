@@ -6,9 +6,9 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionState
 import com.w2sv.androidutils.content.openAppSettings
-import com.w2sv.common.util.goToManageExternalStorageSettings
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.permissions.extensions.launchPermissionRequest
+import com.w2sv.core.util.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.ui.shared.permissions.AppPermissionsState
 import com.w2sv.filenavigator.ui.shared.permissions.RequiredPermission
 import kotlinx.collections.immutable.ImmutableList

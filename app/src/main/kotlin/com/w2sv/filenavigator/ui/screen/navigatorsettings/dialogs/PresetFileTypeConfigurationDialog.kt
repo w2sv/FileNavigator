@@ -30,10 +30,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.w2sv.common.util.colonSuffixed
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.core.colorSaver
 import com.w2sv.composed.core.rememberStyledTextResource
+import com.w2sv.core.util.colonSuffixed
 import com.w2sv.designsystem.modelext.color
 import com.w2sv.designsystem.snackbar.AppSnackbarContent
 import com.w2sv.designsystem.snackbar.SnackbarKind

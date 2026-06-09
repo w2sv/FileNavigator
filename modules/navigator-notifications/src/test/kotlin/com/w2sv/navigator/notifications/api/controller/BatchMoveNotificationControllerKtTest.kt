@@ -1,10 +1,10 @@
 package com.w2sv.navigator.notifications.api.controller
 
-import com.w2sv.common.uri.DocumentUri
 import com.w2sv.navigator.domain.moving.MoveDestination
 import com.w2sv.navigator.notifications.controller.BatchMoveNotificationArgs
 import com.w2sv.navigator.notifications.controller.NavigateFileNotificationController
 import com.w2sv.navigator.notifications.controller.frequencyOrderedQuickMoveDestinations
+import com.w2sv.storage.uri.DocumentUri
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
