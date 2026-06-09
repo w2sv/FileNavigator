@@ -3,7 +3,7 @@ package com.w2sv.domain.model.filetype
 import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import kotlin.collections.listOf
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize

@@ -12,7 +12,7 @@ import com.w2sv.androidutils.content.packagePlayStoreUrl
 import com.w2sv.androidutils.content.startActivity
 import com.w2sv.androidutils.widget.showToast
 import com.w2sv.common.AppUrl
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 
 @Immutable
 data class SettingsActionGroup(@StringRes val titleRes: Int, val actions: List<SettingsAction>)

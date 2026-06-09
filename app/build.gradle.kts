@@ -95,6 +95,7 @@ dependencies {
     implementation(projects.modules.usecase)
     implementation(projects.modules.navigator)
     implementation(projects.modules.navigatorQuicktile)
+    implementation(projects.modules.resources)
     "screenshotImplementation"(projects.modules.navigatorDomain)
 
     implementation(libs.w2sv.androidutils.core)

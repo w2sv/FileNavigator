@@ -27,7 +27,7 @@ import com.w2sv.designsystem.component.DialogButton
 import com.w2sv.designsystem.component.HighlightedDialogButton
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.kotlinutils.threadUnsafeLazy
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import com.w2sv.navigator.domain.moving.MoveFileNotificationData
 import com.w2sv.navigator.domain.notifications.NotificationEventHandler
 import dagger.hilt.android.AndroidEntryPoint

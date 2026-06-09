@@ -25,7 +25,7 @@ import com.w2sv.designsystem.state.StatefulTextEditor
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow

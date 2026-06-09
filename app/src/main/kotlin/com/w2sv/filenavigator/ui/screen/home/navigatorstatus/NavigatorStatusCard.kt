@@ -42,7 +42,7 @@ import com.w2sv.designsystem.component.AppCard
 import com.w2sv.designsystem.component.AppCardHeaderIcon
 import com.w2sv.designsystem.theme.DEFAULT_ANIMATION_DURATION
 import com.w2sv.filenavigator.ui.shared.debugging.PreviewOf
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import com.w2sv.navigator.FileNavigator
 
 @Preview

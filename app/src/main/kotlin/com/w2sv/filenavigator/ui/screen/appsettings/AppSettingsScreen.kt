@@ -34,7 +34,7 @@ import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.ui.screen.appsettings.model.settingsActionGroups
 import com.w2sv.filenavigator.ui.shared.debugging.PreviewOf
 import com.w2sv.filenavigator.ui.shared.debugging.ScreenPreviews
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import java.time.LocalDate
 
 object AppSettingsScreenDimens {

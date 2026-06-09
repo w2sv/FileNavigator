@@ -6,7 +6,7 @@ import androidx.annotation.StringRes
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.w2sv.androidutils.res.getHtmlFormattedText
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import com.w2sv.navigator.domain.notifications.NotificationEvent
 
 sealed class MoveResult(val cancelNotification: Boolean = false, val makeFeedback: Context.(MoveOperation?) -> MoveOperationFeedback) {

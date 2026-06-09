@@ -15,7 +15,7 @@ import com.w2sv.designsystem.snackbar.AppSnackbarVisuals
 import com.w2sv.designsystem.snackbar.ScopedSnackbarController
 import com.w2sv.designsystem.snackbar.SnackbarKind
 import com.w2sv.designsystem.snackbar.rememberScopedSnackbarController
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import com.w2sv.navigator.quicktile.FileNavigatorTileService
 import slimber.log.d
 import slimber.log.e

@@ -7,6 +7,7 @@ dependencies {
     implementation(projects.modules.navigatorDomain)
     implementation(projects.modules.domain)
     implementation(projects.modules.common)
+    implementation(projects.modules.resources)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.documentfile)

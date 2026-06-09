@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 
 // TODO: composed
 @Stable

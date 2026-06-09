@@ -29,7 +29,7 @@ import com.w2sv.designsystem.component.AppCardHeaderIcon
 import com.w2sv.designsystem.component.DialogButton
 import com.w2sv.designsystem.component.MoreIconButtonWithDropdownMenu
 import com.w2sv.filenavigator.ui.shared.debugging.PreviewOf
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable

@@ -6,6 +6,7 @@ plugins {
 dependencies {
     implementation(projects.modules.domain)
     implementation(projects.modules.common)
+    implementation(projects.modules.resources)
     implementation(libs.androidx.core.ktx)
     implementation(libs.w2sv.androidutils.core)
     implementation(libs.w2sv.simplestorage)

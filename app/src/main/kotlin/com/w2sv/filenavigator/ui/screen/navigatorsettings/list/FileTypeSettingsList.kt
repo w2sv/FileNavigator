@@ -11,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.NavigatorConfigActions
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import kotlinx.collections.immutable.toImmutableMap
 
 fun LazyListScope.fileTypeSettingsList(

@@ -1,6 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.home.movehistory
 
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import java.time.LocalDate
 import junit.framework.TestCase.assertEquals
 import org.junit.Test

@@ -56,7 +56,7 @@ import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.filenavigator.ui.shared.LocalMoveDestinationLabelProvider
 import com.w2sv.filenavigator.ui.shared.util.WithLocalContentColor
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import eu.wewox.textflow.material3.TextFlow
 import java.time.LocalDateTime
 import kotlinx.coroutines.CoroutineScope

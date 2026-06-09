@@ -14,7 +14,7 @@ import com.w2sv.designsystem.component.SwitchItemLayout
 import com.w2sv.designsystem.modelext.useDarkTheme
 import com.w2sv.domain.model.settings.Theme
 import com.w2sv.domain.model.settings.ThemeSettings
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 
 @Composable
 fun AppearanceSettingsCard(

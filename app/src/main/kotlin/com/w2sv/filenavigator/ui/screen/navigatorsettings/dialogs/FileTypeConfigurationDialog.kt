@@ -53,7 +53,7 @@ import com.w2sv.designsystem.component.DialogButton
 import com.w2sv.designsystem.component.HighlightedDialogButton
 import com.w2sv.designsystem.theme.dialogSectionLabel
 import com.w2sv.domain.model.filetype.FileType
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 import kotlinx.parcelize.Parcelize
 
 @Composable

@@ -6,7 +6,7 @@ import androidx.compose.ui.res.stringResource
 import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.designsystem.component.AppCard
 import com.w2sv.designsystem.component.SwitchItemLayout
-import com.w2sv.modules.common.R
+import com.w2sv.modules.resources.R
 
 @Composable
 fun GeneralSettingsCard(showStorageVolumeNames: Boolean, onShowStorageVolumeNamesChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
