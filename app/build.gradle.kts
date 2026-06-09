@@ -78,14 +78,6 @@ androidComponents {
     }
 }
 
-// https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-compiler.html#compose-compiler-options-dsl
-composeCompiler {
-    includeSourceInformation = true
-    stabilityConfigurationFiles.add(project.layout.projectDirectory.file("compose_compiler_config.conf"))
-    metricsDestination.set(project.layout.buildDirectory.dir("compose_compiler"))
-    reportsDestination.set(project.layout.buildDirectory.dir("compose_compiler"))
-}
-
 // https://github.com/Triple-T/gradle-play-publisher
 play {
     serviceAccountCredentials.set(file("service-account-key.json"))
@@ -122,7 +114,6 @@ dependencies {
     // .Compose
     implementation(libs.androidx.compose.viewmodel)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.androidx.constraintlayout.compose)
 
     // Kotlinx
     implementation(libs.kotlinx.collections.immutable)

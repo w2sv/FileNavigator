@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.w2sv.filenavigator.ui.designsystem.AppCard
-import com.w2sv.filenavigator.ui.designsystem.ItemLayout
+import com.w2sv.designsystem.component.AppCard
+import com.w2sv.designsystem.component.ItemLayout
 import com.w2sv.filenavigator.ui.screen.appsettings.model.SettingsActionGroup
 
 @Composable

@@ -24,11 +24,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.w2sv.designsystem.DialogButton
-import com.w2sv.filenavigator.ui.designsystem.AppCard
-import com.w2sv.filenavigator.ui.designsystem.AppCardHeaderIcon
-import com.w2sv.filenavigator.ui.designsystem.MoreIconButtonWithDropdownMenu
-import com.w2sv.filenavigator.ui.util.PreviewOf
+import com.w2sv.designsystem.component.AppCard
+import com.w2sv.designsystem.component.AppCardHeaderIcon
+import com.w2sv.designsystem.component.DialogButton
+import com.w2sv.designsystem.component.MoreIconButtonWithDropdownMenu
+import com.w2sv.filenavigator.ui.shared.debugging.PreviewOf
 import com.w2sv.modules.common.R
 import kotlinx.collections.immutable.persistentListOf
 

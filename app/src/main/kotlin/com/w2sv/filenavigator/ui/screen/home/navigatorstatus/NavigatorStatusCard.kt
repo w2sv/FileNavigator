@@ -37,11 +37,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.w2sv.designsystem.Easing
+import com.w2sv.designsystem.animation.Easing
+import com.w2sv.designsystem.component.AppCard
+import com.w2sv.designsystem.component.AppCardHeaderIcon
 import com.w2sv.designsystem.theme.DEFAULT_ANIMATION_DURATION
-import com.w2sv.filenavigator.ui.designsystem.AppCard
-import com.w2sv.filenavigator.ui.designsystem.AppCardHeaderIcon
-import com.w2sv.filenavigator.ui.util.PreviewOf
+import com.w2sv.filenavigator.ui.shared.debugging.PreviewOf
 import com.w2sv.modules.common.R
 import com.w2sv.navigator.FileNavigator
 

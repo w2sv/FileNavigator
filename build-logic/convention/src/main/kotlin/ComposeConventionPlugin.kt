@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class ComposeConventionPlugin : Plugin<Project> {
@@ -16,6 +17,16 @@ class ComposeConventionPlugin : Plugin<Project> {
 
             extensions.configure<CommonExtension> {
                 buildFeatures.compose = true
+            }
+
+            // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-compiler.html#compose-compiler-options-dsl
+            extensions.configure<ComposeCompilerGradlePluginExtension> {
+                stabilityConfigurationFiles.add(
+                    rootProject.layout.projectDirectory.file("config/compose_compiler_config.conf")
+                )
+                includeSourceInformation.set(true)
+                metricsDestination.set(project.layout.buildDirectory.dir("compose_compiler"))
+                reportsDestination.set(project.layout.buildDirectory.dir("compose_compiler"))
             }
 
             tasks.withType<KotlinCompile> {

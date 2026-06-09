@@ -12,13 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.w2sv.composed.core.isPortraitModeActive
-import com.w2sv.filenavigator.ui.designsystem.PaddingDefaults
+import com.w2sv.designsystem.layout.PaddingDefaults
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryCard
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryState
 import com.w2sv.filenavigator.ui.screen.home.navigatorstatus.NavigatorStatusCard
-import com.w2sv.filenavigator.ui.util.ModifierReceivingComposable
-import com.w2sv.filenavigator.ui.util.PreviewOf
-import com.w2sv.filenavigator.ui.util.rememberMovableContentOf
+import com.w2sv.filenavigator.ui.shared.debugging.PreviewOf
+import com.w2sv.filenavigator.ui.shared.util.ModifierReceivingComposable
+import com.w2sv.filenavigator.ui.shared.util.rememberMovableContentOf
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable

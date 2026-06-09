@@ -4,5 +4,10 @@ plugins {
 }
 
 dependencies {
+    implementation(projects.modules.common)
+    implementation(projects.modules.domain)
     implementation(libs.w2sv.androidutils.core)
+    implementation(libs.androidx.constraintlayout.compose)
+
+    testImplementation(libs.bundles.unitTest)
 }

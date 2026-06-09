@@ -43,13 +43,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.composed.core.extensions.thenIf
+import com.w2sv.designsystem.component.DeletionTooltip
+import com.w2sv.designsystem.component.FileTypeIcon
+import com.w2sv.designsystem.snackbar.AppSnackbarContent
+import com.w2sv.designsystem.snackbar.SnackbarKind
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
-import com.w2sv.filenavigator.ui.designsystem.DeletionTooltip
-import com.w2sv.filenavigator.ui.designsystem.FileTypeIcon
-import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
 import com.w2sv.modules.common.R
 import kotlinx.collections.immutable.toImmutableMap
 

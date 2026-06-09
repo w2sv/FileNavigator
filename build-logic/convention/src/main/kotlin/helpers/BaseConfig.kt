@@ -2,6 +2,7 @@ package helpers
 
 import com.android.build.api.dsl.ApplicationDefaultConfig
 import com.android.build.api.dsl.CommonExtension
+import java.io.File
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
@@ -24,7 +25,8 @@ internal fun Project.applyBaseConfig(excludeMetaInfResources: Boolean = true, na
     extensions.configureCommon(
         namespace = namespace.get(path),
         catalog = catalog,
-        excludeMetaInfResources = excludeMetaInfResources
+        excludeMetaInfResources = excludeMetaInfResources,
+        lintConfig = rootProject.file("config/lint/lint.xml")
     )
     enableTestParallelization()
     setRobolectricSdk(this)
@@ -50,7 +52,8 @@ private fun ExtensionContainer.configureKotlinAndroidProject() {
 private fun ExtensionContainer.configureCommon(
     namespace: String,
     catalog: VersionCatalog,
-    excludeMetaInfResources: Boolean
+    excludeMetaInfResources: Boolean,
+    lintConfig: File
 ) {
     configure<CommonExtension> {
         this.namespace = namespace
@@ -64,6 +67,7 @@ private fun ExtensionContainer.configureCommon(
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
         }
+        lint.lintConfig = lintConfig
         testOptions.apply {
             unitTests {
                 isReturnDefaultValues = true

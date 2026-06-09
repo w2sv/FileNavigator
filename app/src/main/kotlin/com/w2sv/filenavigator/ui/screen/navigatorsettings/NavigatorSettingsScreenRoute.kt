@@ -16,8 +16,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.core.isLandscapeModeActive
+import com.w2sv.designsystem.snackbar.LocalSnackbarHostState
+import com.w2sv.designsystem.snackbar.dismissCurrentSnackbar
 import com.w2sv.domain.model.filetype.FileType
-import com.w2sv.filenavigator.ui.LocalSnackbarHostState
 import com.w2sv.filenavigator.ui.navigation.RootScaffoldState
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.FileTypeSelectionBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.rememberFileTypeSelectionState
@@ -27,7 +28,6 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.CustomFileType
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.FileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.PresetFileTypeConfigurationDialog
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.rememberNavigatorConfigActions
-import com.w2sv.filenavigator.ui.util.snackbar.dismissCurrentSnackbar
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.update
 

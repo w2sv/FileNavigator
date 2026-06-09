@@ -34,13 +34,13 @@ import com.w2sv.common.util.colonSuffixed
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.core.colorSaver
 import com.w2sv.composed.core.rememberStyledTextResource
+import com.w2sv.designsystem.modelext.color
+import com.w2sv.designsystem.snackbar.AppSnackbarContent
+import com.w2sv.designsystem.snackbar.SnackbarKind
 import com.w2sv.designsystem.theme.dialogSectionLabel
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
-import com.w2sv.filenavigator.ui.designsystem.AppSnackbarContent
-import com.w2sv.filenavigator.ui.designsystem.SnackbarKind
-import com.w2sv.filenavigator.ui.modelext.color
-import com.w2sv.filenavigator.ui.util.snapshotStateListSaver
+import com.w2sv.filenavigator.ui.shared.util.snapshotStateListSaver
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.modules.common.R
 import kotlinx.collections.immutable.ImmutableSet

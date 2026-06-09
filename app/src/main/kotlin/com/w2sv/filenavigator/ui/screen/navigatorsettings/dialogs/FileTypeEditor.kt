@@ -19,10 +19,10 @@ import androidx.compose.ui.platform.LocalContext
 import com.w2sv.common.util.containsSpecialCharacter
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.core.rememberStyledTextResource
+import com.w2sv.designsystem.state.InputInvalidityReason
+import com.w2sv.designsystem.state.ProxyTextEditor
+import com.w2sv.designsystem.state.StatefulTextEditor
 import com.w2sv.domain.model.filetype.FileType
-import com.w2sv.filenavigator.ui.util.InputInvalidityReason
-import com.w2sv.filenavigator.ui.util.ProxyTextEditor
-import com.w2sv.filenavigator.ui.util.StatefulTextEditor
 import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.modules.common.R
