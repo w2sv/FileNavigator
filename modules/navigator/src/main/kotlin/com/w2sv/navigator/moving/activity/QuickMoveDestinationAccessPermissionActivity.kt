@@ -28,7 +28,7 @@ import com.w2sv.composed.core.rememberStyledTextResource
 import com.w2sv.designsystem.HighlightedDialogButton
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.domain.repository.PreferencesRepository
+import com.w2sv.domain.repository.RequestFlagRepository
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.modules.common.R
 import com.w2sv.navigator.domain.moving.MoveDestination
@@ -58,7 +58,7 @@ import slimber.log.i
 internal class QuickMoveDestinationAccessPermissionActivity : LoggingComponentActivity() {
 
     @Inject
-    lateinit var preferencesRepository: PreferencesRepository
+    lateinit var requestFlagRepository: RequestFlagRepository
 
     @Inject
     lateinit var navigatorConfigDataSource: NavigatorConfigDataSource
@@ -99,7 +99,7 @@ internal class QuickMoveDestinationAccessPermissionActivity : LoggingComponentAc
                             GrantRationalDialog(
                                 onDismissRequest = {
                                     lifecycleScope.launch {
-                                        preferencesRepository
+                                        requestFlagRepository
                                             .showQuickMovePermissionQueryExplanation
                                             .save(true)
                                     }
@@ -120,7 +120,7 @@ internal class QuickMoveDestinationAccessPermissionActivity : LoggingComponentAc
 
     private suspend fun determineAction(): Action =
         when {
-            preferencesRepository.showQuickMovePermissionQueryExplanation.flow.first() -> ShowRationale
+            requestFlagRepository.showQuickMovePermissionQueryExplanation.flow.first() -> ShowRationale
             moveOperation.destination.hasReadAndWritePermission(this) -> StartMove
             else -> LaunchPicker
         }

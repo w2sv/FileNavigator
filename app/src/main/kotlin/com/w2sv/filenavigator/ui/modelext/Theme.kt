@@ -3,7 +3,7 @@ package com.w2sv.filenavigator.ui.modelext
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import com.w2sv.domain.model.Theme
+import com.w2sv.domain.model.settings.Theme
 
 @Composable
 @ReadOnlyComposable

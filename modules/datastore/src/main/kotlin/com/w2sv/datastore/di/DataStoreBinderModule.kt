@@ -1,9 +1,11 @@
 package com.w2sv.datastore.di
 
-import com.w2sv.datastore.preferences.PreferencesRepositoryImpl
+import com.w2sv.datastore.preferences.AppSettingsRepositoryImpl
+import com.w2sv.datastore.preferences.RequestFlagRepositoryImpl
 import com.w2sv.datastore.proto.navigatorconfig.NavigatorConfigDataSourceImpl
+import com.w2sv.domain.repository.AppSettingsRepository
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.domain.repository.PreferencesRepository
+import com.w2sv.domain.repository.RequestFlagRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,5 +19,8 @@ internal interface DataStoreBinderModule {
     fun bindsNavigatorConfigDataSource(impl: NavigatorConfigDataSourceImpl): NavigatorConfigDataSource
 
     @Binds
-    fun bindsPreferencesRepository(impl: PreferencesRepositoryImpl): PreferencesRepository
+    fun bindsAppSettingsRepository(impl: AppSettingsRepositoryImpl): AppSettingsRepository
+
+    @Binds
+    fun bindsRequestFlagRepository(impl: RequestFlagRepositoryImpl): RequestFlagRepository
 }

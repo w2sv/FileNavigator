@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import com.w2sv.designsystem.theme.AppTheme
-import com.w2sv.filenavigator.ui.LocalMoveDestinationLabelProvider
 import com.w2sv.filenavigator.ui.navigation.RootScaffold
 import com.w2sv.filenavigator.ui.navigation.Screen
 import com.w2sv.filenavigator.ui.navigation.rememberNavigator
@@ -16,6 +15,7 @@ import com.w2sv.filenavigator.ui.screen.home.HomeScreen
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryState
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.NavigatorSettingsScreen
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.list.navigatorconfigactions.PreviewNavigatorConfigActions
+import com.w2sv.filenavigator.ui.shared.LocalMoveDestinationLabelProvider
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -63,7 +63,10 @@ internal fun StoreScreenshotContent(screenshot: StoreScreenshot, fixture: StoreS
                     showFileTypeConfigurationDialog = {}
                 )
 
-                StoreScreenshot.APP_SETTINGS -> AppSettingsScreen(appPreferences = fixture.appPreferences)
+                StoreScreenshot.APP_SETTINGS -> AppSettingsScreen(
+                    appSettings = fixture.appSettings,
+                    updateAppSettings = {}
+                )
             }
         }
     }

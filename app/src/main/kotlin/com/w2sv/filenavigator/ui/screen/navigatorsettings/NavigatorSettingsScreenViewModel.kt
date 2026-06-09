@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.domain.repository.NavigatorConfigDataSource
-import com.w2sv.domain.repository.PreferencesRepository
+import com.w2sv.domain.repository.RequestFlagRepository
 import com.w2sv.filenavigator.ui.util.LoggingViewModel
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.navigator.FileNavigator
@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class NavigatorSettingsScreenViewModel @Inject constructor(
     navigatorConfigDataSource: NavigatorConfigDataSource,
-    private val preferencesRepository: PreferencesRepository,
+    private val requestFlagRepository: RequestFlagRepository,
     @FileNavigatorIsRunning val navigatorIsRunning: StateFlow<Boolean>,
     @ApplicationContext context: Context
 ) : LoggingViewModel() {
@@ -44,7 +44,7 @@ class NavigatorSettingsScreenViewModel @Inject constructor(
 
     val configChangesHaveBeenApplied = navigatorConfigDataSource.config.distinctUntilChanged().drop(1).map {}
 
-    val showAutoMoveIntroduction = preferencesRepository.showAutoMoveIntroduction.stateIn(
+    val showAutoMoveIntroduction = requestFlagRepository.showAutoMoveIntroduction.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed()
     )
@@ -66,7 +66,7 @@ class NavigatorSettingsScreenViewModel @Inject constructor(
 
     fun dismissAutoMoveIntroduction() {
         viewModelScope.launch {
-            preferencesRepository.showAutoMoveIntroduction.save(false)
+            requestFlagRepository.showAutoMoveIntroduction.save(false)
         }
     }
 }
