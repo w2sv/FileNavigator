@@ -59,7 +59,7 @@ jobs:
             # Build Changelog
             -   name: Build Changelog
                 id: build_changelog
-                uses: ardalanamini/auto-changelog@v4
+                uses: ardalanamini/auto-changelog@v5.0.0
                 with:
                     mention-authors: false
                     mention-new-contributors: true
