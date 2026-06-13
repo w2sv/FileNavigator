@@ -3,7 +3,7 @@ package com.w2sv.core.util
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
-class StringKtTest {
+class StringExtKtTest {
 
     @Test
     fun containsSpecialCharacter() {

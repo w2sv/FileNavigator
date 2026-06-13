@@ -155,8 +155,8 @@
     <string name="create">创建</string>
     <string name="delete_the_file_type">删除文件类型</string>
     <string name="add_a_file_extension">添加文件扩展名</string>
-    <string name="color">配色</string>
-    <string name="file_extensions">文件扩展名</string>
+    <string name="color">颜色：</string>
+    <string name="file_extensions">文件扩展名：</string>
     <string name="leave_at_least_one_file_extension_enabled">请至少开启一个扩展名</string>
     <string name="you_cant_disable_this_unique_file_extension">您无法禁用这一独特的文件扩展名</string>
     <string name="create_file_type_card_label">创建文件类型</string>

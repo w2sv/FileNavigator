@@ -11,9 +11,7 @@ import androidx.core.text.buildSpannedString
 import com.w2sv.core.di.ApplicationDefaultScope
 import com.w2sv.core.logging.log
 import com.w2sv.core.util.formattedFileSize
-import com.w2sv.core.util.lineBreakSuffixed
-import com.w2sv.core.util.removeSlashSuffix
-import com.w2sv.core.util.slashPrefixed
+import com.w2sv.core.util.lineBreak
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.modules.resources.R
 import com.w2sv.navigator.domain.NavigatorIntents
@@ -31,13 +29,13 @@ import com.w2sv.navigator.notifications.api.setBigTextStyle
 import com.w2sv.navigator.notifications.helper.GetQuickMoveDestinations
 import com.w2sv.navigator.notifications.helper.iconBitmap
 import com.w2sv.storage.util.loadBitmapWithFileNotFoundHandling
-import java.io.IOException
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import slimber.log.i
+import java.io.IOException
+import javax.inject.Inject
 
 internal class NavigateFileNotificationController @Inject constructor(
     environment: NotificationEnvironment,
@@ -236,15 +234,18 @@ private fun NavigatableFile.largeNotificationIcon(context: Context): Bitmap? =
 
 private fun NavigatableFile.notificationContentText(context: Context): SpannedString =
     buildSpannedString {
-        append(mediaStoreEntry.fileName.lineBreakSuffixed())
-        bold { append(context.getString(R.string.location).lineBreakSuffixed()) }
-        append(
-            mediaStoreEntry.relativePath
-                .removeSlashSuffix()
-                .slashPrefixed()
-                .lineBreakSuffixed()
-        )
-        bold { append(context.getString(R.string.size).lineBreakSuffixed()) }
+        append(mediaStoreEntry.fileName)
+        lineBreak()
+
+        bold { append(context.getString(R.string.location)) }
+        lineBreak()
+
+        append("/${mediaStoreEntry.relativePath.removeSuffix("/")}")
+        lineBreak()
+
+        bold { append(context.getString(R.string.size)) }
+        lineBreak()
+
         append(formattedFileSize(mediaStoreEntry.size))
     }
 
