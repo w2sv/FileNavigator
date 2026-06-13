@@ -29,13 +29,13 @@ import com.w2sv.navigator.notifications.api.setBigTextStyle
 import com.w2sv.navigator.notifications.helper.GetQuickMoveDestinations
 import com.w2sv.navigator.notifications.helper.iconBitmap
 import com.w2sv.storage.util.loadBitmapWithFileNotFoundHandling
+import java.io.IOException
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import slimber.log.i
-import java.io.IOException
-import javax.inject.Inject
 
 internal class NavigateFileNotificationController @Inject constructor(
     environment: NotificationEnvironment,
