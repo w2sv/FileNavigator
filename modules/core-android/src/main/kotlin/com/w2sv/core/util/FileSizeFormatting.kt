@@ -3,18 +3,6 @@ package com.w2sv.core.util
 import java.text.NumberFormat
 import java.util.Locale
 
-fun String.removeSlashSuffix(): String =
-    removeSuffix("/")
-
-fun String.slashPrefixed(): String =
-    "/$this"
-
-fun String.lineBreakSuffixed(): String =
-    "$this\n"
-
-fun String.colonSuffixed(): String =
-    "$this:"
-
 /**
  * Formats a byte count (as returned by [java.io.File.length]) into a human-readable file size.
  *

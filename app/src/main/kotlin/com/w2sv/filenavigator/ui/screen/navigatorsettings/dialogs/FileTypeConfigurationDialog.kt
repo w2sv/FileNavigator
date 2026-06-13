@@ -47,7 +47,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.w2sv.core.util.colonSuffixed
 import com.w2sv.designsystem.component.CharSequenceText
 import com.w2sv.designsystem.component.DialogButton
 import com.w2sv.designsystem.component.HighlightedDialogButton
@@ -166,7 +165,7 @@ private fun ColorRow(color: Color, onConfigureColorButtonPress: () -> Unit, modi
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = stringResource(R.string.color).colonSuffixed(),
+            text = stringResource(R.string.color),
             style = MaterialTheme.typography.dialogSectionLabel
         )
         Box(contentAlignment = Alignment.Center) {

@@ -164,8 +164,8 @@
     <string name="create">Create</string>
     <string name="delete_the_file_type">Delete the file type.</string>
     <string name="add_a_file_extension">Add a File Extension</string>
-    <string name="color">Color</string>
-    <string name="file_extensions">File Extensions</string>
+    <string name="color">Color:</string>
+    <string name="file_extensions">File Extensions:</string>
     <string name="leave_at_least_one_file_extension_enabled">Leave at least one file extension enabled.</string>
     <string name="you_cant_disable_this_unique_file_extension">You can\'t disable this unique extension.</string>
     <string name="create_file_type_card_label">Create a file type</string>

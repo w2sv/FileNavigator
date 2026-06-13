@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.composed.core.OnChange
 import com.w2sv.composed.core.colorSaver
 import com.w2sv.composed.core.rememberStyledTextResource
-import com.w2sv.core.util.colonSuffixed
 import com.w2sv.designsystem.modelext.color
 import com.w2sv.designsystem.snackbar.AppSnackbarContent
 import com.w2sv.designsystem.snackbar.SnackbarKind
@@ -135,7 +134,7 @@ fun PresetFileTypeConfigurationDialog(
             Column {
                 // To prevent spacing in between text and chip flow row introduced by FileTypeConfigurationDialog
                 Text(
-                    text = stringResource(R.string.file_extensions).colonSuffixed(),
+                    text = stringResource(R.string.file_extensions),
                     style = MaterialTheme.typography.dialogSectionLabel,
                     modifier = Modifier.padding(bottom = 6.dp)
                 )
