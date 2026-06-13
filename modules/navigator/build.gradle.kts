@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.modules.coreAndroid)
+    implementation(projects.modules.shared)
     implementation(projects.modules.designsystem)
     implementation(projects.modules.domain)
     implementation(projects.modules.navigatorDomain)

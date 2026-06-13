@@ -87,7 +87,7 @@ play {
 
 dependencies {
     baselineProfile(projects.benchmarking)
-    implementation(projects.modules.coreAndroid)
+    implementation(projects.modules.shared)
     implementation(projects.modules.designsystem)
     implementation(projects.modules.database)
     implementation(projects.modules.datastore)

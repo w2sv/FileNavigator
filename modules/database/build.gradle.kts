@@ -13,7 +13,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.modules.coreAndroid)
+    implementation(projects.modules.shared)
     implementation(projects.modules.domain)
     implementation(projects.modules.storage)
     implementation(libs.androidx.core.ktx)

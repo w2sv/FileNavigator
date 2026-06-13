@@ -113,24 +113,24 @@ with files exposed through shared storage and Android's media and document APIs.
 
 ![File Navigator module dependency graph](docs/module-graph.svg)
 
-| Module | Responsibility |
-| --- | --- |
-| `:app` | Compose UI, app navigation, and top-level dependency wiring |
-| `:modules:domain` | Core models, repository contracts, and use-case contracts |
-| `:modules:usecase` | Domain use-case implementations |
-| `:modules:navigator` | File observation, moving, and foreground service behavior |
-| `:modules:navigator-domain` | Navigator-specific models and contracts |
+| Module                             | Responsibility |
+|------------------------------------| --- |
+| `:app`                             | Compose UI, app navigation, and top-level dependency wiring |
+| `:benchmarking`                    | Baseline Profile generation and macrobenchmarks |
+| `:modules:database`                | Room database and move-history persistence |
+| `:modules:datastore`               | Persisted navigator and app configuration |
+| `:modules:datastore-proto`         | Generated Protocol Buffer configuration models |
+| `:modules:designsystem`            | Shared Compose theme and UI components |
+| `:modules:domain`                  | Core models, repository contracts, and use-case contracts |
+| `:modules:navigator`               | File observation, moving, and foreground service behavior |
+| `:modules:navigator-domain`        | Navigator-specific models and contracts |
 | `:modules:navigator-notifications` | Navigation and move notifications |
-| `:modules:navigator-quicktile` | Quick Settings tile integration |
-| `:modules:database` | Room database and move-history persistence |
-| `:modules:datastore` | Persisted navigator and app configuration |
-| `:modules:datastore-proto` | Generated Protocol Buffer configuration models |
-| `:modules:designsystem` | Shared Compose theme and UI components |
-| `:modules:core-android` | Shared Android infrastructure and utility extensions |
-| `:modules:resources` | Shared strings, icons, colors, and images |
-| `:modules:storage` | Document and media URI types and storage helpers |
-| `:modules:test` | Shared test dependencies and utilities |
-| `:benchmarking` | Baseline Profile generation and macrobenchmarks |
+| `:modules:navigator-quicktile`     | Quick Settings tile integration |
+| `:modules:resources`               | Shared strings, icons, colors, and images |
+| `:modules:shared`                  | Shared Android infrastructure and utility extensions |
+| `:modules:storage`                 | Document and media URI types and storage helpers |
+| `:modules:test`                    | Shared test dependencies and utilities |
+| `:modules:usecase`                 | Domain use-case implementations |
 
 ## Permissions
 
