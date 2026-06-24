@@ -13,7 +13,7 @@ jobs:
         steps:
             # Checkout the repository
             -   name: Checkout
-                uses: actions/checkout@v6
+                uses: actions/checkout@v7
 
             # Install JDK
             -   name: Set up JDK 17
