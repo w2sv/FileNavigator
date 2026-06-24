@@ -20,7 +20,7 @@ kotlinxSerializationCore = "1.11.0"
 ksp = "2.3.9"
 ktlint = "14.2.0"
 lifecycle = "2.10.0"
-lifecycleViewmodelNavigation3 = "2.10.0"
+lifecycleViewmodelNavigation3 = "2.11.0"
 # @keep
 minSdk = "30"
 moduleGraph = "2.9.1"
