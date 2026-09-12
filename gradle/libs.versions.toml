@@ -8,7 +8,7 @@ baselineprofile = "1.5.0-alpha06"
 compileSdk = "37"
 # @pin
 compose-lint-checks = "1.4.3"
-compose-material3 = "1.5.0-alpha21"
+compose-material3 = "1.5.0-alpha28"
 compose-tooling = "1.11.2"
 hilt = "2.59.2"
 hiltNavigationCompose = "1.3.0"
