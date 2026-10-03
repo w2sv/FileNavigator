@@ -15,8 +15,14 @@ internal class DownloadsObserver(private val fileTypes: Collection<FileType>, ha
         environment = environment
     ) {
 
-    override fun enabledFileAndSourceTypeOrNull(mediaStoreEntry: MediaStoreEntry): FileAndSourceType? =
-        fileTypes
+    override fun enabledFileAndSourceTypeOrNull(mediaStoreEntry: MediaStoreEntry): FileAndSourceType? {
+        val compound = mediaStoreEntry.compoundFileExtension
+        if (compound.isNotEmpty()) {
+            fileTypes.firstOrNull { it.fileExtensions.contains(compound) }
+                ?.let { return FileAndSourceType(it, SourceType.Download) }
+        }
+        return fileTypes
             .firstOrNull { it.fileExtensions.contains(mediaStoreEntry.fileExtension) }
             ?.let { fileType -> FileAndSourceType(fileType, SourceType.Download) }
+    }
 }

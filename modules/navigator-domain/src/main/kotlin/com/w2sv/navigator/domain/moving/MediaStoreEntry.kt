@@ -9,6 +9,7 @@ import com.w2sv.androidutils.database.getBooleanOrThrow
 import com.w2sv.androidutils.database.getLongOrThrow
 import com.w2sv.androidutils.database.getStringOrThrow
 import com.w2sv.androidutils.database.query
+import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.storage.uri.MediaUri
 import java.io.File
@@ -42,6 +43,20 @@ data class MediaStoreEntry(
      */
     val fileExtension: String
         get() = fileName.substringAfterLast(".", "")
+
+    /**
+     * The two-part compound extension if the filename ends with a known compound
+     * extension (e.g. "fb2.zip"), otherwise empty string.
+     */
+    val compoundFileExtension: String
+        get() {
+            val dotIndex = fileName.lastIndexOf('.')
+            if (dotIndex <= 0) return ""
+            val secondDotIndex = fileName.lastIndexOf('.', dotIndex - 1)
+            if (secondDotIndex < 0) return ""
+            val candidate = fileName.substring(secondDotIndex + 1)
+            return if (candidate in PresetFileType.compoundFileExtensions) candidate else ""
+        }
 
     val parentDirName: String
         get() = relativePath
