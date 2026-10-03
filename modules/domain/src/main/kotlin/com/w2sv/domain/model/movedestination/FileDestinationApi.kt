@@ -4,5 +4,7 @@ import android.content.Context
 
 interface FileDestinationApi : MoveDestinationApi {
     override fun fileName(context: Context): String =
-        documentFile(context).name!! // TODO
+        documentFile(context).name
+            ?: documentUri.fileName(context)
+            ?: documentUri.documentId.substringAfterLast('/')
 }

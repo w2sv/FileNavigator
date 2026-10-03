@@ -110,12 +110,21 @@ sealed interface MoveDestination :
 
         companion object {
             operator fun invoke(documentUri: DocumentUri, context: Context): File =
-                // TODO: test
-                when (documentUri.uri.authority!!) {
-                    "com.android.externalstorage.documents" -> Local(
-                        documentUri = documentUri,
-                        mediaUri = documentUri.mediaUri(context)!!
-                    )
+                when (documentUri.uri.authority) {
+                    "com.android.externalstorage.documents" -> {
+                        val mediaUri = documentUri.mediaUri(context)
+                        if (mediaUri != null) {
+                            Local(
+                                documentUri = documentUri,
+                                mediaUri = mediaUri
+                            )
+                        } else {
+                            External(
+                                documentUri = documentUri,
+                                context = context
+                            )
+                        }
+                    }
 
                     else -> External(
                         documentUri = documentUri,

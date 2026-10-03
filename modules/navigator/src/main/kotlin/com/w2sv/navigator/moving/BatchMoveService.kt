@@ -111,8 +111,9 @@ internal class BatchMoveService : LoggingUnboundService() {
                         add(result)
                     }
                 }
-            } catch (_: CancellationException) {
+            } catch (e: CancellationException) {
                 i { "Caught CancellationException" }
+                throw e
             }
         }
     }

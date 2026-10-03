@@ -71,10 +71,12 @@ internal class QuickMoveDestinationAccessPermissionActivity : LoggingComponentAc
     private val destinationPicker = registerForActivityResult(
         contract = ActivityResultContracts.OpenDocumentTree(),
         callback = { treeUri ->
-            if (treeUri != null) {
-                onDocumentTreeAccessGranted(treeUri)
+            lifecycleScope.launch {
+                if (treeUri != null) {
+                    onDocumentTreeAccessGranted(treeUri)
+                }
+                finishAndRemoveTask()
             }
-            finishAndRemoveTask()
         }
     )
 
@@ -129,7 +131,7 @@ internal class QuickMoveDestinationAccessPermissionActivity : LoggingComponentAc
         destinationPicker.launch(moveOperation.destination.documentUri.uri)
     }
 
-    private fun onDocumentTreeAccessGranted(treeUri: Uri) {
+    private suspend fun onDocumentTreeAccessGranted(treeUri: Uri) {
         // Take persistable permissions so that the next time we dont need the user grant permission again for the destination
         contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
 
@@ -140,14 +142,12 @@ internal class QuickMoveDestinationAccessPermissionActivity : LoggingComponentAc
 
         // If user selected different destination, save as quick move destination
         if (moveDestination != moveOperation.destination) {
-            lifecycleScope.launch {
-                navigatorConfigDataSource.update {
-                    it.saveQuickMoveDestination(
-                        fileType = moveOperation.file.fileType,
-                        sourceType = moveOperation.file.sourceType,
-                        destination = moveDestination
-                    )
-                }
+            navigatorConfigDataSource.update {
+                it.saveQuickMoveDestination(
+                    fileType = moveOperation.file.fileType,
+                    sourceType = moveOperation.file.sourceType,
+                    destination = moveDestination
+                )
             }
         }
 
