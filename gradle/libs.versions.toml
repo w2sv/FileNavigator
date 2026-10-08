@@ -29,7 +29,7 @@ protobuf = "4.35.0"
 protobuf-plugin = "0.10.0"
 room = "2.8.4"
 triplet-play = "4.0.0"
-versionCatalogUpdate = "1.1.0"
+versionCatalogUpdate = "1.1.1"
 # @pin
 w2sv-composed = "0.1.1"
 w2sv-kotlinutils = "1.0.0"
