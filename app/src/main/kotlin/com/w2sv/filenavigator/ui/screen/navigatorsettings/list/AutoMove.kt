@@ -32,12 +32,10 @@ fun rememberSelectAutoMoveDestination(onDestinationSelected: (LocalDestinationAp
     return rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { optionalTreeUri ->
         optionalTreeUri?.let { treeUri ->
             context.contentResolver.takePersistableReadAndWriteUriPermission(treeUri)
-            onDestinationSelected(
-                LocalDestination.fromTreeUri(
-                    context = context,
-                    treeUri = treeUri
-                )!! // TODO: null case possible?
-            )
+            LocalDestination.fromTreeUri(
+                context = context,
+                treeUri = treeUri
+            )?.let(onDestinationSelected)
         }
     }
 }

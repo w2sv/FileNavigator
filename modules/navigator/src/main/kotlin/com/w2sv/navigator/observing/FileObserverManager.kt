@@ -9,6 +9,7 @@ internal class FileObserverManager @Inject constructor(
     private val fileObserverProvider: FileObserverProvider,
     private val contentResolver: ContentResolver
 ) {
+    @Volatile
     private var activeObservers: List<FileObserver>? = null
 
     suspend fun registerFileObservers() {

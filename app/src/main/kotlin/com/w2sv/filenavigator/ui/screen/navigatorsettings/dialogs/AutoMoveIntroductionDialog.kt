@@ -7,7 +7,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,6 +24,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun AutoMoveIntroductionDialogIfNotYetShown(show: Boolean, onDismissRequest: () -> Unit) {
+    val dismissed = remember { mutableStateOf(false) }
     val showDialog = produceState(initialValue = false, key1 = show) {
         if (show) {
             delay(1_000.milliseconds)
@@ -29,8 +32,13 @@ fun AutoMoveIntroductionDialogIfNotYetShown(show: Boolean, onDismissRequest: () 
         }
     }
 
-    if (showDialog.value) {
-        AutoMoveIntroductionDialog(onDismissRequest = onDismissRequest)
+    if (showDialog.value && !dismissed.value) {
+        AutoMoveIntroductionDialog(
+            onDismissRequest = {
+                dismissed.value = true
+                onDismissRequest()
+            }
+        )
     }
 }
 
