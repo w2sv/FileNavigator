@@ -9,6 +9,13 @@
                 "github-actions"
             ],
             "groupName": "GitHub Actions"
+        },
+        {
+            "description": "Keep JDK 17 for F-Droid reproducible builds",
+            "matchManagers": ["github-actions"],
+            "matchPackageNames": ["java-jdk"],
+            "matchFileNames": [".github/workflows/fdroid_release.yaml"],
+            "enabled": false
         }
     ]
 }
