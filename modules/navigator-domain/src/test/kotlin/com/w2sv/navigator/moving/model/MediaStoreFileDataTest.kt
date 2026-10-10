@@ -35,6 +35,34 @@ internal class MediaStoreFileDataTest {
     }
 
     @Test
+    fun testCompoundFileExtension() {
+        assertEquals(
+            "fb2.zip",
+            TestInstance.mediaStoreFileData(
+                absPath = "primary/0/Download/book.fb2.zip",
+                volumeRelativeDirPath = "Download/"
+            )
+                .compoundFileExtension
+        )
+        assertEquals(
+            "",
+            TestInstance.mediaStoreFileData(
+                absPath = "primary/0/Download/book.zip",
+                volumeRelativeDirPath = "Download/"
+            )
+                .compoundFileExtension
+        )
+        assertEquals(
+            "",
+            TestInstance.mediaStoreFileData(
+                absPath = "primary/0/Download/book.fb2",
+                volumeRelativeDirPath = "Download/"
+            )
+                .compoundFileExtension
+        )
+    }
+
+    @Test
     fun testParentDirName() {
         assertEquals("Screenshots", TestInstance.mediaStoreEntry.parentDirName)
     }

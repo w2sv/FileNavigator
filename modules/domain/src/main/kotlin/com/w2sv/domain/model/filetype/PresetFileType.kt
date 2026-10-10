@@ -121,7 +121,7 @@ enum class PresetFileType(
         fileExtensions = setOf(
             "epub", "azw", "azw1", "azw2", "azw3", "mobi", "iba", "rtf", "tpz", "mart",
             "tk3", "aep", "dnl", "ybk", "lit", "ebk", "prc", "kfx", "ava", "orb", "koob",
-            "bpnueb", "pef", "vbk", "fkb", "bkk", "xtc"
+            "bpnueb", "pef", "vbk", "fkb", "bkk", "xtc", "fb2", "fb2.zip"
         ),
         extensionsAreConfigurable = true
     );
@@ -134,6 +134,13 @@ enum class PresetFileType(
         )
 
     companion object {
+
+        /**
+         * Known compound file extensions (e.g. "fb2.zip") that must be matched
+         * against the full two-part suffix before falling back to the simple
+         * (last-dot) extension.
+         */
+        val compoundFileExtensions: Set<String> = setOf("fb2.zip")
 
         @JvmStatic
         val mediaEntries: List<PresetFileType> by lazy {
