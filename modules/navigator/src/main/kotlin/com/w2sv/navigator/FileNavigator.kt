@@ -43,11 +43,13 @@ class FileNavigator : LoggingUnboundService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         logOnStartCommand(intent)
 
-        when (val action = intent?.action) {
-            Action.START -> start()
-            Action.STOP -> stop()
-            Action.REREGISTER_FILE_OBSERVERS -> serviceScope.launch { fileObserverManager.reregisterFileObservers() }
-            else -> w { "Service started with unknown action: $action" }
+        when {
+            // Android may restart a START_STICKY service with a null intent after process death.
+            // Therefore, a null intent must restore foreground operation.
+            intent == null || intent.action == Action.START -> start()
+            intent.action == Action.STOP -> stop()
+            intent.action == Action.REREGISTER_FILE_OBSERVERS -> serviceScope.launch { fileObserverManager.reregisterFileObservers() }
+            else -> w { "Service started with unknown action: ${intent.action}" }
         }
 
         return START_STICKY
