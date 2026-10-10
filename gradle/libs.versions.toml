@@ -1,35 +1,35 @@
 [versions]
-agp = "9.2.1"
+agp = "9.4.1"
 androidx-compose-material = "1.7.8"
 androidx-test = "1.7.0"
 androidxActivity = "1.13.0"
-baselineprofile = "1.5.0-alpha06"
+baselineprofile = "1.5.0"
 # @keep
 compileSdk = "37"
 # @pin
 compose-lint-checks = "1.4.3"
-compose-material3 = "1.5.0-alpha21"
-compose-tooling = "1.11.2"
-hilt = "2.59.2"
-hiltNavigationCompose = "1.3.0"
+compose-material3 = "1.5.0-beta01"
+compose-tooling = "1.12.1"
+hilt = "2.60.1"
+hiltNavigationCompose = "1.4.0"
 junit = "4.13.2"
-kotlin = "2.4.0"
-kotlinxCollectionsImmutable = "0.5.0"
+kotlin = "2.4.21"
+kotlinxCollectionsImmutable = "0.5.2"
 kotlinxCoroutines = "1.11.0"
 kotlinxSerializationCore = "1.11.0"
-ksp = "2.3.9"
+ksp = "2.3.12"
 ktlint = "14.2.0"
-lifecycle = "2.10.0"
-lifecycleViewmodelNavigation3 = "2.10.0"
+lifecycle = "2.11.0"
+lifecycleViewmodelNavigation3 = "2.11.0"
 # @keep
 minSdk = "30"
 moduleGraph = "2.9.1"
-nav3Core = "1.2.0-alpha04"
-protobuf = "4.35.0"
+nav3Core = "1.2.0"
+protobuf = "4.36.2"
 protobuf-plugin = "0.10.0"
-room = "2.8.4"
-triplet-play = "4.0.0"
-versionCatalogUpdate = "1.1.0"
+room = "2.8.5"
+triplet-play = "4.1.1"
+versionCatalogUpdate = "1.1.1"
 # @pin
 w2sv-composed = "0.1.1"
 w2sv-kotlinutils = "1.0.0"
@@ -38,7 +38,7 @@ w2sv-kotlinutils = "1.0.0"
 # @keep
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidxActivity" }
-androidx-appcompat = "androidx.appcompat:appcompat:1.7.1"
+androidx-appcompat = "androidx.appcompat:appcompat:1.8.0"
 androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "baselineprofile" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose-tooling" }
@@ -52,8 +52,8 @@ androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", vers
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-tooling" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-tooling" }
 androidx-compose-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
-androidx-constraintlayout-compose = "androidx.constraintlayout:constraintlayout-compose:1.1.1"
-androidx-core-ktx = "androidx.core:core-ktx:1.19.0"
+androidx-constraintlayout-compose = "androidx.constraintlayout:constraintlayout-compose:1.1.2"
+androidx-core-ktx = "androidx.core:core-ktx:1.19.1"
 androidx-documentfile = "androidx.documentfile:documentfile:1.1.0"
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
@@ -70,8 +70,8 @@ androidx-test-ext-junit = "androidx.test.ext:junit:1.3.0"
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test" }
 app-cash-turbine = "app.cash.turbine:turbine:1.2.1"
-compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "compose-lint-checks" }
 compose-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "compose-lint-checks" }
 google-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 google-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -86,7 +86,7 @@ ksp-gradlePlugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.g
 mockk = "io.mockk:mockk:1.14.11"
 protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
-robolectric = "org.robolectric:robolectric:4.16.1"
+robolectric = "org.robolectric:robolectric:4.17"
 slimber = "com.github.PaulWoitaschek:Slimber:2.0.0"
 textflow = "io.github.oleksandrbalan:textflow-material3:1.2.1"
 w2sv-androidutils-core = "io.github.w2sv:androidutils-core:1.0.0"
