@@ -7,7 +7,7 @@ baselineprofile = "1.5.0"
 # @keep
 compileSdk = "37"
 # @pin
-compose-lint-checks = "1.4.3"
+compose-lint-checks = "1.6.1"
 compose-material3 = "1.5.0-beta01"
 compose-tooling = "1.12.1"
 hilt = "2.60.1"
