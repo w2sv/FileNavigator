@@ -26,10 +26,12 @@ fun AutoMoveIntroductionDialogIfNotYetShown(show: Boolean, onDismissRequest: () 
         if (show) {
             delay(1_000.milliseconds)
             value = true
+        } else {
+            value = false
         }
     }
 
-    if (showDialog.value) {
+    if (show && showDialog.value) {
         AutoMoveIntroductionDialog(onDismissRequest = onDismissRequest)
     }
 }
