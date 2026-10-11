@@ -68,7 +68,18 @@ private fun ExtensionContainer.configureCommon(
             unitTests {
                 isReturnDefaultValues = true
                 isIncludeAndroidResources = true
-                all { test -> test.failOnNoDiscoveredTests.set(false) }
+                all { test ->
+                    test.failOnNoDiscoveredTests.set(false)
+
+                    // Robolectric loads a native runtime, which requires explicit
+                    // native access permission on JDK 24+.
+                    // This fixes:
+                    // WARNING: A restricted method in java.lang.System has been called
+                    // WARNING: java.lang.System::load has been called by org.robolectric.nativeruntime.DefaultNativeRuntimeLoader in an unnamed module
+                    // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+                    // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+                    test.jvmArgs("--enable-native-access=ALL-UNNAMED")
+                }
             }
             animationsDisabled = true
         }
