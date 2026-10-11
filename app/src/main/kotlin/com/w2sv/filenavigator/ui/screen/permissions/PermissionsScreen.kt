@@ -1,8 +1,11 @@
 package com.w2sv.filenavigator.ui.screen.permissions
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -15,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.ui.platform.isPortraitModeActive
+import com.w2sv.designsystem.layout.PaddingDefaults
 import com.w2sv.designsystem.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.shared.debugging.ScreenPreviews
 import com.w2sv.modules.resources.R
@@ -37,11 +41,14 @@ private fun Prev() {
 @Composable
 fun PermissionsScreen(cards: ImmutableList<PermissionCard>) {
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.required_permissions), maxLines = 1) }) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.required_permissions), maxLines = 1) }) },
+        contentWindowInsets = WindowInsets.safeDrawing
     ) { paddingValues ->
         val modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
+            .consumeWindowInsets(paddingValues)
+            .padding(horizontal = PaddingDefaults.horizontal)
 
         when (isPortraitModeActive) {
             true -> PortraitMode(permissionCards = cards, modifier = modifier)
@@ -55,7 +62,7 @@ private fun PortraitMode(permissionCards: ImmutableList<PermissionCard>, modifie
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(32.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.padding(horizontal = 32.dp)
+        modifier = modifier
     ) {
         items(permissionCards, key = { it.hashCode() }) {
             PermissionCard(card = it, modifier = Modifier.animateItem())

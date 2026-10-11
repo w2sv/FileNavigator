@@ -23,7 +23,9 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun HomeScreen(navigatorIsRunning: Boolean, moveHistoryState: MoveHistoryState) {
-    val sharedModifier = Modifier.fillMaxSize()
+    val sharedModifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = PaddingDefaults.horizontal)
 
     val statusDisplayCard: ModifierReceivingComposable = rememberMovableContentOf { modifier ->
         NavigatorStatusCard(navigatorIsRunning = navigatorIsRunning, modifier = modifier)
@@ -69,7 +71,7 @@ private fun PortraitMode(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.padding(horizontal = PaddingDefaults.horizontal),
+        modifier = modifier,
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
