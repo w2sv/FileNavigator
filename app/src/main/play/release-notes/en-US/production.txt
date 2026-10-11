@@ -1,5 +1,1 @@
-• New bottom navigation for quicker access to key screens
-• Cleaner, less cluttered Navigator Settings screen
-• Improved support for APK file extensions
-• Fixed move notification file type icon tints
-• Additional UI refinements throughout the app
+• Fixed File Navigator failing to resume after Android restarts its background service
