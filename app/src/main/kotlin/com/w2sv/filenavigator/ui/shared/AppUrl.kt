@@ -1,4 +1,4 @@
-package com.w2sv.filenavigator
+package com.w2sv.filenavigator.ui.shared
 
 object AppUrl {
     const val LICENSE = "https://github.com/w2sv/FileNavigator/blob/main/LICENSE"

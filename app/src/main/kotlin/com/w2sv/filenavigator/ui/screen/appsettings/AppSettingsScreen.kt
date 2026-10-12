@@ -29,9 +29,9 @@ import com.w2sv.designsystem.layout.PaddingDefaults
 import com.w2sv.domain.model.settings.AppSettings
 import com.w2sv.domain.model.settings.Theme
 import com.w2sv.domain.model.settings.ThemeSettings
-import com.w2sv.filenavigator.AppUrl
 import com.w2sv.filenavigator.BuildConfig
 import com.w2sv.filenavigator.ui.screen.appsettings.model.settingsActionGroups
+import com.w2sv.filenavigator.ui.shared.AppUrl
 import com.w2sv.filenavigator.ui.shared.debugging.PreviewOf
 import com.w2sv.filenavigator.ui.shared.debugging.ScreenPreviews
 import com.w2sv.modules.resources.R
