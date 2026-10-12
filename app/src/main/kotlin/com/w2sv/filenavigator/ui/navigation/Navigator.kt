@@ -1,6 +1,5 @@
 package com.w2sv.filenavigator.ui.navigation
 
-import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -10,62 +9,58 @@ import androidx.navigation3.runtime.NavBackStack
 import com.w2sv.composed.navigation3.Nav3Navigator
 import com.w2sv.composed.navigation3.rememberTypedNavBackStack
 import com.w2sv.core.logging.logIdentifier
+import com.w2sv.filenavigator.ui.navigation.bottom.BottomNavRoute
+import com.w2sv.filenavigator.ui.navigation.main.MainNavRoute
 import slimber.log.i
 
-interface Navigator {
-    fun toAppSettings()
-    fun toPermissions()
-    fun toHome()
-    fun toNavigatorSettings()
-    fun popBackStack()
-    val currentRoute: Screen
-    val backStack: List<Screen>
-}
-
 @Stable
-@VisibleForTesting
-class NavigatorImpl(backStack: NavBackStack<Screen>) :
-    Nav3Navigator<Screen>(backStack),
-    Navigator {
+class Navigator(backStack: NavBackStack<MainNavRoute>) : Nav3Navigator<MainNavRoute>(backStack) {
 
-    override fun toAppSettings() =
-        toBottomNavDestination(Screen.AppSettings)
+    private val currentBottomNavHost: MainNavRoute.BottomNavHost?
+        get() = currentRoute as? MainNavRoute.BottomNavHost
 
-    override fun toPermissions() {
-        clearAndLaunch(Screen.Permissions)
+    val currentBottomNavRoute: BottomNavRoute?
+        get() = currentBottomNavHost?.backStack?.lastOrNull()
+
+    fun toAppSettings() =
+        toBottomNavDestination(BottomNavRoute.AppSettings)
+
+    fun toPermissions() {
+        clearAndLaunch(MainNavRoute.Permissions)
     }
 
-    override fun toHome() =
-        toBottomNavDestination(Screen.Home)
+    fun toHome() =
+        toBottomNavDestination(BottomNavRoute.Home)
 
-    override fun toNavigatorSettings() =
-        toBottomNavDestination(Screen.NavigatorSettings)
+    fun toNavigatorSettings() =
+        toBottomNavDestination(BottomNavRoute.NavigatorSettings)
 
-    private fun toBottomNavDestination(destination: Screen) {
-        val current = currentRoute
-        when {
-            current == destination -> Unit
-            !current.isBottomNavDestination -> clearAndLaunch(destination)
-            else -> {
-                if (!current.isHome) {
-                    popBackStack()
-                }
-                launchSingleTop(destination)
-            }
+    private fun toBottomNavDestination(destination: BottomNavRoute) {
+        if (currentBottomNavRoute == destination) return
+
+        val host = currentBottomNavHost ?: MainNavRoute.BottomNavHost().also { clearAndLaunch(it) }
+        if (destination == BottomNavRoute.Home) {
+            host.backStack.resetTo(BottomNavRoute.Home)
+        } else {
+            host.backStack.resetTo(BottomNavRoute.Home, destination)
         }
     }
 }
 
 @Composable
-fun rememberNavigator(startScreen: Screen): Navigator {
-    val backStack = rememberTypedNavBackStack<Screen>(startScreen)
+fun rememberNavigator(startRoute: MainNavRoute): Navigator {
+    val backStack = rememberTypedNavBackStack<MainNavRoute>(startRoute)
 
     LaunchedEffect(backStack) {
-        snapshotFlow { backStack.toList() }
+        snapshotFlow {
+            backStack.map { route ->
+                route to (route as? MainNavRoute.BottomNavHost)?.backStack?.toList()
+            }
+        }
             .collect { stack ->
-                i { "BackStack=${stack.map { it.logIdentifier }}" }
+                i { "BackStack=${stack.map { (route, nested) -> route.logIdentifier to nested?.map { it.logIdentifier } }}" }
             }
     }
 
-    return remember(backStack) { NavigatorImpl(backStack) }
+    return remember(backStack) { Navigator(backStack) }
 }

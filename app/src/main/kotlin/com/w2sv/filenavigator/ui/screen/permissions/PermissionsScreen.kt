@@ -6,25 +6,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.ui.platform.isPortraitModeActive
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.filenavigator.ui.shared.debugging.ScreenPreviews
+import com.w2sv.modules.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-
-@Composable
-fun PermissionsScreen(cards: ImmutableList<PermissionCard>) {
-    val sharedModifier = Modifier.fillMaxSize()
-
-    when (isPortraitModeActive) {
-        true -> PortraitMode(permissionCards = cards, modifier = sharedModifier)
-        false -> LandscapeMode(permissionCards = cards, modifier = sharedModifier)
-    }
-}
 
 @ScreenPreviews
 @Composable
@@ -36,6 +31,22 @@ private fun Prev() {
                 PermissionCard.manageAllFiles { }
             )
         )
+    }
+}
+
+@Composable
+fun PermissionsScreen(cards: ImmutableList<PermissionCard>) {
+    Scaffold(
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.required_permissions), maxLines = 1) }) }
+    ) { paddingValues ->
+        val modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+
+        when (isPortraitModeActive) {
+            true -> PortraitMode(permissionCards = cards, modifier = modifier)
+            false -> LandscapeMode(permissionCards = cards, modifier = modifier)
+        }
     }
 }
 

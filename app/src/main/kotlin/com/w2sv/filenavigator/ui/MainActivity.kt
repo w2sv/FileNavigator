@@ -24,8 +24,8 @@ import com.w2sv.designsystem.modelext.useDarkTheme
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.usecase.MoveDestinationLabelProvider
 import com.w2sv.filenavigator.BuildConfig
-import com.w2sv.filenavigator.ui.navigation.NavGraph
 import com.w2sv.filenavigator.ui.navigation.Navigator
+import com.w2sv.filenavigator.ui.navigation.main.MainNavGraph
 import com.w2sv.filenavigator.ui.navigation.rememberNavigator
 import com.w2sv.filenavigator.ui.shared.LocalMoveDestinationLabelProvider
 import com.w2sv.filenavigator.ui.shared.debugging.DevAction
@@ -53,11 +53,11 @@ class MainActivity : LoggingComponentActivity() {
             // Update system bars on change of useDarkTheme
             LaunchedEffect(useDarkTheme) { enableEdgeToEdge(useDarkTheme = useDarkTheme) }
 
-            val navigator = rememberNavigator(startScreen = viewModel.startScreen)
+            val navigator = rememberNavigator(startRoute = viewModel.startRoute)
 
             // Navigate to permissions screen if not all permissions granted and we're not already there
             CollectFromFlow(viewModel.permissionsState.allGranted) { allPermissionsGranted ->
-                if (!allPermissionsGranted && !navigator.currentRoute.isPermissions) {
+                if (!allPermissionsGranted && navigator.currentRoute != Permissions) {
                     navigator.toPermissions()
                 }
             }
@@ -68,7 +68,7 @@ class MainActivity : LoggingComponentActivity() {
                     useAmoledBlackTheme = appThemeSettings.useAmoledBlackTheme,
                     useDynamicColors = appThemeSettings.useDynamicColors
                 ) {
-                    NavGraph(
+                    MainNavGraph(
                         navigator = navigator,
                         permissionsState = viewModel.permissionsState
                     )

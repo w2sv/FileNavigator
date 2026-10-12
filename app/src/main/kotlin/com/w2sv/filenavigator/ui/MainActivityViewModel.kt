@@ -8,7 +8,7 @@ import com.w2sv.core.util.hasManageAllFilesPermission
 import com.w2sv.core.util.hasPostNotificationsPermission
 import com.w2sv.domain.repository.AppSettingsRepository
 import com.w2sv.domain.repository.RequestFlagRepository
-import com.w2sv.filenavigator.ui.navigation.Screen
+import com.w2sv.filenavigator.ui.navigation.main.MainNavRoute
 import com.w2sv.filenavigator.ui.shared.permissions.AppPermissionsState
 import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.kotlinutils.coroutines.flow.mapState
@@ -36,10 +36,10 @@ class MainActivityViewModel @Inject constructor(
         )
     )
 
-    val startScreen: Screen by threadUnsafeLazy {
+    val startRoute: MainNavRoute by threadUnsafeLazy {
         when {
-            !permissionsState.allGranted.value -> Screen.Permissions
-            else -> Screen.Home
+            !permissionsState.allGranted.value -> MainNavRoute.Permissions
+            else -> MainNavRoute.BottomNavHost()
         }
     }
 

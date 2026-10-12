@@ -19,7 +19,7 @@ import com.w2sv.composed.ui.platform.isLandscapeModeActive
 import com.w2sv.designsystem.snackbar.LocalSnackbarHostState
 import com.w2sv.designsystem.snackbar.dismissCurrentSnackbar
 import com.w2sv.domain.model.filetype.FileType
-import com.w2sv.filenavigator.ui.navigation.RootScaffoldState
+import com.w2sv.filenavigator.ui.navigation.bottom.BottomNavScaffoldState
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.FileTypeSelectionBottomSheet
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.bottomsheet.rememberFileTypeSelectionState
 import com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs.AutoMoveIntroductionDialogIfNotYetShown
@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.update
 
 @Composable
 fun NavigatorSettingsScreenRoute(
-    rootScaffoldState: RootScaffoldState,
+    bottomNavScaffoldState: BottomNavScaffoldState,
     navigatorVM: NavigatorSettingsScreenViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
 ) {
@@ -52,12 +52,12 @@ fun NavigatorSettingsScreenRoute(
     val configEditState = rememberConfigEditState(navigatorVM)
 
     OnChange(navigatorConfig) { snackbarHostState.dismissCurrentSnackbar() }
-    DisposableEffect(rootScaffoldState, configEditState) {
+    DisposableEffect(bottomNavScaffoldState, configEditState) {
         val fab: @Composable () -> Unit = { NavigatorSettingsFloatingActionButton(configEditState = configEditState) }
-        rootScaffoldState.fab = fab
+        bottomNavScaffoldState.fab = fab
         onDispose {
-            if (rootScaffoldState.fab === fab) {
-                rootScaffoldState.fab = null
+            if (bottomNavScaffoldState.fab === fab) {
+                bottomNavScaffoldState.fab = null
             }
         }
     }
