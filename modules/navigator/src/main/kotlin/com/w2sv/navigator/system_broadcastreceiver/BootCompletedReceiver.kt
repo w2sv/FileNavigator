@@ -39,7 +39,7 @@ internal class BootCompletedReceiver : LoggingBroadcastReceiver() {
 
         scope.launch {
             try {
-                if (navigatorConfig.first().startOnBoot && FileNavigator.necessaryPermissionsGranted(context)) {
+                if (navigatorConfig.first().startOnBoot && FileNavigator.areRequiredPermissionsGranted(context)) {
                     FileNavigator.start(context)
                 }
             } finally {

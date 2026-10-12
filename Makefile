@@ -43,6 +43,9 @@ run-with-navigator-start:
 	@adb shell am force-stop com.w2sv.filenavigator
 	@adb shell am start -n com.w2sv.filenavigator/.ui.MainActivity -a com.w2sv.filenavigator.START_NAVIGATOR
 
+revoke-manage-all-files-permission:
+	@adb shell appops set --uid com.w2sv.filenavigator.debug MANAGE_EXTERNAL_STORAGE ignore
+
 # ==============
 # Building
 # ==============

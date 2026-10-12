@@ -61,7 +61,7 @@ class FileNavigatorTileService : LoggingTileService() {
      * - launches MainActivity if required permissions are missing, which will result in the permissions screen being shown
      */
     private fun activateNavigator() {
-        when (FileNavigator.necessaryPermissionsGranted(this)) {
+        when (FileNavigator.areRequiredPermissionsGranted(this)) {
             true -> FileNavigator.start(this)
             false -> startMainActivityAndCollapse()
         }

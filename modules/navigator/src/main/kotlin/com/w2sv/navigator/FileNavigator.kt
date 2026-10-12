@@ -43,12 +43,27 @@ class FileNavigator : LoggingUnboundService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         logOnStartCommand(intent)
 
+        if (intent?.action == Action.STOP) {
+            stop()
+            return START_NOT_STICKY
+        }
+
+        // If a requested permission is revoked via app settings, android kills the app's process.
+        // If the service was running on revoking, it gets restarted with a null intent due to START_STICKY, in which case we have to abort startup.
+        // This applies for both required permissions, as asserted on android 17.
+        if (!areRequiredPermissionsGranted(this)) {
+            w { "Required permissions missing; stopping FileNavigator" }
+            stop()
+            return START_NOT_STICKY
+        }
+
         when {
-            // Android may restart a START_STICKY service with a null intent after process death.
-            // Therefore, a null intent must restore foreground operation.
+            // Restore operation after a sticky restart.
             intent == null || intent.action == Action.START -> start()
-            intent.action == Action.STOP -> stop()
-            intent.action == Action.REREGISTER_FILE_OBSERVERS -> serviceScope.launch { fileObserverManager.reregisterFileObservers() }
+
+            intent.action == Action.REREGISTER_FILE_OBSERVERS ->
+                serviceScope.launch { fileObserverManager.reregisterFileObservers() }
+
             else -> w { "Service started with unknown action: ${intent.action}" }
         }
 
@@ -126,9 +141,9 @@ class FileNavigator : LoggingUnboundService() {
                 .setAction(Action.STOP)
 
         /**
-         * @return whether the necessary permissions for running the [FileNavigator] are granted.
+         * @return whether the required permissions for running the [FileNavigator] are granted.
          */
-        fun necessaryPermissionsGranted(context: Context): Boolean =
+        fun areRequiredPermissionsGranted(context: Context): Boolean =
             hasManageAllFilesPermission && context.hasPostNotificationsPermission()
     }
 }

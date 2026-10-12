@@ -10,15 +10,12 @@ import com.w2sv.domain.repository.AppSettingsRepository
 import com.w2sv.domain.repository.RequestFlagRepository
 import com.w2sv.filenavigator.ui.navigation.main.MainNavRoute
 import com.w2sv.filenavigator.ui.shared.permissions.AppPermissionsState
-import com.w2sv.kotlinutils.coroutines.flow.collectOn
 import com.w2sv.kotlinutils.coroutines.flow.mapState
 import com.w2sv.kotlinutils.threadUnsafeLazy
-import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
@@ -44,11 +41,4 @@ class MainActivityViewModel @Inject constructor(
     }
 
     val themeSettings = appSettingsRepository.appSettings.mapState { it.theme }
-
-    init {
-        // Stop FileNavigator when any permission missing
-        permissionsState.allGranted.filter { !it }.collectOn(viewModelScope) {
-            FileNavigator.stop(context)
-        }
-    }
 }

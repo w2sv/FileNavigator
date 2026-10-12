@@ -1,9 +1,12 @@
 package com.w2sv.navigator
 
+import android.Manifest
+import android.app.AppOpsManager
 import android.app.Application
 import android.app.Notification
 import android.app.Service
 import android.content.Intent
+import android.os.Environment
 import com.w2sv.androidutils.content.intent
 import com.w2sv.navigator.domain.notifications.ForegroundNotificationProvider
 import com.w2sv.navigator.observing.FileObserverManager
@@ -32,9 +35,10 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.android.controller.ServiceController
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowEnvironment
 
 @RunWith(RobolectricTestRunner::class)
-@Config(application = Application::class)
+@Config(application = Application::class, sdk = [33])
 internal class FileNavigatorTest {
 
     @get:Rule
@@ -52,6 +56,9 @@ internal class FileNavigatorTest {
     @Before
     fun setUp() {
         application = RuntimeEnvironment.getApplication()
+        ShadowEnvironment.addExternalDir("test-external-storage")
+        shadowOf(application).grantPermissions(Manifest.permission.POST_NOTIFICATIONS)
+        setManageAllFilesPermission(true)
         notification = Notification()
         observersRegistered = CompletableDeferred()
         observersReregistered = CompletableDeferred()
@@ -108,9 +115,44 @@ internal class FileNavigatorTest {
 
         FileNavigator.stop(application)
 
-        assertEquals(Service.START_STICKY, dispatch(shadowOf(application).nextStartedService))
+        assertEquals(Service.START_NOT_STICKY, dispatch(shadowOf(application).nextStartedService))
         assertFalse(service.status.isRunning.value)
         assertTrue(shadowOf(service).isForegroundStopped)
+        assertTrue(shadowOf(service).isStoppedBySelf)
+    }
+
+    @Test
+    fun `sticky restart stops service when all files permission revoked`() {
+        setManageAllFilesPermission(false)
+
+        assertFalse(Environment.isExternalStorageManager())
+        assertStartRejected(null)
+    }
+
+    @Test
+    fun `start action stops service when all files permission missing`() {
+        setManageAllFilesPermission(false)
+
+        FileNavigator.start(application)
+
+        assertStartRejected(shadowOf(application).nextStartedService)
+    }
+
+    @Test
+    fun `sticky restart stops service when notification permission denied`() {
+        shadowOf(application).denyPermissions(Manifest.permission.POST_NOTIFICATIONS)
+
+        assertFalse(FileNavigator.areRequiredPermissionsGranted(application))
+        assertStartRejected(null)
+    }
+
+    @Test
+    fun `stop action stops service regardless of permissions`() {
+        setManageAllFilesPermission(false)
+
+        FileNavigator.stop(application)
+
+        assertEquals(Service.START_NOT_STICKY, dispatch(shadowOf(application).nextStartedService))
         assertTrue(shadowOf(service).isStoppedBySelf)
     }
 
@@ -148,6 +190,27 @@ internal class FileNavigatorTest {
         assertEquals(0, shadowOf(service).lastForegroundNotificationId)
         assertNull(shadowOf(service).lastForegroundNotification)
         coVerify(exactly = 0) { fileObserverManager.registerFileObservers() }
+    }
+
+    private fun assertStartRejected(intent: Intent?) {
+        assertEquals(Service.START_NOT_STICKY, dispatch(intent))
+        assertFalse(service.status.isRunning.value)
+        assertTrue(shadowOf(service).isStoppedBySelf)
+        assertNull(shadowOf(service).lastForegroundNotification)
+        coVerify(exactly = 0) { fileObserverManager.registerFileObservers() }
+        coVerify(exactly = 0) { fileObserverManager.reregisterFileObservers() }
+    }
+
+    private fun setManageAllFilesPermission(granted: Boolean) {
+        val appOps = application.getSystemService(AppOpsManager::class.java)
+        val operation = requireNotNull(AppOpsManager.permissionToOp(Manifest.permission.MANAGE_EXTERNAL_STORAGE))
+
+        shadowOf(appOps).setMode(
+            operation,
+            application.applicationInfo.uid,
+            application.packageName,
+            if (granted) AppOpsManager.MODE_ALLOWED else AppOpsManager.MODE_IGNORED
+        )
     }
 
     private fun assertForegroundServiceRunning() {
