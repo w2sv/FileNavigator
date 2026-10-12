@@ -29,14 +29,14 @@ import androidx.compose.ui.unit.dp
 import com.w2sv.composed.ui.text.rememberStyledTextResource
 import com.w2sv.designsystem.component.AppCardProperties
 import com.w2sv.designsystem.component.DialogButton
-import com.w2sv.designsystem.theme.AppTheme
+import com.w2sv.designsystem.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.shared.AppUrl
 import com.w2sv.modules.resources.R
 
 @Preview
 @Composable
 private fun PermissionCardPrev() {
-    AppTheme {
+    FileNavigatorTheme {
         PermissionCard(PermissionCard.manageAllFiles {})
     }
 }

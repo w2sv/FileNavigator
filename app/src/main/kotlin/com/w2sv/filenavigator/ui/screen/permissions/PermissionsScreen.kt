@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.w2sv.composed.ui.platform.isPortraitModeActive
-import com.w2sv.designsystem.theme.AppTheme
+import com.w2sv.designsystem.theme.FileNavigatorTheme
 import com.w2sv.filenavigator.ui.shared.debugging.ScreenPreviews
 import com.w2sv.modules.resources.R
 import kotlinx.collections.immutable.ImmutableList
@@ -24,7 +24,7 @@ import kotlinx.collections.immutable.persistentListOf
 @ScreenPreviews
 @Composable
 private fun Prev() {
-    AppTheme {
+    FileNavigatorTheme {
         PermissionsScreen(
             persistentListOf(
                 PermissionCard.postNotifications { },

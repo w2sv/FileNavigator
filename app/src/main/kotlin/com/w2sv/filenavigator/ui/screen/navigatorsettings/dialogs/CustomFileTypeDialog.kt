@@ -25,7 +25,7 @@ import com.w2sv.composed.ui.text.rememberStyledTextResource
 import com.w2sv.designsystem.component.DeletionTooltip
 import com.w2sv.designsystem.component.OutlinedTextField
 import com.w2sv.designsystem.modelext.color
-import com.w2sv.designsystem.theme.AppTheme
+import com.w2sv.designsystem.theme.FileNavigatorTheme
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.modules.resources.R
@@ -199,7 +199,7 @@ private fun FileExtensionChipWithTooltip(extension: String, deleteExtension: () 
 @Preview
 @Composable
 private fun StatelessCustomFileTypeConfigurationDialogPrev() {
-    AppTheme {
+    FileNavigatorTheme {
         StatelessCustomFileTypeConfigurationDialog(
             title = "Create a file type",
             confirmButtonText = "Apply",

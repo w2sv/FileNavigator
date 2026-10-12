@@ -25,7 +25,7 @@ import com.w2sv.composed.ui.text.rememberStyledTextResource
 import com.w2sv.core.logging.LoggingComponentActivity
 import com.w2sv.designsystem.component.DialogButton
 import com.w2sv.designsystem.component.HighlightedDialogButton
-import com.w2sv.designsystem.theme.AppTheme
+import com.w2sv.designsystem.theme.FileNavigatorTheme
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.modules.resources.R
 import com.w2sv.navigator.domain.moving.MoveFileNotificationData
@@ -56,7 +56,7 @@ internal class FileDeletionActivity : LoggingComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
+            FileNavigatorTheme {
                 Box(modifier = Modifier.fillMaxSize()) {
                     DeletionConfirmationDialog(
                         fileName = args.navigatableFile.mediaStoreEntry.fileName,
@@ -130,7 +130,7 @@ private fun DeletionConfirmationDialog(
 @Preview
 @Composable
 private fun Prev() {
-    AppTheme {
+    FileNavigatorTheme {
         DeletionConfirmationDialog("someFile", {}, {})
     }
 }

@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.w2sv.designsystem.theme.AppTheme
+import com.w2sv.designsystem.theme.FileNavigatorTheme
 import com.w2sv.designsystem.theme.onSurfaceVariantDecreasedAlpha
 import com.w2sv.modules.resources.R
 
@@ -120,7 +120,7 @@ fun SwitchItemLayout(
 @Preview
 @Composable
 private fun SwitchItemLayoutPrev() {
-    AppTheme {
+    FileNavigatorTheme {
         Surface {
             SwitchItemLayout(
                 icon = { Icon(R.drawable.ic_palette_24) },

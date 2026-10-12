@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.w2sv.composed.ui.text.rememberStyledTextResource
 import com.w2sv.designsystem.component.DialogButton
-import com.w2sv.designsystem.theme.AppTheme
+import com.w2sv.designsystem.theme.FileNavigatorTheme
 import com.w2sv.modules.resources.R
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
@@ -74,7 +74,7 @@ private val TextSectionBottomPadding = 6.dp
 @Preview
 @Composable
 private fun AutoMoveIntroductionPrev() {
-    AppTheme {
+    FileNavigatorTheme {
         AutoMoveIntroductionDialog(onDismissRequest = {})
     }
 }

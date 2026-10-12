@@ -25,7 +25,7 @@ private val railway = FontFamily(
     Font(R.font.raleway_thin, FontWeight.Thin, FontStyle.Normal)
 )
 
-internal val typography = Typography(
+internal val FileNavigatorTypography = Typography(
     displayLarge = defaultTypography.displayLarge.copy(fontFamily = railway),
     displayMedium = defaultTypography.displayMedium.copy(fontFamily = railway),
     displaySmall = defaultTypography.displaySmall.copy(fontFamily = railway),

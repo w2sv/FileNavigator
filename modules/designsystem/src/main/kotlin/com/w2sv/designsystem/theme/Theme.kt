@@ -1,6 +1,5 @@
 package com.w2sv.designsystem.theme
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
@@ -11,21 +10,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.w2sv.androidutils.os.dynamicColorsSupported
+import com.w2sv.composed.ui.systembar.SystemBarIconAppearance
 import com.w2sv.kotlinutils.threadUnsafeLazy
 
-@SuppressLint("NewApi")
 @Composable
-fun AppTheme(
+fun FileNavigatorTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     useAmoledBlackTheme: Boolean = false,
     useDynamicColors: Boolean = dynamicColorsSupported,
     context: Context = LocalContext.current,
     content: @Composable () -> Unit
 ) {
+    SystemBarIconAppearance(!useDarkTheme)
+
+    val enableDynamicColors = useDynamicColors && dynamicColorsSupported
     val colorScheme = when {
-        useDynamicColors && useDarkTheme && useAmoledBlackTheme -> dynamicDarkColorScheme(context).amoledBlack()
-        useDynamicColors && useDarkTheme -> dynamicDarkColorScheme(context)
-        useDynamicColors && !useDarkTheme -> dynamicLightColorScheme(context)
+        enableDynamicColors && useDarkTheme && useAmoledBlackTheme -> dynamicDarkColorScheme(context).amoledBlack()
+        enableDynamicColors && useDarkTheme -> dynamicDarkColorScheme(context)
+        enableDynamicColors -> dynamicLightColorScheme(context)
         useDarkTheme && useAmoledBlackTheme -> staticColorSchemeDark.amoledBlack()
         useDarkTheme -> staticColorSchemeDark
         else -> staticColorSchemeLight
@@ -33,13 +35,13 @@ fun AppTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = typography,
+        typography = FileNavigatorTypography,
         content = content
     )
 }
 
 private fun ColorScheme.amoledBlack(): ColorScheme =
-    copy(background = Color.Black, surface = Color.Black, onBackground = Color.White, onSurface = Color.White)
+    copy(background = Black, surface = Black, onBackground = White, onSurface = White)
 
 private val staticColorSchemeDark by threadUnsafeLazy {
     ColorScheme(

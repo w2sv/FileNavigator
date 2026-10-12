@@ -47,7 +47,7 @@ import com.w2sv.designsystem.component.DeletionTooltip
 import com.w2sv.designsystem.component.FileTypeIcon
 import com.w2sv.designsystem.snackbar.AppSnackbarContent
 import com.w2sv.designsystem.snackbar.SnackbarKind
-import com.w2sv.designsystem.theme.AppTheme
+import com.w2sv.designsystem.theme.FileNavigatorTheme
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.navigatorconfig.NavigatorConfig
 import com.w2sv.modules.resources.R
@@ -206,7 +206,7 @@ private fun LazyGridItemScope.GridCard(
 @Preview(showSystemUi = true)
 @Composable
 private fun Prev() {
-    AppTheme {
+    FileNavigatorTheme {
         val map = NavigatorConfig.default.fileTypeConfigMap.values.associate { it.fileType to it.enabled }
         FileTypeSelectionBottomSheet(
             state = FileTypeSelectionState(

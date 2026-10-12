@@ -49,7 +49,7 @@ import com.w2sv.designsystem.snackbar.SnackbarAction
 import com.w2sv.designsystem.snackbar.SnackbarController
 import com.w2sv.designsystem.snackbar.SnackbarKind
 import com.w2sv.designsystem.snackbar.rememberSnackbarController
-import com.w2sv.designsystem.theme.AppTheme
+import com.w2sv.designsystem.theme.FileNavigatorTheme
 import com.w2sv.domain.model.MovedFile
 import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
@@ -294,7 +294,7 @@ private fun ShortNamePrevDynamicDark() {
 
 @Composable
 private fun Prev(fileName: String, useDynamicColor: Boolean, useDarkTheme: Boolean = false) {
-    AppTheme(useDynamicColors = useDynamicColor, useDarkTheme = useDarkTheme) {
+    FileNavigatorTheme(useDynamicColors = useDynamicColor, useDarkTheme = useDarkTheme) {
         FileMoveSummary(
             movedFile = MovedFile.Local(
                 documentUri = DocumentUri.parse(""),

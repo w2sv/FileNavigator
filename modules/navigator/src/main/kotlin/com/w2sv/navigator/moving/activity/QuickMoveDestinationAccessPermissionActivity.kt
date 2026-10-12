@@ -25,7 +25,7 @@ import com.w2sv.androidutils.content.componentName
 import com.w2sv.composed.ui.text.rememberStyledTextResource
 import com.w2sv.core.logging.LoggingComponentActivity
 import com.w2sv.designsystem.component.HighlightedDialogButton
-import com.w2sv.designsystem.theme.AppTheme
+import com.w2sv.designsystem.theme.FileNavigatorTheme
 import com.w2sv.domain.repository.NavigatorConfigDataSource
 import com.w2sv.domain.repository.RequestFlagRepository
 import com.w2sv.kotlinutils.threadUnsafeLazy
@@ -95,7 +95,7 @@ internal class QuickMoveDestinationAccessPermissionActivity : LoggingComponentAc
                 ShowRationale -> {
                     i { "Showing rationale" }
                     setContent {
-                        AppTheme {
+                        FileNavigatorTheme {
                             GrantRationalDialog(
                                 onDismissRequest = {
                                     lifecycleScope.launch {
@@ -193,7 +193,7 @@ private fun GrantRationalDialog(onDismissRequest: () -> Unit, modifier: Modifier
 @Preview
 @Composable
 private fun Prev() {
-    AppTheme {
+    FileNavigatorTheme {
         GrantRationalDialog({})
     }
 }
