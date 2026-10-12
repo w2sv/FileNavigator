@@ -1,7 +1,5 @@
 SHELL=/bin/bash
 
-VERSION := $(shell grep -Po '^version=\K.*' gradle.properties)
-
 update-dependencies:
 	@./gradlew versionCatalogUpdate
 
