@@ -11,25 +11,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.w2sv.composed.core.isPortraitModeActive
+import com.w2sv.composed.ui.platform.isPortraitModeActive
+import com.w2sv.composed.ui.rememberMovableContentOf
 import com.w2sv.designsystem.layout.PaddingDefaults
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryCard
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryState
 import com.w2sv.filenavigator.ui.screen.home.navigatorstatus.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.shared.debugging.PreviewOf
 import com.w2sv.filenavigator.ui.shared.util.ModifierReceivingComposable
-import com.w2sv.filenavigator.ui.shared.util.rememberMovableContentOf
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun HomeScreen(navigatorIsRunning: Boolean, moveHistoryState: MoveHistoryState) {
     val sharedModifier = Modifier.fillMaxSize()
 
-    val statusDisplayCard: ModifierReceivingComposable = rememberMovableContentOf {
-        NavigatorStatusCard(navigatorIsRunning = navigatorIsRunning, modifier = it)
+    val statusDisplayCard: ModifierReceivingComposable = rememberMovableContentOf { modifier ->
+        NavigatorStatusCard(navigatorIsRunning = navigatorIsRunning, modifier = modifier)
     }
-    val moveHistoryCard: ModifierReceivingComposable = rememberMovableContentOf {
-        MoveHistoryCard(state = moveHistoryState, modifier = it)
+    val moveHistoryCard: ModifierReceivingComposable = rememberMovableContentOf { modifier ->
+        MoveHistoryCard(state = moveHistoryState, modifier = modifier)
     }
 
     when (isPortraitModeActive) {

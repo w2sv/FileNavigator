@@ -17,7 +17,7 @@ import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.composed.core.CollectFromFlow
+import com.w2sv.composed.runtime.CollectFromFlow
 import com.w2sv.core.logging.LoggingComponentActivity
 import com.w2sv.core.logging.log
 import com.w2sv.designsystem.modelext.useDarkTheme
@@ -57,7 +57,7 @@ class MainActivity : LoggingComponentActivity() {
 
             // Navigate to permissions screen if not all permissions granted and we're not already there
             CollectFromFlow(viewModel.permissionsState.allGranted) { allPermissionsGranted ->
-                if (!allPermissionsGranted && !navigator.currentScreen.isPermissions) {
+                if (!allPermissionsGranted && !navigator.currentRoute.isPermissions) {
                     navigator.toPermissions()
                 }
             }

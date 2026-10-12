@@ -2,6 +2,7 @@ package com.w2sv.filenavigator.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.w2sv.augmentedpermissions.PermissionRequestHistory
 import com.w2sv.core.logging.LoggingViewModel
 import com.w2sv.core.util.hasManageAllFilesPermission
 import com.w2sv.core.util.hasPostNotificationsPermission
@@ -16,7 +17,6 @@ import com.w2sv.navigator.FileNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
@@ -27,18 +27,13 @@ class MainActivityViewModel @Inject constructor(
     @ApplicationContext context: Context
 ) : LoggingViewModel() {
 
-    private val postNotificationsPermissionRequested by threadUnsafeLazy {
-        requestFlagRepository.postNotificationsPermissionRequested.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly
-        )
-    }
-
     val permissionsState = AppPermissionsState(
         hasPostNotificationsPermission = { context.hasPostNotificationsPermission() },
         hasManageAllFilesPermission = { hasManageAllFilesPermission },
-        postNotificationsPermissionRequested = { postNotificationsPermissionRequested.value },
-        savePostNotificationsRequested = { viewModelScope.launch { requestFlagRepository.postNotificationsPermissionRequested.save(true) } }
+        postNotificationsPermissionHistory = PermissionRequestHistory(
+            wasRequestLaunchedBefore = requestFlagRepository.postNotificationsPermissionRequested.flow,
+            recordRequestLaunched = { viewModelScope.launch { requestFlagRepository.postNotificationsPermissionRequested.save(true) } }
+        )
     )
 
     val startScreen: Screen by threadUnsafeLazy {

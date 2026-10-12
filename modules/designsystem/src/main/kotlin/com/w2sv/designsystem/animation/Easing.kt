@@ -3,7 +3,7 @@ package com.w2sv.designsystem.animation
 import android.view.animation.AnticipateInterpolator
 import android.view.animation.AnticipateOvershootInterpolator
 import android.view.animation.OvershootInterpolator
-import com.w2sv.composed.core.extensions.toEasing
+import com.w2sv.composed.animation.toEasing
 import com.w2sv.kotlinutils.threadUnsafeLazy
 
 object Easing {

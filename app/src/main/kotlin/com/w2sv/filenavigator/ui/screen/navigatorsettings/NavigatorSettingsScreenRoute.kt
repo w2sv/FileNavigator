@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.w2sv.composed.core.OnChange
-import com.w2sv.composed.core.isLandscapeModeActive
+import com.w2sv.composed.runtime.OnChange
+import com.w2sv.composed.ui.platform.isLandscapeModeActive
 import com.w2sv.designsystem.snackbar.LocalSnackbarHostState
 import com.w2sv.designsystem.snackbar.dismissCurrentSnackbar
 import com.w2sv.domain.model.filetype.FileType

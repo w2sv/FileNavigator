@@ -31,8 +31,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.w2sv.composed.core.CollectLatestFromFlow
-import com.w2sv.composed.core.OnChange
+import com.w2sv.composed.runtime.CollectLatestFromFlow
+import com.w2sv.composed.runtime.OnChange
 import com.w2sv.designsystem.animation.Easing
 import com.w2sv.designsystem.snackbar.AppSnackbarVisuals
 import com.w2sv.designsystem.snackbar.LocalSnackbarVisibility

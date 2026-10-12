@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.w2sv.composed.core.isPortraitModeActive
+import com.w2sv.composed.ui.platform.isPortraitModeActive
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.filenavigator.ui.shared.debugging.ScreenPreviews
 import kotlinx.collections.immutable.ImmutableList

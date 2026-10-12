@@ -21,7 +21,7 @@ import androidx.lifecycle.coroutineScope
 import com.w2sv.androidutils.content.intent
 import com.w2sv.androidutils.res.getHtmlFormattedText
 import com.w2sv.androidutils.widget.showToast
-import com.w2sv.composed.core.rememberStyledTextResource
+import com.w2sv.composed.ui.text.rememberStyledTextResource
 import com.w2sv.core.logging.LoggingComponentActivity
 import com.w2sv.designsystem.component.DialogButton
 import com.w2sv.designsystem.component.HighlightedDialogButton

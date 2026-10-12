@@ -4,10 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.PermissionState
 import com.w2sv.androidutils.content.openAppSettings
-import com.w2sv.composed.core.OnChange
-import com.w2sv.composed.permissions.extensions.launchPermissionRequest
+import com.w2sv.augmentedpermissions.PermissionState
+import com.w2sv.composed.runtime.OnChange
 import com.w2sv.core.util.goToManageExternalStorageSettings
 import com.w2sv.filenavigator.ui.shared.permissions.AppPermissionsState
 import com.w2sv.filenavigator.ui.shared.permissions.RequiredPermission
@@ -16,7 +15,7 @@ import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 fun PermissionsScreenRoute(permissionsState: AppPermissionsState, onAllPermissionsGranted: () -> Unit) {
-    val postNotificationsPermissionState = rememberPostNotificationsPermissionState()
+    val postNotificationsPermissionState = rememberPostNotificationsPermissionState(permissionsState.postNotificationsPermissionHistory)
 
     SyncPostNotificationsPermissionState(
         permissionState = postNotificationsPermissionState,
@@ -30,7 +29,6 @@ fun PermissionsScreenRoute(permissionsState: AppPermissionsState, onAllPermissio
     val permissionCards = remember(missingPermissions) {
         buildPermissionCards(
             missingPermissions = missingPermissions.toPersistentList(),
-            permissionsState = permissionsState,
             postNotificationsPermissionState = postNotificationsPermissionState
         )
     }
@@ -40,23 +38,18 @@ fun PermissionsScreenRoute(permissionsState: AppPermissionsState, onAllPermissio
 
 @Composable
 private fun SyncPostNotificationsPermissionState(permissionState: PermissionState, appPermissionsState: AppPermissionsState) {
-    OnChange(permissionState.status) { appPermissionsState.refresh() }
+    OnChange(permissionState.isGranted) { appPermissionsState.refresh() }
 }
 
 private fun buildPermissionCards(
     missingPermissions: ImmutableList<RequiredPermission>,
-    permissionsState: AppPermissionsState,
     postNotificationsPermissionState: PermissionState
 ): ImmutableList<PermissionCard> =
     missingPermissions.map {
         when (it) {
             RequiredPermission.PostNotifications -> PermissionCard.postNotifications(
                 onGrantButtonClick = { context ->
-                    permissionsState.onPostNotificationsPermissionRequested()
-                    postNotificationsPermissionState.launchPermissionRequest(
-                        launchedBefore = permissionsState.postNotificationsPermissionRequested(),
-                        onSuppressed = { context.openAppSettings() }
-                    )
+                    postNotificationsPermissionState.launchRequest(onSuppressed = { context.openAppSettings() })
                 }
             )
 

@@ -23,17 +23,17 @@ fun rememberRootScaffoldState(): RootScaffoldState =
 
 @Composable
 fun RootScaffold(navigator: Navigator, rootScaffoldState: RootScaffoldState, content: @Composable (PaddingValues) -> Unit) {
-    val currentScreen = navigator.currentScreen
+    val currentRoute = navigator.currentRoute
 
     Scaffold(
-        topBar = { TopAppBar(title = stringResource(currentScreen.titleRes)) },
+        topBar = { TopAppBar(title = stringResource(currentRoute.titleRes)) },
         bottomBar = {
-            if (!currentScreen.isPermissions) {
+            if (!currentRoute.isPermissions) {
                 BottomNavigationBar(navigator)
             }
         },
         floatingActionButton = {
-            AnimatedVisibility(currentScreen.isNavigatorSettings && rootScaffoldState.fab != null) {
+            AnimatedVisibility(currentRoute.isNavigatorSettings && rootScaffoldState.fab != null) {
                 rootScaffoldState.fab?.invoke()
             }
         },

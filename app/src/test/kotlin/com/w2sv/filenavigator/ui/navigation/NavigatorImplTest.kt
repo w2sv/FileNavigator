@@ -59,10 +59,4 @@ class NavigatorImplTest {
         navigator.popBackStack()
         assertBackStackEquals(listOf(Screen.Home))
     }
-
-    @Test
-    fun `currentScreen returns top of stack`() {
-        initializeBackStack(Screen.Home, Screen.AppSettings)
-        assertEquals(Screen.AppSettings, navigator.currentScreen)
-    }
 }

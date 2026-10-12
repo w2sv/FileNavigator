@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.smarttoolfactory.colorpicker.picker.HSVColorPickerCircularWithSliders
-import com.w2sv.composed.core.colorSaver
 import com.w2sv.designsystem.component.DialogButton
 import com.w2sv.designsystem.component.HighlightedDialogButton
+import com.w2sv.filenavigator.ui.shared.util.colorSaver
 import com.w2sv.modules.resources.R
 
 @Composable

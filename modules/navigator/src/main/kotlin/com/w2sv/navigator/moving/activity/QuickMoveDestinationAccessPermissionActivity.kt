@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.lifecycleScope
 import com.w2sv.androidutils.content.componentName
-import com.w2sv.composed.core.rememberStyledTextResource
+import com.w2sv.composed.ui.text.rememberStyledTextResource
 import com.w2sv.core.logging.LoggingComponentActivity
 import com.w2sv.designsystem.component.HighlightedDialogButton
 import com.w2sv.designsystem.theme.AppTheme

@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.shared.permissions
 
+import com.w2sv.augmentedpermissions.PermissionRequestHistory
 import com.w2sv.kotlinutils.coroutines.flow.mapState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,8 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 class AppPermissionsState(
     private val hasPostNotificationsPermission: () -> Boolean,
     private val hasManageAllFilesPermission: () -> Boolean,
-    val postNotificationsPermissionRequested: () -> Boolean,
-    private val savePostNotificationsRequested: () -> Unit
+    val postNotificationsPermissionHistory: PermissionRequestHistory
 ) {
     val missingPermissions: StateFlow<List<RequiredPermission>>
         field = MutableStateFlow(computeMissingPermissions())
@@ -28,12 +28,6 @@ class AppPermissionsState(
                 RequiredPermission.PostNotifications -> hasPostNotificationsPermission()
             }
         }
-
-    fun onPostNotificationsPermissionRequested() {
-        if (!postNotificationsPermissionRequested()) {
-            savePostNotificationsRequested()
-        }
-    }
 
     /**
      * Refreshes the current permission state by re-evaluating

@@ -31,7 +31,7 @@ fun BottomNavigationBar(navigator: Navigator) {
             BottomNavigationTab.entries.forEach { tab ->
                 val label = stringResource(tab.labelRes)
                 ShortNavigationBarItem(
-                    selected = navigator.currentScreen == tab.screen,
+                    selected = navigator.currentRoute == tab.screen,
                     onClick = { tab.navigate(navigator) },
                     icon = {
                         Icon(

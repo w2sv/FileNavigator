@@ -3,8 +3,8 @@ package com.w2sv.filenavigator.ui.shared.util
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.Transition
 import androidx.compose.runtime.Composable
-import com.w2sv.composed.core.OnChange
-import com.w2sv.composed.core.OnDispose
+import com.w2sv.composed.runtime.OnChange
+import com.w2sv.composed.runtime.OnDispose
 
 @Composable
 fun OnVisibilityStateChange(transition: Transition<*>, callback: (Boolean) -> Unit) {

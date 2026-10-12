@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import com.w2sv.composed.material3.extensions.dismissCurrentSnackbarAndShow
+import com.w2sv.composed.material3.replaceCurrentWith
 
 /**
  * Wrapper around [SnackbarHostState] that centralizes snackbar showing,
@@ -21,7 +21,7 @@ class SnackbarController(private val snackbarHostState: SnackbarHostState, priva
     }
 
     suspend fun showReplacing(makeSnackbar: Context.() -> SnackbarVisuals) {
-        snackbarHostState.dismissCurrentSnackbarAndShow(makeSnackbar(context))
+        snackbarHostState.replaceCurrentWith(makeSnackbar(context))
     }
 
     fun dismissCurrent() {

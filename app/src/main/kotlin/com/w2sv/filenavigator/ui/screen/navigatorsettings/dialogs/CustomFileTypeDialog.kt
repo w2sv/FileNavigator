@@ -1,7 +1,6 @@
 package com.w2sv.filenavigator.ui.screen.navigatorsettings.dialogs
 
 import androidx.compose.foundation.MutatePriority
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -17,19 +16,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.w2sv.composed.core.rememberStyledTextResource
+import com.w2sv.composed.ui.focus.clearFocusOnTap
+import com.w2sv.composed.ui.text.rememberStyledTextResource
 import com.w2sv.designsystem.component.DeletionTooltip
 import com.w2sv.designsystem.component.OutlinedTextField
 import com.w2sv.designsystem.modelext.color
 import com.w2sv.designsystem.theme.AppTheme
 import com.w2sv.domain.model.filetype.FileType
 import com.w2sv.domain.model.filetype.PresetFileType
-import com.w2sv.filenavigator.ui.shared.util.ClearFocusOnFlowEmissionOrKeyboardHidden
 import com.w2sv.modules.resources.R
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
@@ -120,9 +118,9 @@ private fun StatelessCustomFileTypeConfigurationDialog(
         onDismissRequest = onDismissRequest,
         fileTypeColor = customFileTypeEditor.fileType.color,
         onConfigureColorButtonPress = onConfigureColorButtonPress,
-        modifier = modifier.pointerInput(Unit) { detectTapGestures { customFileTypeEditor.clearFocus() } }
+        modifier = modifier.clearFocusOnTap(customFileTypeEditor.focusClearingController)
     ) {
-        ClearFocusOnFlowEmissionOrKeyboardHidden(customFileTypeEditor.clearFocus)
+        customFileTypeEditor.focusClearingController.Bind()
 
         OutlinedTextField(
             editor = customFileTypeEditor.nameEditor,

@@ -63,12 +63,6 @@ android {
     }
 }
 
-kotlin {
-    compilerOptions {
-        optIn.add("com.google.accompanist.permissions.ExperimentalPermissionsApi")
-    }
-}
-
 androidComponents {
     onVariants(selector().withBuildType("release")) {
         it.packaging.resources.excludes.add("META-INF/**")
@@ -97,8 +91,9 @@ dependencies {
     "screenshotImplementation"(projects.modules.navigatorDomain)
 
     implementation(libs.w2sv.androidutils.core)
+    implementation(libs.w2sv.augmentedpermissions)
+    implementation(libs.w2sv.composed.navigation3)
     implementation(libs.w2sv.reversiblestate)
-    implementation(libs.w2sv.composed.permissions)
     implementation(libs.w2sv.colorpicker)
 
     // Androidx

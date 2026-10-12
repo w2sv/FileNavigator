@@ -39,8 +39,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
-import com.w2sv.composed.core.OnLifecycleEvent
-import com.w2sv.composed.core.extensions.thenIf
+import com.w2sv.composed.lifecycle.OnLifecycleEvent
+import com.w2sv.composed.material3.WithLocalContentColor
+import com.w2sv.composed.ui.thenIf
 import com.w2sv.designsystem.layout.WeightedBox
 import com.w2sv.designsystem.modelext.color
 import com.w2sv.designsystem.snackbar.AppSnackbarVisuals
@@ -54,7 +55,6 @@ import com.w2sv.domain.model.filetype.PresetFileType
 import com.w2sv.domain.model.filetype.SourceType
 import com.w2sv.domain.model.movedestination.LocalDestinationApi
 import com.w2sv.filenavigator.ui.shared.LocalMoveDestinationLabelProvider
-import com.w2sv.filenavigator.ui.shared.util.WithLocalContentColor
 import com.w2sv.modules.resources.R
 import com.w2sv.storage.uri.DocumentUri
 import eu.wewox.textflow.material3.TextFlow
@@ -306,6 +306,7 @@ private fun Prev(fileName: String, useDynamicColor: Boolean, useDarkTheme: Boole
                 moveDestination = object : LocalDestinationApi {
                     override fun pathRepresentation(context: Context, includeVolumeName: Boolean): String =
                         ""
+
                     override val isVolumeRoot: Boolean = true
                     override val documentUri: DocumentUri = DocumentUri.parse("")
                     override fun fileName(context: Context): String =

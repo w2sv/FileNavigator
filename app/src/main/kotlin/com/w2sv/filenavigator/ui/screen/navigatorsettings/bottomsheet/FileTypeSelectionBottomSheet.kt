@@ -42,7 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.w2sv.composed.core.extensions.thenIf
+import com.w2sv.composed.ui.thenIf
 import com.w2sv.designsystem.component.DeletionTooltip
 import com.w2sv.designsystem.component.FileTypeIcon
 import com.w2sv.designsystem.snackbar.AppSnackbarContent

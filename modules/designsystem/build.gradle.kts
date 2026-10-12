@@ -7,6 +7,7 @@ dependencies {
     implementation(projects.modules.domain)
     implementation(projects.modules.resources)
     implementation(libs.w2sv.androidutils.core)
+    implementation(libs.w2sv.composed.animation)
     implementation(libs.androidx.constraintlayout.compose)
 
     testImplementation(projects.modules.shared)

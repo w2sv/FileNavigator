@@ -1,5 +1,7 @@
 package com.w2sv.filenavigator.ui.shared.permissions
 
+import com.w2sv.augmentedpermissions.PermissionRequestHistory
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -12,7 +14,7 @@ class AppPermissionsStateTest {
 
     private var hasPostNotificationsPermission = false
     private var hasManageAllFilesPermission = false
-    private var postNotificationsRequested = false
+    private val postNotificationsRequested = MutableStateFlow(false)
     private var saveCallCount = 0
 
     private lateinit var state: AppPermissionsState
@@ -22,11 +24,13 @@ class AppPermissionsStateTest {
         state = AppPermissionsState(
             hasPostNotificationsPermission = { hasPostNotificationsPermission },
             hasManageAllFilesPermission = { hasManageAllFilesPermission },
-            postNotificationsPermissionRequested = { postNotificationsRequested },
-            savePostNotificationsRequested = {
-                saveCallCount++
-                postNotificationsRequested = true
-            }
+            postNotificationsPermissionHistory = PermissionRequestHistory(
+                wasRequestLaunchedBefore = postNotificationsRequested,
+                recordRequestLaunched = {
+                    saveCallCount++
+                    postNotificationsRequested.value = true
+                }
+            )
         )
     }
 
@@ -51,13 +55,13 @@ class AppPermissionsStateTest {
         }
 
     @Test
-    fun `onPostNotificationsPermissionRequested persists request`() {
-        assertFalse(postNotificationsRequested)
+    fun `notification permission history records request`() {
+        assertFalse(postNotificationsRequested.value)
 
-        state.onPostNotificationsPermissionRequested()
-        state.onPostNotificationsPermissionRequested()
+        state.postNotificationsPermissionHistory.recordRequestLaunched()
 
         assertEquals(1, saveCallCount)
+        assertTrue(postNotificationsRequested.value)
     }
 
     @Test

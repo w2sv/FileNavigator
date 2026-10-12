@@ -7,8 +7,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.rememberNavBackStack
+import com.w2sv.composed.navigation3.Nav3Navigator
+import com.w2sv.composed.navigation3.rememberTypedNavBackStack
 import com.w2sv.core.logging.logIdentifier
 import slimber.log.i
 
@@ -18,7 +18,7 @@ interface Navigator {
     fun toHome()
     fun toNavigatorSettings()
     fun popBackStack()
-    val currentScreen: Screen
+    val currentRoute: Screen
     val backStack: List<Screen>
 }
 
@@ -31,8 +31,9 @@ class NavigatorImpl(backStack: NavBackStack<Screen>) :
     override fun toAppSettings() =
         toBottomNavDestination(Screen.AppSettings)
 
-    override fun toPermissions() =
+    override fun toPermissions() {
         clearAndLaunch(Screen.Permissions)
+    }
 
     override fun toHome() =
         toBottomNavDestination(Screen.Home)
@@ -41,7 +42,7 @@ class NavigatorImpl(backStack: NavBackStack<Screen>) :
         toBottomNavDestination(Screen.NavigatorSettings)
 
     private fun toBottomNavDestination(destination: Screen) {
-        val current = currentScreen
+        val current = currentRoute
         when {
             current == destination -> Unit
             !current.isBottomNavDestination -> clearAndLaunch(destination)
@@ -57,7 +58,7 @@ class NavigatorImpl(backStack: NavBackStack<Screen>) :
 
 @Composable
 fun rememberNavigator(startScreen: Screen): Navigator {
-    val backStack = rememberTypedNavBackStack(startScreen)
+    val backStack = rememberTypedNavBackStack<Screen>(startScreen)
 
     LaunchedEffect(backStack) {
         snapshotFlow { backStack.toList() }
@@ -68,8 +69,3 @@ fun rememberNavigator(startScreen: Screen): Navigator {
 
     return remember(backStack) { NavigatorImpl(backStack) }
 }
-
-@Composable
-@Suppress("UNCHECKED_CAST")
-private fun <T : NavKey> rememberTypedNavBackStack(vararg initialKeys: T): NavBackStack<T> =
-    rememberNavBackStack(*initialKeys) as NavBackStack<T>

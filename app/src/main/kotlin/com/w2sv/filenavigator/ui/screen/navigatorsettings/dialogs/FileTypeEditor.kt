@@ -8,7 +8,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -16,20 +15,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import com.w2sv.composed.core.OnChange
-import com.w2sv.composed.core.rememberStyledTextResource
+import com.w2sv.composed.runtime.OnChange
+import com.w2sv.composed.ui.focus.FocusClearingController
+import com.w2sv.composed.ui.focus.rememberFocusClearingController
+import com.w2sv.composed.ui.text.rememberStyledTextResource
 import com.w2sv.core.util.containsSpecialCharacter
 import com.w2sv.designsystem.state.InputInvalidityReason
 import com.w2sv.designsystem.state.ProxyTextEditor
 import com.w2sv.designsystem.state.StatefulTextEditor
 import com.w2sv.domain.model.filetype.FileType
-import com.w2sv.kotlinutils.coroutines.flow.emit
 import com.w2sv.kotlinutils.threadUnsafeLazy
 import com.w2sv.modules.resources.R
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import slimber.log.i
 
 enum class FileTypeNameInvalidityReason(@StringRes override val errorMessageRes: Int) : InputInvalidityReason {
@@ -89,7 +86,7 @@ class CustomFileTypeEditor(
     initialFileType: FileType.Custom,
     otherFileTypes: Collection<FileType>,
     private val createFileType: (FileType.Custom) -> Unit,
-    private val scope: CoroutineScope,
+    val focusClearingController: FocusClearingController,
     private val context: Context
 ) {
     private val otherFileTypeNames by threadUnsafeLazy {
@@ -171,18 +168,15 @@ class CustomFileTypeEditor(
     // Focus
     // ===================
 
-    val clearFocus get() = _clearFocus.asSharedFlow()
-    private val _clearFocus = MutableSharedFlow<Unit>()
-
     fun clearFocus() {
-        _clearFocus.emit(Unit, scope)
+        focusClearingController.requestClearFocus()
     }
 
     companion object {
         fun saver(
             existingFileTypes: Collection<FileType>,
             createFileType: (FileType.Custom) -> Unit,
-            scope: CoroutineScope,
+            focusClearingController: FocusClearingController,
             context: Context
         ): Saver<CustomFileTypeEditor, Pair<FileType.Custom, String>> =
             object : Saver<CustomFileTypeEditor, Pair<FileType.Custom, String>> {
@@ -194,7 +188,7 @@ class CustomFileTypeEditor(
                         initialFileType = value.first,
                         otherFileTypes = existingFileTypes,
                         createFileType = createFileType,
-                        scope = scope,
+                        focusClearingController = focusClearingController,
                         context = context
                     ).apply {
                         extensionEditor.update(value.second)
@@ -208,18 +202,18 @@ fun rememberCustomFileTypeEditor(
     existingFileTypes: ImmutableSet<FileType>,
     saveFileType: (FileType.Custom) -> Unit,
     initialFileType: FileType.Custom? = null,
-    scope: CoroutineScope = rememberCoroutineScope(),
+    focusClearingController: FocusClearingController = rememberFocusClearingController(),
     context: Context = LocalContext.current
 ): CustomFileTypeEditor {
     val editor = rememberSaveable(
         initialFileType,
-        saver = CustomFileTypeEditor.saver(existingFileTypes, saveFileType, scope, context)
+        saver = CustomFileTypeEditor.saver(existingFileTypes, saveFileType, focusClearingController, context)
     ) {
         CustomFileTypeEditor(
             initialFileType = initialFileType ?: FileType.newEmptyCustom(existingFileTypes),
             otherFileTypes = existingFileTypes,
             createFileType = saveFileType,
-            scope = scope,
+            focusClearingController = focusClearingController,
             context = context
         )
     }
