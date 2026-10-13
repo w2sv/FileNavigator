@@ -15,7 +15,15 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.w2sv.core.logging.LoggingComponentActivity
 import com.w2sv.core.logging.log
+import com.w2sv.core.util.hasManageAllFilesPermission
+import com.w2sv.core.util.hasPostNotificationsPermission
 import com.w2sv.domain.usecase.MoveDestinationLabelProvider
+import com.w2sv.filenavigator.BuildConfig
+import com.w2sv.filenavigator.ui.navigation.main.MainNavRoute
+import com.w2sv.filenavigator.ui.shared.debugging.DebugAction
+import com.w2sv.filenavigator.ui.shared.permissions.AppPermissionsState
+import com.w2sv.kotlinutils.makeIf
+import com.w2sv.kotlinutils.threadUnsafeLazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -26,29 +34,37 @@ class MainActivity : LoggingComponentActivity() {
     lateinit var moveDestinationLabelProvider: MoveDestinationLabelProvider
 
     private val viewModel by viewModels<MainActivityViewModel>()
+    private val permissionsState by threadUnsafeLazy {
+        AppPermissionsState(
+            hasPostNotificationsPermission = { hasPostNotificationsPermission() },
+            hasManageAllFilesPermission = { hasManageAllFilesPermission },
+            postNotificationsPermissionHistory = viewModel.postNotificationsPermissionHistory
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setOnExitAnimationListener(SwipeRightExitAnimation())
         super.onCreate(savedInstanceState)
         WindowCompat.enableEdgeToEdge(window)
 
-        val intentAction = intent.action.log { "intent action=$it" }
+        val debugAction = makeIf(BuildConfig.DEBUG) { DebugAction.fromIntentAction(intent.action.log { "intent action=$it" }) }
+        val startRoute = if (permissionsState.allGranted.value) MainNavRoute.BottomNavHost() else MainNavRoute.Permissions
 
         setContent {
             val themeSettings by viewModel.themeSettings.collectAsStateWithLifecycle()
             FileNavigatorUi(
                 themeSettings = themeSettings,
-                startRoute = viewModel.startRoute,
-                permissionsState = viewModel.permissionsState,
+                startRoute = startRoute,
+                permissionsState = permissionsState,
                 moveDestinationLabelProvider = moveDestinationLabelProvider,
-                initialIntentAction = intentAction
+                debugAction = debugAction
             )
         }
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.permissionsState.refresh()
+        permissionsState.refresh()
     }
 }
 
