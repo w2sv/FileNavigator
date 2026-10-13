@@ -98,7 +98,7 @@
     <string name="move_history_deletion_dialog_message">确定清除？此操作不可逆</string>
     <string name="move_history_placeholder">被移动的文件将在这里显示</string>
     <string name="move_history">移动记录</string>
-    <string name="navigator_settings">整理程序设置</string>
+    <string name="navigator_screen_title">整理程序</string>
     <string name="couldn_t_find_file">未能找到文件</string>
     <string name="delete_entry">删除此项</string>
     <string name="applied_navigator_settings">设置已应用</string>

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.w2sv.composed.ui.platform.isPortraitModeActive
 import com.w2sv.composed.ui.rememberMovableContentOf
 import com.w2sv.designsystem.layout.PaddingDefaults
@@ -18,8 +17,24 @@ import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryCard
 import com.w2sv.filenavigator.ui.screen.home.movehistory.MoveHistoryState
 import com.w2sv.filenavigator.ui.screen.home.navigatorstatus.NavigatorStatusCard
 import com.w2sv.filenavigator.ui.shared.debugging.PreviewOf
+import com.w2sv.filenavigator.ui.shared.debugging.ScreenPreviews
 import com.w2sv.filenavigator.ui.shared.util.ModifierReceivingComposable
 import kotlinx.collections.immutable.persistentListOf
+
+@ScreenPreviews
+@Composable
+private fun HomeScreenPrev() {
+    PreviewOf {
+        HomeScreen(
+            navigatorIsRunning = true,
+            moveHistoryState = MoveHistoryState(
+                history = persistentListOf(),
+                deleteAll = {},
+                deleteEntry = {}
+            )
+        )
+    }
+}
 
 @Composable
 fun HomeScreen(navigatorIsRunning: Boolean, moveHistoryState: MoveHistoryState) {
@@ -45,21 +60,6 @@ fun HomeScreen(navigatorIsRunning: Boolean, moveHistoryState: MoveHistoryState) 
             statusDisplayCard = statusDisplayCard,
             moveHistoryCard = moveHistoryCard,
             modifier = sharedModifier
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun HomeScreenPrev() {
-    PreviewOf {
-        HomeScreen(
-            navigatorIsRunning = true,
-            moveHistoryState = MoveHistoryState(
-                history = persistentListOf(),
-                deleteAll = {},
-                deleteEntry = {}
-            )
         )
     }
 }

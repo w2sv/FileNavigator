@@ -9,11 +9,11 @@ import kotlinx.serialization.Serializable
 sealed class BottomNavRoute(@StringRes val titleRes: Int) : NavKey {
 
     @Serializable
-    data object Home : BottomNavRoute(R.string.app_name)
+    data object Home : BottomNavRoute(R.string.home)
 
     @Serializable
     data object AppSettings : BottomNavRoute(R.string.app_settings)
 
     @Serializable
-    data object NavigatorSettings : BottomNavRoute(R.string.navigator_settings)
+    data object NavigatorSettings : BottomNavRoute(R.string.navigator_screen_title)
 }

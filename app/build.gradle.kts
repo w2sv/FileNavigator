@@ -106,6 +106,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.navigation3.android)
 
     // .Compose
+    implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.compose.viewmodel)
     implementation(libs.androidx.hilt.navigation.compose)
 

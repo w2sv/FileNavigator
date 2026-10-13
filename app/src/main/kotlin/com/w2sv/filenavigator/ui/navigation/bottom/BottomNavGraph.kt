@@ -1,5 +1,6 @@
 package com.w2sv.filenavigator.ui.navigation.bottom
 
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -12,6 +13,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.w2sv.composed.runtime.OnChange
 import com.w2sv.filenavigator.ui.navigation.NavTransitionDefaults
 import com.w2sv.filenavigator.ui.navigation.Navigator
 import com.w2sv.filenavigator.ui.navigation.RoundedOnExit
@@ -22,14 +24,15 @@ import com.w2sv.filenavigator.ui.screen.navigatorsettings.NavigatorSettingsScree
 
 @Composable
 internal fun BottomNavGraph(host: MainNavRoute.BottomNavHost, navigator: Navigator) {
-    val scaffoldState = remember { BottomNavScaffoldState() }
-    val fadeTransition =
-        fadeIn(animationSpec = tween(NavTransitionDefaults.DurationMillis)) togetherWith
-            fadeOut(animationSpec = tween(NavTransitionDefaults.DurationMillis))
+    val scaffoldState = remember(host) { BottomNavScaffoldState(host.backStack.last()) }
+
+    OnChange(host.backStack.last()) { route ->
+        scaffoldState.currentBottomNavRoute = route
+    }
 
     BottomNavScaffold(
-        navigator = navigator,
-        bottomNavScaffoldState = scaffoldState
+        bottomNavScaffoldState = scaffoldState,
+        onNavigate = navigator::toBottomNavDestination
     ) { paddingValues ->
         NavDisplay(
             backStack = host.backStack,
@@ -39,29 +42,26 @@ internal fun BottomNavGraph(host: MainNavRoute.BottomNavHost, navigator: Navigat
                 rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator()
             ),
-            transitionSpec = { fadeTransition },
-            popTransitionSpec = { fadeTransition },
+            transitionSpec = { fadeTransition() },
+            popTransitionSpec = { fadeTransition() },
             entryProvider = entryProvider {
                 entry<BottomNavRoute.Home> {
                     RoundedOnExit {
-                        BottomNavDestinationLayout(
-                            route = BottomNavRoute.Home,
-                            collapsible = false
-                        ) {
+                        BottomNavDestinationLayout(Home) {
                             HomeScreenRoute()
                         }
                     }
                 }
                 entry<BottomNavRoute.AppSettings> {
                     RoundedOnExit {
-                        BottomNavDestinationLayout(BottomNavRoute.AppSettings) {
+                        BottomNavDestinationLayout(AppSettings) {
                             AppSettingsScreenRoute()
                         }
                     }
                 }
                 entry<BottomNavRoute.NavigatorSettings> {
                     RoundedOnExit {
-                        BottomNavDestinationLayout(BottomNavRoute.NavigatorSettings) {
+                        BottomNavDestinationLayout(NavigatorSettings) {
                             NavigatorSettingsScreenRoute(bottomNavScaffoldState = scaffoldState)
                         }
                     }
@@ -70,3 +70,7 @@ internal fun BottomNavGraph(host: MainNavRoute.BottomNavHost, navigator: Navigat
         )
     }
 }
+
+private fun fadeTransition(): ContentTransform =
+    fadeIn(animationSpec = tween(NavTransitionDefaults.DurationMillis)) togetherWith
+        fadeOut(animationSpec = tween(NavTransitionDefaults.DurationMillis))

@@ -35,7 +35,7 @@ class Navigator(backStack: NavBackStack<MainNavRoute>) : Nav3Navigator<MainNavRo
     fun toNavigatorSettings() =
         toBottomNavDestination(BottomNavRoute.NavigatorSettings)
 
-    private fun toBottomNavDestination(destination: BottomNavRoute) {
+    fun toBottomNavDestination(destination: BottomNavRoute) {
         if (currentBottomNavRoute == destination) return
 
         val host = currentBottomNavHost ?: MainNavRoute.BottomNavHost().also { clearAndLaunch(it) }
